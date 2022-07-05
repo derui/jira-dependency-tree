@@ -1,0 +1,36 @@
+{
+  "name": "jira-dendency-tree",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:css": "postcss --watch -o dist/static/css/app.css src/root.css",
+    "start:tsc": "tsc --watch",
+    "start:vite": "vite",
+    "start": "npm-run-all -p start:tsc start:vite start:css emulators",
+    "build:bundle": "NODE_ENV=production vite build",
+    "build:css": "postcss -o dist/static/css/app.css src/css/root.css",
+    "build": "npm-run-all -s build:css build:bundle",
+    "lint:css": "stylelint --config stylelint.config.js 'src/css/**/*.css'",
+    "lint:ts": "eslint --fix --ext .ts,.tsx src/ts/",
+    "lint": "npm-run-all -p lint:ts lint:css",
+    "test": "uvu -r solid-register",
+    "test:watch": "chokidar  src/**/*.ts src/**/*.tsx -c \"uvu -r solid-register\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^7.6.1",
+    "jira-client": "^8.1.0"
+  },
+  "devDependencies": {
+    "chokidar": "^3.5.3",
+    "solid-js": "^1.4.6",
+    "solid-register": "^0.2.5",
+    "typescript": "^4.7.4",
+    "uvu": "^0.5.6",
+    "vite": "^2.9.13",
+    "vite-plugin-solid": "^2.2.6",
+    "vite-tsconfig-paths": "^3.5.0"
+  }
+}

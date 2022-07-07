@@ -14,8 +14,8 @@
     "lint:css": "stylelint --config stylelint.config.js 'src/css/**/*.css'",
     "lint:ts": "eslint --fix --ext .ts,.tsx src/ts/",
     "lint": "npm-run-all -p lint:ts lint:css",
-    "test": "uvu -r solid-register",
-    "test:watch": "chokidar  src/**/*.ts src/**/*.tsx -c \"uvu -r solid-register\""
+    "test": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
+    "test:watch": "chokidar 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'npx uvu -r solid-register -r tsconfig-paths/register -r tsm'"
   },
   "author": "",
   "license": "ISC",
@@ -25,8 +25,11 @@
   },
   "devDependencies": {
     "chokidar": "^3.5.3",
+    "chokidar-cli": "^3.0.0",
     "solid-js": "^1.4.6",
     "solid-register": "^0.2.5",
+    "tsconfig-paths": "^4.0.0",
+    "tsm": "^2.2.1",
     "typescript": "^4.7.4",
     "uvu": "^0.5.6",
     "vite": "^2.9.13",

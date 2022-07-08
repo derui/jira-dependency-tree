@@ -17,8 +17,8 @@
     "test": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
     "test:watch": "chokidar 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'npx uvu -r solid-register -r tsconfig-paths/register -r tsm'"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "derui",
+  "license": "MIT",
   "dependencies": {
     "d3": "^7.6.1",
     "jira-client": "^8.1.0"
@@ -35,5 +35,8 @@
     "vite": "^2.9.13",
     "vite-plugin-solid": "^2.2.6",
     "vite-tsconfig-paths": "^3.5.0"
+  },
+  "volta": {
+    "node": "16.16.0"
   }
 }

@@ -12,9 +12,4 @@ export default defineConfig({
     polyfillDynamicImport: false,
   },
   publicDir: 'dist',
-  resolve: {
-    alias: {
-      "./firebase.config": path.join(__dirname, 'src', 'ts', isProduction ? 'firebase.config.prod' : 'firebase.config')
-    },
-  },
 });

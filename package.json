@@ -7,7 +7,7 @@
     "start:css": "postcss --watch -o dist/static/css/app.css src/root.css",
     "start:tsc": "tsc --watch",
     "start:vite": "vite",
-    "start": "npm-run-all -p start:tsc start:vite start:css emulators",
+    "start": "npm-run-all -p start:tsc start:vite start:css",
     "build:bundle": "NODE_ENV=production vite build",
     "build:css": "postcss -o dist/static/css/app.css src/css/root.css",
     "build": "npm-run-all -s build:css build:bundle",
@@ -24,6 +24,7 @@
     "jira-client": "^8.1.0"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^5.30.5",
     "@typescript-eslint/parser": "^5.30.5",
     "chokidar": "^3.5.3",
@@ -32,6 +33,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.14",
+    "postcss-cli": "^10.0.0",
     "prettier": "^2.7.1",
     "solid-js": "^1.4.6",
     "solid-register": "^0.2.5",

@@ -1,4 +1,4 @@
-import { difference } from "@/util";
+import { constraint, difference } from "@/util";
 
 type Edge = [string, string];
 type Vertex = string;
@@ -92,18 +92,24 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
 
   return {
     addVertex(label) {
+      constraint(label.trim().length > 0);
       const vertices = addVertex(this.vertices, label);
 
       return makeGraph(this.edges, vertices);
     },
 
     addVertices(vertices) {
-      const newVertices = addVertices(this.vertices, vertices);
+      const newVertices = addVertices(
+        this.vertices,
+        vertices.filter((v) => v.trim().length > 0)
+      );
 
       return makeGraph(this.edges, newVertices);
     },
 
     levelAt(level: number) {
+      constraint(level >= 0);
+
       const nodesAtLevel = new Set<Vertex>();
 
       findRoots(adjMatrix).forEach((root) => {

@@ -51,6 +51,27 @@ test("add adjacent between two vertices", () => {
   assert.equal(graph.levelAt(0), ["a"]);
 });
 
+test("can not accept empty or blank vertex", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph();
+
+  // verify
+  assert.throws(() => graph.addVertex(""));
+  assert.throws(() => graph.addVertex("   "));
+});
+
+test("level must be greater equal 0", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph();
+
+  // verify
+  assert.throws(() => graph.levelAt(-1));
+});
+
 test("level get from multiple root", () => {
   // arrange
 
@@ -83,6 +104,17 @@ test("get adjacent vertices from given vertex", () => {
   assert.equal(graph.adjacent("b"), ["c", "d"]);
   assert.equal(graph.adjacent("d"), ["c"]);
   assert.equal(graph.adjacent("c"), []);
+});
+
+test("ignore empty or blank vertices when add multiple vertices to graph at once", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertices(["    ", "", "c", "d"]);
+
+  // verify
+  assert.is(graph.edges.length, 0);
+  assert.equal(new Set(graph.vertices), new Set(["c", "d"]));
 });
 
 test.run();

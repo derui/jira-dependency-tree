@@ -12,3 +12,12 @@ export const difference = function difference<T>(a: Set<T>, b: Set<T>): Set<T> {
 
   return diff;
 };
+
+// check constraint and throw error if constraint is broken.
+export const constraint = function constraint(condition: boolean, message?: string) {
+  let revisedMessage = message ?? "Detect invalid constraint";
+
+  if (!condition) {
+    throw Error(revisedMessage);
+  }
+};

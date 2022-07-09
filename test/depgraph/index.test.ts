@@ -1,0 +1,66 @@
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
+
+import { emptyGraph } from "@/depgraph/index";
+
+const test = suite("depgraph");
+
+test("make empty depgraph", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph();
+
+  // verify
+  assert.is(graph.edges.length, 0);
+  assert.is(graph.vertices.length, 0);
+});
+
+test("add a vertex to graph", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertex("a");
+
+  // verify
+  assert.is(graph.edges.length, 0);
+  assert.is(graph.vertices.length, 1);
+  assert.equal(graph.levelAt(0), ["a"]);
+});
+
+test("can not add same label twice", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertex("a").addVertex("a");
+
+  // verify
+  assert.is(graph.edges.length, 0);
+  assert.is(graph.vertices.length, 1);
+});
+
+test("add adjacent between two vertices", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertex("a").addVertex("b").directTo("a", "b");
+
+  // verify
+  assert.is(graph.edges.length, 1);
+  assert.is(graph.vertices.length, 2);
+  assert.equal(graph.levelAt(0), ["a"]);
+});
+
+test("level get from multiple root", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertex("a").addVertex("b").addVertex("c").directTo("a", "b");
+
+  // verify
+  assert.is(graph.edges.length, 1);
+  assert.is(graph.vertices.length, 3);
+  assert.equal(graph.levelAt(0), ["a", "c"]);
+});
+
+test.run();

@@ -15,7 +15,7 @@
     "lint:ts": "eslint --fix --ext .ts,.tsx src/ts/",
     "lint": "npm-run-all -p lint:ts lint:css",
     "test": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
-    "test:watch": "chokidar 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'npx uvu -r solid-register -r tsconfig-paths/register -r tsm'"
+    "test:watch": "chokidar --silent 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'pnpm run test'"
   },
   "author": "derui",
   "license": "MIT",

@@ -9,13 +9,19 @@ type AdjacentMatrix = {
 
 type Graph = {
   // add vertex labelled by [label]
-  addVertex(label: string): Graph;
+  addVertex(label: Vertex): Graph;
+
+  // add some vertices at once
+  addVertices(label: Vertex[]): Graph;
 
   // get vertices at level
   levelAt(level: number): Vertex[];
 
   // add edge that is directed [from] to [to]
   directTo(from: Vertex, to: Vertex): Graph;
+
+  // Get adjacent vertices of [vertex]
+  adjacent(vertex: Vertex): Vertex[];
 
   readonly edges: Edge[];
   readonly vertices: Vertex[];
@@ -28,6 +34,16 @@ const addVertex = function addVertex(vertices: Vertex[], label: string) {
 
   vertices.push(label);
   return vertices;
+};
+
+const addVertices = function addVertex(vertices: Vertex[], newVertices: Vertex[]) {
+  const current = new Set(vertices);
+
+  for (const v of newVertices) {
+    current.add(v);
+  }
+
+  return Array.from(current);
 };
 
 const makeAdjacentMatrix = function makeAdjacentMatrix(edges: Edge[], vertices: Vertex[]) {
@@ -81,6 +97,12 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       return makeGraph(this.edges, vertices);
     },
 
+    addVertices(vertices) {
+      const newVertices = addVertices(this.vertices, vertices);
+
+      return makeGraph(this.edges, newVertices);
+    },
+
     levelAt(level: number) {
       const nodesAtLevel = new Set<Vertex>();
 
@@ -99,6 +121,12 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       const edges = this.edges.concat([[from, to]]);
 
       return makeGraph(edges, this.vertices);
+    },
+
+    adjacent(vertex) {
+      const set = new Set(adjMatrix[vertex] ?? []);
+
+      return Array.from(set).sort();
     },
 
     get edges() {

@@ -61,6 +61,28 @@ test("level get from multiple root", () => {
   assert.is(graph.edges.length, 1);
   assert.is(graph.vertices.length, 3);
   assert.equal(graph.levelAt(0), ["a", "c"]);
+  assert.equal(graph.levelAt(1), ["b"]);
+  assert.equal(graph.levelAt(2), []);
+});
+
+test("get adjacent vertices from given vertex", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  // verify
+  assert.is(graph.edges.length, 4);
+  assert.is(graph.vertices.length, 4);
+  assert.equal(graph.adjacent("a"), ["b"]);
+  assert.equal(graph.adjacent("b"), ["c", "d"]);
+  assert.equal(graph.adjacent("d"), ["c"]);
+  assert.equal(graph.adjacent("c"), []);
 });
 
 test.run();

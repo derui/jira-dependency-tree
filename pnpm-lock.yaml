@@ -2,11 +2,13 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/d3': ^7.4.0
+  '@types/d3-hierarchy': ^3.1.0
   '@typescript-eslint/eslint-plugin': ^5.30.5
   '@typescript-eslint/parser': ^5.30.5
   chokidar: ^3.5.3
   chokidar-cli: ^3.0.0
   d3: ^7.6.1
+  d3-hierarchy: ^3.1.2
   eslint: ^8.19.0
   eslint-plugin-import: ^2.26.0
   eslint-plugin-unused-imports: ^2.0.0
@@ -27,10 +29,12 @@ specifiers:
 
 dependencies:
   d3: 7.6.1
+  d3-hierarchy: 3.1.2
   jira-client: 8.1.0
 
 devDependencies:
   '@types/d3': 7.4.0
+  '@types/d3-hierarchy': 3.1.0
   '@typescript-eslint/eslint-plugin': 5.30.5_6zdoc3rn4mpiddqwhppni2mnnm
   '@typescript-eslint/parser': 5.30.5_4x5o4skxv6sl53vpwefgt23khm
   chokidar: 3.5.3

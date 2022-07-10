@@ -1,4 +1,4 @@
-export type StatusCategory = {
+export type IssueStatusCategory = {
   id: string;
   name: string;
   colorName: string;

@@ -1,4 +1,4 @@
-import { IssueStatusId, IssueTypeId, StatusCategory } from "@/type";
+import { IssueStatus, IssueStatusId, IssueType, IssueTypeId, IssueStatusCategory } from "@/type";
 
 // JIRA's project representation
 export type ProjectBase = {
@@ -8,6 +8,9 @@ export type ProjectBase = {
   // a key of project
   key: string;
 
+  // a name of project
+  name: string;
+
   // status definitions in a project
   statuses: IssueStatus[];
 
@@ -15,13 +18,13 @@ export type ProjectBase = {
   issueTypes: IssueType[];
 
   // status categories in project
-  statusCategories: StatusCategory[];
+  statusCategories: IssueStatusCategory[];
 };
 
 export class Project {
   private _statuses: IssueStatus[];
   private _issueTypes: IssueType[];
-  private _statusCategories: StatusCategory[];
+  private _statusCategories: IssueStatusCategory[];
   readonly id: string;
   readonly key: string;
 

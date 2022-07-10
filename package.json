@@ -22,7 +22,8 @@
   "dependencies": {
     "d3": "^7.6.1",
     "d3-hierarchy": "^3.1.2",
-    "jira-client": "^8.1.0"
+    "jira.js": "^2.15.2",
+    "solid-js": "^1.4.6"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
@@ -38,7 +39,6 @@
     "postcss": "^8.4.14",
     "postcss-cli": "^10.0.0",
     "prettier": "^2.7.1",
-    "solid-js": "^1.4.6",
     "solid-register": "^0.2.5",
     "tsconfig-paths": "^4.0.0",
     "tsm": "^2.2.1",

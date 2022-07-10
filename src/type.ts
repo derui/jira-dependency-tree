@@ -1,15 +1,13 @@
-export const ISSUE_CATEGORY = {
-  DONE: "DONE",
-  IN_PROGRESS: "IN_PROGRESS",
-  TODO: "TODO",
-} as const;
-
-export type IssueCategory = typeof ISSUE_CATEGORY[keyof typeof ISSUE_CATEGORY];
+export type StatusCategory = {
+  id: string;
+  name: string;
+  colorName: string;
+};
 
 export type IssueStatus = {
   id: string;
   name: string;
-  category: IssueCategory;
+  categoryId: string;
 };
 
 export type IssueType = {
@@ -17,3 +15,6 @@ export type IssueType = {
   name: string;
   avatarUrl: string;
 };
+
+export type IssueTypeId = string;
+export type IssueStatusId = string;

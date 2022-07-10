@@ -14,8 +14,10 @@
     "lint:css": "stylelint --config stylelint.config.js 'src/css/**/*.css'",
     "lint:ts": "eslint --fix --ext .ts,.tsx src/ts/",
     "lint": "npm-run-all -p lint:ts lint:css",
-    "test": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
-    "test:watch": "chokidar --silent 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'pnpm run test'"
+    "test-live-server": "live-server --no-browser --port=8081 test",
+    "test-uvu": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
+    "test": "npm-run-all -r -p test-live-server test-uvu",
+    "test:watch": "chokidar --silent 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'pnpm run test-uvu'"
   },
   "author": "derui",
   "license": "MIT",

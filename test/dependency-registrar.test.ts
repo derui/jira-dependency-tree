@@ -1,29 +1,33 @@
-import { createDependencyRegistrar } from "./dependency-registrar";
+import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { suite } from "uvu";
+import * as assert from "uvu/assert";
 
-describe("dependency registrar", () => {
-  test("can registrar any type and get any type with key", () => {
-    type dep = {
-      name: number;
-      name2: string;
-    };
-    const registar = createDependencyRegistrar<dep>();
+const test = suite("dependency registrar");
 
-    registar.register("name", 5);
-    registar.register("name2", "foo");
+test("can registrar any type and get any type with key", () => {
+  type dep = {
+    name: number;
+    name2: string;
+  };
+  const registar = createDependencyRegistrar<dep>();
 
-    const name = registar.resolve("name");
-    const name2 = registar.resolve("name2");
+  registar.register("name", 5);
+  registar.register("name2", "foo");
 
-    expect(name).toEqual(5);
-    expect(name2).toEqual("foo");
-  });
+  const name = registar.resolve("name");
+  const name2 = registar.resolve("name2");
 
-  test("throw error if not found", () => {
-    type dep = {
-      name: number;
-    };
-    const registar = createDependencyRegistrar<dep>();
-
-    expect(() => registar.resolve("name")).toThrow();
-  });
+  assert.is(name, 5);
+  assert.equal(name2, "foo");
 });
+
+test("throw error if not found", () => {
+  type dep = {
+    name: number;
+  };
+  const registar = createDependencyRegistrar<dep>();
+
+  assert.throws(() => registar.resolve("name"));
+});
+
+test.run();

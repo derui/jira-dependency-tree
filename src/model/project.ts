@@ -1,4 +1,4 @@
-import { IssueStatus, IssueType } from "./type";
+import { IssueStatusId, IssueTypeId, StatusCategory } from "@/type";
 
 // JIRA's project representation
 export type ProjectBase = {
@@ -13,11 +13,15 @@ export type ProjectBase = {
 
   // issue types in a project
   issueTypes: IssueType[];
+
+  // status categories in project
+  statusCategories: StatusCategory[];
 };
 
 export class Project {
   private _statuses: IssueStatus[];
   private _issueTypes: IssueType[];
+  private _statusCategories: StatusCategory[];
   readonly id: string;
   readonly key: string;
 
@@ -26,13 +30,18 @@ export class Project {
     this.key = arg.key;
     this._statuses = arg.statuses;
     this._issueTypes = arg.issueTypes;
+    this._statusCategories = arg.statusCategories;
   }
 
-  findStatusBy(id: string) {
+  findStatusBy(id: IssueStatusId) {
     return this._statuses.find((v) => v.id === id);
   }
 
-  findIssueTypeBy(id: string) {
+  findIssueTypeBy(id: IssueTypeId) {
     return this._issueTypes.find((v) => v.id === id);
+  }
+
+  findStatusCategoryById(id: string) {
+    return this._statusCategories.find((v) => v.id === id);
   }
 }

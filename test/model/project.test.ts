@@ -1,5 +1,4 @@
-import { Project } from "@/project";
-import { ISSUE_CATEGORY } from "@/type";
+import { Project } from "@/model/project";
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
@@ -12,7 +11,7 @@ const issueTypes = [
     avatarUrl: "http://localhost/foo",
   },
 ];
-const statuses = [{ id: "1", name: "TODO", category: ISSUE_CATEGORY.TODO }];
+const statuses = [{ id: "1", name: "TODO", categoryId: "3" }];
 const project = new Project({ id: "150", key: "foo", statuses, issueTypes });
 
 test("get issuetype by id", () => {

@@ -1,11 +1,11 @@
-type Size = {
-  width: number;
-  height: number;
-};
+import { Size } from "@/type";
 
 export type EnvironmentArgument = {
   // Size of issue in environment
-  issueSize?: Size;
+  issueNodeSize?: Size;
+
+  // user domain
+  userDomain?: string;
 
   // credential on environment
   credentials?: {
@@ -31,13 +31,25 @@ export class Environment implements Environment {
     return Object.freeze(this._credentials);
   }
 
+  private _userDomain: string | null;
+
+  get userDomain() {
+    return this._userDomain;
+  }
+
   constructor(env: EnvironmentArgument) {
-    this._issueSize = env.issueSize ?? { width: 192, height: 64 };
+    this._issueSize = env.issueNodeSize ?? { width: 192, height: 64 };
     this._credentials = env.credentials ?? {};
+    this._userDomain = env.userDomain ?? null;
   }
 
   // set credential
   applyCrednetial(jiraToken: string) {
     this._credentials.jiraToken = jiraToken;
+  }
+
+  // set credential
+  initUserDomain(userDomain: string) {
+    this._userDomain = userDomain;
   }
 }

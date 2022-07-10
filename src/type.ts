@@ -18,3 +18,8 @@ export type IssueType = {
 
 export type IssueTypeId = string;
 export type IssueStatusId = string;
+
+export type Size = {
+  width: number;
+  height: number;
+};

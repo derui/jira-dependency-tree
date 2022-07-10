@@ -1,7 +1,7 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
-import { difference } from "@/util";
+import { difference, filterUndefined } from "@/util";
 
 const test = suite("util");
 
@@ -17,6 +17,17 @@ test("difference between two sets", () => {
   // Verify
   assert.equal(retA, new Set([3]), "ret a - b");
   assert.equal(retB, new Set([6]), "ret b - a");
+});
+
+test("filter undefined", () => {
+  // arrange
+
+  // do
+
+  // verify
+  assert.equal(filterUndefined(undefined), false);
+  assert.equal(filterUndefined("value"), true);
+  assert.equal(filterUndefined(""), true);
 });
 
 test.run();

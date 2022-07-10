@@ -21,3 +21,8 @@ export const constraint = function constraint(condition: boolean, message?: stri
     throw Error(revisedMessage);
   }
 };
+
+// A simple type guard to remove undefined
+export const filterUndefined = function filterUndefined<T>(value: T | undefined): value is T {
+  return value !== undefined;
+};

@@ -27,10 +27,12 @@ export class Project {
   private _statusCategories: IssueStatusCategory[];
   readonly id: string;
   readonly key: string;
+  readonly name: string;
 
   constructor(arg: ProjectBase) {
     this.id = arg.id;
     this.key = arg.key;
+    this.name = arg.name;
     this._statuses = arg.statuses;
     this._issueTypes = arg.issueTypes;
     this._statusCategories = arg.statusCategories;

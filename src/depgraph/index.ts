@@ -7,7 +7,7 @@ type AdjacentMatrix = {
   [k: Vertex]: Set<Vertex>;
 };
 
-type Graph = {
+export type Graph = {
   // add vertex labelled by [label]
   addVertex(label: Vertex): Graph;
 

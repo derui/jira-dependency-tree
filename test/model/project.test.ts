@@ -12,7 +12,8 @@ const issueTypes = [
   },
 ];
 const statuses = [{ id: "1", name: "TODO", categoryId: "3" }];
-const project = new Project({ id: "150", key: "foo", statuses, issueTypes });
+const statusCategories = [{ id: "3", name: "TODO", colorName: "yellow" }];
+const project = new Project({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
 
 test("get issuetype by id", () => {
   // arrange

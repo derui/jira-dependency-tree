@@ -6,8 +6,8 @@ import { IssueTypeDetails, StatusCategory, StatusDetails } from "jira.js/out/ver
 
 const mapStatus = function mapStatus(status: StatusDetails): IssueStatus {
   return {
-    id: status.id,
-    name: status.name,
+    id: status.id!,
+    name: status.name ?? "",
     categoryId: "",
   };
 };
@@ -28,7 +28,7 @@ const mapIssueType = function mapIssueType(issueType: IssueTypeDetails): IssueTy
   };
 };
 
-const createJiraProjectLoader = function createJiraProejctLoader(client: Version3Client): ProjectLoader {
+export const createJiraProjectLoader = function createJiraProejctLoader(client: Version3Client): ProjectLoader {
   return async (projectKey) => {
     const project = await client.projects.getProject({ projectIdOrKey: projectKey });
     const statusCategories = await client.workflowStatusCategories.getStatusCategories();

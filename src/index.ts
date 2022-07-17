@@ -9,7 +9,7 @@ const issues = [
     statusId: "1",
     typeId: "2",
     selfUrl: "http://localhost/ex-1",
-    outwardIssueKeys: ["EX-2", "EX-3", "EX-4"],
+    outwardIssueKeys: ["EX-2", "EX-4"],
   },
 
   {
@@ -39,13 +39,22 @@ const issues = [
     selfUrl: "http://localhost/ex-4",
     outwardIssueKeys: [],
   },
+  {
+    key: "EX-5",
+    summary: "summary of ex-5",
+    description: "",
+    statusId: "1",
+    typeId: "2",
+    selfUrl: "http://localhost/ex-5",
+    outwardIssueKeys: ["EX-3"],
+  },
 ];
 
 const width = 1000;
 const height = 1000;
 const svg = d3
   .create("svg")
-  .attr("viewBox", [-250, -250, width - 250, height - 250])
+  .attr("viewBox", [0, 0, width, height])
   .attr("width", width)
   .attr("height", height)
   .attr("style", "max-width: 100%; height: auto; height: intrinsic;")

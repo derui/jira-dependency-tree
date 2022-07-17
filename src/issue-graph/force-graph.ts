@@ -2,7 +2,7 @@ import { emptyGraph, Graph } from "@/depgraph";
 import { Issue } from "@/model/issue";
 import * as d3 from "d3";
 import { buildIssueGraph } from "./issue";
-import { Configuration, D3Node, LeveledIssue as LeveledIssue } from "./type";
+import { Configuration, D3Node, IssueLink, LeveledIssue as LeveledIssue } from "./type";
 
 const MAX_LEVEL = 100;
 
@@ -65,21 +65,31 @@ export const makeForceGraph = function makeForceGraph(
     .data(linkData)
     .enter()
     .append("line")
-    .attr("class", "issue-link")
+    .attr("class", (d) => {
+      return `issue-link-${d.source.issue.key}-${d.target.issue.key}`;
+    })
     .attr("stroke", "#000")
     .attr("stroke-weight", 1);
 
   // build issue graphs
   const issueNodes = buildIssueGraph(container, leveledIssues, configuration);
 
+  // define ticked event handler
   const ticked = function ticked() {
-    issueNodes.attr("transform", (d) => `translate(${d.x},${d.y})`);
+    issueNodes.attr("transform", (d) => {
+      const x = d.level * (configuration.nodeSize.width + 50);
+      // update positions for link calculation
+      d.x = x;
 
+      return `translate(${x},${d.y})`;
+    });
+
+    // link draw right-most center to left-most center of next issue.
     links
-      .attr("x1", (d) => d.source.x!)
-      .attr("y1", (d) => d.source.y!)
+      .attr("x1", (d) => d.source.x! + configuration.nodeSize.width)
+      .attr("y1", (d) => d.source.y! + configuration.nodeSize.height / 2)
       .attr("x2", (d) => d.target.x!)
-      .attr("y2", (d) => d.target.y!);
+      .attr("y2", (d) => d.target.y! + configuration.nodeSize.height / 2);
   };
 
   // force between nodes
@@ -87,14 +97,20 @@ export const makeForceGraph = function makeForceGraph(
     .forceSimulation<LeveledIssue>()
     .nodes(leveledIssues)
     .on("tick", ticked)
-    .force("link", d3.forceLink(linkData).distance(20))
+    .force(
+      "link",
+      d3
+        .forceLink<LeveledIssue, IssueLink>(linkData)
+        .id((d) => d.issue.key)
+        .distance(30)
+    )
     .force("center", d3.forceY(configuration.canvasSize.height / 2))
     .force("charge", d3.forceManyBody().strength(-10))
-    .force("collision", d3.forceCollide(15))
+    .force("collision", d3.forceCollide(configuration.nodeSize.width / 2))
     .velocityDecay(0.5);
 
   // define initial position
   simulation.nodes().forEach((d) => {
-    d.fy = d.level * 30;
+    d.x = d.level * (configuration.nodeSize.width + 50);
   });
 };

@@ -39,6 +39,20 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
   return accum;
 };
 
+const makeLinkData = function makeLinkData(graph: Graph, issues: LeveledIssue[]) {
+  const issueMap = issues.reduce((accum, issue) => {
+    accum.set(issue.issue.key, issue);
+    return accum;
+  }, new Map<string, LeveledIssue>());
+
+  return graph.vertices.reduce((accum, v) => {
+    graph.adjacent(v).forEach((adjacent) => {
+      accum.push({ source: issueMap.get(v)!, target: issueMap.get(adjacent)! });
+    });
+    return accum;
+  }, [] as { source: LeveledIssue; target: LeveledIssue }[]);
+};
+
 export const makeForceGraph = function makeForceGraph(
   container: D3Node<any>,
   issues: Issue[],
@@ -46,18 +60,7 @@ export const makeForceGraph = function makeForceGraph(
 ) {
   const issueGraph = makeIssueGraph(issues);
   const leveledIssues = makeLeveledIssues(issueGraph, issues);
-  const issueMap = leveledIssues.reduce((accum, issue) => {
-    accum.set(issue.issue.key, issue);
-    return accum;
-  }, new Map<string, LeveledIssue>());
-
-  const linkData = issueGraph.vertices.reduce((accum, v) => {
-    issueGraph.adjacent(v).forEach((adjacent) => {
-      accum.push({ source: issueMap.get(v)!, target: issueMap.get(adjacent)! });
-    });
-
-    return accum;
-  }, [] as { source: LeveledIssue; target: LeveledIssue }[]);
+  const linkData = makeLinkData(issueGraph, leveledIssues);
 
   // make link between issues
   const links = container

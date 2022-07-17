@@ -61,6 +61,20 @@ const svg = d3
   .attr("font-family", "sans-serif")
   .attr("font-size", 10);
 
+// arrow head from below
+// http://thenewcode.com/1068/Making-Arrows-in-SVG
+svg
+  .append("defs")
+  .append("marker")
+  .attr("id", "arrowhead")
+  .attr("markerWidth", 10)
+  .attr("markerHeight", 7)
+  .attr("refX", 10)
+  .attr("refY", 3.5)
+  .attr("orient", "auto")
+  .append("polygon")
+  .attr("points", "0 0, 10 3.5, 0 7");
+
 const g = svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 const configuration = {
   nodeSize: { width: 152, height: 64 },

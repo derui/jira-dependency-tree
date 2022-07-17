@@ -72,7 +72,8 @@ export const makeForceGraph = function makeForceGraph(
       return `issue-link-${d.source.issue.key}-${d.target.issue.key}`;
     })
     .attr("stroke", "#000")
-    .attr("stroke-weight", 1);
+    .attr("stroke-weight", 1)
+    .attr("marker-end", "url(#arrowhead)");
 
   // build issue graphs
   const issueNodes = buildIssueGraph(container, leveledIssues, configuration);

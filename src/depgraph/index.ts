@@ -87,6 +87,19 @@ const dfs = function dfs(mat: AdjacentMatrix, root: Vertex, work: (node: Vertex,
   recursiveDfs(mat, root, 0, new Set());
 };
 
+const largestLevelOf = function largestLevelOf(mat: AdjacentMatrix, target: Vertex) {
+  let largestLevel = 0;
+  findRoots(mat).forEach((root) => {
+    dfs(mat, root, (node, depth) => {
+      if (node === target && depth >= largestLevel) {
+        largestLevel = depth;
+      }
+    });
+  });
+
+  return largestLevel;
+};
+
 const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
   const adjMatrix = makeAdjacentMatrix(edges, vertices);
 
@@ -111,10 +124,15 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       constraint(level >= 0);
 
       const nodesAtLevel = new Set<Vertex>();
+      const largestLevelMap = new Map<string, number>();
 
       findRoots(adjMatrix).forEach((root) => {
-        dfs(adjMatrix, root, (node, depth) => {
-          if (depth === level) {
+        dfs(adjMatrix, root, (node) => {
+          if (!largestLevelMap.has(node)) {
+            largestLevelMap.set(node, largestLevelOf(adjMatrix, node));
+          }
+
+          if (largestLevelMap.get(node)! === level) {
             nodesAtLevel.add(node);
           }
         });

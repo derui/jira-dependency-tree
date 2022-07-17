@@ -1,13 +1,6 @@
-import { Size } from "@/type";
-import { D3Node, IssueHierarchyData, IssueNode } from "./type";
-
-interface Configuration {
-  nodeSize: Size;
-}
+import { Configuration, D3Node, IssueNode, LeveledIssue } from "./type";
 
 const buildIssueNode = function buildIssueNode(node: IssueNode, configuration: Configuration) {
-  node.attr("transform", (d) => `translate(${d.y},${d.x})`);
-
   node
     .append("rect")
     .attr("class", "issue-node-outer")
@@ -19,24 +12,25 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, configuration: C
 
   node
     .append("text")
+    .attr("class", "issue-key")
+    .attr("dy", 16)
+    .attr("dx", 16)
+    .text((d) => d.issue.key);
+
+  node
+    .append("text")
     .attr("class", "issue-summary")
-    .attr("dy", 24)
-    .attr("dx", 48)
-    .text((d) => d.data.summary);
+    .attr("dy", 32)
+    .attr("dx", 16)
+    .text((d) => d.issue.summary);
 };
 
-export const buildIssueTree = function buildIssueTree(
+export const buildIssueGraph = function buildIssueGraph(
   container: D3Node<any>,
-  data: IssueHierarchyData,
+  data: LeveledIssue[],
   configuration: Configuration
 ) {
-  const issueNode = container
-    .append("g")
-    .attr("stroke-linejoin", "round")
-    .attr("stroke-width", 3)
-    .selectAll("g")
-    .data(data.descendants())
-    .join("g");
+  const issueNode = container.selectAll("g").data(data).join("g");
 
   buildIssueNode(issueNode, configuration);
 

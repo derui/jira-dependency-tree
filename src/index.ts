@@ -1,10 +1,5 @@
 import * as d3 from "d3";
-import * as d3tree from "d3-hierarchy";
-import { makeHierarchies } from "./issue-graph/hierarchy";
-import { buildIssueTree } from "./issue-graph/issue";
-import { Issue } from "./model/issue";
-
-const tree = d3tree.tree().nodeSize([100, 25]);
+import { makeForceGraph } from "./issue-graph/force-graph";
 
 const issues = [
   {
@@ -46,8 +41,6 @@ const issues = [
   },
 ];
 
-const root = makeHierarchies(issues);
-
 const width = 1000;
 const height = 1000;
 const svg = d3
@@ -60,10 +53,11 @@ const svg = d3
   .attr("font-size", 10);
 
 const g = svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
+const configuration = {
+  nodeSize: { width: 152, height: 64 },
+  canvasSize: { width: 1000, height: 1000 },
+};
 
-root.map((v) => {
-  const [x, y] = tree.nodeSize() || [1, 1];
-  buildIssueTree(g, tree(v) as d3.HierarchyPointNode<Issue>, { nodeSize: { width: x, height: y } });
-});
+makeForceGraph(g, issues, configuration);
 
 document.querySelector("#root")?.appendChild(svg.node() as Node);

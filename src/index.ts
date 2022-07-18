@@ -1,12 +1,60 @@
 import * as d3 from "d3";
 import { makeForceGraph } from "./issue-graph/force-graph";
+import { Project } from "./model/project";
+
+const project = new Project({
+  id: "key",
+  key: "key",
+  name: "project",
+  statuses: [
+    {
+      name: "Done",
+      id: "1",
+      categoryId: "1",
+    },
+    {
+      name: "In progress",
+      id: "2",
+      categoryId: "2",
+    },
+    {
+      name: "TODO",
+      id: "3",
+      categoryId: "3",
+    },
+  ],
+  issueTypes: [
+    {
+      id: "1",
+      name: "Story",
+      avatarUrl: "",
+    },
+  ],
+  statusCategories: [
+    {
+      id: "1",
+      name: "Done",
+      colorName: "green",
+    },
+    {
+      id: "2",
+      name: "In progress",
+      colorName: "blue",
+    },
+    {
+      id: "3",
+      name: "TODO",
+      colorName: "yellow",
+    },
+  ],
+});
 
 const issues = [
   {
     key: "EX-1",
     summary: "summary of ex-1",
     description: "",
-    statusId: "1",
+    statusId: "2",
     typeId: "2",
     selfUrl: "http://localhost/ex-1",
     outwardIssueKeys: ["EX-2", "EX-4"],
@@ -25,7 +73,7 @@ const issues = [
     key: "EX-3",
     summary: "summary of ex-3",
     description: "",
-    statusId: "1",
+    statusId: "3",
     typeId: "2",
     selfUrl: "http://localhost/ex-3",
     outwardIssueKeys: ["EX-4"],
@@ -81,6 +129,6 @@ const configuration = {
   canvasSize: { width: 1000, height: 1000 },
 };
 
-makeForceGraph(g, issues, configuration);
+makeForceGraph(g, issues, project, configuration);
 
 document.querySelector("#root")?.appendChild(svg.node() as Node);

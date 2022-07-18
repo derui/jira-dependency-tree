@@ -1,6 +1,7 @@
+import { Project } from "@/model/project";
 import { Configuration, D3Node, IssueNode, LeveledIssue } from "./type";
 
-const buildIssueNode = function buildIssueNode(node: IssueNode, configuration: Configuration) {
+const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
   node
     .append("rect")
     .attr("class", "issue-node-outer")
@@ -10,42 +11,50 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, configuration: C
     .attr("rx", 4.0)
     .attr("ry", 4.0);
 
+  // issue key
   node
     .append("text")
     .attr("class", "issue-key")
     .attr("dy", 16)
-    .attr("dx", 16)
+    .attr("dx", 8)
     .text((d) => d.issue.key);
 
+  // issue summary
   node
     .append("text")
     .attr("class", "issue-summary")
     .attr("dy", 32)
-    .attr("dx", 16)
+    .attr("dx", 8)
     .text((d) => d.issue.summary);
+
+  // issue status
+  node
+    .append("rect")
+    .attr("class", "issue-node__status")
+    .attr("stroke-size", 0)
+    .attr("width", 32)
+    .attr("height", 16)
+    .attr("x", 8)
+    .attr("y", "4em")
+    .attr("fill", (d) => {
+      const status = project.findStatusBy(d.issue.statusId);
+      if (status) {
+        return project.findStatusCategoryById(status.categoryId)?.colorName ?? null;
+      }
+
+      return null;
+    });
 };
 
 export const buildIssueGraph = function buildIssueGraph(
   container: D3Node<any>,
   data: LeveledIssue[],
+  project: Project,
   configuration: Configuration
 ) {
   const issueNode = container.selectAll("g").data(data).join("g");
 
-  buildIssueNode(issueNode, configuration);
+  buildIssueNode(issueNode, project, configuration);
 
   return issueNode;
 };
-
-/**
-   <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:bx="https://boxy-svg.com">
-   <rect x="152.044" y="118.398" width="156" height="60" style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" rx="3.833" ry="3.833"></rect>
-   <desc>Author: https://pixabay.com/users/Ly-HN-17242598
-   License: https://pixabay.com/service/terms/#license
-   </desc>
-   </image>
-   <text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 10px; white-space: pre;" x="171.951" y="135.085">test name in card</text>
-   <text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 10px; white-space: pre;" x="159.71" y="162.268">EX-12345</text>
-   <text style="fill: rgb(51, 51, 51); font-family: &quot;Fira Code&quot;; font-size: 10px; white-space: pre;" x="216.78" y="161.842">In progress</text>
-   </svg>
-*/

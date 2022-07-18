@@ -8,7 +8,7 @@ const mapStatus = function mapStatus(status: StatusDetails): IssueStatus {
   return {
     id: status.id!,
     name: status.name ?? "",
-    categoryId: "",
+    categoryId: status.statusCategory?.id?.toString() ?? "",
   };
 };
 

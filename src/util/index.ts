@@ -26,3 +26,7 @@ export const constraint = function constraint(condition: boolean, message?: stri
 export const filterUndefined = function filterUndefined<T>(value: T | undefined): value is T {
   return value !== undefined;
 };
+
+export const filterNull = function filterNull<T>(value: T | null): value is T {
+  return value !== null;
+};

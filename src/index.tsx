@@ -1,5 +1,9 @@
-import { makeIssueGraphRoot } from "./issue-graph/root";
+import run from "@cycle/run";
+import { VNode } from "snabbdom";
 import { Project } from "./model/project";
+import { DOMSource, makeDOMDriver } from "@cycle/dom";
+import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
+import xs, { Stream } from "xstream";
 
 const project = new Project({
   id: "key",
@@ -97,11 +101,28 @@ const issues = [
   },
 ];
 
-const configuration = {
-  nodeSize: { width: 152, height: 64 },
-  canvasSize: { width: 1000, height: 1000 },
+type MainSources = {
+  DOM: DOMSource;
 };
 
-const svg = makeIssueGraphRoot(issues, project, configuration);
+type MainSinks = {
+  DOM: Stream<VNode>;
+  issueGraph: Stream<IssueGraphSink>;
+};
 
-document.querySelector("#root")?.appendChild(svg.node() as Node);
+const main = function main(): MainSinks {
+  const vnode$ = xs.of(<div></div>);
+  return {
+    DOM: vnode$,
+    issueGraph: xs.of({
+      viewPort: { minX: 0, minY: 0, width: 1000, height: 1000 },
+      issues,
+      project,
+    }),
+  };
+};
+
+run(main, {
+  DOM: makeDOMDriver("#app"),
+  issueGraph: makeIssueGraphDriver("#svg"),
+});

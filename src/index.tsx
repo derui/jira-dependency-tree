@@ -6,6 +6,7 @@ import { Reducer, StateSource, withState } from "@cycle/state";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
+import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 
 const project = new Project({
   id: "key",
@@ -106,6 +107,7 @@ const issues = [
 type MainSources = {
   DOM: DOMSource;
   state: StateSource<MainState>;
+  panZoom: PanZoomSource;
 };
 
 type MainSinks = {
@@ -139,4 +141,5 @@ const main = function main(sources: MainSources): MainSinks {
 run(withState(main), {
   DOM: makeDOMDriver("#app"),
   issueGraph: makeIssueGraphDriver("#svg"),
+  panZoom: makePanZoomDriver("#svg"),
 });

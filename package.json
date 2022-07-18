@@ -15,7 +15,7 @@
     "lint:ts": "eslint --fix --ext .ts,.tsx src/ts/",
     "lint": "npm-run-all -p lint:ts lint:css",
     "test-live-server": "live-server --no-browser --port=8081 test",
-    "test-uvu": "uvu -r solid-register -r tsconfig-paths/register -r tsm",
+    "test-uvu": "uvu -r tsconfig-paths/register -r tsm",
     "test": "npm-run-all -r -p test-live-server test-uvu",
     "test:watch": "chokidar --silent 'src/**/*.ts' 'test/**/*.ts' 'src/**/*.tsx' -c 'pnpm run test-uvu'"
   },
@@ -24,8 +24,7 @@
   "dependencies": {
     "d3": "^7.6.1",
     "d3-hierarchy": "^3.1.2",
-    "jira.js": "^2.15.2",
-    "solid-js": "^1.4.6"
+    "jira.js": "^2.15.2"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
@@ -47,13 +46,11 @@
     "postcss-nesting": "^10.1.10",
     "prettier": "^2.7.1",
     "puppeteer": "^15.3.2",
-    "solid-register": "^0.2.5",
     "tsconfig-paths": "^4.0.0",
     "tsm": "^2.2.1",
     "typescript": "^4.7.4",
     "uvu": "^0.5.6",
     "vite": "^2.9.13",
-    "vite-plugin-solid": "^2.2.6",
     "vite-tsconfig-paths": "^3.5.0"
   },
   "volta": {

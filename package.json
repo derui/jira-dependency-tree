@@ -22,9 +22,13 @@
   "author": "derui",
   "license": "MIT",
   "dependencies": {
+    "@cycle/dom": "^23.1.0",
+    "@cycle/run": "^5.7.0",
+    "@cycle/state": "^1.7.0",
     "d3": "^7.6.1",
     "d3-hierarchy": "^3.1.2",
-    "jira.js": "^2.15.2"
+    "jira.js": "^2.15.2",
+    "xstream": "^11.14.0"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",

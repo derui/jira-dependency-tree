@@ -1,5 +1,4 @@
-import * as d3 from "d3";
-import { makeForceGraph } from "./issue-graph/force-graph";
+import { makeIssueGraphRoot } from "./issue-graph/root";
 import { Project } from "./model/project";
 
 const project = new Project({
@@ -98,37 +97,11 @@ const issues = [
   },
 ];
 
-const width = 1000;
-const height = 1000;
-const svg = d3
-  .create("svg")
-  .attr("viewBox", [0, 0, width, height])
-  .attr("width", width)
-  .attr("height", height)
-  .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-  .attr("font-family", "sans-serif")
-  .attr("font-size", 10);
-
-// arrow head from below
-// http://thenewcode.com/1068/Making-Arrows-in-SVG
-svg
-  .append("defs")
-  .append("marker")
-  .attr("id", "arrowhead")
-  .attr("markerWidth", 10)
-  .attr("markerHeight", 7)
-  .attr("refX", 10)
-  .attr("refY", 3.5)
-  .attr("orient", "auto")
-  .append("polygon")
-  .attr("points", "0 0, 10 3.5, 0 7");
-
-const g = svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 const configuration = {
   nodeSize: { width: 152, height: 64 },
   canvasSize: { width: 1000, height: 1000 },
 };
 
-makeForceGraph(g, issues, project, configuration);
+const svg = makeIssueGraphRoot(issues, project, configuration);
 
 document.querySelector("#root")?.appendChild(svg.node() as Node);

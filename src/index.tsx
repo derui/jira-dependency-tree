@@ -2,8 +2,10 @@ import run from "@cycle/run";
 import { VNode } from "snabbdom";
 import { Project } from "./model/project";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
+import { Reducer, StateSource, withState } from "@cycle/state";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
+import { Issue } from "./model/issue";
 
 const project = new Project({
   id: "key",
@@ -103,26 +105,38 @@ const issues = [
 
 type MainSources = {
   DOM: DOMSource;
+  state: StateSource<MainState>;
 };
 
 type MainSinks = {
   DOM: Stream<VNode>;
+  state: Stream<Reducer<MainState>>;
   issueGraph: Stream<IssueGraphSink>;
 };
 
-const main = function main(): MainSinks {
+type MainState = {
+  issues: Issue[];
+  project: Project;
+};
+
+const main = function main(sources: MainSources): MainSinks {
   const vnode$ = xs.of(<div></div>);
+  const reducer$ = xs.of<Reducer<MainState>>(() => {
+    return { issues, project };
+  });
+
   return {
     DOM: vnode$,
-    issueGraph: xs.of({
+    state: reducer$,
+    issueGraph: sources.state.stream.map((v) => ({
       viewPort: { minX: 0, minY: 0, width: 1000, height: 1000 },
-      issues,
-      project,
-    }),
+      issues: v.issues,
+      project: v.project,
+    })),
   };
 };
 
-run(main, {
+run(withState(main), {
   DOM: makeDOMDriver("#app"),
   issueGraph: makeIssueGraphDriver("#svg"),
 });

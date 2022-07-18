@@ -1,5 +1,5 @@
 import run from "@cycle/run";
-import { VNode } from "snabbdom";
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
 import { Project } from "./model/project";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";

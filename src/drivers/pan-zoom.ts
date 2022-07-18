@@ -71,6 +71,8 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
           });
 
           mousedown$.addListener(dragListener);
+
+          listener.next({ pan });
         },
         stop() {},
       }),

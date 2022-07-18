@@ -41,6 +41,8 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
           svg = makeIssueGraphRoot(issues, project, configuration);
           document.querySelector(parentSelector)?.append(svg.node() as Node);
         }
+
+        svg.attr("viewBox", [viewPort.minX, viewPort.minY, viewPort.width, viewPort.height]);
       },
     });
 

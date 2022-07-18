@@ -123,18 +123,23 @@ type MainState = {
 
 const main = function main(sources: MainSources): MainSinks {
   const vnode$ = xs.of(<div></div>);
+
   const reducer$ = xs.of<Reducer<MainState>>(() => {
     return { issues, project };
+  });
+
+  const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
+    return {
+      viewPort: { minX: panZoomState.pan.x, minY: panZoomState.pan.y, width: 1000, height: 1000 },
+      issues: state.issues,
+      project: state.project,
+    };
   });
 
   return {
     DOM: vnode$,
     state: reducer$,
-    issueGraph: sources.state.stream.map((v) => ({
-      viewPort: { minX: 0, minY: 0, width: 1000, height: 1000 },
-      issues: v.issues,
-      project: v.project,
-    })),
+    issueGraph: issueGraph$,
   };
 };
 

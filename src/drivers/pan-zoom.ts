@@ -54,6 +54,7 @@ const makeWheelListener = function makeWheelListener(next: (delta: number) => vo
     next: (e) => {
       const event = e as WheelEvent;
       const delta = event.deltaY > 0 ? 1 : -1;
+      event.preventDefault();
 
       next(delta);
     },
@@ -85,7 +86,7 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
           });
 
           const wheelListener = makeWheelListener((delta) => {
-            zoom = Math.max(Math.min(zoom - delta, 100), 1);
+            zoom = Math.max(Math.min(zoom + delta, 200), 1);
 
             listener.next({ pan, zoomPercentage: zoom });
           });

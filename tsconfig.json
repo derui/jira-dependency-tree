@@ -23,6 +23,7 @@
     "jsxFragmentFactory": "Fragment",
     "incremental": true,
     "baseUrl": ".",
+    "outDir": "generated",
     "types": ["vite/client"],
     "paths": {
       "@/*": ["src/*"]

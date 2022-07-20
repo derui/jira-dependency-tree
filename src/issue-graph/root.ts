@@ -13,8 +13,8 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
   const svg = d3
     .create("svg")
     .attr("viewBox", [0, 0, width, height])
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", "100%")
+    .attr("height", "100%")
     .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10);

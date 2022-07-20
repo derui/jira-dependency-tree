@@ -130,7 +130,7 @@ const main = function main(sources: MainSources): MainSinks {
 
   const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
     return {
-      viewPort: { minX: panZoomState.pan.x, minY: panZoomState.pan.y, width: 1000, height: 1000 },
+      panZoom: panZoomState,
       issues: state.issues,
       project: state.project,
     };

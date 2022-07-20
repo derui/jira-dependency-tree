@@ -30,3 +30,34 @@ export const filterUndefined = function filterUndefined<T>(value: T | undefined)
 export const filterNull = function filterNull<T>(value: T | null): value is T {
   return value !== null;
 };
+
+// Deadly simple rect class
+export class Rect {
+  readonly top: number;
+  readonly left: number;
+  readonly right: number;
+  readonly bottom: number;
+  constructor(args: { top: number; left: number; right: number; bottom: number }) {
+    this.top = args.top;
+    this.left = args.left;
+    this.right = args.right;
+    this.bottom = args.bottom;
+  }
+
+  static fromDOMRect(rect: DOMRect) {
+    return new Rect({
+      top: rect.top,
+      left: rect.left,
+      right: rect.right,
+      bottom: rect.bottom,
+    });
+  }
+
+  get height() {
+    return Math.max(this.bottom - this.top, 0);
+  }
+
+  get width() {
+    return Math.max(this.right - this.left, 0);
+  }
+}

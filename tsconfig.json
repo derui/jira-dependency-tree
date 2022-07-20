@@ -22,21 +22,16 @@
     "jsxFactory": "jsx",
     "jsxFragmentFactory": "Fragment",
     "incremental": true,
-    "baseUrl": "./",
-    "outDir": "generated",
+    "baseUrl": ".",
     "types": ["vite/client"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "test/**/*.ts",
-    "test/**/*.tsx",
+    "src",
+    "test",
   ],
-  "exclude": [],
+  "exclude": ["node_modules"],
   "noEmit": true
 }

@@ -1,7 +1,7 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
-import { difference, filterUndefined } from "@/util";
+import { difference, filterUndefined, Rect } from "@/util";
 
 const test = suite("util");
 
@@ -28,6 +28,28 @@ test("filter undefined", () => {
   assert.equal(filterUndefined(undefined), false);
   assert.equal(filterUndefined("value"), true);
   assert.equal(filterUndefined(""), true);
+});
+
+test("normal rect", () => {
+  // arrange
+
+  // do
+  const rect = new Rect({ top: 0, left: 0, right: 15, bottom: 10 });
+
+  // verify
+  assert.equal(rect.width, 15);
+  assert.equal(rect.height, 10);
+});
+
+test("invalid rect", () => {
+  // arrange
+
+  // do
+  const rect = new Rect({ top: 100, left: 20, right: 15, bottom: 10 });
+
+  // verify
+  assert.equal(rect.width, 0);
+  assert.equal(rect.height, 0);
 });
 
 test.run();

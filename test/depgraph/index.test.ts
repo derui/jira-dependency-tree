@@ -1,7 +1,7 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
-import { emptyGraph } from "@/depgraph/index";
+import { emptyGraph } from "@/depgraph";
 
 const test = suite("depgraph");
 

@@ -11,6 +11,7 @@ export interface PanZoomSource {
 
 export type PanZoomState = {
   pan: Position;
+  zoomPercentage: number;
 };
 
 const makeDragListener = function makeDragListener(
@@ -48,6 +49,17 @@ const makeDragListener = function makeDragListener(
   };
 };
 
+const makeWheelListener = function makeWheelListener(next: (delta: number) => void): Partial<Listener<Event>> {
+  return {
+    next: (e) => {
+      const event = e as WheelEvent;
+      const delta = event.deltaY > 0 ? 1 : -1;
+
+      next(delta);
+    },
+  };
+};
+
 export const makePanZoomDriver = function makePanZoomDriver(selector: string = "body"): Driver<void, PanZoomSource> {
   const element = document.querySelector(selector)!;
 
@@ -55,8 +67,10 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
     const mouseup$ = fromEvent(document, "mouseup");
     const mousedown$ = fromEvent(element, "mousedown");
     const mousemove$ = fromEvent(element, "mousemove");
+    const wheel$ = fromEvent(element, "wheel");
 
     let pan = { x: 0, y: 0 };
+    let zoom = 100;
 
     return {
       reset() {
@@ -67,12 +81,19 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
           const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
             pan = { x: pan.x + delta.x, y: pan.y + delta.y };
 
-            listener.next({ pan });
+            listener.next({ pan, zoomPercentage: zoom });
+          });
+
+          const wheelListener = makeWheelListener((delta) => {
+            zoom = Math.max(Math.min(zoom - delta, 100), 1);
+
+            listener.next({ pan, zoomPercentage: zoom });
           });
 
           mousedown$.addListener(dragListener);
+          wheel$.addListener(wheelListener);
 
-          listener.next({ pan });
+          listener.next({ pan, zoomPercentage: zoom });
         },
         stop() {},
       }),

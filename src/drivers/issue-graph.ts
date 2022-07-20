@@ -6,22 +6,29 @@ import { Project } from "@/model/project";
 import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Size } from "@/type";
 import { Selection } from "d3";
-import { filterNull } from "@/util";
-
-export type IssueGraphViewPort = {
-  minX: number;
-  minY: number;
-  width: number;
-  height: number;
-};
+import { filterNull, Rect } from "@/util";
+import { PanZoomState } from "./pan-zoom";
 
 export interface IssueGraphSink {
-  viewPort: IssueGraphViewPort;
+  panZoom: PanZoomState;
   issues: Issue[];
   project: Project;
 }
 
 export interface IssueGraphSource {}
+
+export const makeViewBox = function makeViewBox(panZoom: PanZoomState, rect: Rect) {
+  const scale = panZoom.zoomPercentage / 100;
+  const zoomedWidth = rect.width * scale;
+  const zoomedHeight = rect.height * scale;
+  const centerX = panZoom.pan.x + rect.width / 2;
+  const centerY = panZoom.pan.y + rect.height / 2;
+
+  const newMinX = centerX - zoomedWidth / 2;
+  const newMinY = centerY - zoomedHeight / 2;
+
+  return [newMinX, newMinY, zoomedWidth, zoomedHeight];
+};
 
 export const makeIssueGraphDriver = function makeIssueGraphDriver(
   parentSelector: string,
@@ -29,20 +36,22 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
 ): Driver<Stream<IssueGraphSink | null>, Stream<IssueGraphSource>> {
   return function IssueGraphDriver(sink$) {
     let svg: Selection<SVGSVGElement, undefined, null, undefined> | null = null;
+    let svgSize: DOMRect;
 
     sink$.filter(filterNull).subscribe({
-      next: ({ viewPort, issues, project }) => {
+      next: ({ panZoom, issues, project }) => {
         const configuration = {
           nodeSize,
-          canvasSize: { width: viewPort.width, height: viewPort.height },
+          canvasSize: { width: svgSize.width, height: svgSize.height },
         };
 
         if (svg === null) {
           svg = makeIssueGraphRoot(issues, project, configuration);
           document.querySelector(parentSelector)?.append(svg.node() as Node);
+          svgSize = svg.node()!.getBoundingClientRect();
         }
 
-        svg.attr("viewBox", [viewPort.minX, viewPort.minY, viewPort.width, viewPort.height]);
+        svg.attr("viewBox", makeViewBox(panZoom, svgSize));
       },
     });
 

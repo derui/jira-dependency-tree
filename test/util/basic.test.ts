@@ -1,7 +1,7 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
-import { difference, filterUndefined, Rect } from "@/util";
+import { difference, filterUndefined, Rect } from "@/util/basic";
 
 const test = suite("util");
 

@@ -1,5 +1,5 @@
 import { makeViewBox } from "@/drivers/issue-graph";
-import { Rect } from "@/util";
+import { Rect } from "@/util/basic";
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 

@@ -1,4 +1,4 @@
-import { constraint, difference } from "@/util";
+import { constraint, difference } from "@/util/basic";
 
 type Edge = [string, string];
 type Vertex = string;

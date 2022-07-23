@@ -1,12 +1,11 @@
 import { Driver } from "@cycle/run";
 import xs, { Stream } from "xstream";
-import { adapt } from "@cycle/run/lib/adapt";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Size } from "@/type";
 import { Selection } from "d3";
-import { filterNull, Rect } from "@/util";
+import { filterNull, Rect } from "@/util/basic";
 import { PanZoomState } from "./pan-zoom";
 
 export interface IssueGraphSink {
@@ -55,6 +54,6 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       },
     });
 
-    return adapt(xs.of({}));
+    return xs.of({});
   };
 };

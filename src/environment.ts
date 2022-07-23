@@ -1,4 +1,5 @@
 import { Size } from "@/type";
+import produce from "immer";
 
 export type EnvironmentArgument = {
   // Size of issue in environment
@@ -13,43 +14,32 @@ export type EnvironmentArgument = {
   };
 };
 
-// Environment is application's context. Some of configuration contains this class.
-export class Environment implements Environment {
-  // Size of issue in environment
-  private _issueSize: Size;
-
-  get issueSize() {
-    return Object.freeze(this._issueSize);
-  }
-
-  // credential on environment
-  private _credentials: {
+export type Environment = {
+  issueSize: Size;
+  credentials: {
     jiraToken?: string;
   };
+  userDomain: string | null;
 
-  get crednetials() {
-    return Object.freeze(this._credentials);
-  }
+  applyCredentials(jiraToken: string): Environment;
+  applyUserDomain(jiraToken: string): Environment;
+};
 
-  private _userDomain: string | null;
+export const environmentFactory = function environmentFactory(argument: EnvironmentArgument): Environment {
+  return {
+    issueSize: argument.issueNodeSize ?? { width: 192, height: 64 },
+    credentials: argument.credentials ?? {},
+    userDomain: argument.userDomain ?? null,
 
-  get userDomain() {
-    return this._userDomain;
-  }
-
-  constructor(env: EnvironmentArgument) {
-    this._issueSize = env.issueNodeSize ?? { width: 192, height: 64 };
-    this._credentials = env.credentials ?? {};
-    this._userDomain = env.userDomain ?? null;
-  }
-
-  // set credential
-  applyCrednetial(jiraToken: string) {
-    this._credentials.jiraToken = jiraToken;
-  }
-
-  // set credential
-  initUserDomain(userDomain: string) {
-    this._userDomain = userDomain;
-  }
-}
+    applyCredentials(jiraToken: string) {
+      return produce(this, (draft) => {
+        draft.credentials.jiraToken = jiraToken;
+      });
+    },
+    applyUserDomain(userDomain: string) {
+      return produce(this, (draft) => {
+        draft.userDomain = userDomain;
+      });
+    },
+  };
+};

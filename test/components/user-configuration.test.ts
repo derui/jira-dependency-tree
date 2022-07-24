@@ -2,13 +2,9 @@ import { UserConfiguration } from "@/components/user-configuration";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { resetJsdom, setupJsdom } from "test/jsdom-setup";
 import { suite } from "uvu";
 
 const test = suite("components/UserConfiguration");
-
-test.before(setupJsdom);
-test.before.each(resetJsdom);
 
 test("allow user to submit if all value is valid", async () => {
   await new Promise<void>(async (resolve, rej) => {

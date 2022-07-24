@@ -3,7 +3,7 @@ import xs, { Stream } from "xstream";
 import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 
-type UserConfigurationState = {
+export type UserConfigurationState = {
   jiraToken: string;
   userDomain: string;
 };
@@ -16,7 +16,7 @@ type UserConfigurationSinks = ComponentSinks<{
 
 const intent = function intent(sources: UserConfigurationSources) {
   const submit$ = selectAsMain(sources, ".user-configuration__form")
-    .events("submit", { preventDefault: true })
+    .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(true);
   const changeCredential$ = selectAsMain(sources, ".user-configuration__credential")
     .events("input")
@@ -43,12 +43,13 @@ const model = function model(actions: ReturnType<typeof intent>) {
       jiraToken: credential,
       userDomain,
       allowSubmit: !!credential && !!userDomain,
-    }));
+    }))
+    .remember();
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
   return state$.map(({ allowSubmit }) => (
-    <form class={{ "user-configuration__form": true }}>
+    <form class={{ "user-configuration__form": true }} attrs={{ method: "dialog" }}>
       <input class={{ "user-configuration__credential": true }} attrs={{ type: "text" }} />
       <input class={{ "user-configuration__user-domain": true }} attrs={{ type: "text" }} />
       <input
@@ -65,8 +66,6 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
 
   return {
     DOM: view(state$),
-    value: state$
-      .map(({ jiraToken, userDomain }) => actions.submit$.take(1).map(() => ({ jiraToken, userDomain })))
-      .flatten(),
+    value: state$.map(({ jiraToken, userDomain }) => actions.submit$.map(() => ({ jiraToken, userDomain }))).flatten(),
   };
 };

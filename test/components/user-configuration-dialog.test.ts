@@ -1,4 +1,4 @@
-import { UserConfiguration } from "@/components/user-configuration";
+import { UserConfiguration } from "@/components/user-configuration-dialog";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";

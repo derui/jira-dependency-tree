@@ -27,8 +27,14 @@ export const filterUndefined = function filterUndefined<T>(value: T | undefined)
   return value !== undefined;
 };
 
+// A simple type guard to remove null
 export const filterNull = function filterNull<T>(value: T | null): value is T {
   return value !== null;
+};
+
+// A simple type guard to remove blank string
+export const filterEmptyString = function filterEmptyString(value: string): boolean {
+  return value.trim().length > 0;
 };
 
 // Deadly simple rect class

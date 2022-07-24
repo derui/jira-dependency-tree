@@ -7,6 +7,9 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
+import { UserConfiguration, UserConfigurationState } from "./components/user-configuration";
+import isolate from "@cycle/isolate";
+import { environmentFactory } from "./environment";
 
 const project = new Project({
   id: "key",
@@ -119,15 +122,17 @@ type MainSinks = {
 type MainState = {
   issues: Issue[];
   project: Project;
+  userConfiguration: UserConfigurationState;
 };
 
 const main = function main(sources: MainSources): MainSinks {
-  const vnode$ = xs.of(<div></div>);
-
+  const childSinks = isolate(UserConfiguration, "userConfiguration")(sources);
   const reducer$ = xs.of<Reducer<MainState>>(() => {
-    return { issues, project };
+    return { issues, project, userConfiguration: { environment: environmentFactory({}) } };
   });
+  const userConfiguratioh$ = childSinks.DOM;
 
+  const vnode$ = xs.combine(userConfiguratioh$).map((userConfiguration) => <div>{userConfiguration}</div>);
   const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
     return {
       panZoom: panZoomState,
@@ -138,7 +143,7 @@ const main = function main(sources: MainSources): MainSinks {
 
   return {
     DOM: vnode$,
-    state: reducer$,
+    state: xs.merge(reducer$, childSinks.state as Stream<Reducer<MainState>>),
     issueGraph: issueGraph$,
   };
 };

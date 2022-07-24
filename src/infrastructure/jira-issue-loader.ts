@@ -1,7 +1,7 @@
 import { IssueLoader } from "@/issue-loader";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
-import { filterUndefined } from "@/util";
+import { filterUndefined } from "@/util/basic";
 import { Version3Client } from "jira.js";
 import { Issue as JiraIssue } from "jira.js/out/version3/models";
 

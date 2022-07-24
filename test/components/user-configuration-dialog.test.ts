@@ -4,7 +4,7 @@ import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { suite } from "uvu";
 
-const test = suite("components/UserConfiguration");
+const test = suite("components/UserConfigurationDialog");
 
 test("allow user to submit if all value is valid", async () => {
   await new Promise<void>(async (resolve, rej) => {

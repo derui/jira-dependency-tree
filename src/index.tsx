@@ -7,7 +7,7 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
-import { UserConfiguration } from "./components/user-configuration-dialog";
+import { UserConfigurationDialog } from "./components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
@@ -127,7 +127,7 @@ type MainState = {
 };
 
 const main = function main(sources: MainSources): MainSinks {
-  const childSinks = isolate(UserConfiguration, { DOM: "userConfiguration" })(sources);
+  const childSinks = isolate(UserConfigurationDialog, { DOM: "userConfiguration" })(sources);
 
   const userConfiguratioh$ = childSinks.DOM;
 

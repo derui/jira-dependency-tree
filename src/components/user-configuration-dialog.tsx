@@ -8,13 +8,13 @@ export type UserConfigurationState = {
   userDomain: string;
 };
 
-type UserConfigurationSources = ComponentSources<{}>;
+type UserConfigurationDialogSources = ComponentSources<{}>;
 
-type UserConfigurationSinks = ComponentSinks<{
+type UserConfigurationDialogSinks = ComponentSinks<{
   value: Stream<UserConfigurationState>;
 }>;
 
-const intent = function intent(sources: UserConfigurationSources) {
+const intent = function intent(sources: UserConfigurationDialogSources) {
   const submit$ = selectAsMain(sources, ".user-configuration__form")
     .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(true);
@@ -60,7 +60,9 @@ const view = function view(state$: ReturnType<typeof model>) {
   ));
 };
 
-export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
+export const UserConfigurationDialog = function UserConfigurationDialog(
+  sources: UserConfigurationDialogSources
+): UserConfigurationDialogSinks {
   const actions = intent(sources);
   const state$ = model(actions);
 

@@ -1,4 +1,4 @@
-import { UserConfiguration } from "@/components/user-configuration-dialog";
+import { UserConfigurationDialog } from "@/components/user-configuration-dialog";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -26,7 +26,7 @@ test("allow user to submit if all value is valid", async () => {
     });
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any });
+    const sinks = UserConfigurationDialog({ DOM: dom as any });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return select(".user-configuration__submitter", vtree)[0].data?.attrs?.disabled;
@@ -63,7 +63,7 @@ test("get value with submit", async () => {
     });
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any });
+    const sinks = UserConfigurationDialog({ DOM: dom as any });
 
     const actual$ = sinks.value.map((v) => v);
     const expected$ = Time.diagram("----x----|", { x: { jiraToken: "cred", userDomain: "domain" } });

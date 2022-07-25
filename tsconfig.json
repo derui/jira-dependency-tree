@@ -1,8 +1,4 @@
 {
-  "ts-node": {
-    "transpileOnly": true,
-    "swc": true
-  },
   "compilerOptions": {
     "target": "esnext",
     "lib": [
@@ -17,10 +13,10 @@
     "strictNullChecks": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
+    "module": "nodenext",
     "moduleResolution": "node",
     "sourceMap": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "isolatedModules": true,
     "jsx": "react",
     "jsxFactory": "jsx",

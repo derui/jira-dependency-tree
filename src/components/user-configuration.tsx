@@ -2,7 +2,7 @@ import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-
 import xs, { Stream } from "xstream";
 import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { UserConfigurationState } from "./user-configuration-dialog";
+import { UserConfigurationDialog, UserConfigurationState } from "./user-configuration-dialog";
 import isolate from "@cycle/isolate";
 
 type UserConfigurationSources = ComponentSources<{}>;
@@ -31,7 +31,10 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
     <div class={{ "user-configuration": true }}>
       <div class={{ "user-configuration__toolbar": true }}>
         <span>
-          <button class={{ "user-configuration__opener": true, "user-configuration__opener--opened": opened }}>
+          <button
+            class={{ "user-configuration__opener": true, "user-configuration__opener--opened": opened }}
+            dataset={{ testid: "opener" }}
+          >
             Open
           </button>
         </span>
@@ -41,6 +44,7 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
           "user-configuration__dialog-container": true,
           "user-configuration__dialog-container--hidden": !opened,
         }}
+        dataset={{ testid: "dialog" }}
       >
         {dialog}
       </div>
@@ -48,9 +52,7 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
   ));
 };
 
-export const UserConfigurationDialog = function UserConfigurationDialog(
-  sources: UserConfigurationSources
-): UserConfigurationSinks {
+export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
   const dialog = isolate(UserConfigurationDialog, "userConfigurationDialog")(sources);
 
   const actions = intent(sources);

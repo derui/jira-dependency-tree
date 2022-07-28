@@ -19,7 +19,7 @@ test("do not open dialog initially", async () => {
       return select("[data-testid=opener]", vtree)[0].data?.class;
     });
     const expected$ = Time.diagram("(a|)", {
-      a: { "user-configuration__opener": true, "user-configuration__opener--opened": false },
+      a: { "user-configuration__opener": true, "--opened": false },
     });
 
     // Assert
@@ -54,12 +54,12 @@ test("do not open dialog initially", async () => {
     });
     const expected$ = Time.diagram("a-b------|", {
       a: {
-        opener: { "user-configuration__opener": true, "user-configuration__opener--opened": false },
-        dialog: { "user-configuration__dialog-container": true, "user-configuration__dialog-container--hidden": true },
+        opener: { "user-configuration__opener": true, "--opened": false },
+        dialog: { "user-configuration__dialog-container": true, "--hidden": true },
       },
       b: {
-        opener: { "user-configuration__opener": true, "user-configuration__opener--opened": true },
-        dialog: { "user-configuration__dialog-container": true, "user-configuration__dialog-container--hidden": false },
+        opener: { "user-configuration__opener": true, "--opened": true },
+        dialog: { "user-configuration__dialog-container": true, "--hidden": false },
       },
     });
 

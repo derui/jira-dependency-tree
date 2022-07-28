@@ -32,17 +32,15 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
       <div class={{ "user-configuration__toolbar": true }}>
         <span>
           <button
-            class={{ "user-configuration__opener": true, "user-configuration__opener--opened": opened }}
+            class={{ "user-configuration__opener": true, "--opened": opened }}
             dataset={{ testid: "opener" }}
-          >
-            Open
-          </button>
+          ></button>
         </span>
       </div>
       <div
         class={{
           "user-configuration__dialog-container": true,
-          "user-configuration__dialog-container--hidden": !opened,
+          "--hidden": !opened,
         }}
         dataset={{ testid: "dialog" }}
       >

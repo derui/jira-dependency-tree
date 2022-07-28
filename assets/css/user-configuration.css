@@ -1,7 +1,60 @@
- .user-configuration {
-     position: absolute;
-     right: 16px;
-     top: 16px;
+.user-configuration {
+    position: absolute;
+    display: flex;
+    right: 16px;
+    top: 16px;
+    background: ;
+}
 
+.user-configuration__toolbar {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
 
- }
+.user-configuration__opener {
+    padding: var(--space-small);
+    outline: none;
+    background: none;
+    border: 2px solid transparent;
+    transition: border 0.1s ease-out;
+    cursor: pointer;
+    height: 32px;
+    width: 32px;
+    border-radius: 16px;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        flex: 0 0 auto;
+        mask: url("/assets/svg/settings.svg");
+        mask-size: cover;
+        width: 100%;
+        height: 100%;
+        background-color: var(--secondary-1-4);
+    }
+
+    &:hover {
+        border: 2px solid var(--secondary-1-4);
+    }
+
+    &.--opened {
+        border: 2px solid var(--secondary-1-4);
+        background-color: var(--secondary-1-4);
+        border-radius: 16px 16px 4px 4px;
+
+        &::before {
+            background-color: white;
+        }
+    }
+}
+
+.user-configuration__dialog-container {
+    position: absolute;
+    top: 32px;
+    right: 0;
+
+    &.--hidden {
+    visibility: hidden;
+    }
+}

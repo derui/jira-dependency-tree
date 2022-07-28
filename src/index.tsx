@@ -7,10 +7,10 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
-import { UserConfigurationDialog } from "./components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
+import { UserConfiguration } from "./components/user-configuration";
 
 const project = new Project({
   id: "key",
@@ -127,11 +127,13 @@ type MainState = {
 };
 
 const main = function main(sources: MainSources): MainSinks {
-  const childSinks = isolate(UserConfigurationDialog, { DOM: "userConfiguration" })(sources);
+  const childSinks = isolate(UserConfiguration, { DOM: "userConfiguration" })(sources);
 
   const userConfiguratioh$ = childSinks.DOM;
 
-  const vnode$ = userConfiguratioh$.map((userConfiguration) => <div>{userConfiguration}</div>);
+  const vnode$ = userConfiguratioh$.map((userConfiguration) => (
+    <div class={{ "app-root": true }}>{userConfiguration}</div>
+  ));
   const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
     return {
       panZoom: panZoomState,
@@ -164,7 +166,7 @@ const main = function main(sources: MainSources): MainSinks {
 };
 
 run(withState(main), {
-  DOM: makeDOMDriver("#app"),
-  issueGraph: makeIssueGraphDriver("#svg"),
-  panZoom: makePanZoomDriver("#svg"),
+  DOM: makeDOMDriver("#root"),
+  issueGraph: makeIssueGraphDriver("#root"),
+  panZoom: makePanZoomDriver("#root"),
 });

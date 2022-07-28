@@ -1,14 +1,19 @@
 @import "./issue.css";
+@import "./user-configuration.css";
 
-html, body, #root, #svg, #app {
+html, body, #root {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
-#app {
+#root {
+    overflow: hidden;
+}
+
+.copyrights {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 16px;
+    left: 16px;
 }

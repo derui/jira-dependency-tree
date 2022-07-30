@@ -33,7 +33,7 @@ export type Project = {
   findStatusCategoryById(id: string): IssueStatusCategory | undefined;
 };
 
-export const projectFactory = function projectFactory(argument: ProjectArgument) {
+export const projectFactory = function projectFactory(argument: ProjectArgument): Project {
   const id = argument.id;
   const key = argument.key;
   const name = argument.name;

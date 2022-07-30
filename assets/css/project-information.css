@@ -1,0 +1,6 @@
+.project-information {
+  position: absolute;
+  display: flex;
+  right: var(--space-large);
+  top: var(--space-large);
+}

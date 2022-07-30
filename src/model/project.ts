@@ -1,7 +1,7 @@
 import { IssueStatus, IssueStatusId, IssueType, IssueTypeId, IssueStatusCategory } from "@/type";
 
 // JIRA's project representation
-export type ProjectBase = {
+export type ProjectArgument = {
   // an id of project
   id: string;
 
@@ -12,41 +12,56 @@ export type ProjectBase = {
   name: string;
 
   // status definitions in a project
-  statuses: IssueStatus[];
+  statuses?: IssueStatus[];
 
   // issue types in a project
-  issueTypes: IssueType[];
+  issueTypes?: IssueType[];
 
   // status categories in project
-  statusCategories: IssueStatusCategory[];
+  statusCategories?: IssueStatusCategory[];
 };
 
-export class Project {
-  private _statuses: IssueStatus[];
-  private _issueTypes: IssueType[];
-  private _statusCategories: IssueStatusCategory[];
+export type Project = {
   readonly id: string;
   readonly key: string;
   readonly name: string;
 
-  constructor(arg: ProjectBase) {
-    this.id = arg.id;
-    this.key = arg.key;
-    this.name = arg.name;
-    this._statuses = arg.statuses;
-    this._issueTypes = arg.issueTypes;
-    this._statusCategories = arg.statusCategories;
-  }
+  findStatusBy(id: IssueStatusId): IssueStatus | undefined;
 
-  findStatusBy(id: IssueStatusId) {
-    return this._statuses.find((v) => v.id === id);
-  }
+  findIssueTypeBy(id: IssueTypeId): IssueType | undefined;
 
-  findIssueTypeBy(id: IssueTypeId) {
-    return this._issueTypes.find((v) => v.id === id);
-  }
+  findStatusCategoryById(id: string): IssueStatusCategory | undefined;
+};
 
-  findStatusCategoryById(id: string) {
-    return this._statusCategories.find((v) => v.id === id);
-  }
-}
+export const projectFactory = function projectFactory(argument: ProjectArgument) {
+  const id = argument.id;
+  const key = argument.key;
+  const name = argument.name;
+  const statuses = argument.statuses ?? [];
+  const issueTypes = argument.issueTypes ?? [];
+  const statusCategories = argument.statusCategories ?? [];
+
+  return {
+    get id() {
+      return id;
+    },
+    get key() {
+      return key;
+    },
+    get name() {
+      return name;
+    },
+
+    findStatusBy(id: IssueStatusId) {
+      return statuses.find((v) => v.id === id);
+    },
+
+    findIssueTypeBy(id: IssueTypeId) {
+      return issueTypes.find((v) => v.id === id);
+    },
+
+    findStatusCategoryById(id: string) {
+      return statusCategories.find((v) => v.id === id);
+    },
+  };
+};

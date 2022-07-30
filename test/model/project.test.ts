@@ -1,4 +1,4 @@
-import { Project } from "@/model/project";
+import { projectFactory } from "@/model/project";
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
@@ -13,7 +13,7 @@ const issueTypes = [
 ];
 const statuses = [{ id: "1", name: "TODO", categoryId: "3" }];
 const statusCategories = [{ id: "3", name: "TODO", colorName: "yellow" }];
-const project = new Project({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
+const project = projectFactory({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
 
 test("get issuetype by id", () => {
   // arrange

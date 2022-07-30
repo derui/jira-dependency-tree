@@ -1,6 +1,6 @@
 import run from "@cycle/run";
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
-import { Project } from "./model/project";
+import { Project, projectFactory } from "./model/project";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
@@ -12,7 +12,7 @@ import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
 import { UserConfiguration } from "./components/user-configuration";
 
-const project = new Project({
+const project = projectFactory({
   id: "key",
   key: "key",
   name: "project",

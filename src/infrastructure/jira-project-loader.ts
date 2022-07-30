@@ -1,4 +1,4 @@
-import { Project } from "@/model/project";
+import { projectFactory } from "@/model/project";
 import { ProjectLoader } from "@/project-loader";
 import { IssueStatus, IssueStatusCategory, IssueType } from "@/type";
 import { Version3Client } from "jira.js";
@@ -37,7 +37,7 @@ export const createJiraProjectLoader = function createJiraProejctLoader(client: 
       projectId: Number(project.id),
     });
 
-    return new Project({
+    return projectFactory({
       id: project.id,
       key: project.key,
       name: project.name,

@@ -1,60 +1,119 @@
 .user-configuration {
-    position: absolute;
-    display: flex;
-    right: 16px;
-    top: 16px;
-    background: ;
+  position: absolute;
+  display: flex;
+  right: var(--space-large);
+  top: var(--space-large);
+  background: ;
 }
 
 .user-configuration__toolbar {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }
 
 .user-configuration__opener {
-    padding: var(--space-small);
-    outline: none;
-    background: none;
-    border: 2px solid transparent;
-    transition: border 0.1s ease-out;
-    cursor: pointer;
-    height: 32px;
-    width: 32px;
-    border-radius: 16px;
+  padding: var(--space-small);
+  outline: none;
+  background: none;
+  border: 2px solid transparent;
+  transition: border 0.1s ease-out;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask: url("/assets/svg/settings.svg");
+    mask-size: cover;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(var(--secondary-1-3));
+  }
+
+  &:hover {
+    border: 2px solid rgb(var(--secondary-1-3));
+  }
+
+  &.--opened {
+    border: 2px solid rgb(var(--secondary-1-3));
+    background-color: rgb(var(--secondary-1-3));
+    border-radius: 16px 16px 0 0;
 
     &::before {
-        content: "";
-        display: inline-block;
-        flex: 0 0 auto;
-        mask: url("/assets/svg/settings.svg");
-        mask-size: cover;
-        width: 100%;
-        height: 100%;
-        background-color: var(--secondary-1-4);
+      background-color: white;
     }
-
-    &:hover {
-        border: 2px solid var(--secondary-1-4);
-    }
-
-    &.--opened {
-        border: 2px solid var(--secondary-1-4);
-        background-color: var(--secondary-1-4);
-        border-radius: 16px 16px 4px 4px;
-
-        &::before {
-            background-color: white;
-        }
-    }
+  }
 }
 
 .user-configuration__dialog-container {
-    position: absolute;
-    top: 32px;
-    right: 0;
+  position: absolute;
+  top: 32px;
+  right: 0;
+  border: 1px solid rgb(var(--secondary-1-3));
+  box-shadow: var(--box-shadow);
 
-    &.--hidden {
+  &.--hidden {
     visibility: hidden;
-    }
+  }
+}
+
+.user-configuration__form {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
+.user-configuration__credential,
+.user-configuration__user-domain {
+  margin-left: var(--space-large);
+  padding: var(--space-base) var(--space-large);
+  border: 1px solid transparent;
+  border-bottom: 1px solid rgb(var(--primary-3));
+  outline: 1px solid transparent;
+  transition: outline 0.2s ease-out, border-radius 0.2s ease-out;
+
+  &:focus {
+    outline: 1px solid rgb(var(--primary-3));
+    border-radius: var(--space-small);
+  }
+}
+
+.user-configuration__input-container {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-large) var(--space-large) 0 var(--space-large);
+  white-space: nowrap;
+}
+
+.user-configuration__input-label {
+  color: rgb(var(--primary-4));
+}
+
+.user-configuration__submitter {
+  margin-top: var(--space-large);
+  padding: var(--space-base);
+  width: 100%;
+  border: none;
+  border-top: 1px solid rgb(var(--secondary-1-3));
+  background-color: rgb(var(--secondary-2-1) / 30%);
+  transition: background-color 0.2s ease-in-out;
+  color: rgb(var(--primary-4));
+
+  &[disabled] {
+    color: gray;
+  }
+
+  &:hover:not([disabled]) {
+    background-color: rgb(var(--secondary-2-1) / 60%);
+  }
+
+  &:active:not([disabled]) {
+    background-color: rgb(var(--secondary-2-1));
+  }
 }

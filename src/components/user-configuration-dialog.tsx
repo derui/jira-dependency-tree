@@ -50,8 +50,14 @@ const model = function model(actions: ReturnType<typeof intent>) {
 const view = function view(state$: ReturnType<typeof model>) {
   return state$.map(({ allowSubmit }) => (
     <form class={{ "user-configuration__form": true }} attrs={{ method: "dialog" }}>
-      <input class={{ "user-configuration__credential": true }} attrs={{ type: "text" }} />
-      <input class={{ "user-configuration__user-domain": true }} attrs={{ type: "text" }} />
+      <label class={{ "user-configuration__input-container": true }}>
+        <span class={{ "user-configuration__input-label": true }}>Credential</span>
+        <input class={{ "user-configuration__credential": true }} attrs={{ type: "text", placeholder: "required" }} />
+      </label>
+      <label class={{ "user-configuration__input-container": true }}>
+        <span class={{ "user-configuration__input-label": true }}>User Domain</span>
+        <input class={{ "user-configuration__user-domain": true }} attrs={{ type: "text", placeholder: "required" }} />
+      </label>
       <input
         class={{ "user-configuration__submitter": true }}
         attrs={{ type: "submit", disabled: !allowSubmit, value: "Apply" }}

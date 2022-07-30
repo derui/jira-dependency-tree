@@ -6,7 +6,7 @@ repos:
       name: prettier
       entry: npx prettier
       language: system
-      files: "\\.tsx?$"
+      files: "\\.(tsx?|css)$"
       args: ["-w"]
     - id: eslint
       name: eslint

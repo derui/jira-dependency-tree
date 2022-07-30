@@ -11,19 +11,23 @@ type UserConfigurationSinks = ComponentSinks<{
   value: Stream<UserConfigurationState>;
 }>;
 
-const intent = function intent(sources: UserConfigurationSources) {
-  const clickOpener$ = selectAsMain(sources, ".user-configuration__opener").events("click", { bubbles: false });
+const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<UserConfigurationState>) {
+  const clickOpener$ = selectAsMain(sources, ".user-configuration__opener")
+    .events("click", { bubbles: false })
+    .mapTo(true);
+  const dialogApplied$ = dialogValue.mapTo(false);
 
   return {
     clickOpener$,
+    dialogApplied$,
   };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  return actions.clickOpener$
-    .fold((accum) => !accum, false)
-    .map((v) => ({ opened: v }))
-    .remember();
+  return xs
+    .merge(actions.clickOpener$, actions.dialogApplied$)
+    .fold((accum, toggle) => (toggle ? !accum : toggle), false)
+    .map((v) => ({ opened: v }));
 };
 
 const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNode>) {
@@ -53,7 +57,7 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
 export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
   const dialog = isolate(UserConfigurationDialog, "userConfigurationDialog")(sources);
 
-  const actions = intent(sources);
+  const actions = intent(sources, dialog.value);
   const state$ = model(actions);
 
   return {

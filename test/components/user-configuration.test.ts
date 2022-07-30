@@ -73,4 +73,53 @@ test("do not open dialog initially", async () => {
   });
 });
 
+test("close dialog automatically when it applied", async () => {
+  await new Promise<void>(async (resolve, rej) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const click$ = Time.diagram("-x-------|", { x: { target: {} } });
+    const credential$ = Time.diagram("--x------|", { x: { target: { value: "a" } } });
+    const userDomain$ = Time.diagram("--x------|", { x: { target: { value: "b" } } });
+    const form$ = Time.diagram("---x-----|");
+    const dom = mockDOMSource({
+      ".___userConfigurationDialog": {
+        ".user-configuration__credential": {
+          input: credential$,
+        },
+        ".user-configuration__user-domain": {
+          input: userDomain$,
+        },
+        ".user-configuration__form": {
+          submit: form$,
+        },
+      },
+      ".user-configuration__opener": {
+        click: click$,
+      },
+    });
+
+    // Act
+    const sinks = UserConfiguration({ DOM: dom as any });
+
+    const actual$ = sinks.DOM.drop(1).map((vtree) => {
+      return {
+        opener: select("[data-testid=opener]", vtree)[0].data?.class!["--opened"],
+        dialog: select("[data-testid=dialog]", vtree)[0].data?.class!["--hidden"],
+      };
+    });
+    const expected$ = Time.diagram("-a(aa)b-----|", {
+      a: { opener: true, dialog: false },
+      b: { opener: false, dialog: true },
+    });
+
+    // Assert
+    Time.assertEqual(actual$, expected$);
+
+    Time.run((e) => {
+      if (e) rej(e);
+      else resolve();
+    });
+  });
+});
+
 test.run();

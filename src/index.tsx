@@ -11,6 +11,7 @@ import isolate from "@cycle/isolate";
 import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
 import { UserConfiguration } from "./components/user-configuration";
+import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
 
 const project = projectFactory({
   id: "key",
@@ -127,12 +128,20 @@ type MainState = {
 };
 
 const main = function main(sources: MainSources): MainSinks {
-  const childSinks = isolate(UserConfiguration, { DOM: "userConfiguration" })(sources);
+  const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })(sources);
+  const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
+    DOM: sources.DOM,
+    props: sources.state.stream.map<ProjectInformationProps>(({ project }) => ({ project })),
+  });
 
-  const userConfiguratioh$ = childSinks.DOM;
+  const userConfiguration$ = userConfigurationSink.DOM;
+  const projectInformation$ = projectInformationSink.DOM;
 
-  const vnode$ = userConfiguratioh$.map((userConfiguration) => (
-    <div class={{ "app-root": true }}>{userConfiguration}</div>
+  const vnode$ = xs.combine(userConfiguration$, projectInformation$).map(([userConfiguration, projectInformation]) => (
+    <div class={{ "app-root": true }}>
+      {userConfiguration}
+      {projectInformation}
+    </div>
   ));
   const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
     return {
@@ -146,7 +155,7 @@ const main = function main(sources: MainSources): MainSinks {
     return { issues, project, environment: environmentFactory({}) };
   });
 
-  const environmentReducer$ = childSinks.value.map(
+  const environmentReducer$ = userConfigurationSink.value.map(
     (v) =>
       function (prevState?: MainState) {
         if (!prevState) return undefined;

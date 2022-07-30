@@ -69,13 +69,14 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
     const mousedown$ = fromEvent(element, "mousedown");
     const mousemove$ = fromEvent(element, "mousemove");
     const wheel$ = fromEvent(element, "wheel");
+    const rect = element.getBoundingClientRect();
 
-    let pan = { x: 0, y: 0 };
+    let pan = { x: -1 * (rect.width / 2), y: (-1 * rect.height) / 2 };
     let zoom = 100;
 
     return {
       reset() {
-        pan = { x: 0, y: 0 };
+        pan = { x: -1 * (rect.width / 2), y: (-1 * rect.height) / 2 };
       },
       state$: xs.createWithMemory({
         start: (listener) => {

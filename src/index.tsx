@@ -150,7 +150,6 @@ const main = function main(sources: MainSources): MainSinks {
     (v) =>
       function (prevState?: MainState) {
         if (!prevState) return undefined;
-        console.log(prevState);
 
         return produce(prevState, (draft) => {
           draft.environment = draft.environment.applyCredentials(v.jiraToken).applyUserDomain(v.userDomain);

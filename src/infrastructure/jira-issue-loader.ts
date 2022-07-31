@@ -19,7 +19,7 @@ const mapJiraIssue = function mapJiraIssue(issue: JiraIssue): Issue {
   };
 };
 
-const createJiraIssueLoader = function createJiraIssueLoader(client: Version3Client): IssueLoader {
+export const createJiraIssueLoader = function createJiraIssueLoader(client: Version3Client): IssueLoader {
   const loadRecursive = async function loadRecursive(project: Project, loadedIssues: Issue[]): Promise<Issue[]> {
     const jql = `project = ${project.key} AND sprint in openSprints()`;
 

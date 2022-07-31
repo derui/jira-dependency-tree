@@ -15,11 +15,11 @@ export type EnvironmentArgument = {
 };
 
 export type Environment = {
-  issueSize: Size;
-  credentials: {
+  readonly issueSize: Size;
+  readonly credentials: {
     jiraToken?: string;
   };
-  userDomain: string | null;
+  readonly userDomain?: string;
 
   applyCredentials(jiraToken: string): Environment;
   applyUserDomain(jiraToken: string): Environment;
@@ -29,7 +29,7 @@ export const environmentFactory = function environmentFactory(argument: Environm
   return {
     issueSize: argument.issueNodeSize ?? { width: 192, height: 64 },
     credentials: argument.credentials ?? {},
-    userDomain: argument.userDomain ?? null,
+    userDomain: argument.userDomain,
 
     applyCredentials(jiraToken: string) {
       return produce(this, (draft) => {

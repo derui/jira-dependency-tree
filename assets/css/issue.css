@@ -1,4 +1,8 @@
 .issue-node-outer {
-    stroke: rgb(0,0,0);
-    fill: rgb(255,255,255);
+  stroke: rgb(0, 0, 0);
+  fill: rgb(255, 255, 255);
+}
+
+.issue-link {
+  fill: none;
 }

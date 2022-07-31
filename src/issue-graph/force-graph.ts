@@ -64,15 +64,15 @@ export const makeForceGraph = function makeForceGraph(
   const leveledIssues = makeLeveledIssues(issueGraph, issues);
   const linkData = makeLinkData(issueGraph, leveledIssues);
 
+  const curve = d3.line().curve(d3.curveBasis);
+
   // make link between issues
   const links = container
     .selectAll(".issue-link")
     .data(linkData)
     .enter()
-    .append("line")
-    .attr("class", (d) => {
-      return `issue-link-${d.source.issue.key}-${d.target.issue.key}`;
-    })
+    .append("path")
+    .attr("class", "issue-link")
     .attr("stroke", "#000")
     .attr("stroke-weight", 1)
     .attr("marker-end", "url(#arrowhead)");
@@ -91,11 +91,18 @@ export const makeForceGraph = function makeForceGraph(
     });
 
     // link draw right-most center to left-most center of next issue.
-    links
-      .attr("x1", (d) => d.source.x! + configuration.nodeSize.width)
-      .attr("y1", (d) => d.source.y! + configuration.nodeSize.height / 2)
-      .attr("x2", (d) => d.target.x!)
-      .attr("y2", (d) => d.target.y! + configuration.nodeSize.height / 2);
+    links.attr("d", (d) => {
+      const startX = d.source.x! + configuration.nodeSize.width;
+      const endY = d.target.y! + configuration.nodeSize.height / 2;
+      const betweenDistanceX = d.target.x! - startX;
+      const pointData: [number, number][] = [
+        [startX, d.source.y! + configuration.nodeSize.height / 2],
+        [startX + betweenDistanceX * 0.5, endY],
+        [d.target.x!, endY],
+      ];
+
+      return curve(pointData);
+    });
   };
 
   // force between nodes

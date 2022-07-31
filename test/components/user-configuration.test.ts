@@ -1,8 +1,9 @@
-import { UserConfiguration } from "@/components/user-configuration";
+import { UserConfiguration, UserConfigurationProps } from "@/components/user-configuration";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { suite } from "uvu";
+import xs from "xstream";
 
 const test = suite("components/UserConfiguration");
 
@@ -13,7 +14,10 @@ test("do not open dialog initially", async () => {
     const dom = mockDOMSource({});
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any });
+    const sinks = UserConfiguration({
+      DOM: dom as any,
+      props: xs.of<UserConfigurationProps>({ setupFinished: false }),
+    });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return select("[data-testid=opener]", vtree)[0].data?.class;
@@ -44,22 +48,25 @@ test("do not open dialog initially", async () => {
     });
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any });
+    const sinks = UserConfiguration({ DOM: dom as any, props: xs.of<UserConfigurationProps>({ setupFinished: true }) });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
         opener: select("[data-testid=opener]", vtree)[0].data?.class,
         dialog: select("[data-testid=dialog]", vtree)[0].data?.class,
+        marker: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
       };
     });
     const expected$ = Time.diagram("a-b------|", {
       a: {
         opener: { "user-configuration__opener": true, "--opened": false },
         dialog: { "user-configuration__dialog-container": true, "--hidden": true },
+        marker: false,
       },
       b: {
         opener: { "user-configuration__opener": true, "--opened": true },
         dialog: { "user-configuration__dialog-container": true, "--hidden": false },
+        marker: false,
       },
     });
 
@@ -99,7 +106,10 @@ test("close dialog automatically when it applied", async () => {
     });
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any });
+    const sinks = UserConfiguration({
+      DOM: dom as any,
+      props: xs.of<UserConfigurationProps>({ setupFinished: false }),
+    });
 
     const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {

@@ -5,7 +5,11 @@ import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "./user-configuration-dialog";
 import isolate from "@cycle/isolate";
 
-type UserConfigurationSources = ComponentSources<{}>;
+export type UserConfigurationProps = { setupFinished: boolean };
+
+type UserConfigurationSources = ComponentSources<{
+  props: Stream<UserConfigurationProps>;
+}>;
 
 type UserConfigurationSinks = ComponentSinks<{
   value: Stream<UserConfigurationState>;
@@ -20,26 +24,31 @@ const intent = function intent(sources: UserConfigurationSources, dialogValue: S
   return {
     clickOpener$,
     dialogApplied$,
+    props$: sources.props,
   };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  return xs
+  const opened = xs
     .merge(actions.clickOpener$, actions.dialogApplied$)
-    .fold((accum, toggle) => (toggle ? !accum : toggle), false)
-    .map((v) => ({ opened: v }));
+    .fold((accum, toggle) => (toggle ? !accum : toggle), false);
+
+  return xs.combine(opened, actions.props$).map(([opened, { setupFinished }]) => ({ opened, setupFinished }));
 };
 
 const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNode>) {
-  return xs.combine(state$, dialog).map(([{ opened }, dialog]) => (
+  return xs.combine(state$, dialog).map(([{ opened, setupFinished }, dialog]) => (
     <div class={{ "user-configuration": true }}>
       <div class={{ "user-configuration__toolbar": true }}>
-        <span>
-          <button
-            class={{ "user-configuration__opener": true, "--opened": opened }}
-            dataset={{ testid: "opener" }}
-          ></button>
-        </span>
+        <span
+          class={{ "user-configuration__marker": true, "--show": !setupFinished }}
+          dataset={{ testid: "marker" }}
+        ></span>
+
+        <button
+          class={{ "user-configuration__opener": true, "--opened": opened }}
+          dataset={{ testid: "opener" }}
+        ></button>
       </div>
       <div
         class={{

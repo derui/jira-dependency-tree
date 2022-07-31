@@ -1,5 +1,4 @@
 import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
-import { environmentFactory } from "@/environment";
 import { projectFactory } from "@/model/project";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
@@ -18,7 +17,7 @@ test("initial display when project is not configured", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      props: xs.of<ProjectInformationProps>({ environment: environmentFactory({}) }),
+      props: xs.of<ProjectInformationProps>({}),
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
@@ -26,6 +25,7 @@ test("initial display when project is not configured", async () => {
         name: select("[data-testid=name]", vtree)[0].text,
         needConfiguration: select("[data-testid=name]", vtree)[0].data?.class!["--need-configuration"],
         syncDisabled: select("[data-testid=sync]", vtree)[0].data?.attrs?.disabled,
+        shown: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
       };
     });
     const expected$ = Time.diagram("(a|)", {
@@ -33,6 +33,7 @@ test("initial display when project is not configured", async () => {
         name: "Click here",
         needConfiguration: true,
         syncDisabled: true,
+        shown: true,
       },
     });
 
@@ -62,7 +63,6 @@ test("show project name", async () => {
             key: "key",
             name: "name",
           }),
-          environment: environmentFactory({}),
         })
         .remember(),
     });
@@ -81,6 +81,43 @@ test("show project name", async () => {
         syncDisabled: false,
       },
     });
+
+    // Assert
+    Time.assertEqual(actual$, expected$);
+
+    Time.run((e) => {
+      if (e) rej(e);
+      else resolve();
+    });
+  });
+});
+
+test("do not show marker if setup finished", async () => {
+  await new Promise<void>(async (resolve, rej) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const dom = mockDOMSource({});
+
+    // Act
+    const sinks = ProjectInformation({
+      DOM: dom as any,
+      props: xs
+        .of<ProjectInformationProps>({
+          project: projectFactory({
+            id: "id",
+            key: "key",
+            name: "name",
+          }),
+        })
+        .remember(),
+    });
+
+    const actual$ = sinks.DOM.map((vtree) => {
+      return {
+        shown: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
+      };
+    });
+    const expected$ = Time.diagram("(a|)", { a: { shown: false } });
 
     // Assert
     Time.assertEqual(actual$, expected$);

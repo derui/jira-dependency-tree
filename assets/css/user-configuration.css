@@ -8,6 +8,7 @@
 
 .user-configuration__toolbar {
   display: flex;
+  position: relative;
   flex: 1 1 auto;
   flex-direction: column;
 }
@@ -116,5 +117,22 @@
 
   &:active:not([disabled]) {
     background-color: rgb(var(--secondary-2-1));
+  }
+}
+
+.user-configuration__marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  visibility: hidden;
+  background-color: rgb(var(--primary-3) / 70%);
+
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+
+  &.--show {
+    visibility: visible;
   }
 }

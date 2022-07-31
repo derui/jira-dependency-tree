@@ -10,7 +10,7 @@ import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import isolate from "@cycle/isolate";
 import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
-import { UserConfiguration } from "./components/user-configuration";
+import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
 
 const project = projectFactory({
@@ -128,7 +128,12 @@ type MainState = {
 };
 
 const main = function main(sources: MainSources): MainSinks {
-  const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })(sources);
+  const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
+    DOM: sources.DOM,
+    props: sources.state.stream.map<UserConfigurationProps>(({ environment }) => ({
+      setupFinished: environment.isSetupFinished(),
+    })),
+  });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     DOM: sources.DOM,
     props: sources.state.stream.map<ProjectInformationProps>(({ project }) => ({ project })),

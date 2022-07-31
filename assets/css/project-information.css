@@ -84,3 +84,20 @@
     }
   }
 }
+
+.project-information__marker {
+  position: absolute;
+  top: var(--space-base);
+  left: var(--space-base);
+  display: inline-block;
+  visibility: hidden;
+  background-color: rgb(var(--primary-3) / 70%);
+
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+
+  &.--show {
+    visibility: visible;
+  }
+}

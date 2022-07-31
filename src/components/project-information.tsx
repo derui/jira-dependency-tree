@@ -2,11 +2,9 @@ import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-
 import { MemoryStream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
-import { Environment } from "@/environment";
 
 export interface ProjectInformationProps {
   project?: Project;
-  environment: Environment;
 }
 
 type ProjectInformationSources = ComponentSources<{
@@ -22,7 +20,6 @@ const intent = function intent(sources: ProjectInformationSources) {
 const model = function model(actions: ReturnType<typeof intent>) {
   return actions.props$.map((v) => ({
     project: v.project,
-    setupFinished: v.environment.isSetupFinished(),
   }));
 };
 
@@ -32,6 +29,7 @@ const view = function view(state$: ReturnType<typeof model>) {
 
     return (
       <div class={{ "project-information": true }}>
+        <span class={{ "project-information__marker": true, "--show": !project }} dataset={{ testid: "marker" }}></span>
         <span
           class={{ "project-information__name": true, "--need-configuration": !project }}
           dataset={{ testid: "name" }}

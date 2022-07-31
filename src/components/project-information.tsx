@@ -27,13 +27,13 @@ const view = function view(state$: ReturnType<typeof model>) {
 
     return (
       <div class={{ "project-information": true }}>
+        <span
+          class={{ "project-information__name": true, "--need-configuration": !project }}
+          dataset={{ testid: "name" }}
+        >
+          {name}
+        </span>
         <div class={{ "project-information__toolbar": true }}>
-          <span
-            class={{ "project-information__name": true, "--need-configuration": !project }}
-            dataset={{ testid: "name" }}
-          >
-            {name}
-          </span>
           <span>
             <button
               class={{ "project-information__synchronize": true }}

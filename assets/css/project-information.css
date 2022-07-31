@@ -3,4 +3,84 @@
   display: flex;
   left: var(--space-large);
   top: var(--space-large);
+  padding: var(--space-base) var(--space-large);
+  border: 1px solid rgb(var(--secondary-1-3));
+  border-radius: var(--space-large);
+  align-items: center;
+}
+
+.project-information__toolbar {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.project-information__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 15em;
+  flex: 0 0 15em;
+  font-size: var(--large-font-size);
+  font-weight: bold;
+  cursor: pointer;
+  color: rgb(var(--secondary-2-3));
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
+  line-height: 1.5em;
+
+  &:hover:not(&.--need-configuration) {
+    color: rgb(var(--secondary-2-4));
+    border-bottom: 1px solid rgb(var(--secondary-2-4));
+  }
+
+  &.--need-configuration {
+    color: gray;
+    text-decoration-color: gray;
+  }
+}
+
+.project-information__synchronize {
+  padding: var(--space-small);
+  outline: none;
+  background: none;
+  border: 1px solid transparent;
+  transition: border 0.1s ease-out, background-color 0.1s ease-out;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask: url("/assets/svg/reload.svg");
+    mask-size: cover;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(var(--complement-3));
+    transition: background-color 0.1s ease-out;
+  }
+
+  &:hover {
+    border: 1px solid rgb(var(--complement-3));
+  }
+
+  &:active {
+    border: 1px solid rgb(var(--complement-3));
+    background-color: rgb(var(--complement-3));
+
+    &:before {
+      background-color: rgb(var(--complement-1));
+    }
+  }
+
+  &.--opened {
+    border: 2px solid rgb(var(--complement-3));
+    background-color: rgb(var(--complement-3));
+    border-radius: 16px 16px 0 0;
+
+    &::before {
+      background-color: white;
+    }
+  }
 }

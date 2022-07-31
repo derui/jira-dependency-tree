@@ -21,6 +21,7 @@ export type Environment = {
   };
   readonly userDomain?: string;
 
+  isSetupFinished(): boolean;
   applyCredentials(jiraToken: string): Environment;
   applyUserDomain(jiraToken: string): Environment;
 };
@@ -30,6 +31,10 @@ export const environmentFactory = function environmentFactory(argument: Environm
     issueSize: argument.issueNodeSize ?? { width: 192, height: 64 },
     credentials: argument.credentials ?? {},
     userDomain: argument.userDomain,
+
+    isSetupFinished() {
+      return !!this.credentials?.jiraToken && !!this.userDomain;
+    },
 
     applyCredentials(jiraToken: string) {
       return produce(this, (draft) => {

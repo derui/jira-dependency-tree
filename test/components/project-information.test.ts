@@ -1,4 +1,5 @@
 import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
+import { environmentFactory } from "@/environment";
 import { projectFactory } from "@/model/project";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
@@ -17,7 +18,7 @@ test("initial display when project is not configured", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      props: xs.of<ProjectInformationProps>({}),
+      props: xs.of<ProjectInformationProps>({ environment: environmentFactory({}) }),
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
@@ -61,6 +62,7 @@ test("show project name", async () => {
             key: "key",
             name: "name",
           }),
+          environment: environmentFactory({}),
         })
         .remember(),
     });

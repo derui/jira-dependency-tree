@@ -1,7 +1,8 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
-import { MemoryStream } from "xstream";
+import xs, { MemoryStream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
+import { selectAsMain } from "./helper";
 
 export interface ProjectInformationProps {
   project?: Project;
@@ -14,21 +15,24 @@ type ProjectInformationSources = ComponentSources<{
 type ProjectInformationSinks = ComponentSinks<{}>;
 
 const intent = function intent(sources: ProjectInformationSources) {
-  return { props$: sources.props };
+  const nameClicked$ = selectAsMain(sources, ".project-information__name").events("click").mapTo(true);
+
+  return { props$: sources.props, nameClicked$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  return actions.props$.map((v) => ({
-    project: v.project,
-  }));
+  const project$ = actions.props$.map((v) => v.project);
+  const opened$ = actions.nameClicked$.fold((accum) => !accum, false);
+
+  return xs.combine(project$, opened$).map(([project, opened]) => ({ project, opened }));
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ project }) => {
+  return state$.map(({ project, opened }) => {
     const name = project?.name ?? "Click here";
 
     return (
-      <div class={{ "project-information": true }}>
+      <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: "main" }}>
         <span class={{ "project-information__marker": true, "--show": !project }} dataset={{ testid: "marker" }}></span>
         <span
           class={{ "project-information__name": true, "--need-configuration": !project }}
@@ -44,6 +48,18 @@ const view = function view(state$: ReturnType<typeof model>) {
               dataset={{ testid: "sync" }}
             ></button>
           </span>
+        </div>
+        <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: "editor" }}>
+          <form class={{ "project-information__form": true }} attrs={{ method: "dialog" }}>
+            <label class={{ "project-information__input-container": true }}>
+              <span class={{ "project-information__input-label": true }}>Key</span>
+              <input
+                class={{ "project-information__name-input": true }}
+                attrs={{ type: "text", placeholder: "required" }}
+              />
+            </label>
+            <input class={{ "project-information__submitter": true }} attrs={{ type: "submit", value: "Apply" }} />
+          </form>
         </div>
       </div>
     );

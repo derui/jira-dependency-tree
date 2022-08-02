@@ -1,41 +1,63 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
-import xs, { MemoryStream } from "xstream";
+import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
 import { selectAsMain } from "./helper";
+import { ProjectUpdaterSource } from "@/drivers/project-updater";
+import { filterUndefined } from "@/util/basic";
 
 export interface ProjectInformationProps {
   project?: Project;
 }
 
 type ProjectInformationSources = ComponentSources<{
+  projectUpdater: ProjectUpdaterSource;
   props: MemoryStream<ProjectInformationProps>;
 }>;
 
-type ProjectInformationSinks = ComponentSinks<{}>;
+type ProjectInformationSinks = ComponentSinks<{
+  projectUpdater: Stream<string>;
+}>;
 
 const intent = function intent(sources: ProjectInformationSources) {
   const nameClicked$ = selectAsMain(sources, ".project-information__name").events("click").mapTo(true);
+  const submit$ = selectAsMain(sources, ".project-information__form")
+    .events("submit", { preventDefault: true, bubbles: false })
+    .mapTo(false);
+  const nameChanged$ = selectAsMain(sources, ".project-information__name-input")
+    .events("input")
+    .map((v) => {
+      return (v.target as HTMLInputElement).value;
+    });
 
-  return { props$: sources.props, nameClicked$ };
+  return { props$: sources.props, nameClicked$, nameChanged$, submit$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   const project$ = actions.props$.map((v) => v.project);
-  const opened$ = actions.nameClicked$.fold((accum) => !accum, false);
+  const opened$ = xs.merge(actions.nameClicked$, actions.submit$).fold((accum, value) => !!value || !accum, false);
+  const name$ = xs
+    .merge(
+      project$.filter(filterUndefined).map((v) => v.name),
+      actions.nameChanged$
+    )
+    .startWith("Click here");
 
-  return xs.combine(project$, opened$).map(([project, opened]) => ({ project, opened }));
+  return xs
+    .combine(project$, opened$, name$)
+    .map(([project, opened, name]) => ({ projectGiven: project !== undefined, opened, name }));
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ project, opened }) => {
-    const name = project?.name ?? "Click here";
-
+  return state$.map(({ projectGiven, opened, name }) => {
     return (
       <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: "main" }}>
-        <span class={{ "project-information__marker": true, "--show": !project }} dataset={{ testid: "marker" }}></span>
         <span
-          class={{ "project-information__name": true, "--need-configuration": !project }}
+          class={{ "project-information__marker": true, "--show": !projectGiven }}
+          dataset={{ testid: "marker" }}
+        ></span>
+        <span
+          class={{ "project-information__name": true, "--need-configuration": !projectGiven }}
           dataset={{ testid: "name" }}
         >
           {name}
@@ -44,7 +66,7 @@ const view = function view(state$: ReturnType<typeof model>) {
           <span>
             <button
               class={{ "project-information__synchronize": true }}
-              attrs={{ disabled: !project }}
+              attrs={{ disabled: !projectGiven }}
               dataset={{ testid: "sync" }}
             ></button>
           </span>
@@ -55,7 +77,7 @@ const view = function view(state$: ReturnType<typeof model>) {
               <span class={{ "project-information__input-label": true }}>Key</span>
               <input
                 class={{ "project-information__name-input": true }}
-                attrs={{ type: "text", placeholder: "required" }}
+                attrs={{ type: "text", placeholder: "required", value: name }}
               />
             </label>
             <input class={{ "project-information__submitter": true }} attrs={{ type: "submit", value: "Apply" }} />
@@ -74,5 +96,6 @@ export const ProjectInformation = function ProjectInformation(
 
   return {
     DOM: view(state$),
+    projectUpdater: actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten(),
   };
 };

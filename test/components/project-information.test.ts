@@ -1,5 +1,7 @@
 import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
+import { ProjectUpdaterSource } from "@/drivers/project-updater";
 import { projectFactory } from "@/model/project";
+import { DriverStatus } from "@/type";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -7,6 +9,13 @@ import { suite } from "uvu";
 import xs from "xstream";
 
 const test = suite("components/UserConfiguration");
+let updater: ProjectUpdaterSource;
+
+test.before(() => {
+  updater = {
+    status: xs.of<DriverStatus>(DriverStatus.FINISHED),
+  };
+});
 
 test("initial display when project is not configured", async () => {
   await new Promise<void>(async (resolve, rej) => {
@@ -17,6 +26,7 @@ test("initial display when project is not configured", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
+      projectUpdater: updater,
       props: xs.of<ProjectInformationProps>({}),
     });
 
@@ -56,6 +66,7 @@ test("show project name", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
+      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -67,7 +78,7 @@ test("show project name", async () => {
         .remember(),
     });
 
-    const actual$ = sinks.DOM.map((vtree) => {
+    const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {
         name: select("[data-testid=name]", vtree)[0].text,
         needConfiguration: select("[data-testid=name]", vtree)[0].data?.class!["--need-configuration"],
@@ -101,6 +112,7 @@ test("do not show marker if setup finished", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
+      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -112,7 +124,7 @@ test("do not show marker if setup finished", async () => {
         .remember(),
     });
 
-    const actual$ = sinks.DOM.map((vtree) => {
+    const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {
         shown: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
       };
@@ -143,6 +155,7 @@ test("show dialog if name click", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
+      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -154,13 +167,65 @@ test("show dialog if name click", async () => {
         .remember(),
     });
 
-    const actual$ = sinks.DOM.drop(1).map((vtree) => {
+    const actual$ = sinks.DOM.drop(2).map((vtree) => {
       return {
         opened: select("[data-testid=main]", vtree)[0].data?.class!["--editor-opened"],
         editor: select("[data-testid=editor]", vtree)[0].data?.class!["--show"],
       };
     });
     const expected$ = Time.diagram("-a--|", { a: { opened: true, editor: true } });
+
+    // Assert
+    Time.assertEqual(actual$, expected$);
+
+    Time.run((e) => {
+      if (e) rej(e);
+      else resolve();
+    });
+  });
+});
+
+test("execute to update project when submit from editor", async () => {
+  await new Promise<void>(async (resolve, rej) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const click$ = Time.diagram("-a----|", { a: { target: {} } });
+    const input$ = Time.diagram("--a---|", { a: { target: { value: "next" } } });
+    const submit$ = Time.diagram("----x-|", { x: { target: {} } });
+    const dom = mockDOMSource({
+      ".project-information__name": {
+        click: click$,
+      },
+      ".project-information__name-input": {
+        input: input$,
+      },
+      ".project-information__form": {
+        submit: submit$,
+      },
+    });
+
+    // Act
+    const sinks = ProjectInformation({
+      DOM: dom as any,
+      projectUpdater: updater,
+      props: xs
+        .of<ProjectInformationProps>({
+          project: projectFactory({
+            id: "id",
+            key: "key",
+            name: "name",
+          }),
+        })
+        .remember(),
+    });
+
+    const actual$ = xs.combine(sinks.DOM.last(), sinks.projectUpdater).map(([vtree, called]) => {
+      return {
+        opened: select("[data-testid=main]", vtree)[0].data?.class!["--editor-opened"],
+        called,
+      };
+    });
+    const expected$ = Time.diagram("------(a|)", { a: { opened: false, called: "next" } });
 
     // Assert
     Time.assertEqual(actual$, expected$);

@@ -12,6 +12,7 @@ import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
+import { projectUpdaterFactory } from "./drivers/project-updater";
 
 const project = projectFactory({
   id: "key",
@@ -136,6 +137,7 @@ const main = function main(sources: MainSources): MainSinks {
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     DOM: sources.DOM,
+    projectUpdater: projectUpdaterFactory(),
     props: sources.state.stream.map<ProjectInformationProps>(({ project }) => ({ project })),
   });
 

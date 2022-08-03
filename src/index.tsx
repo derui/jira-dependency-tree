@@ -150,7 +150,7 @@ const main = function main(sources: MainSources): MainSinks {
       {projectInformation}
     </div>
   ));
-  const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state$).map(([state, panZoomState]) => {
+  const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state).map(([state, panZoomState]) => {
     return {
       panZoom: panZoomState,
       issues: state.issues,

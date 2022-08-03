@@ -6,7 +6,7 @@ import { fromEvent } from "@cycle/dom/lib/cjs/fromEvent";
 export interface PanZoomSource {
   // reset pan and zoom
   reset(): void;
-  state$: MemoryStream<PanZoomState>;
+  state: MemoryStream<PanZoomState>;
 }
 
 export type PanZoomState = {
@@ -78,7 +78,7 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
       reset() {
         pan = { x: -1 * (rect.width / 2), y: (-1 * rect.height) / 2 };
       },
-      state$: xs.createWithMemory({
+      state: xs.createWithMemory({
         start: (listener) => {
           const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
             pan = { x: pan.x + delta.x, y: pan.y + delta.y };

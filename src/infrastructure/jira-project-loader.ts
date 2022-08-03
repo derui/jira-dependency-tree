@@ -1,5 +1,4 @@
-import { projectFactory } from "@/model/project";
-import { ProjectLoader } from "@/project-loader";
+import { Project, projectFactory } from "@/model/project";
 import { IssueStatus, IssueStatusCategory, IssueType } from "@/type";
 import { Version3Client } from "jira.js";
 import { IssueTypeDetails, StatusCategory, StatusDetails } from "jira.js/out/version3/models";
@@ -28,7 +27,9 @@ const mapIssueType = function mapIssueType(issueType: IssueTypeDetails): IssueTy
   };
 };
 
-export const createJiraProjectLoader = function createJiraProejctLoader(client: Version3Client): ProjectLoader {
+export const createJiraProjectLoader = function createJiraProejctLoader(
+  client: Version3Client
+): (project: string) => Promise<Project> {
   return async (projectKey) => {
     const project = await client.projects.getProject({ projectIdOrKey: projectKey });
     const statusCategories = await client.workflowStatusCategories.getStatusCategories();

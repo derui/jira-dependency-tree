@@ -1,6 +1,4 @@
-import { IssueLoader } from "@/issue-loader";
 import { Issue } from "@/model/issue";
-import { Project } from "@/model/project";
 import { filterUndefined } from "@/util/basic";
 import { Version3Client } from "jira.js";
 import { Issue as JiraIssue } from "jira.js/out/version3/models";
@@ -19,9 +17,11 @@ const mapJiraIssue = function mapJiraIssue(issue: JiraIssue): Issue {
   };
 };
 
-export const createJiraIssueLoader = function createJiraIssueLoader(client: Version3Client): IssueLoader {
-  const loadRecursive = async function loadRecursive(project: Project, loadedIssues: Issue[]): Promise<Issue[]> {
-    const jql = `project = ${project.key} AND sprint in openSprints()`;
+export const createJiraIssueLoader = function createJiraIssueLoader(
+  client: Version3Client
+): (project: string) => Promise<Issue[]> {
+  const loadRecursive = async function loadRecursive(project: string, loadedIssues: Issue[]): Promise<Issue[]> {
+    const jql = `project = ${project} AND sprint in openSprints()`;
 
     try {
       const result = await client.issueSearch.searchForIssuesUsingJql({ jql, startAt: loadedIssues.length });

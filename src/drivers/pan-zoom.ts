@@ -81,7 +81,7 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
       state: xs.createWithMemory({
         start: (listener) => {
           const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
-            pan = { x: pan.x + delta.x, y: pan.y + delta.y };
+            pan = { x: pan.x + delta.x * (zoom / 100), y: pan.y + delta.y * (zoom / 100) };
 
             listener.next({ pan, zoomPercentage: zoom });
           });

@@ -10,6 +10,7 @@ export type EnvironmentArgument = {
 
   // credential on environment
   credentials?: {
+    email?: string;
     jiraToken?: string;
   };
 };
@@ -17,13 +18,14 @@ export type EnvironmentArgument = {
 export type Environment = {
   readonly issueSize: Size;
   readonly credentials: {
+    email?: string;
     jiraToken?: string;
   };
   readonly userDomain?: string;
 
   isSetupFinished(): boolean;
-  applyCredentials(jiraToken: string): Environment;
-  applyUserDomain(jiraToken: string): Environment;
+  applyCredentials(jiraToken: string, email: string): Environment;
+  applyUserDomain(userDomain: string): Environment;
 };
 
 export const environmentFactory = function environmentFactory(argument: EnvironmentArgument): Environment {
@@ -33,12 +35,13 @@ export const environmentFactory = function environmentFactory(argument: Environm
     userDomain: argument.userDomain,
 
     isSetupFinished() {
-      return !!this.credentials?.jiraToken && !!this.userDomain;
+      return !!this.credentials.jiraToken && !!this.credentials.email && !!this.userDomain;
     },
 
-    applyCredentials(jiraToken: string) {
+    applyCredentials(jiraToken: string, email: string) {
       return produce(this, (draft) => {
         draft.credentials.jiraToken = jiraToken;
+        draft.credentials.email = email;
       });
     },
     applyUserDomain(userDomain: string) {

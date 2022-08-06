@@ -20,10 +20,10 @@ test("setup finished if all informations are set", () => {
   // arrange
 
   // do
-  const env = environmentFactory({}).applyCredentials("cred").applyUserDomain("domain");
+  const env = environmentFactory({}).applyCredentials("cred", "email").applyUserDomain("domain");
 
   // verify
-  assert.equal(env.credentials, { jiraToken: "cred" });
+  assert.equal(env.credentials, { jiraToken: "cred", email: "email" });
   assert.equal(env.userDomain, "domain");
   assert.equal(env.isSetupFinished(), true);
 });

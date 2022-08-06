@@ -166,7 +166,7 @@ const main = function main(sources: MainSources): MainSinks {
         if (!prevState) return undefined;
 
         return produce(prevState, (draft) => {
-          draft.environment = draft.environment.applyCredentials(v.jiraToken).applyUserDomain(v.userDomain);
+          draft.environment = draft.environment.applyCredentials(v.jiraToken, v.email).applyUserDomain(v.userDomain);
         });
       }
   );

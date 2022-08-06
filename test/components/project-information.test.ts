@@ -1,7 +1,5 @@
 import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
-import { ProjectUpdaterSource } from "@/drivers/project-updater";
 import { projectFactory } from "@/model/project";
-import { DriverStatus } from "@/type";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -9,13 +7,6 @@ import { suite } from "uvu";
 import xs from "xstream";
 
 const test = suite("components/UserConfiguration");
-let updater: ProjectUpdaterSource;
-
-test.before(() => {
-  updater = {
-    status: xs.of<DriverStatus>(DriverStatus.FINISHED),
-  };
-});
 
 test("initial display when project is not configured", async () => {
   await new Promise<void>(async (resolve, rej) => {
@@ -26,7 +17,6 @@ test("initial display when project is not configured", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      projectUpdater: updater,
       props: xs.of<ProjectInformationProps>({}),
     });
 
@@ -66,7 +56,6 @@ test("show project name", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -112,7 +101,6 @@ test("do not show marker if setup finished", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -155,7 +143,6 @@ test("show dialog if name click", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -207,7 +194,6 @@ test("execute to update project when submit from editor", async () => {
     // Act
     const sinks = ProjectInformation({
       DOM: dom as any,
-      projectUpdater: updater,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({
@@ -219,13 +205,15 @@ test("execute to update project when submit from editor", async () => {
         .remember(),
     });
 
-    const actual$ = xs.combine(sinks.DOM.last(), sinks.projectUpdater).map(([vtree, called]) => {
+    const actual$ = xs.combine(sinks.DOM.last(), sinks.jira).map(([vtree, called]) => {
       return {
         opened: select("[data-testid=main]", vtree)[0].data?.class!["--editor-opened"],
         called,
       };
     });
-    const expected$ = Time.diagram("------(a|)", { a: { opened: false, called: "next" } });
+    const expected$ = Time.diagram("------(a|)", {
+      a: { opened: false, called: { kind: "project", projectKey: "next" } },
+    });
 
     // Assert
     Time.assertEqual(actual$, expected$);

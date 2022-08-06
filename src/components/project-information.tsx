@@ -3,20 +3,19 @@ import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
 import { selectAsMain } from "./helper";
-import { ProjectUpdaterSource } from "@/drivers/project-updater";
 import { filterUndefined } from "@/util/basic";
+import { JiraLoaderSinks } from "@/drivers/jira-loader";
 
 export interface ProjectInformationProps {
   project?: Project;
 }
 
 type ProjectInformationSources = ComponentSources<{
-  projectUpdater: ProjectUpdaterSource;
   props: MemoryStream<ProjectInformationProps>;
 }>;
 
 type ProjectInformationSinks = ComponentSinks<{
-  projectUpdater: Stream<string>;
+  jira: Stream<JiraLoaderSinks>;
 }>;
 
 const intent = function intent(sources: ProjectInformationSources) {
@@ -96,6 +95,13 @@ export const ProjectInformation = function ProjectInformation(
 
   return {
     DOM: view(state$),
-    projectUpdater: actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten(),
+    jira: actions.nameChanged$
+      .map((name) =>
+        actions.submit$.take(1).map<JiraLoaderSinks>(() => ({
+          kind: "project",
+          projectKey: name,
+        }))
+      )
+      .flatten(),
   };
 };

@@ -37,7 +37,10 @@ const isProjectLoaderAction = function isProjectLoaderAction(
   return action.kind === "project";
 };
 
-export const createJiraLoader = function createJiraLoader(): Driver<Stream<JiraLoaderSinks>, JiraLoaderSources> {
+export const makeJiraLoaderDriver = function makeJiraLoaderDriver(): Driver<
+  Stream<JiraLoaderSinks>,
+  JiraLoaderSources
+> {
   let clientListener: Listener<Version3Client> | undefined;
 
   let client$ = xs.createWithMemory<Version3Client>({

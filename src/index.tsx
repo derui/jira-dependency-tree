@@ -12,6 +12,7 @@ import { Environment, environmentFactory } from "./environment";
 import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
+import { filterUndefined } from "./util/basic";
 
 const project = projectFactory({
   id: "key",
@@ -123,7 +124,7 @@ type MainSinks = {
 
 type MainState = {
   issues: Issue[];
-  project: Project;
+  project: Project | undefined;
   environment: Environment;
 };
 
@@ -148,13 +149,19 @@ const main = function main(sources: MainSources): MainSinks {
       {projectInformation}
     </div>
   ));
-  const issueGraph$ = xs.combine(sources.state.stream, sources.panZoom.state).map(([state, panZoomState]) => {
-    return {
-      panZoom: panZoomState,
-      issues: state.issues,
-      project: state.project,
-    };
-  });
+  const issueGraph$ = xs
+    .combine(
+      sources.state.stream.map(({ issues }) => issues),
+      sources.state.stream.map(({ project }) => project).filter(filterUndefined),
+      sources.panZoom.state
+    )
+    .map(([issues, project, panZoomState]) => {
+      return {
+        panZoom: panZoomState,
+        issues,
+        project,
+      };
+    });
 
   const initialReducer$ = xs.of(() => {
     return { issues, project, environment: environmentFactory({}) };

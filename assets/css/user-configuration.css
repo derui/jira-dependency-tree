@@ -69,6 +69,7 @@
 }
 
 .user-configuration__credential,
+.user-configuration__email,
 .user-configuration__user-domain {
   margin-left: var(--space-large);
   padding: var(--space-base) var(--space-large);

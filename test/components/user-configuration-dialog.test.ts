@@ -12,13 +12,17 @@ test("allow user to submit if all value is valid", async () => {
     const Time = mockTimeSource();
     const domain$ = Time.diagram("--x------|", { x: { target: { value: "domain" } } });
     const cred$ = Time.diagram("---x-----|", { x: { target: { value: "cred" } } });
-    const submit$ = Time.diagram("----x----|", { x: { target: {} } });
+    const email$ = Time.diagram("----x----|", { x: { target: { value: "email" } } });
+    const submit$ = Time.diagram("-----x---|", { x: { target: {} } });
     const dom = mockDOMSource({
       ".user-configuration__user-domain": {
         input: domain$,
       },
       ".user-configuration__credential": {
         input: cred$,
+      },
+      ".user-configuration__email": {
+        input: email$,
       },
       ".user-configuration__form": {
         submit: submit$,
@@ -31,7 +35,7 @@ test("allow user to submit if all value is valid", async () => {
     const actual$ = sinks.DOM.map((vtree) => {
       return select(".user-configuration__submitter", vtree)[0].data?.attrs?.disabled;
     });
-    const expected$ = Time.diagram("a-ab-----|", { a: true, b: false });
+    const expected$ = Time.diagram("a-aab----|", { a: true, b: false });
 
     // Assert
     Time.assertEqual(actual$, expected$);
@@ -49,6 +53,7 @@ test("get value with submit", async () => {
     const Time = mockTimeSource();
     const domain$ = Time.diagram("--x------|", { x: { target: { value: "domain" } } });
     const cred$ = Time.diagram("---x-----|", { x: { target: { value: "cred" } } });
+    const email$ = Time.diagram("---x-----|", { x: { target: { value: "email" } } });
     const submit$ = Time.diagram("----x----|", { x: { target: {} } });
     const dom = mockDOMSource({
       ".user-configuration__user-domain": {
@@ -56,6 +61,9 @@ test("get value with submit", async () => {
       },
       ".user-configuration__credential": {
         input: cred$,
+      },
+      ".user-configuration__email": {
+        input: email$,
       },
       ".user-configuration__form": {
         submit: submit$,
@@ -66,7 +74,7 @@ test("get value with submit", async () => {
     const sinks = UserConfigurationDialog({ DOM: dom as any });
 
     const actual$ = sinks.value.map((v) => v);
-    const expected$ = Time.diagram("----x----|", { x: { jiraToken: "cred", userDomain: "domain" } });
+    const expected$ = Time.diagram("----x----|", { x: { jiraToken: "cred", userDomain: "domain", email: "email" } });
 
     // Assert
     Time.assertEqual(actual$, expected$);

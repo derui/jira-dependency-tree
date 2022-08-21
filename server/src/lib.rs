@@ -13,6 +13,7 @@ pub struct JiraAuhtorization {
 #[derive(Deserialize)]
 pub struct IssueLoadingRequest {
     pub authorization: JiraAuhtorization,
+    pub project: String,
 }
 
 /// This is the main body for the function.

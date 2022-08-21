@@ -14,3 +14,9 @@ repos:
       language: system
       files: "\\.tsx?$"
       args: ["--fix", "--ext", ".ts,.tsx"]
+    - id: rustfmt
+      name: rustfmt
+      entry: rustfmt
+      language: system
+      files: "\\.rs$"
+      args: ["--edition", "2021"]

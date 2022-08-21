@@ -22,12 +22,10 @@ pub struct IssueLoadingRequest {
 /// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
-    let json: IssueLoadingRequest = match event.body() {
+    let _json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
-
-    assert_eq!(json.authorization.jira_token, "");
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime

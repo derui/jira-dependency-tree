@@ -8,7 +8,8 @@ async fn test_parse_request() {
         "jira_token": "token",
         "email": "email@example.com",
         "user_domain": "user-domain"
-        }
+        },
+        "project": "project"
     });
 
     // do

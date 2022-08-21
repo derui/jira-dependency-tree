@@ -30,7 +30,7 @@ impl JiraUrl for JiraAuhtorization {
     }
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 pub struct JiraIssueLink {
     pub outward_issue: Option<String>,
 }
@@ -59,6 +59,8 @@ fn as_issue(issues: &Vec<Value>) -> Vec<JiraIssue> {
             .map(|v| JiraIssueLink { outward_issue: v })
             .collect()
     }
+
+    println!("{}", issues[0]);
 
     issues
         .iter()
@@ -107,19 +109,20 @@ fn load_issue_recursive(
         .body(body.to_string())?
         .send()?;
 
-    let json: Value = res.json().map_err(|err| err.to_string())?;
+    let json: Value = res.json()?;
 
     match json["issues"].as_array() {
         None => Ok(Vec::from_iter(issues.iter().cloned())),
         Some(got_issues) => {
             let issue_len = got_issues.len();
-            let total_size = json["total"].as_u64().unwrap_or(0) as usize;
+            let total_size = json["total"].as_u64().unwrap_or_default() as usize;
+
+            issues.append(as_issue(got_issues).as_mut());
 
             if total_size <= issues.len() + issue_len {
                 return Ok(Vec::from_iter(issues.iter().cloned()));
             }
 
-            issues.append(as_issue(got_issues).as_mut());
             load_issue_recursive(request, url, issues)
         }
     }

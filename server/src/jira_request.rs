@@ -11,6 +11,8 @@ pub trait JiraUrl {
 
 impl JiraUrl for JiraAuhtorization {
     fn get_url(&self, path: &str) -> String {
+        let path = path.trim_start_matches(" ");
+        let path = path.trim_start_matches("/");
         return format!("https://{}.atlassian.net/{}", self.user_domain, path);
     }
 
@@ -18,7 +20,7 @@ impl JiraUrl for JiraAuhtorization {
         let mut map = HashMap::new();
         let auth = format!("{}:{}", self.email, self.jira_token);
 
-        map.insert(String::from("Authorization"), base64::encode(auth));
+        map.insert(String::from("authorization"), base64::encode(auth));
 
         return map;
     }
@@ -44,5 +46,47 @@ mod tests {
 
         // verify
         assert_eq!(url, "https://domain.atlassian.net/test/path");
+    }
+
+    #[test]
+    fn should_strip_lead_slash_from_path() {
+        // arrange
+        let auth = JiraAuhtorization {
+            jira_token: String::from("token"),
+            email: String::from("test@example.com"),
+            user_domain: String::from("domain"),
+        };
+
+        // do
+        let url = auth.get_url("/lead/slash");
+        let multi_lead_slashes = auth.get_url("///lead/slash");
+
+        // verify
+        assert_eq!(url, "https://domain.atlassian.net/lead/slash");
+        assert_eq!(
+            multi_lead_slashes,
+            "https://domain.atlassian.net/lead/slash"
+        );
+    }
+
+    #[test]
+    fn get_authorization_header() {
+        // arrange
+        let auth = JiraAuhtorization {
+            jira_token: String::from("token"),
+            email: String::from("test@example.com"),
+            user_domain: String::from("domain"),
+        };
+
+        // do
+        let headers = auth.get_base_headers();
+
+        // verify
+        assert_eq!(
+            headers
+                .get("authorization")
+                .expect("can not found authorization"),
+            "dGVzdEBleGFtcGxlLmNvbTp0b2tlbg=="
+        );
     }
 }

@@ -11,9 +11,9 @@ pub trait JiraUrl {
 
 impl JiraUrl for JiraAuhtorization {
     fn get_url(&self, path: &str) -> String {
-        let path = path.trim_start_matches(" ");
-        let path = path.trim_start_matches("/");
-        return format!("https://{}.atlassian.net/{}", self.user_domain, path);
+        let path = path.trim_start_matches(' ');
+        let path = path.trim_start_matches('/');
+        format!("https://{}.atlassian.net/{}", self.user_domain, path)
     }
 
     fn get_base_headers(&self) -> HashMap<String, String> {
@@ -22,7 +22,7 @@ impl JiraUrl for JiraAuhtorization {
 
         map.insert(String::from("authorization"), base64::encode(auth));
 
-        return map;
+        map
     }
 }
 

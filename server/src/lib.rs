@@ -1,6 +1,6 @@
 pub mod jira_request;
 
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use lambda_http::{Body, Error, Request, Response};
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone, Debug)]

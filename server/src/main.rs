@@ -1,6 +1,6 @@
 extern crate jira_issue_loader;
 
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
+use lambda_http::{run, service_fn, Error};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

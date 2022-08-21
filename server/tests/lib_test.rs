@@ -18,5 +18,5 @@ async fn test_parse_request() {
         .expect("failed to create request");
 
     // verify
-    let response = handler(request).await.expect("failed to handle request");
+    let _response = handler(request).await.expect("failed to handle request");
 }

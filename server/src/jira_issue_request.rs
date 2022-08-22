@@ -46,22 +46,20 @@ pub struct JiraIssue {
     pub links: Vec<JiraIssueLink>,
 }
 
+fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
+    value
+        .iter()
+        .filter_map(|v| {
+            v["outwardIssue"]
+                .as_object()
+                .map(|obj| obj["key"].as_str().map(|v| v.into()))
+        })
+        .map(|v| JiraIssueLink { outward_issue: v })
+        .collect()
+}
+
 // json to JiraIssue
-fn as_issue(issues: &Vec<Value>) -> Vec<JiraIssue> {
-    fn issuelink(value: &Vec<Value>) -> Vec<JiraIssueLink> {
-        value
-            .iter()
-            .filter_map(|v| {
-                v["outwardIssue"]
-                    .as_object()
-                    .map(|obj| obj["key"].as_str().map(|v| v.into()))
-            })
-            .map(|v| JiraIssueLink { outward_issue: v })
-            .collect()
-    }
-
-    println!("{}", issues[0]);
-
+fn as_issue(issues: &[Value]) -> Vec<JiraIssue> {
     issues
         .iter()
         .map(|issue| JiraIssue {
@@ -80,7 +78,7 @@ fn as_issue(issues: &Vec<Value>) -> Vec<JiraIssue> {
             self_url: issue["self"].as_str().map(|v| v.into()),
             links: issue["fields"]["issuelinks"]
                 .as_array()
-                .map(issuelink)
+                .map(|v| as_issuelink(v))
                 .unwrap_or_default(),
         })
         .collect()

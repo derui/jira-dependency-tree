@@ -1,4 +1,5 @@
-pub mod jira_request;
+pub mod jira_issue_request;
+pub mod jira_project_request;
 
 use isahc::http::Method;
 use lambda_http::{Body, Error, Request, Response};
@@ -25,6 +26,7 @@ pub struct IssueLoadingRequest {
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let unmatch = not_found();
+
     match event.uri().path() {
         "/load-issues" => match event.method() {
             &Method::POST => execute_load_issue(&event).await,

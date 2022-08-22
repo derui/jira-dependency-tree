@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
-    jira_request::{load_issue, JiraIssueLink, JiraUrl},
+    jira_issue_request::{load_issue, JiraIssueLink, JiraUrl},
     IssueLoadingRequest, JiraAuhtorization,
 };
 

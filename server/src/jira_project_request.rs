@@ -51,7 +51,7 @@ fn build_partial_request(path: &str, url: &impl JiraUrl) -> Builder {
 }
 
 fn load_project_inner(project: &str, url: &impl JiraUrl) -> Result<Value, Box<dyn Error>> {
-    let mut project = build_partial_request(&format!("rest/api/3/project/{}", project), url)
+    let mut project = build_partial_request(&format!("/rest/api/3/project/{}", project), url)
         .body(())?
         .send()?;
 
@@ -118,7 +118,7 @@ fn load_statuses(url: &impl JiraUrl) -> Result<Vec<JiraIssueStatus>, Box<dyn Err
                 .map(|obj| JiraIssueStatus {
                     id: obj["id"].as_str().map(Into::into).unwrap_or_default(),
                     name: obj["name"].as_str().map(Into::into),
-                    category_id: obj["categoryId"].as_u64(),
+                    category_id: obj["statusCategory"]["id"].as_u64(),
                 })
                 .collect()
         })
@@ -131,7 +131,7 @@ pub fn load_project(project: &str, url: impl JiraUrl) -> Option<JiraProject> {
 
     match project_inner {
         Ok(json) => {
-            let project_id = json["id"].as_u64().unwrap_or(0);
+            let project_id: u64 = json["id"].as_str().map(|v| v.parse().unwrap()).unwrap_or(0);
             let statuses = load_statuses(&url).unwrap_or_default();
             let status_categories = load_status_categories(&url).unwrap_or_default();
             let types = load_issue_types(project_id, &url).unwrap_or_default();

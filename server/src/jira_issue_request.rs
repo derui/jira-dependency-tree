@@ -24,7 +24,10 @@ impl JiraUrl for JiraAuhtorization {
         let mut map = HashMap::new();
         let auth = format!("{}:{}", self.email, self.jira_token);
 
-        map.insert(String::from("authorization"), base64::encode(auth));
+        map.insert(
+            String::from("authorization"),
+            format!("Basic {}", base64::encode(auth)),
+        );
 
         map
     }
@@ -35,7 +38,7 @@ pub struct JiraIssueLink {
     pub outward_issue: Option<String>,
 }
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct JiraIssue {
     pub key: String,
     pub summary: String,
@@ -92,7 +95,7 @@ fn load_issue_recursive(
 ) -> Result<Vec<JiraIssue>, Box<dyn std::error::Error>> {
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
-        "jql":format!("{} AND sprint in openSprints()", request.project),
+        "jql": format!("project = \"{}\" AND Sprint in openSprints()", request.project),
         "startAt": issues.len()
     });
 
@@ -193,7 +196,7 @@ mod tests {
             headers
                 .get("authorization")
                 .expect("can not found authorization"),
-            "dGVzdEBleGFtcGxlLmNvbTp0b2tlbg=="
+            "Basic dGVzdEBleGFtcGxlLmNvbTp0b2tlbg=="
         );
     }
 }

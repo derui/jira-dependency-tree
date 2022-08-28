@@ -1,8 +1,5 @@
 FROM public.ecr.aws/lambda/provided:al2
 
-# リンカーとしてgccを利用する
-RUN yum install -y gcc pkgconfig
-
 # rustupでRustツールチェーンをインストールする
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
 ENV PATH $PATH:/root/.cargo/bin
@@ -17,4 +14,8 @@ VOLUME /code
 
 WORKDIR /code
 # provided:al2 はランタイム用の設定になっているので、ENTRYPOINTをビルド用に書き換える
+
+# リンカーとしてgccを利用する
+RUN yum install -y gcc pkgconfig openssl-devel
+
 ENTRYPOINT ["cargo", "build", "--release"]

@@ -8,7 +8,7 @@ import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import isolate from "@cycle/isolate";
-import { Environment, environmentFactory } from "./environment";
+import { Setting, settingFactory } from "./model/setting";
 import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
@@ -128,12 +128,12 @@ type MainSinks = {
 type MainState = {
   issues: Issue[];
   project: Project | undefined;
-  environment: Environment;
+  setting: Setting;
 };
 
 const authorize = function authorize(sources: MainSources) {
   sources.state.stream
-    .map((v) => v.environment)
+    .map((v) => v.setting)
     .filter((e) => e.isSetupFinished())
     .subscribe({
       next(e) {
@@ -149,7 +149,7 @@ const authorize = function authorize(sources: MainSources) {
 const main = function main(sources: MainSources): MainSinks {
   const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
     DOM: sources.DOM,
-    props: sources.state.stream.map<UserConfigurationProps>(({ environment }) => ({
+    props: sources.state.stream.map<UserConfigurationProps>(({ setting: environment }) => ({
       setupFinished: environment.isSetupFinished(),
     })),
   });
@@ -185,7 +185,7 @@ const main = function main(sources: MainSources): MainSinks {
     });
 
   const initialReducer$ = xs.of(() => {
-    return { issues, project, environment: environmentFactory({}) };
+    return { issues, project, setting: settingFactory({}) };
   });
 
   const environmentReducer$ = userConfigurationSink.value.map(
@@ -194,7 +194,7 @@ const main = function main(sources: MainSources): MainSinks {
         if (!prevState) return undefined;
 
         return produce(prevState, (draft) => {
-          draft.environment = draft.environment.applyCredentials(v.jiraToken, v.email).applyUserDomain(v.userDomain);
+          draft.setting = draft.setting.applyCredentials(v.jiraToken, v.email).applyUserDomain(v.userDomain);
         });
       }
   );

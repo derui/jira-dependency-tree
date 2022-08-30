@@ -1,7 +1,7 @@
 import { Size } from "@/type";
 import produce from "immer";
 
-export type EnvironmentArgument = {
+export type SettingArgument = {
   // Size of issue in environment
   issueNodeSize?: Size;
 
@@ -15,7 +15,7 @@ export type EnvironmentArgument = {
   };
 };
 
-export type Environment = {
+export type Setting = {
   readonly issueSize: Size;
   readonly credentials: {
     email?: string;
@@ -24,11 +24,11 @@ export type Environment = {
   readonly userDomain?: string;
 
   isSetupFinished(): boolean;
-  applyCredentials(jiraToken: string, email: string): Environment;
-  applyUserDomain(userDomain: string): Environment;
+  applyCredentials(jiraToken: string, email: string): Setting;
+  applyUserDomain(userDomain: string): Setting;
 };
 
-export const environmentFactory = function environmentFactory(argument: EnvironmentArgument): Environment {
+export const settingFactory = function settingFactory(argument: SettingArgument): Setting {
   return {
     issueSize: argument.issueNodeSize ?? { width: 192, height: 64 },
     credentials: argument.credentials ?? {},

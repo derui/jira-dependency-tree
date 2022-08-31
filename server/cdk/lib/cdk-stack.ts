@@ -12,8 +12,18 @@ export class CdkStack extends cdk.Stack {
       code: lambda.DockerImageCode.fromImageAsset("../"),
     });
 
-    new apigw.LambdaRestApi(this, "Endpoint", {
+    const restApi = new apigw.LambdaRestApi(this, "Endpoint", {
       handler: jiraIssueHandlerLambda,
+      apiKeySourceType: apigw.ApiKeySourceType.HEADER,
+    });
+
+    const apiKey = new apigw.RateLimitedApiKey(this, "default", {
+      apiKeyName: "default",
+      resources: [restApi],
+      enabled: true,
+      throttle: {
+        rateLimit: 10,
+      },
     });
   }
 }

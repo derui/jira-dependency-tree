@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["@typescript-eslint", "unused-imports", "import"],
+  plugins: ["@typescript-eslint", "import"],
   parser: '@typescript-eslint/parser',
   extends:  [
     "plugin:import/errors",
@@ -22,7 +22,6 @@ module.exports = {
     "import/no-unresolved": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     // "@typescript-eslint/no-unnecessary-type-assertion": "error",
-    "unused-imports/no-unused-imports": "warn"
   },
   settings:  {
     "import/parsers": {

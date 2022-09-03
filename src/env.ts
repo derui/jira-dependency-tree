@@ -1,9 +1,6 @@
-export type Env = {
-  apiBaseUrl: string;
-  apiKey: string;
-};
+import { Env } from "./model/env";
 
 export const env: Env = {
-  apiBaseUrl: "http://localhost:8082",
+  apiBaseUrl: "http://localhost:3000/prod",
   apiKey: "",
 };

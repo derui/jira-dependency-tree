@@ -19,20 +19,16 @@ pub struct IssueLoadingRequest {
     pub project: String,
 }
 
-/// This is the main body for the function.
-/// Write your code inside it.
-/// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let unmatch = not_found();
 
     match event.uri().path() {
-        "/load-issues" => match event.method() {
+        "/prod/load-issues" => match event.method() {
             &Method::POST => execute_load_issue(&event).await,
             _ => unmatch,
         },
-        "/load-project" => match event.method() {
+        "/prod/load-project" => match event.method() {
             &Method::POST => execute_load_project(&event).await,
             _ => unmatch,
         },

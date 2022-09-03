@@ -19,7 +19,7 @@
 }
 
 .project-information__name {
-  margin-left: var(--space-base);
+  margin-left: var(--space-large);
   grid-area: name;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -7,6 +7,7 @@ use serde_json::Value;
 use crate::jira_issue_request::JiraUrl;
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssueStatus {
     pub id: String,
     pub name: Option<String>,
@@ -14,6 +15,7 @@ pub struct JiraIssueStatus {
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssueStatusCategory {
     pub id: Option<u64>,
     pub name: Option<String>,
@@ -21,6 +23,7 @@ pub struct JiraIssueStatusCategory {
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssueType {
     pub id: Option<u64>,
     pub name: Option<String>,
@@ -28,6 +31,7 @@ pub struct JiraIssueType {
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraProject {
     pub id: u64,
     pub key: String,

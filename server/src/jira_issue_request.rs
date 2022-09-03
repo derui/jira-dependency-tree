@@ -34,11 +34,13 @@ impl JiraUrl for JiraAuhtorization {
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssueLink {
     pub outward_issue: Option<String>,
 }
 
 #[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssue {
     pub key: String,
     pub summary: String,

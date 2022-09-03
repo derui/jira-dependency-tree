@@ -1,10 +1,9 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
+import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
 import { selectAsMain } from "./helper";
 import { filterUndefined } from "@/util/basic";
-import { JiraLoaderSinks } from "@/drivers/jira-loader";
 
 export interface ProjectInformationProps {
   project?: Project;
@@ -15,7 +14,7 @@ type ProjectInformationSources = ComponentSources<{
 }>;
 
 type ProjectInformationSinks = ComponentSinks<{
-  jira: Stream<JiraLoaderSinks>;
+  value: Stream<string>;
 }>;
 
 const intent = function intent(sources: ProjectInformationSources) {
@@ -95,13 +94,6 @@ export const ProjectInformation = function ProjectInformation(
 
   return {
     DOM: view(state$),
-    jira: actions.nameChanged$
-      .map((name) =>
-        actions.submit$.take(1).map<JiraLoaderSinks>(() => ({
-          kind: "project",
-          projectKey: name,
-        }))
-      )
-      .flatten(),
+    value: actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten(),
   };
 };

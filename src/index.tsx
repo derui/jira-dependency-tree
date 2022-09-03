@@ -1,5 +1,5 @@
 import run from "@cycle/run";
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Project, projectFactory } from "./model/project";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
@@ -13,7 +13,7 @@ import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
 import { filterUndefined } from "./util/basic";
-import { makeJiraLoaderDriver, JiraLoaderSinks, JiraLoaderSources } from "./drivers/jira-loader";
+import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
 
 const project = projectFactory({
   id: "key",
@@ -115,35 +115,20 @@ type MainSources = {
   DOM: DOMSource;
   state: StateSource<MainState>;
   panZoom: PanZoomSource;
-  jira: JiraLoaderSources;
+  HTTP: HTTPSource;
 };
 
 type MainSinks = {
   DOM: Stream<VNode>;
   state: Stream<Reducer<MainState>>;
   issueGraph: Stream<IssueGraphSink>;
-  jira: Stream<JiraLoaderSinks>;
+  HTTP: Stream<RequestInput>;
 };
 
 type MainState = {
   issues: Issue[];
   project: Project | undefined;
   setting: Setting;
-};
-
-const authorize = function authorize(sources: MainSources) {
-  sources.state.stream
-    .map((v) => v.setting)
-    .filter((e) => e.isSetupFinished())
-    .subscribe({
-      next(e) {
-        sources.jira.authorize({
-          host: e.userDomain!,
-          user: e.credentials.email!,
-          credential: e.credentials.jiraToken!,
-        });
-      },
-    });
 };
 
 const main = function main(sources: MainSources): MainSinks {
@@ -167,8 +152,6 @@ const main = function main(sources: MainSources): MainSinks {
       {projectInformation}
     </div>
   ));
-
-  authorize(sources);
 
   const issueGraph$ = xs
     .combine(
@@ -203,7 +186,7 @@ const main = function main(sources: MainSources): MainSinks {
     DOM: vnode$,
     state: xs.merge(initialReducer$, environmentReducer$),
     issueGraph: issueGraph$,
-    jira: projectInformationSink.jira,
+    HTTP: xs.of(),
   };
 };
 
@@ -211,5 +194,5 @@ run(withState(main), {
   DOM: makeDOMDriver("#root"),
   issueGraph: makeIssueGraphDriver("#root"),
   panZoom: makePanZoomDriver("#root"),
-  jira: makeJiraLoaderDriver(),
+  HTTP: makeHTTPDriver(),
 });

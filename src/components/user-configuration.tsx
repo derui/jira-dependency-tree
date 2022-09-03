@@ -1,4 +1,4 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
 import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";

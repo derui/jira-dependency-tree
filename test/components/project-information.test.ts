@@ -205,14 +205,14 @@ test("execute to update project when submit from editor", async () => {
         .remember(),
     });
 
-    const actual$ = xs.combine(sinks.DOM.last(), sinks.jira).map(([vtree, called]) => {
+    const actual$ = xs.combine(sinks.DOM.last(), sinks.value.last()).map(([vtree, called]) => {
       return {
         opened: select("[data-testid=main]", vtree)[0].data?.class!["--editor-opened"],
         called,
       };
     });
     const expected$ = Time.diagram("------(a|)", {
-      a: { opened: false, called: { kind: "project", projectKey: "next" } },
+      a: { opened: false, called: "next" },
     });
 
     // Assert

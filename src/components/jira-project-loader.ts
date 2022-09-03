@@ -1,21 +1,21 @@
-import { IssueRequest } from "@/model/event";
+import { ProjectRequest } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
 import { MemoryStream, Stream } from "xstream";
 import { selectResponse } from "./helper";
 
-export type JiraIssueLoaderSources = {
+export type JiraProjectLoaderSources = {
   HTTP: HTTPSource;
-  events: Stream<IssueRequest>;
+  events: Stream<ProjectRequest>;
 };
 
-export type JiraIssueLoaderSinks = {
+export type JiraProjectLoaderSinks = {
   HTTP: Stream<RequestOptions>;
   project: MemoryStream<Project>;
 };
 
-export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoaderSources): JiraIssueLoaderSinks {
+export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProjectLoaderSources): JiraProjectLoaderSinks {
   const events$ = sources.events;
   const request$ = events$.map<RequestOptions>((e) => {
     return {

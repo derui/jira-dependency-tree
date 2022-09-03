@@ -14,6 +14,8 @@ import { UserConfiguration, UserConfigurationProps } from "./components/user-con
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
 import { filterUndefined } from "./util/basic";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
+import { JiraLoader } from "./components/jira-loader";
+import { env } from "./env";
 
 const project = projectFactory({
   id: "key",
@@ -126,8 +128,10 @@ type MainSinks = {
 };
 
 type MainState = {
-  issues: Issue[];
-  project: Project | undefined;
+  data: {
+    issues: Issue[];
+    project: Project | undefined;
+  };
   setting: Setting;
 };
 
@@ -140,7 +144,26 @@ const main = function main(sources: MainSources): MainSinks {
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     DOM: sources.DOM,
-    props: sources.state.stream.map<ProjectInformationProps>(({ project }) => ({ project })),
+    props: sources.state.stream.map<ProjectInformationProps>(({ data }) => ({ project: data.project })),
+  });
+
+  const credential$ = sources.state.stream.map((v) => v.setting.toCredential()).filter(filterUndefined);
+  const jiraLoaderSinks = isolate(JiraLoader, { HTTP: "jiraLoader" })({
+    HTTP: sources.HTTP,
+    issueEvents: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
+      return {
+        env: env,
+        credential,
+        projectKey,
+      };
+    }),
+    projectEvents: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
+      return {
+        env: env,
+        credential,
+        projectKey,
+      };
+    }),
   });
 
   const userConfiguration$ = userConfigurationSink.DOM;
@@ -155,8 +178,8 @@ const main = function main(sources: MainSources): MainSinks {
 
   const issueGraph$ = xs
     .combine(
-      sources.state.stream.map(({ issues }) => issues),
-      sources.state.stream.map(({ project }) => project).filter(filterUndefined),
+      sources.state.stream.map(({ data }) => data.issues),
+      sources.state.stream.map(({ data }) => data.project).filter(filterUndefined),
       sources.panZoom.state
     )
     .map(([issues, project, panZoomState]) => {
@@ -168,7 +191,7 @@ const main = function main(sources: MainSources): MainSinks {
     });
 
   const initialReducer$ = xs.of(() => {
-    return { issues, project, setting: settingFactory({}) };
+    return { data: { issues, project }, setting: settingFactory({}) };
   });
 
   const environmentReducer$ = userConfigurationSink.value.map(
@@ -182,11 +205,23 @@ const main = function main(sources: MainSources): MainSinks {
       }
   );
 
+  const jiraLoaderReducer$ = jiraLoaderSinks.state.map((v) => {
+    return function (prevState?: MainState) {
+      if (!prevState) return undefined;
+      const data = v(prevState.data);
+
+      return produce(prevState, (draft) => {
+        draft.data.issues = data?.issues ?? [];
+        draft.data.project = data?.project;
+      });
+    };
+  });
+
   return {
     DOM: vnode$,
-    state: xs.merge(initialReducer$, environmentReducer$),
+    state: xs.merge(initialReducer$, environmentReducer$, jiraLoaderReducer$),
     issueGraph: issueGraph$,
-    HTTP: xs.of(),
+    HTTP: jiraLoaderSinks.HTTP,
   };
 };
 

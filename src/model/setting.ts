@@ -1,5 +1,6 @@
 import { Size } from "@/type";
 import produce from "immer";
+import { Credential } from "./event";
 
 export type SettingArgument = {
   // Size of issue in environment
@@ -26,6 +27,8 @@ export type Setting = {
   isSetupFinished(): boolean;
   applyCredentials(jiraToken: string, email: string): Setting;
   applyUserDomain(userDomain: string): Setting;
+
+  toCredential(): Credential | undefined;
 };
 
 export const settingFactory = function settingFactory(argument: SettingArgument): Setting {
@@ -48,6 +51,16 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
       return produce(this, (draft) => {
         draft.userDomain = userDomain;
       });
+    },
+    toCredential(): Credential | undefined {
+      const { email, jiraToken } = this.credentials;
+      const userDomain = this.userDomain;
+
+      if (!userDomain || !email || !jiraToken) {
+        return;
+      }
+
+      return { token: jiraToken, email, userDomain };
     },
   };
 };

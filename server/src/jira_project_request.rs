@@ -25,7 +25,7 @@ pub struct JiraIssueStatusCategory {
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueType {
-    pub id: Option<u64>,
+    pub id: String,
     pub name: Option<String>,
     pub avatar_url: Option<String>,
 }
@@ -99,7 +99,7 @@ fn load_issue_types(
         .map(|vec| {
             vec.iter()
                 .map(|obj| JiraIssueType {
-                    id: obj["id"].as_u64(),
+                    id: obj["id"].as_str().map(Into::into).unwrap_or_default(),
                     name: obj["name"].as_str().map(Into::into),
                     avatar_url: obj["avatarUrl"].as_str().map(Into::into),
                 })

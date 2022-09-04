@@ -1,7 +1,6 @@
 import { IssueRequest } from "@/model/event";
 import { Issue } from "@/model/issue";
-import { HTTPSource } from "@cycle/http";
-import { RequestOptions } from "http";
+import { HTTPSource, RequestOptions } from "@cycle/http";
 import { MemoryStream, Stream } from "xstream";
 import { selectResponse } from "./helper";
 

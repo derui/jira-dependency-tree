@@ -1,7 +1,7 @@
 import { IssueRequest } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions } from "@cycle/http";
-import { MemoryStream, Stream } from "xstream";
+import { Stream } from "xstream";
 import { selectResponse } from "./helper";
 
 export type JiraIssueLoaderSources = {
@@ -11,7 +11,7 @@ export type JiraIssueLoaderSources = {
 
 export type JiraIssueLoaderSinks = {
   HTTP: Stream<RequestOptions>;
-  issues: MemoryStream<Issue[]>;
+  issues: Stream<Issue[]>;
 };
 
 export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoaderSources): JiraIssueLoaderSinks {
@@ -38,7 +38,7 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
   const issues$ = selectResponse(sources.HTTP)
     .filter((response) => response.status === 200)
     .map((response) => {
-      return mapResponse(JSON.parse(response.body));
+      return mapResponse(JSON.parse(response.text));
     });
 
   return {

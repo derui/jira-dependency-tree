@@ -2,7 +2,7 @@ import { ProjectRequest } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
-import { MemoryStream, Stream } from "xstream";
+import { Stream } from "xstream";
 import { selectResponse } from "./helper";
 
 export type JiraProjectLoaderSources = {
@@ -12,7 +12,7 @@ export type JiraProjectLoaderSources = {
 
 export type JiraProjectLoaderSinks = {
   HTTP: Stream<RequestOptions>;
-  project: MemoryStream<Project>;
+  project: Stream<Project>;
 };
 
 export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProjectLoaderSources): JiraProjectLoaderSinks {
@@ -39,7 +39,7 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
   const project$ = selectResponse(sources.HTTP)
     .filter((response) => response.status === 200)
     .map((response) => {
-      const json = JSON.parse(response.body);
+      const json = JSON.parse(response.text);
 
       return mapResponse(json);
     });

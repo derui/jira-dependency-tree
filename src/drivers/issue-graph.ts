@@ -36,14 +36,22 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
   return function IssueGraphDriver(sink$) {
     let svg: Selection<SVGSVGElement, undefined, null, undefined> | null = null;
     let svgSize: DOMRect;
+    let prevIssues: Issue[] | null = null;
+    let prevProject: Project | null = null;
+
+    const configuration = {
+      nodeSize,
+      canvasSize: { width: 0, height: 0 },
+    };
 
     sink$.filter(filterNull).subscribe({
       next: ({ panZoom, issues, project }) => {
         if (svg === null) {
-          const configuration = {
-            nodeSize,
-            canvasSize: { width: 0, height: 0 },
-          };
+          svg = makeIssueGraphRoot(issues, project, configuration);
+          document.querySelector(parentSelector)?.append(svg.node() as Node);
+          svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
+        } else if (prevIssues !== issues || prevProject !== project) {
+          svg.remove();
 
           svg = makeIssueGraphRoot(issues, project, configuration);
           document.querySelector(parentSelector)?.append(svg.node() as Node);
@@ -51,6 +59,8 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
         }
 
         svg.attr("viewBox", makeViewBox(panZoom, svgSize));
+        prevIssues = issues;
+        prevProject = project;
       },
     });
 

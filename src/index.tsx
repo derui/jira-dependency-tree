@@ -144,10 +144,15 @@ const main = function main(sources: MainSources): MainSinks {
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     DOM: sources.DOM,
-    props: sources.state.stream.map<ProjectInformationProps>(({ data }) => ({ project: data.project })),
+    props: sources.state
+      .select<MainState["data"]>("data")
+      .stream.map<ProjectInformationProps>((data) => ({ project: data.project })),
   });
 
-  const credential$ = sources.state.stream.map((v) => v.setting.toCredential()).filter(filterUndefined);
+  const credential$ = sources.state
+    .select<MainState["setting"]>("setting")
+    .stream.map((v) => v.toCredential())
+    .filter(filterUndefined);
   const jiraLoaderSinks = isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
     issueEvents: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
@@ -209,10 +214,11 @@ const main = function main(sources: MainSources): MainSinks {
     return function (prevState?: MainState) {
       if (!prevState) return undefined;
       const data = v(prevState.data);
+      if (!data) return prevState;
 
       return produce(prevState, (draft) => {
-        draft.data.issues = data?.issues ?? [];
-        draft.data.project = data?.project;
+        draft.data.issues = data?.issues ?? draft.data.issues;
+        draft.data.project = data?.project ?? draft.data.project;
       });
     };
   });

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     jira_issue_request::JiraUrl,
-    jira_project_request::{load_project, JiraIssueStatus},
+    jira_project_request::{load_project, JiraStatus},
 };
 
 struct TestRequest<'a> {
@@ -47,7 +47,7 @@ fn request_to_get_a_project() {
     });
     server.mock(|when, then| {
         when.method(Method::GET)
-            .path("/rest/api/3/status")
+            .path("/rest/api/3/statuses/search")
             .header("content-type", "application/json")
             .header("authorization", "foo");
 
@@ -79,15 +79,17 @@ fn request_to_get_a_project() {
     assert_eq!(
         result.statuses,
         vec![
-            JiraIssueStatus {
-                id: "10000".into(),
-                name: Some("In Progress".into()),
-                category_id: Some(1)
+            JiraStatus {
+                id: "1000".into(),
+                name: Some("Finished".into()),
+                status_category: "DONE".into(),
+                used_issues: vec!["10002".into()]
             },
-            JiraIssueStatus {
-                id: "5".into(),
-                name: Some("Closed".into()),
-                category_id: Some(9)
+            JiraStatus {
+                id: "1001".into(),
+                name: Some("TODO".into()),
+                status_category: "TODO".into(),
+                used_issues: vec!["10003".into(), "10004".into()]
             }
         ]
     );

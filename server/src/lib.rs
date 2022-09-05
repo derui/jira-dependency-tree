@@ -40,18 +40,22 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
 }
 
 async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
-    let json: IssueLoadingRequest = match event.body() {
+    let _json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
 
-    let issues = jira_issue_request::load_issue(&json, json.authorization.clone());
+    // let issues = jira_issue_request::load_issue(&json, json.authorization.clone());
+    let issues = json!(
+    [{"key":"TES-3","summary":"Test3","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10002","links":[]},{"key":"TES-2","summary":"Teset2","description":null,"statusId":"10000","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10001","links":[{"outwardIssue":"TES-3"}]},{"key":"TES-1","summary":"Test1","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10000","links":[{"outwardIssue":"TES-2"},{"outwardIssue":"TES-3"}]}]
+
+        );
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
     let resp = Response::builder()
         .status(200)
-        .header("content-type", "text/html")
+        .header("content-type", "application/json")
         .header("Access-Control-Allow-Origin", "*")
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .body(
@@ -64,19 +68,23 @@ async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
 }
 
 async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> {
-    let json: IssueLoadingRequest = match event.body() {
+    let _json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
 
-    let project = jira_project_request::load_project(&json.project, json.authorization.clone())
-        .expect("Not found");
+    // let project = jira_project_request::load_project(&json.project, json.authorization.clone())
+    //     .expect("Not found");
+
+    let project = json!(
+        {"id":10000,"key":"TES","name":"testproejct","statuses":[{"id":"10000","name":"To Do","categoryId":"2"},{"id":"10001","name":"進行中","categoryId":"4"},{"id":"10002","name":"完了","categoryId":"3"}],"statusCategories":[{"id":"1","name":"カテゴリがありません","colorName":"medium-gray"},{"id":"2","name":"To Do","colorName":"blue-gray"},{"id":"4","name":"進行中","colorName":"yellow"},{"id":"3","name":"完了","colorName":"green"}],"issueTypes":[{"id":null,"name":"ストーリー","avatarUrl":null},{"id":null,"name":"タスク","avatarUrl":null},{"id":null,"name":"バグ","avatarUrl":null},{"id":null,"name":"エピック","avatarUrl":null},{"id":null,"name":"サブタスク","avatarUrl":null}]}
+    );
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
     let resp = Response::builder()
         .status(200)
-        .header("content-type", "text/html")
+        .header("content-type", "application/json")
         .header("Access-Control-Allow-Origin", "*")
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .body(

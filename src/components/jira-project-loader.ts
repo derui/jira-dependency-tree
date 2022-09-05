@@ -55,7 +55,7 @@ const mapResponse = function mapResponse(body: { [k: string]: any }): Project {
     id: body.id,
     key: body.key,
     name: body.name,
-    statuses: body.statues,
+    statuses: body.statuses,
     statusCategories: body.statusCategories,
     issueTypes: body.issueTypes,
   });

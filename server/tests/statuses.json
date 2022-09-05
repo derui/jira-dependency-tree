@@ -1,29 +1,54 @@
-[
-  {
-    "self": "https://your-domain.atlassian.net/rest/api/3/status/10000",
-    "description": "The issue is currently being worked on.",
-    "iconUrl": "https://your-domain.atlassian.net/images/icons/progress.gif",
-    "name": "In Progress",
-    "id": "10000",
-    "statusCategory": {
-      "self": "https://your-domain.atlassian.net/rest/api/3/statuscategory/1",
-      "id": 1,
-      "key": "in-flight",
-      "colorName": "yellow",
-      "name": "In Progress"
+{
+  "self": "https://your-domain.atlassian.net/rest/api/3/statuses/search?startAt=0&maxResults=2",
+  "nextPage": "https://your-domain.atlassian.net/rest/api/3/statuses/search?startAt=2&maxResults=2",
+  "maxResults": 2,
+  "startAt": 0,
+  "total": 5,
+  "isLast": true,
+  "values": [
+    {
+      "id": "1000",
+      "name": "Finished",
+      "statusCategory": "DONE",
+      "scope": {
+        "type": "PROJECT",
+        "project": {
+          "id": "10000"
+        }
+      },
+      "description": "The issue is resolved",
+      "usages": [
+        {
+          "project": {
+            "id": "10000"
+          },
+          "issueTypes": [
+            "10002"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1001",
+      "name": "TODO",
+      "statusCategory": "TODO",
+      "scope": {
+        "type": "PROJECT",
+        "project": {
+          "id": "10000"
+        }
+      },
+      "description": "The issue is resolved",
+      "usages": [
+        {
+          "project": {
+            "id": "10000"
+          },
+          "issueTypes": [
+            "10003", "10004"
+          ]
+        }
+      ]
     }
-  },
-  {
-    "self": "https://your-domain.atlassian.net/rest/api/3/status/5",
-    "description": "The issue is closed.",
-    "iconUrl": "https://your-domain.atlassian.net/images/icons/closed.gif",
-    "name": "Closed",
-    "id": "5",
-    "statusCategory": {
-      "self": "https://your-domain.atlassian.net/rest/api/3/statuscategory/9",
-      "id": 9,
-      "key": "completed",
-      "colorName": "green"
-    }
-  }
-]
+  ]
+}

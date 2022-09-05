@@ -8,16 +8,17 @@ use crate::jira_issue_request::JiraUrl;
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-pub struct JiraIssueStatus {
+pub struct JiraStatus {
     pub id: String,
     pub name: Option<String>,
-    pub category_id: Option<u64>,
+    pub status_category: String,
+    pub used_issues: Vec<String>,
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueStatusCategory {
-    pub id: Option<u64>,
+    pub id: Option<String>,
     pub name: Option<String>,
     pub color_name: Option<String>,
 }
@@ -36,7 +37,7 @@ pub struct JiraProject {
     pub id: u64,
     pub key: String,
     pub name: String,
-    pub statuses: Vec<JiraIssueStatus>,
+    pub statuses: Vec<JiraStatus>,
     pub status_categories: Vec<JiraIssueStatusCategory>,
     pub issue_types: Vec<JiraIssueType>,
 }
@@ -76,7 +77,7 @@ fn load_status_categories(
         .map(|vec| {
             vec.iter()
                 .map(|obj| JiraIssueStatusCategory {
-                    id: obj["id"].as_u64(),
+                    id: obj["id"].as_str().map(Into::into),
                     name: obj["name"].as_str().map(|v| v.into()),
                     color_name: obj["colorName"].as_str().map(|v| v.into()),
                 })
@@ -108,21 +109,55 @@ fn load_issue_types(
         .unwrap_or_default())
 }
 
-fn load_statuses(url: &impl JiraUrl) -> Result<Vec<JiraIssueStatus>, Box<dyn Error>> {
-    let mut body = build_partial_request("/rest/api/3/status", url)
-        .body(())?
-        .send()?;
+fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>, Box<dyn Error>> {
+    let mut body = build_partial_request(
+        &format!(
+            "/rest/api/3/statuses/search?projectId={}&expand=usages",
+            project_id
+        ),
+        url,
+    )
+    .body(())?
+    .send()?;
 
     let json: Value = body.json()?;
+    let values = &json["values"];
 
-    Ok(json
+    Ok(values
         .as_array()
         .map(|vec| {
             vec.iter()
-                .map(|obj| JiraIssueStatus {
-                    id: obj["id"].as_str().map(Into::into).unwrap_or_default(),
-                    name: obj["name"].as_str().map(Into::into),
-                    category_id: obj["statusCategory"]["id"].as_u64(),
+                .map(|obj| -> JiraStatus {
+                    let usage = obj["usages"].as_array().map(|v| v.clone()).and_then(|v| {
+                        v.iter()
+                            .find(|usage| {
+                                usage["project"]["id"]
+                                    .as_str()
+                                    .and_then(|v| v.parse::<u64>().ok())
+                                    .unwrap_or_default()
+                                    == project_id
+                            })
+                            .cloned()
+                    });
+
+                    let issue_types = usage
+                        .and_then(|v| v["issueTypes"].as_array().cloned())
+                        .map(|v| {
+                            v.iter()
+                                .filter_map(|v| v.as_str().map(Into::into))
+                                .collect()
+                        })
+                        .unwrap_or_default();
+
+                    JiraStatus {
+                        id: obj["id"].as_str().map(Into::into).unwrap_or_default(),
+                        name: obj["name"].as_str().map(Into::into),
+                        status_category: obj["statusCategory"]
+                            .as_str()
+                            .map(Into::into)
+                            .unwrap_or_default(),
+                        used_issues: issue_types,
+                    }
                 })
                 .collect()
         })
@@ -136,7 +171,7 @@ pub fn load_project(project: &str, url: impl JiraUrl) -> Option<JiraProject> {
     match project_inner {
         Ok(json) => {
             let project_id: u64 = json["id"].as_str().map(|v| v.parse().unwrap()).unwrap_or(0);
-            let statuses = load_statuses(&url).unwrap_or_default();
+            let statuses = load_statuses(project_id, &url).unwrap_or_default();
             let status_categories = load_status_categories(&url).unwrap_or_default();
             let types = load_issue_types(project_id, &url).unwrap_or_default();
 

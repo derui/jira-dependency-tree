@@ -1,4 +1,5 @@
 import { projectFactory } from "@/model/project";
+import { StatusCategory } from "@/type";
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
 
@@ -11,7 +12,7 @@ const issueTypes = [
     avatarUrl: "http://localhost/foo",
   },
 ];
-const statuses = [{ id: "1", name: "TODO", categoryId: "3" }];
+const statuses = [{ id: "1", name: "TODO", statusCategory: StatusCategory.TODO }];
 const statusCategories = [{ id: "3", name: "TODO", colorName: "yellow" }];
 const project = projectFactory({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
 

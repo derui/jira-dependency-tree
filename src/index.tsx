@@ -25,17 +25,17 @@ const project = projectFactory({
     {
       name: "Done",
       id: "1",
-      categoryId: "1",
+      statusCategory: "DONE",
     },
     {
       name: "In progress",
       id: "2",
-      categoryId: "2",
+      statusCategory: "IN_PROGRESS",
     },
     {
       name: "TODO",
       id: "3",
-      categoryId: "3",
+      statusCategory: "TODO",
     },
   ],
   issueTypes: [

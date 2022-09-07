@@ -1,4 +1,5 @@
 import { Project } from "@/model/project";
+import { StatusCategory } from "@/type";
 import { Configuration, D3Node, IssueNode, LeveledIssue } from "./type";
 
 const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
@@ -38,8 +39,18 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("y", "4em")
     .attr("fill", (d) => {
       const status = project.findStatusBy(d.issue.statusId);
-      if (status) {
-        return project.findStatusCategoryById(status.categoryId)?.colorName ?? null;
+      switch (status?.statusCategory) {
+        case StatusCategory.TODO:
+          // secondary-2-1
+          return "#d6efa2";
+        case StatusCategory.IN_PROGRESS:
+          // secondary-1-1
+          return "lightgray";
+        case StatusCategory.DONE:
+          // complement-1-1
+          return "#9PCF8D";
+        default:
+          break;
       }
 
       return null;

@@ -1,11 +1,10 @@
-export const DriverStatus = {
-  WAITING: "WAITING",
-  PENDING: "PENDING",
-  EXECUTING: "EXECUTING",
-  FINISHED: "FINISHED",
+export const StatusCategory = {
+  DONE: "DONE",
+  IN_PROGRESS: "IN_PROGRESS",
+  TODO: "TODO",
 } as const;
 
-export type DriverStatus = typeof DriverStatus[keyof typeof DriverStatus];
+export type StatausCategory = typeof StatusCategory[keyof typeof StatusCategory];
 
 export type IssueStatusCategory = {
   id: string;
@@ -16,7 +15,7 @@ export type IssueStatusCategory = {
 export type IssueStatus = {
   id: string;
   name: string;
-  categoryId: string;
+  statusCategory: StatausCategory;
 };
 
 export type IssueType = {

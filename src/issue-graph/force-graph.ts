@@ -84,8 +84,10 @@ export const makeForceGraph = function makeForceGraph(
   const ticked = function ticked() {
     issueNodes.attr("transform", (d) => {
       const x = d.level * (configuration.nodeSize.width + 50);
+      const y = (d.level % 2) * (configuration.nodeSize.height + 25);
       // update positions for link calculation
       d.x = x;
+      d.y = y;
 
       return `translate(${x},${d.y})`;
     });

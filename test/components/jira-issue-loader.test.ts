@@ -13,7 +13,7 @@ test("load issues", async () => {
     const response$ = Time.diagram("-x|", {
       x: {
         status: 200,
-        body: JSON.stringify([
+        text: JSON.stringify([
           {
             key: "foo",
             summary: "bar",

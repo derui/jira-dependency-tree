@@ -34,20 +34,24 @@ const intent = function intent(sources: ProjectInformationSources) {
 const model = function model(actions: ReturnType<typeof intent>) {
   const project$ = actions.props$.map((v) => v.project);
   const opened$ = xs.merge(actions.nameClicked$, actions.submit$).fold((accum, value) => !!value || !accum, false);
-  const name$ = xs
+  const name$ = project$
+    .filter(filterUndefined)
+    .map((v) => v.name)
+    .startWith("Click here");
+  const key$ = xs
     .merge(
-      project$.filter(filterUndefined).map((v) => v.name),
+      project$.filter(filterUndefined).map((v) => v.key),
       actions.nameChanged$
     )
-    .startWith("Click here");
+    .startWith("");
 
   return xs
-    .combine(project$, opened$, name$)
-    .map(([project, opened, name]) => ({ projectGiven: project !== undefined, opened, name }));
+    .combine(project$, opened$, name$, key$)
+    .map(([project, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ projectGiven, opened, name }) => {
+  return state$.map(({ projectGiven, opened, name, key }) => {
     return (
       <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: "main" }}>
         <span
@@ -75,7 +79,7 @@ const view = function view(state$: ReturnType<typeof model>) {
               <span class={{ "project-information__input-label": true }}>Key</span>
               <input
                 class={{ "project-information__name-input": true }}
-                attrs={{ type: "text", placeholder: "required", value: name }}
+                attrs={{ type: "text", placeholder: "required", value: key }}
               />
             </label>
             <input class={{ "project-information__submitter": true }} attrs={{ type: "submit", value: "Apply" }} />

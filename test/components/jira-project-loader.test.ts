@@ -14,11 +14,11 @@ test("load project", async () => {
     const response$ = Time.diagram("-x|", {
       x: {
         status: 200,
-        body: JSON.stringify({
+        text: JSON.stringify({
           id: "foo",
           key: "bar",
           name: "name",
-          statues: [{ id: "id", name: "type", statusCategory: "TODO" }],
+          statuses: [{ id: "id", name: "type", statusCategory: "TODO" }],
           statusCategories: [{ id: "1", name: "category", colorName: "red" }],
           issueTypes: [{ id: "id", name: "issuetype", avatarUrl: null }],
         }),

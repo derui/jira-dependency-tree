@@ -77,7 +77,7 @@ async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> 
     //     .expect("Not found");
 
     let project = json!(
-        {"id":10000,"key":"TES","name":"testproejct","statuses":[{"id":"10000","name":"To Do","categoryId":"2"},{"id":"10001","name":"進行中","categoryId":"4"},{"id":"10002","name":"完了","categoryId":"3"}],"statusCategories":[{"id":"1","name":"カテゴリがありません","colorName":"medium-gray"},{"id":"2","name":"To Do","colorName":"blue-gray"},{"id":"4","name":"進行中","colorName":"yellow"},{"id":"3","name":"完了","colorName":"green"}],"issueTypes":[{"id":null,"name":"ストーリー","avatarUrl":null},{"id":null,"name":"タスク","avatarUrl":null},{"id":null,"name":"バグ","avatarUrl":null},{"id":null,"name":"エピック","avatarUrl":null},{"id":null,"name":"サブタスク","avatarUrl":null}]}
+        {"id":10000,"key":"TES","name":"testproejct","statuses":[{"id":"10002","name":"Done","statusCategory":"DONE","usedIssues":["10002","10001","10004","10003","10005"]},{"id":"10001","name":"In Progress","statusCategory":"IN_PROGRESS","usedIssues":["10002","10001","10004","10003","10005"]},{"id":"10000","name":"To Do","statusCategory":"TODO","usedIssues":["10002","10001","10004","10003","10005"]}],"statusCategories":[{"id":null,"name":"カテゴリがありません","colorName":"medium-gray"},{"id":null,"name":"To Do","colorName":"blue-gray"},{"id":null,"name":"進行中","colorName":"yellow"},{"id":null,"name":"完了","colorName":"green"}],"issueTypes":[{"id":"10001","name":"ストーリー","avatarUrl":null},{"id":"10002","name":"タスク","avatarUrl":null},{"id":"10003","name":"バグ","avatarUrl":null},{"id":"10004","name":"エピック","avatarUrl":null},{"id":"10005","name":"サブタスク","avatarUrl":null}]}
     );
 
     // Return something that implements IntoResponse.

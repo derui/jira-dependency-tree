@@ -12,7 +12,6 @@ pub struct JiraStatus {
     pub id: String,
     pub name: Option<String>,
     pub status_category: String,
-    pub used_issues: Vec<String>,
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq, Eq)]
@@ -111,10 +110,7 @@ fn load_issue_types(
 
 fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>, Box<dyn Error>> {
     let mut body = build_partial_request(
-        &format!(
-            "/rest/api/3/statuses/search?projectId={}&expand=usages",
-            project_id
-        ),
+        &format!("/rest/api/3/statuses/search?projectId={}", project_id),
         url,
     )
     .body(())?
@@ -128,27 +124,6 @@ fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>,
         .map(|vec| {
             vec.iter()
                 .map(|obj| -> JiraStatus {
-                    let usage = obj["usages"].as_array().map(|v| v.clone()).and_then(|v| {
-                        v.iter()
-                            .find(|usage| {
-                                usage["project"]["id"]
-                                    .as_str()
-                                    .and_then(|v| v.parse::<u64>().ok())
-                                    .unwrap_or_default()
-                                    == project_id
-                            })
-                            .cloned()
-                    });
-
-                    let issue_types = usage
-                        .and_then(|v| v["issueTypes"].as_array().cloned())
-                        .map(|v| {
-                            v.iter()
-                                .filter_map(|v| v.as_str().map(Into::into))
-                                .collect()
-                        })
-                        .unwrap_or_default();
-
                     JiraStatus {
                         id: obj["id"].as_str().map(Into::into).unwrap_or_default(),
                         name: obj["name"].as_str().map(Into::into),
@@ -156,7 +131,6 @@ fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>,
                             .as_str()
                             .map(Into::into)
                             .unwrap_or_default(),
-                        used_issues: issue_types,
                     }
                 })
                 .collect()

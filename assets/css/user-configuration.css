@@ -51,6 +51,7 @@
 }
 
 .user-configuration__dialog-container {
+  background-color: white;
   position: absolute;
   top: 32px;
   right: 0;

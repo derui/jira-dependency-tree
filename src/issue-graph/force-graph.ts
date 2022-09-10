@@ -1,4 +1,4 @@
-import { emptyGraph, Graph } from "@/depgraph";
+import { emptyGraph, Graph } from "@/depgraph/main";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import * as d3 from "d3";

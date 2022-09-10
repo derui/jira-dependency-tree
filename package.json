@@ -17,7 +17,7 @@
     "lint": "npm-run-all -p lint:ts lint:css",
     "copy-assets": "cp -r assets/svg/ dist/static/",
     "test-live-server": "live-server --no-browser --port=8081 test",
-    "test-uvu": "node --loader ./loader.js node_modules/uvu/bin.js test",
+    "test-uvu": "node --loader ./loader.js -r esbuild-register node_modules/uvu/bin.js test",
     "test": "npm-run-all -r -p test-live-server test-uvu",
     "test:watch": "chokidar 'src/**/*.ts' 'src/**/*.tsx' 'test/**/*.ts' 'test/**/*.tsx' -c 'pnpm run test-uvu'"
   },
@@ -37,9 +37,6 @@
   },
   "devDependencies": {
     "@cycle/time": "^0.21.0",
-    "@swc/core": "^1.2.249",
-    "@swc/helpers": "^0.4.11",
-    "@swc/register": "^0.1.10",
     "@types/d3": "^7.4.0",
     "@types/d3-hierarchy": "^3.1.0",
     "@types/jsdom": "^16.2.15",

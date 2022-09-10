@@ -63,7 +63,15 @@ export const buildIssueGraph = function buildIssueGraph(
   project: Project,
   configuration: Configuration
 ) {
-  const issueNode = container.selectAll("g").data(data).join("g");
+  const issueNode = container
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("class", "graph-issue")
+    .on("click", (_, d) => {
+      const url = new URL(d.issue.selfUrl);
+      window.open(`${url.origin}/browse/${d.issue.key}`, "_blank");
+    });
 
   buildIssueNode(issueNode, project, configuration);
 

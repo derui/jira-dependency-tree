@@ -6,3 +6,7 @@
 .issue-link {
   fill: none;
 }
+
+.graph-issue {
+  cursor: pointer;
+}

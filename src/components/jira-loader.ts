@@ -31,7 +31,7 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
   });
   const projectLoaderSinks = isolate(JiraProjectLoader, { HTTP: "project" })({
     HTTP: sources.HTTP,
-    events: sources.issueEvents,
+    events: sources.projectEvents,
   });
 
   const initialReducer$ = xs.of(() => {

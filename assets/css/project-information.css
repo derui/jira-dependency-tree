@@ -56,6 +56,10 @@
   width: 32px;
   border-radius: 16px;
 
+  &[disabled] {
+    cursor: initial;
+  }
+
   &::before {
     content: "";
     display: inline-block;
@@ -68,26 +72,20 @@
     transition: background-color 0.1s ease-out;
   }
 
-  &:hover {
+  &[disabled]::before {
+    background-color: lightgray;
+  }
+
+  &:not([disabled]):hover {
     border: 1px solid rgb(var(--complement-3));
   }
 
-  &:active {
+  &:not([disabled]):active {
     border: 1px solid rgb(var(--complement-3));
     background-color: rgb(var(--complement-3));
 
     &:before {
       background-color: rgb(var(--complement-1));
-    }
-  }
-
-  &.--opened {
-    border: 2px solid rgb(var(--complement-3));
-    background-color: rgb(var(--complement-3));
-    border-radius: 16px 16px 0 0;
-
-    &::before {
-      background-color: white;
     }
   }
 }

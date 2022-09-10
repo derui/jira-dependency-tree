@@ -19,6 +19,7 @@ type ProjectInformationSinks = ComponentSinks<{
 
 const intent = function intent(sources: ProjectInformationSources) {
   const nameClicked$ = selectAsMain(sources, ".project-information__name").events("click").mapTo(true);
+  const syncClicked$ = selectAsMain(sources, ".project-information__synchronize").events("click").mapTo(true);
   const submit$ = selectAsMain(sources, ".project-information__form")
     .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(false);
@@ -28,7 +29,7 @@ const intent = function intent(sources: ProjectInformationSources) {
       return (v.target as HTMLInputElement).value;
     });
 
-  return { props$: sources.props, nameClicked$, nameChanged$, submit$ };
+  return { props$: sources.props, nameClicked$, nameChanged$, submit$, syncClicked$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
@@ -46,8 +47,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .startWith("");
 
   return xs
-    .combine(project$, opened$, name$, key$)
-    .map(([project, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
+    .combine(actions.props$, opened$, name$, key$)
+    .map(([{ project }, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
@@ -96,8 +97,12 @@ export const ProjectInformation = function ProjectInformation(
   const actions = intent(sources);
   const state$ = model(actions);
 
+  const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten();
+
+  const value$ = xs.combine(submittedName$, actions.syncClicked$).map(([v]) => v);
+
   return {
     DOM: view(state$),
-    value: actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten(),
+    value: xs.merge(submittedName$, value$),
   };
 };

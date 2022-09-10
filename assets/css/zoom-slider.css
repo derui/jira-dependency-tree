@@ -1,0 +1,14 @@
+.zoom-slider {
+  position: absolute;
+  display: flex;
+  right: var(--space-large);
+  bottom: var(--space-large);
+  padding: var(--space-large);
+  background-color: white;
+}
+
+.zoom-slider__current-zoom {
+  display: inline-block;
+  width: calc(var(--base-font-size) * 4);
+  text-align: center;
+}

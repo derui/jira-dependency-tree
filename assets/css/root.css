@@ -2,6 +2,7 @@
 @import "./issue.css";
 @import "./user-configuration.css";
 @import "./project-information.css";
+@import "./zoom-slider.css";
 
 html,
 body,

@@ -1,4 +1,4 @@
-import { IssueRequest, ProjectRequest } from "@/model/event";
+import { IssueRequest } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { HTTPSource, RequestInput } from "@cycle/http";
@@ -15,7 +15,7 @@ type State = {
 
 export type JiraLoaderSources = {
   HTTP: HTTPSource;
-  projectEvents: Stream<ProjectRequest>;
+  projectEvents: Stream<IssueRequest>;
   issueEvents: Stream<IssueRequest>;
 };
 

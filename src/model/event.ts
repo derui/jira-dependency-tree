@@ -11,9 +11,3 @@ export type IssueRequest = {
   credential: Credential;
   projectKey: string;
 };
-
-export type ProjectRequest = {
-  env: Env;
-  credential: Credential;
-  projectKey: string;
-};

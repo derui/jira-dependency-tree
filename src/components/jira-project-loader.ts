@@ -1,4 +1,4 @@
-import { ProjectRequest } from "@/model/event";
+import { IssueRequest } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
@@ -7,7 +7,7 @@ import { selectResponse } from "./helper";
 
 export type JiraProjectLoaderSources = {
   HTTP: HTTPSource;
-  events: Stream<ProjectRequest>;
+  events: Stream<IssueRequest>;
 };
 
 export type JiraProjectLoaderSinks = {

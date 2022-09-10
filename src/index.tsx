@@ -213,7 +213,7 @@ const main = function main(sources: MainSources): MainSinks {
     });
 
   const initialReducer$ = xs.of(() => {
-    return { data: { issues, project }, setting: settingFactory({}) };
+    return { data: { issues: [], project: undefined }, setting: settingFactory({}) };
   });
 
   const environmentReducer$ = userConfigurationSink.value.map(

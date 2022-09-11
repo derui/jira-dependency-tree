@@ -1,7 +1,7 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { MemoryStream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { selectAsMain } from "./helper";
+import { selectAsMain } from "@/components/helper";
 
 export interface ZoomSliderProps {
   zoom: number;

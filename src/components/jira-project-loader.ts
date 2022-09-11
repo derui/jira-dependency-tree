@@ -3,7 +3,7 @@ import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
 import { Stream } from "xstream";
-import { selectResponse } from "./helper";
+import { selectResponse } from "@/components/helper";
 
 export type JiraProjectLoaderSources = {
   HTTP: HTTPSource;

@@ -2,8 +2,8 @@ import { emptyGraph, Graph } from "@/depgraph/main";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import * as d3 from "d3";
-import { buildIssueGraph } from "./issue";
-import { Configuration, D3Node, IssueLink, LeveledIssue as LeveledIssue } from "./type";
+import { buildIssueGraph } from "@/issue-graph/issue";
+import { Configuration, D3Node, IssueLink, LeveledIssue as LeveledIssue } from "@/issue-graph/type";
 
 const MAX_LEVEL = 100;
 

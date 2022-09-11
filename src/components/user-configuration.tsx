@@ -2,7 +2,7 @@ import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint
 import xs, { Stream } from "xstream";
 import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { UserConfigurationDialog, UserConfigurationState } from "./user-configuration-dialog";
+import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 
 export type UserConfigurationProps = { setupFinished: boolean };

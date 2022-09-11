@@ -2,7 +2,7 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
-import { selectAsMain } from "./helper";
+import { selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
 
 export interface ProjectInformationProps {

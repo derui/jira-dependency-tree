@@ -1,6 +1,6 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueNode, LeveledIssue } from "./type";
+import { Configuration, D3Node, IssueNode, LeveledIssue } from "@/components/type";
 
 const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
   node

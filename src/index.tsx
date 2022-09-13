@@ -8,15 +8,17 @@ import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import isolate from "@cycle/isolate";
-import { Setting, settingFactory } from "./model/setting";
+import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
-import { filterUndefined } from "./util/basic";
+import { filterNull, filterUndefined } from "./util/basic";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
 import { JiraLoader } from "./components/jira-loader";
 import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
+import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
+import equal from "fast-deep-equal/es6";
 
 const project = projectFactory({
   id: "key",
@@ -119,6 +121,7 @@ type MainSources = {
   state: StateSource<MainState>;
   panZoom: PanZoomSource;
   HTTP: HTTPSource;
+  STORAGE: StorageSource;
 };
 
 type MainSinks = {
@@ -126,6 +129,7 @@ type MainSinks = {
   state: Stream<Reducer<MainState>>;
   issueGraph: Stream<IssueGraphSink>;
   HTTP: Stream<RequestInput>;
+  STORAGE: Stream<StorageSink>;
 };
 
 type MainState = {
@@ -212,6 +216,16 @@ const main = function main(sources: MainSources): MainSinks {
       };
     });
 
+  const storageReducer$ = sources.STORAGE.select<SettingArgument>("settings").map((v) => {
+    return function (prevState?: MainState) {
+      if (!prevState) return undefined;
+
+      return produce(prevState, (draft) => {
+        draft.setting = settingFactory(v);
+      });
+    };
+  });
+
   const initialReducer$ = xs.of(() => {
     return { data: { issues: [], project: undefined }, setting: settingFactory({}) };
   });
@@ -240,11 +254,25 @@ const main = function main(sources: MainSources): MainSinks {
     };
   });
 
+  const storage$ = sources.state.stream
+    .map((v) => v.setting)
+    .fold<SettingArgument?>((accum, v) => {
+      if (!accum) {
+        return v.toArgument();
+      }
+
+      const newArg = v.toArgument();
+      return equal(newArg, accum) ? accum : newArg;
+    }, null)
+    .filter(filterNull)
+    .map<StorageSink>((v) => ({ settings: v }));
+
   return {
     DOM: vnode$,
-    state: xs.merge(initialReducer$, environmentReducer$, jiraLoaderReducer$),
+    state: xs.merge(initialReducer$, storageReducer$, environmentReducer$, jiraLoaderReducer$),
     issueGraph: issueGraph$,
     HTTP: xs.merge(jiraLoaderSink.HTTP),
+    STORAGE: storage$,
   };
 };
 
@@ -253,4 +281,5 @@ run(withState(main), {
   issueGraph: makeIssueGraphDriver("#root"),
   panZoom: makePanZoomDriver("#root"),
   HTTP: makeHTTPDriver(),
+  STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
 });

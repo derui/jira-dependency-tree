@@ -29,6 +29,7 @@ export type Setting = {
   applyUserDomain(userDomain: string): Setting;
 
   toCredential(): Credential | undefined;
+  toArgument(): SettingArgument;
 };
 
 export const settingFactory = function settingFactory(argument: SettingArgument): Setting {
@@ -39,6 +40,14 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
 
     isSetupFinished() {
       return !!this.credentials.jiraToken && !!this.credentials.email && !!this.userDomain;
+    },
+
+    toArgument() {
+      return {
+        issueNodeSize: Object.assign({}, this.issueSize),
+        userDomain: this.userDomain,
+        credentials: Object.assign({}, this.credentials),
+      };
     },
 
     applyCredentials(jiraToken: string, email: string) {

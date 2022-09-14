@@ -83,13 +83,11 @@ fn request_to_get_a_project() {
                 id: "1000".into(),
                 name: Some("Finished".into()),
                 status_category: "DONE".into(),
-                used_issues: vec!["10002".into()]
             },
             JiraStatus {
                 id: "1001".into(),
                 name: Some("TODO".into()),
                 status_category: "TODO".into(),
-                used_issues: vec!["10003".into(), "10004".into()]
             }
         ]
     );

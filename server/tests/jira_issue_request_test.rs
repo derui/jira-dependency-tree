@@ -132,3 +132,43 @@ fn request_to_get_simplest_issue() {
     assert_eq!(result[0].status_id, None);
     assert_eq!(result[0].links.len(), 0);
 }
+
+#[test]
+fn request_to_get_simplest_issue_with_subtasks() {
+    // arrange
+    let server = httpmock::MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("issue.json"));
+    });
+
+    // do
+    let url = TestRequest { server: &server };
+    let request = IssueLoadingRequest {
+        authorization: JiraAuhtorization {
+            email: "email".to_string(),
+            jira_token: "token".to_string(),
+            user_domain: "domain".to_string(),
+        },
+        project: "project".to_string(),
+    };
+    let result = load_issue(&request, url);
+
+    // verify
+    mock.assert();
+    assert_eq!(result.len(), 1);
+    assert_eq!(result[0].key, "test");
+    assert_eq!(result[0].summary, "summary");
+    assert_eq!(result[0].description, Some("description".to_string()));
+    assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
+    assert_eq!(result[0].status_id, None);
+    assert_eq!(result[0].links.len(), 1);
+    assert_eq!(result[0].subtasks.len(), 1);
+    assert_eq!(result[0].subtasks[0].key, "key-2");
+}

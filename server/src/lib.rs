@@ -40,16 +40,16 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
 }
 
 async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
-    let _json: IssueLoadingRequest = match event.body() {
+    let json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
 
-    // let issues = jira_issue_request::load_issue(&json, json.authorization.clone());
-    let issues = json!(
-    [{"key":"TES-3","summary":"Test3","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10002","links":[]},{"key":"TES-2","summary":"Teset2","description":null,"statusId":"10000","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10001","links":[{"outwardIssue":"TES-3"}]},{"key":"TES-1","summary":"Test1","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10000","links":[{"outwardIssue":"TES-2"},{"outwardIssue":"TES-3"}]}]
+    let issues = jira_issue_request::load_issue(&json, json.authorization.clone());
+    // let issues = json!(
+    // [{"key":"TES-3","summary":"Test3","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10002","links":[]},{"key":"TES-2","summary":"Teset2","description":null,"statusId":"10000","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10001","links":[{"outwardIssue":"TES-3"}]},{"key":"TES-1","summary":"Test1","description":null,"statusId":"10001","typeId":"10001","selfUrl":"https://derui.atlassian.net/rest/api/3/issue/10000","links":[{"outwardIssue":"TES-2"},{"outwardIssue":"TES-3"}]}]
 
-        );
+    //     );
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
@@ -68,17 +68,17 @@ async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
 }
 
 async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> {
-    let _json: IssueLoadingRequest = match event.body() {
+    let json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
 
-    // let project = jira_project_request::load_project(&json.project, json.authorization.clone())
-    //     .expect("Not found");
+    let project = jira_project_request::load_project(&json.project, json.authorization.clone())
+        .expect("Not found");
 
-    let project = json!(
-        {"id":10000,"key":"TES","name":"testproejct","statuses":[{"id":"10002","name":"Done","statusCategory":"DONE"},{"id":"10001","name":"In Progress","statusCategory":"IN_PROGRESS"},{"id":"10000","name":"To Do","statusCategory":"TODO"}],"statusCategories":[{"id":null,"name":"カテゴリがありません","colorName":"medium-gray"},{"id":null,"name":"To Do","colorName":"blue-gray"},{"id":null,"name":"進行中","colorName":"yellow"},{"id":null,"name":"完了","colorName":"green"}],"issueTypes":[{"id":"10001","name":"ストーリー","avatarUrl":null},{"id":"10002","name":"タスク","avatarUrl":null},{"id":"10003","name":"バグ","avatarUrl":null},{"id":"10004","name":"エピック","avatarUrl":null},{"id":"10005","name":"サブタスク","avatarUrl":null}]}
-    );
+    // let project = json!(
+    //     {"id":10000,"key":"TES","name":"testproejct","statuses":[{"id":"10002","name":"Done","statusCategory":"DONE"},{"id":"10001","name":"In Progress","statusCategory":"IN_PROGRESS"},{"id":"10000","name":"To Do","statusCategory":"TODO"}],"statusCategories":[{"id":null,"name":"カテゴリがありません","colorName":"medium-gray"},{"id":null,"name":"To Do","colorName":"blue-gray"},{"id":null,"name":"進行中","colorName":"yellow"},{"id":null,"name":"完了","colorName":"green"}],"issueTypes":[{"id":"10001","name":"ストーリー","avatarUrl":null},{"id":"10002","name":"タスク","avatarUrl":null},{"id":"10003","name":"バグ","avatarUrl":null},{"id":"10004","name":"エピック","avatarUrl":null},{"id":"10005","name":"サブタスク","avatarUrl":null}]}
+    // );
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime

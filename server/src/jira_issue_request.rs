@@ -41,6 +41,17 @@ pub struct JiraIssueLink {
 
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct JiraSubtask {
+    pub key: String,
+    pub summary: String,
+    pub description: Option<String>,
+    pub status_id: Option<String>,
+    pub type_id: Option<String>,
+    pub self_url: Option<String>,
+}
+
+#[derive(Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct JiraIssue {
     pub key: String,
     pub summary: String,
@@ -49,6 +60,7 @@ pub struct JiraIssue {
     pub type_id: Option<String>,
     pub self_url: Option<String>,
     pub links: Vec<JiraIssueLink>,
+    pub subtasks: Vec<JiraSubtask>,
 }
 
 fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
@@ -60,6 +72,25 @@ fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
                 .map(|obj| obj["key"].as_str().map(|v| v.into()))
         })
         .map(|v| JiraIssueLink { outward_issue: v })
+        .collect()
+}
+
+fn as_subtasks(value: &[Value]) -> Vec<JiraSubtask> {
+    value
+        .iter()
+        .map(|v| JiraSubtask {
+            key: v["key"].as_str().expect("key must not null").into(),
+            summary: v["fields"]["summary"]
+                .as_str()
+                .expect("summary must not null")
+                .into(),
+            description: v["fields"]["description"]["text"]
+                .as_str()
+                .map(|v| v.into()),
+            status_id: v["fields"]["status"]["id"].as_str().map(|v| v.into()),
+            type_id: v["fields"]["issuetype"]["id"].as_str().map(|v| v.into()),
+            self_url: v["self"].as_str().map(|v| v.into()),
+        })
         .collect()
 }
 
@@ -84,6 +115,10 @@ fn as_issue(issues: &[Value]) -> Vec<JiraIssue> {
             links: issue["fields"]["issuelinks"]
                 .as_array()
                 .map(|v| as_issuelink(v))
+                .unwrap_or_default(),
+            subtasks: issue["subtasks"]
+                .as_array()
+                .map(|v| as_subtasks(v))
                 .unwrap_or_default(),
         })
         .collect()

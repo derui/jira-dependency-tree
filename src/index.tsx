@@ -256,7 +256,7 @@ const main = function main(sources: MainSources): MainSinks {
 
   const storage$ = sources.state.stream
     .map((v) => v.setting)
-    .fold<SettingArgument?>((accum, v) => {
+    .fold<SettingArgument | null>((accum, v) => {
       if (!accum) {
         return v.toArgument();
       }

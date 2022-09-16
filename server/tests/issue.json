@@ -15,16 +15,16 @@
               "key": "other"
             }
           }
-        ]
-      },
-      "subtasks": [
-        {
-          "key": "key-2",
-          "fields": {
-            "summary": "sub"
+        ],
+        "subtasks": [
+          {
+            "key": "key-2",
+            "fields": {
+              "summary": "sub"
+            }
           }
-        }
-      ]
+        ]
+      }
     }
   ]
 }

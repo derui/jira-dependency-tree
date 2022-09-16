@@ -116,7 +116,7 @@ fn as_issue(issues: &[Value]) -> Vec<JiraIssue> {
                 .as_array()
                 .map(|v| as_issuelink(v))
                 .unwrap_or_default(),
-            subtasks: issue["subtasks"]
+            subtasks: issue["fields"]["subtasks"]
                 .as_array()
                 .map(|v| as_subtasks(v))
                 .unwrap_or_default(),

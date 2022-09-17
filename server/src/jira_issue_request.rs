@@ -133,7 +133,8 @@ fn load_issue_recursive(
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
         "jql": format!("project = \"{}\" AND Sprint in openSprints()", request.project),
-        "startAt": issues.len()
+        "startAt": issues.len(),
+        "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
     });
 
     let mut res = Request::post(jira_url)

@@ -21,8 +21,9 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
 
   // arrow head from below
   // http://thenewcode.com/1068/Making-Arrows-in-SVG
-  svg
-    .append("defs")
+  const defs = svg.append("defs");
+
+  defs
     .append("marker")
     .attr("id", "arrowhead")
     .attr("markerWidth", 10)
@@ -33,9 +34,54 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
     .append("polygon")
     .attr("points", "0 0, 10 3.5, 0 7");
 
+  defineFilters(defs);
+
+  // definition for text backgrounds
   const g = svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 
   makeForceGraph(g, issues, project, configuration);
 
   return svg;
+};
+
+const defineFilters = function defineFilters(defs: d3.Selection<SVGDefsElement, undefined, null, undefined>) {
+  const todo = defs
+    .append("filter")
+    .attr("id", "todo-bg")
+    // this settings for centric placement for text
+    .attr("x", -0.05)
+    .attr("y", -0.1)
+    .attr("width", 1.1)
+    .attr("height", 1.2);
+  todo
+    .append("feFlood")
+    // secondary-2-1
+    .attr("flood-color", "#6A909B");
+  todo.append("feComposite").attr("in", "SourceGraphic").attr("operator", "xor");
+
+  const inProgress = defs
+    .append("filter")
+    .attr("id", "in-progress-bg")
+    .attr("x", -0.05)
+    .attr("y", -0.1)
+    .attr("width", 1.1)
+    .attr("height", 1.2);
+  inProgress
+    .append("feFlood")
+    // primary-1
+    .attr("flood-color", "#FDACAE");
+  inProgress.append("feComposite").attr("in", "SourceGraphic").attr("operator", "atop");
+
+  const done = defs
+    .append("filter")
+    .attr("id", "done-bg")
+    .attr("x", -0.05)
+    .attr("y", -0.1)
+    .attr("width", 1.1)
+    .attr("height", 1.2);
+  done
+    .append("feFlood")
+    // complement-1-1
+    .attr("flood-color", "#90CF8D");
+  done.append("feComposite").attr("in", "SourceGraphic").attr("operator", "atop");
 };

@@ -9,4 +9,5 @@
 
 .graph-issue {
   cursor: pointer;
+  font-size: var(--base-font-size);
 }

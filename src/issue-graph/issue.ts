@@ -30,30 +30,29 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
 
   // issue status
   node
-    .append("rect")
+    .append("text")
     .attr("class", "issue-node__status")
-    .attr("stroke-size", 0)
-    .attr("width", 32)
-    .attr("height", 16)
-    .attr("x", 8)
-    .attr("y", "4em")
-    .attr("fill", (d) => {
+    .attr("dy", 48)
+    .attr("dx", 8)
+    .attr("filter", (d) => {
       const status = project.findStatusBy(d.issue.statusId);
       switch (status?.statusCategory) {
         case StatusCategory.TODO:
-          // secondary-2-1
-          return "#d6efa2";
+          return "url(#todo-bg)";
         case StatusCategory.IN_PROGRESS:
           // secondary-1-1
-          return "lightgray";
+          return "url(#in-progress-bg)";
         case StatusCategory.DONE:
-          // complement-1-1
-          return "#9PCF8D";
+          return "url(#done-bg)";
         default:
           break;
       }
 
       return null;
+    })
+    .text((d) => {
+      const status = project.findStatusBy(d.issue.statusId);
+      return status?.name ?? "";
     });
 };
 

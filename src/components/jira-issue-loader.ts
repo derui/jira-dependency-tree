@@ -48,7 +48,23 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
 };
 
 const mapResponse = function mapResponse(body: { [k: string]: any }[]): Issue[] {
-  return body.map((b) => {
+  const subtasks = body
+    .map((b) => {
+      return b.subtasks.map((v: any) => {
+        return {
+          key: v.key,
+          summary: v.summary,
+          description: v.description,
+          statusId: v.statusId ?? "",
+          typeId: v.typeId ?? "",
+          selfUrl: v.selfUrl ?? "",
+          outwardIssueKeys: [b.key],
+        };
+      });
+    })
+    .flat();
+
+  const issues = body.map((b) => {
     return {
       key: b.key,
       summary: b.summary,
@@ -59,4 +75,6 @@ const mapResponse = function mapResponse(body: { [k: string]: any }[]): Issue[] 
       outwardIssueKeys: b.links.filter((v: any) => !!v.outwardIssue).map((v: any) => v.outwardIssue),
     };
   });
+
+  return subtasks.concat(issues);
 };

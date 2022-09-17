@@ -22,6 +22,7 @@ test("load issues", async () => {
             typeId: "typeid",
             selfUrl: "self",
             links: [],
+            subtasks: [],
           },
         ]),
       },

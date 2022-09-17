@@ -32,8 +32,8 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
       break;
     }
 
-    level.forEach((v) => {
-      accum.push({ issue: issueMap.get(v)!, level: i });
+    level.forEach((v, indexInLevel) => {
+      accum.push({ issue: issueMap.get(v)!, level: i, indexInLevel });
     });
   }
 
@@ -83,13 +83,11 @@ export const makeForceGraph = function makeForceGraph(
   // define ticked event handler
   const ticked = function ticked() {
     issueNodes.attr("transform", (d) => {
-      const x = d.level * (configuration.nodeSize.width + 50);
-      const y = (d.level % 2) * (configuration.nodeSize.height + 25);
+      const x = d.level * (configuration.nodeSize.width * 1.75);
       // update positions for link calculation
       d.x = x;
-      d.y = y;
 
-      return `translate(${x},${d.y})`;
+      return `translate(${d.x},${d.y})`;
     });
 
     // link draw right-most center to left-most center of next issue.
@@ -126,6 +124,7 @@ export const makeForceGraph = function makeForceGraph(
 
   // define initial position
   simulation.nodes().forEach((d) => {
-    d.x = d.level * (configuration.nodeSize.width + 50);
+    d.x = d.level * (configuration.nodeSize.width * 1.75);
+    d.y = (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
   });
 };

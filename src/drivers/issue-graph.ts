@@ -59,6 +59,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
         }
 
         svg.attr("viewBox", makeViewBox(panZoom, svgSize));
+        configuration.canvasSize = { width: svgSize.width, height: svgSize.height };
         prevIssues = issues;
         prevProject = project;
       },

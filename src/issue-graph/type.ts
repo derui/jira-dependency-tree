@@ -11,6 +11,7 @@ export type IssueNode = Selection<BaseType | SVGGElement, LeveledIssue, SVGGElem
 export type LeveledIssue = {
   issue: Issue;
   level: number;
+  indexInLevel: number;
 } & SimulationNodeDatum;
 
 export type IssueLink = {

@@ -32,7 +32,6 @@ export const makeStorageDriver = function makeStorageDriver(
     sink$.filter(filterUndefined).subscribe({
       next: (values) => {
         originalHashMap = Object.assign(originalHashMap, values);
-        console.log(originalHashMap, values);
         storage.setItem(rootKey, JSON.stringify(originalHashMap));
       },
     });

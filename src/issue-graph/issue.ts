@@ -1,8 +1,17 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
 import { Configuration, D3Node, IssueNode, LeveledIssue } from "@/issue-graph/type";
+import { makeTextMeasure } from "./text-measure";
+
+const IssueSizes = {
+  paddingX: 8,
+  paddingY: 4,
+  textHeight: 20,
+};
 
 const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
+  const measure = makeTextMeasure('13.5px "Noto Sans JP"');
+
   node
     .append("rect")
     .attr("class", "issue-node-outer")
@@ -16,24 +25,27 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
   node
     .append("text")
     .attr("class", "issue-key")
-    .attr("dy", 16)
-    .attr("dx", 8)
+    .attr("y", IssueSizes.paddingY)
+    .attr("x", IssueSizes.paddingX)
     .text((d) => d.issue.key);
 
   // issue summary
+  const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
   node
     .append("text")
     .attr("class", "issue-summary")
-    .attr("dy", 32)
-    .attr("dx", 8)
-    .text((d) => d.issue.summary);
+    .attr("y", IssueSizes.paddingY + IssueSizes.textHeight)
+    .attr("x", IssueSizes.paddingX)
+    .text((d) => {
+      return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
+    });
 
   // issue status
   node
     .append("text")
     .attr("class", "issue-node__status")
-    .attr("dy", 48)
-    .attr("dx", 8)
+    .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
+    .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
     .attr("filter", (d) => {
       const status = project.findStatusBy(d.issue.statusId);
       switch (status?.statusCategory) {

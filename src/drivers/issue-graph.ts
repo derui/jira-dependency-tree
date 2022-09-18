@@ -31,7 +31,7 @@ export const makeViewBox = function makeViewBox(panZoom: PanZoomState, rect: Rec
 
 export const makeIssueGraphDriver = function makeIssueGraphDriver(
   parentSelector: string,
-  nodeSize: Size = { width: 152, height: 64 }
+  nodeSize: Size = { width: 160, height: 80 }
 ): Driver<Stream<IssueGraphSink | null>, Stream<IssueGraphSource>> {
   return function IssueGraphDriver(sink$) {
     let svg: Selection<SVGSVGElement, undefined, null, undefined> | null = null;

@@ -26,8 +26,10 @@ export class CdkStack extends cdk.Stack {
 
     const issues = restApi.root.addResource("load-issues");
     issues.addMethod("POST", integration, { apiKeyRequired: true });
+    issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
     const project = restApi.root.addResource("load-project");
     project.addMethod("POST", integration, { apiKeyRequired: true });
+    project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     new apigw.RateLimitedApiKey(this, "default", {
       apiKeyName: "default",
@@ -41,6 +43,7 @@ export class CdkStack extends cdk.Stack {
       enabled: true,
       throttle: {
         rateLimit: 10,
+        burstLimit: 10,
       },
     });
   }

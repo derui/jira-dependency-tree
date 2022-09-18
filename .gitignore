@@ -4,3 +4,4 @@ generated/
 dist/
 src/env.prod.ts
 .firebaserc
+.firebase

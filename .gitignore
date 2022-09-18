@@ -3,3 +3,4 @@ generated/
 .log/
 dist/
 src/env.prod.ts
+.firebaserc

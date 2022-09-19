@@ -1,7 +1,7 @@
 import { IssueRequest } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions } from "@cycle/http";
-import { Stream } from "xstream";
+import xs, { Stream } from "xstream";
 import { selectResponse } from "@/components/helper";
 
 export type JiraIssueLoaderSources = {
@@ -35,7 +35,9 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
     };
   });
 
-  const issues$ = selectResponse(sources.HTTP)
+  const issues$ = selectResponse(sources.HTTP, "issue")
+    .map((r) => r.replaceError(() => xs.of()))
+    .flatten()
     .filter((response) => response.status === 200)
     .map((response) => {
       return mapResponse(JSON.parse(response.text));

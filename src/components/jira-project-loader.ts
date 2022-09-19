@@ -2,7 +2,7 @@ import { IssueRequest } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
-import { Stream } from "xstream";
+import xs, { Stream } from "xstream";
 import { selectResponse } from "@/components/helper";
 
 export type JiraProjectLoaderSources = {
@@ -36,7 +36,14 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
     };
   });
 
-  const project$ = selectResponse(sources.HTTP)
+  const project$ = selectResponse(sources.HTTP, "project")
+    .map((r) =>
+      r.replaceError((v) => {
+        console.log(v);
+        return xs.of();
+      })
+    )
+    .flatten()
     .filter((response) => response.status === 200)
     .map((response) => {
       const json = JSON.parse(response.text);

@@ -9,8 +9,8 @@ export const selectAsMain = function selectAsMain<T>(sources: ComponentSources<T
 };
 
 // helper function to fix type definition of cycle/http
-export const selectResponse = function selectResponse(http: HTTPSource): Stream<Response> {
-  const response$: Stream<Stream<Response>> = http.select() as any;
+export const selectResponse = function selectResponse(http: HTTPSource, category: string): Stream<Stream<Response>> {
+  const res$: Stream<Stream<Response>> = http.select(category) as any;
 
-  return response$.flatten();
+  return res$;
 };

@@ -36,7 +36,7 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
     };
   });
 
-  const project$ = selectResponse(sources.HTTP, "project")
+  const project$ = selectResponse(sources.HTTP)
     .map((r) =>
       r.replaceError((v) => {
         console.log(v);

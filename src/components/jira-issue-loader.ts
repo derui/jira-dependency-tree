@@ -35,7 +35,7 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
     };
   });
 
-  const issues$ = selectResponse(sources.HTTP, "issue")
+  const issues$ = selectResponse(sources.HTTP)
     .map((r) => r.replaceError(() => xs.of()))
     .flatten()
     .filter((response) => response.status === 200)

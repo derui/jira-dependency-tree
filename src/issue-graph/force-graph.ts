@@ -52,7 +52,12 @@ const makeLinkData = function makeLinkData(graph: Graph, issues: LeveledIssue[])
 
   return graph.vertices.reduce((accum, v) => {
     graph.adjacent(v).forEach((adjacent) => {
-      accum.push({ source: issueMap.get(v)!, target: issueMap.get(adjacent)! });
+      const source = issueMap.get(v);
+      const target = issueMap.get(adjacent);
+
+      if (!source || !target) return;
+
+      accum.push({ source, target });
     });
     return accum;
   }, [] as { source: LeveledIssue; target: LeveledIssue }[]);

@@ -131,4 +131,14 @@ test("ignore empty or blank vertices when add multiple vertices to graph at once
   assert.equal(new Set(graph.vertices), new Set(["c", "d"]));
 });
 
+test("ignore vertex that is not included in graph", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph().addVertices(["c", "d"]);
+
+  // verify
+  assert.equal(graph.adjacent("e"), []);
+});
+
 test.run();

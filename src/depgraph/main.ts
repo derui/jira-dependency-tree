@@ -75,7 +75,9 @@ const dfs = function dfs(mat: AdjacentMatrix, root: Vertex, work: (node: Vertex,
   const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, seen: Set<Vertex>) => {
     work(node, depth);
 
-    for (const nextNode of mat[node]) {
+    const nextNodes = mat[node] || new Set();
+
+    for (const nextNode of nextNodes) {
       if (seen.has(nextNode)) {
         continue;
       }

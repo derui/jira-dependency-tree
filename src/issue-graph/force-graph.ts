@@ -33,7 +33,11 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
     }
 
     level.forEach((v, indexInLevel) => {
-      accum.push({ issue: issueMap.get(v)!, level: i, indexInLevel });
+      const issue = issueMap.get(v);
+
+      if (!issue) return;
+
+      accum.push({ issue, level: i, indexInLevel });
     });
   }
 

@@ -1,4 +1,5 @@
 import { UserConfiguration, UserConfigurationProps } from "@/components/user-configuration";
+import { settingFactory } from "@/model/setting";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -16,7 +17,7 @@ test("do not open dialog initially", async () => {
     // Act
     const sinks = UserConfiguration({
       DOM: dom as any,
-      props: xs.of<UserConfigurationProps>({ setupFinished: false }),
+      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
@@ -48,7 +49,10 @@ test("do not open dialog initially", async () => {
     });
 
     // Act
-    const sinks = UserConfiguration({ DOM: dom as any, props: xs.of<UserConfigurationProps>({ setupFinished: true }) });
+    const sinks = UserConfiguration({
+      DOM: dom as any,
+      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: true }),
+    });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
@@ -108,7 +112,7 @@ test("close dialog automatically when it applied", async () => {
     // Act
     const sinks = UserConfiguration({
       DOM: dom as any,
-      props: xs.of<UserConfigurationProps>({ setupFinished: false }),
+      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
     });
 
     const actual$ = sinks.DOM.drop(1).map((vtree) => {

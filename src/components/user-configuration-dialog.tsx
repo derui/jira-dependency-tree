@@ -1,4 +1,4 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line unused-imports/no-unused-imports
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line
 import xs, { Stream } from "xstream";
 import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
@@ -9,7 +9,9 @@ export type UserConfigurationState = {
   userDomain: string;
 };
 
-type UserConfigurationDialogSources = ComponentSources<{}>;
+type UserConfigurationDialogSources = ComponentSources<{
+  props: Stream<Partial<UserConfigurationState>>;
+}>;
 
 type UserConfigurationDialogSinks = ComponentSinks<{
   value: Stream<UserConfigurationState>;
@@ -34,45 +36,60 @@ const intent = function intent(sources: UserConfigurationDialogSources) {
     .map((ev) => {
       return (ev.target as HTMLInputElement).value.trim();
     });
+  const props$ = sources.props;
 
   return {
     submit$,
     changeCredential$,
     changeUserDomain$,
     changeEmail$,
+    props$,
   };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  return xs
-    .combine(
-      actions.changeCredential$.startWith(""),
-      actions.changeUserDomain$.startWith(""),
-      actions.changeEmail$.startWith("")
-    )
-    .map(([credential, userDomain, email]) => ({
-      jiraToken: credential,
-      email,
-      userDomain,
-      allowSubmit: !!credential && !!userDomain && !!email,
-    }))
+  return actions.props$
+    .map((v) => {
+      return xs
+        .combine(
+          actions.changeCredential$.startWith(v.jiraToken || ""),
+          actions.changeUserDomain$.startWith(v.userDomain || ""),
+          actions.changeEmail$.startWith(v.email || "")
+        )
+        .map(([credential, userDomain, email]) => ({
+          jiraToken: credential,
+          email,
+          userDomain,
+          allowSubmit: !!credential && !!userDomain && !!email,
+        }));
+    })
+    .flatten()
     .remember();
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ allowSubmit }) => (
+  return state$.map(({ jiraToken, email, userDomain, allowSubmit }) => (
     <form class={{ "user-configuration__form": true }} attrs={{ method: "dialog" }}>
       <label class={{ "user-configuration__input-container": true }}>
         <span class={{ "user-configuration__input-label": true }}>User Domain</span>
-        <input class={{ "user-configuration__user-domain": true }} attrs={{ type: "text", placeholder: "required" }} />
+        <input
+          class={{ "user-configuration__user-domain": true }}
+          attrs={{ type: "text", placeholder: "required", value: userDomain }}
+        />
       </label>
       <label class={{ "user-configuration__input-container": true }}>
         <span class={{ "user-configuration__input-label": true }}>Email</span>
-        <input class={{ "user-configuration__email": true }} attrs={{ type: "text", placeholder: "required" }} />
+        <input
+          class={{ "user-configuration__email": true }}
+          attrs={{ type: "text", placeholder: "required", value: email }}
+        />
       </label>
       <label class={{ "user-configuration__input-container": true }}>
         <span class={{ "user-configuration__input-label": true }}>Credential</span>
-        <input class={{ "user-configuration__credential": true }} attrs={{ type: "text", placeholder: "required" }} />
+        <input
+          class={{ "user-configuration__credential": true }}
+          attrs={{ type: "text", placeholder: "required", value: jiraToken }}
+        />
       </label>
       <input
         class={{ "user-configuration__submitter": true }}

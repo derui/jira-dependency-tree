@@ -4,8 +4,13 @@ import { selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
+import { Setting } from "@/model/setting";
+import { source } from "@cycle/dom";
 
-export type UserConfigurationProps = { setupFinished: boolean };
+export type UserConfigurationProps = {
+  setting: Setting;
+  setupFinished: boolean;
+};
 
 type UserConfigurationSources = ComponentSources<{
   props: Stream<UserConfigurationProps>;
@@ -64,7 +69,17 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
 };
 
 export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
-  const dialog = isolate(UserConfigurationDialog, "userConfigurationDialog")(sources);
+  const dialog = isolate(
+    UserConfigurationDialog,
+    "userConfigurationDialog"
+  )({
+    DOM: sources.DOM,
+    props: sources.props.map<Partial<UserConfigurationState>>((v) => ({
+      userDomain: v.setting.userDomain,
+      email: v.setting.credentials.email,
+      jiraToken: v.setting.credentials.jiraToken,
+    })),
+  });
 
   const actions = intent(sources, dialog.value);
   const state$ = model(actions);

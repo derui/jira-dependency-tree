@@ -8,13 +8,10 @@ import { Configuration, D3Node, IssueLink, LeveledIssue as LeveledIssue } from "
 const MAX_LEVEL = 100;
 
 const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
-  let issueGraph = issues.reduce((graph, issue) => {
-    return graph.addVertex(issue.key);
+  const issueGraph = issues.reduce((graph, issue) => {
+    const edited = graph.addVertex(issue.key);
+    return issue.outwardIssueKeys.reduce((graph, key) => graph.directTo(issue.key, key), edited);
   }, emptyGraph());
-
-  issueGraph = issues.reduce((graph, issue) => {
-    return issue.outwardIssueKeys.reduce((graph, key) => graph.directTo(issue.key, key), graph);
-  }, issueGraph);
 
   return issueGraph;
 };

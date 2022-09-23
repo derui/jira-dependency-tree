@@ -78,5 +78,27 @@ const mapResponse = function mapResponse(body: { [k: string]: any }[]): Issue[] 
     };
   });
 
-  return subtasks.concat(issues);
+  return mergeTasks(subtasks.concat(issues));
+};
+
+const mergeTasks = function mergeTasks(issues: Issue[]): Issue[] {
+  const map = new Map<string, Issue>();
+
+  for (const issue of issues) {
+    const accumulatedIssues = map.get(issue.key);
+
+    if (accumulatedIssues) {
+      const outwardIssues = new Set<string>(accumulatedIssues.outwardIssueKeys);
+
+      issue.outwardIssueKeys.forEach((v) => {
+        outwardIssues.add(v);
+      });
+
+      accumulatedIssues.outwardIssueKeys = Array.from(outwardIssues);
+    } else {
+      map.set(issue.key, issue);
+    }
+  }
+
+  return Array.from(map.values());
 };

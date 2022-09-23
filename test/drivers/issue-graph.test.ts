@@ -39,7 +39,7 @@ test("get viewBox zoomed", () => {
   const result = makeViewBox(panZoom, rect(100, 150));
 
   // Verify
-  assert.equal(result, [-25, -12.5, 50, 75]);
+  assert.equal(result, [-100, -125, 200, 300]);
 });
 
 test.run();

@@ -17,7 +17,7 @@ export interface IssueGraphSink {
 export interface IssueGraphSource {}
 
 export const makeViewBox = function makeViewBox(panZoom: PanZoomState, rect: Rect) {
-  const scale = panZoom.zoomPercentage / 100;
+  const scale = 100 / panZoom.zoomPercentage;
   const zoomedWidth = rect.width * scale;
   const zoomedHeight = rect.height * scale;
   const centerX = panZoom.pan.x + rect.width / 2;

@@ -81,13 +81,13 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
       state: xs.createWithMemory({
         start: (listener) => {
           const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
-            pan = { x: pan.x + delta.x * (zoom / 100), y: pan.y + delta.y * (zoom / 100) };
+            pan = { x: pan.x + delta.x * (100 / zoom), y: pan.y + delta.y * (100 / zoom) };
 
             listener.next({ pan, zoomPercentage: zoom });
           });
 
           const wheelListener = makeWheelListener((delta) => {
-            zoom = Math.max(Math.min(zoom + delta, 200), 1);
+            zoom = Math.max(Math.min(zoom + delta * 5, 200), 1);
 
             listener.next({ pan, zoomPercentage: zoom });
           });

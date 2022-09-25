@@ -3,7 +3,7 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import * as d3 from "d3";
 import { buildIssueGraph } from "@/issue-graph/issue";
-import { Configuration, D3Node, IssueLink, LeveledIssue as LeveledIssue } from "@/issue-graph/type";
+import { Configuration, D3Node, IssueLink, LeveledIssue } from "@/issue-graph/type";
 
 const MAX_LEVEL = 100;
 
@@ -89,7 +89,7 @@ export const makeForceGraph = function makeForceGraph(
   // define ticked event handler
   const ticked = function ticked() {
     issueNodes.attr("transform", (d) => {
-      const x = d.level * (configuration.nodeSize.width * 1.75);
+      const x = d.level * (configuration.nodeSize.width * 2.5);
       // update positions for link calculation
       d.x = x;
 

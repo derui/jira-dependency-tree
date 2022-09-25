@@ -1,7 +1,8 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueNode, LeveledIssue } from "@/issue-graph/type";
+import { Configuration, D3Node, IssueLink, IssueNode, LeveledIssue } from "@/issue-graph/type";
 import { makeTextMeasure } from "./text-measure";
+import * as d3 from "d3";
 
 const IssueSizes = {
   paddingX: 8,
@@ -89,8 +90,20 @@ export const buildIssueGraph = function buildIssueGraph(
   project: Project,
   configuration: Configuration
 ) {
-  const issueNode = container.selectAll("g").data(data).join("g").attr("class", "graph-issue");
-
+  const issueNode = container
+    .selectAll("g")
+    .data(data)
+    .join("g")
+    .attr("class", "graph-issue")
+    .on("click", (_, d) => {
+      d3.selectAll<d3.BaseType, IssueLink>(".issue-link").attr("stroke-width", (linkd) => {
+        if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
+          return 2;
+        } else {
+          return 1;
+        }
+      });
+    });
   buildIssueNode(issueNode, project, configuration);
 
   return issueNode;

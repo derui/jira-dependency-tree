@@ -99,11 +99,20 @@ export const makeForceGraph = function makeForceGraph(
     // link draw right-most center to left-most center of next issue.
     links.attr("d", (d) => {
       const startX = d.source.x! + configuration.nodeSize.width;
+      const startY = d.source.y! + configuration.nodeSize.height / 2;
       const endY = d.target.y! + configuration.nodeSize.height / 2;
       const betweenDistanceX = d.target.x! - startX;
+      const betweenDistanceY = Math.abs(startY - endY);
+      let yAxis = -1;
+      if (startY >= endY) {
+        yAxis = 1;
+      }
+
       const pointData: [number, number][] = [
-        [startX, d.source.y! + configuration.nodeSize.height / 2],
-        [startX + betweenDistanceX * 0.5, endY],
+        [startX, startY],
+        [startX + betweenDistanceX * 0.3, startY],
+        [startX + betweenDistanceX * 0.5, endY + yAxis * betweenDistanceY * 0.5],
+        [startX + betweenDistanceX * 0.7, endY],
         [d.target.x!, endY],
       ];
 

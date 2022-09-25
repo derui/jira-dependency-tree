@@ -1,4 +1,4 @@
-import { UserConfigurationDialog } from "@/components/user-configuration-dialog";
+import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -113,7 +113,7 @@ test("use given value when it passed", async () => {
     // Act
     const sinks = UserConfigurationDialog({
       DOM: dom as any,
-      props: xs.of({ userDomain: "domain", jiraToken: "cred", email: "email" }),
+      props: xs.of<Partial<UserConfigurationState>>({ userDomain: "domain", jiraToken: "cred", email: "email" }),
     });
 
     const actual$ = sinks.value.map((v) => v);

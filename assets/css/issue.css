@@ -8,8 +8,11 @@
 }
 
 .graph-issue {
-  cursor: pointer;
   font-size: var(--base-font-size);
   font-family: "Noto Sans JP";
   dominant-baseline: text-before-edge;
+}
+
+.issue-self-link {
+  cursor: pointer;
 }

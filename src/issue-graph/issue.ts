@@ -7,6 +7,7 @@ const IssueSizes = {
   paddingX: 8,
   paddingY: 4,
   textHeight: 20,
+  iconSize: 16,
 };
 
 const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
@@ -28,6 +29,20 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("y", IssueSizes.paddingY)
     .attr("x", IssueSizes.paddingX)
     .text((d) => d.issue.key);
+
+  // issue link
+  node
+    .append("svg:image")
+    .attr("class", "issue-self-link")
+    .attr("y", IssueSizes.paddingY * 2)
+    .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
+    .attr("width", IssueSizes.iconSize)
+    .attr("height", IssueSizes.iconSize)
+    .attr("xlink:href", "/assets/svg/exit.svg")
+    .on("click", (_, d) => {
+      const url = new URL(d.issue.selfUrl);
+      window.open(`${url.origin}/browse/${d.issue.key}`, "_blank");
+    });
 
   // issue summary
   const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
@@ -74,15 +89,7 @@ export const buildIssueGraph = function buildIssueGraph(
   project: Project,
   configuration: Configuration
 ) {
-  const issueNode = container
-    .selectAll("g")
-    .data(data)
-    .join("g")
-    .attr("class", "graph-issue")
-    .on("click", (_, d) => {
-      const url = new URL(d.issue.selfUrl);
-      window.open(`${url.origin}/browse/${d.issue.key}`, "_blank");
-    });
+  const issueNode = container.selectAll("g").data(data).join("g").attr("class", "graph-issue");
 
   buildIssueNode(issueNode, project, configuration);
 

@@ -1,4 +1,5 @@
 import { constraint, difference } from "@/util/basic";
+import deepEqual from "fast-deep-equal";
 
 type Edge = [string, string];
 type Vertex = string;
@@ -22,6 +23,12 @@ export type Graph = {
 
   // Get adjacent vertices of [vertex]
   adjacent(vertex: Vertex): Vertex[];
+
+  // Get subgraph that has the root is given vertex
+  subgraphOf(vertex: Vertex): Graph;
+
+  // Return result that given graph is intersected
+  intersect(graph: Graph): boolean;
 
   readonly edges: Edge[];
   readonly vertices: Vertex[];
@@ -141,6 +148,32 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       });
 
       return Array.from(nodesAtLevel);
+    },
+
+    subgraphOf(subRoot: Vertex): Graph {
+      let subgraph = emptyGraph();
+
+      dfs(adjMatrix, subRoot, (node) => {
+        subgraph = subgraph.addVertex(node);
+      });
+
+      return subgraph.vertices.reduce((graph, vertex) => {
+        return this.adjacent(vertex).reduce((g, v) => {
+          return g.directTo(vertex, v);
+        }, graph);
+      }, subgraph);
+    },
+
+    intersect(graph: Graph) {
+      for (const edgeThis of this.edges) {
+        for (const edgeOther of graph.edges) {
+          if (deepEqual(edgeThis, edgeOther)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     },
 
     directTo(from, to) {

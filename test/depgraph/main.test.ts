@@ -141,4 +141,87 @@ test("ignore vertex that is not included in graph", () => {
   assert.equal(graph.adjacent("e"), []);
 });
 
+test("get subgraph from given root vertex", () => {
+  // arrange
+  const graph = emptyGraph()
+    .addVertices(["a", "b", "c", "d", "e"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c")
+    .directTo("e", "c");
+
+  // do
+  const subgraphA = graph.subgraphOf("a");
+  const subgraphE = graph.subgraphOf("e");
+
+  // verify
+  assert.is(subgraphA.edges.length, 4, "edge of subgraph A");
+  assert.is(subgraphA.vertices.length, 4, "vertices of subgraph A");
+  assert.is(subgraphE.edges.length, 1);
+  assert.is(subgraphE.vertices.length, 2);
+  assert.equal(subgraphA.adjacent("a"), ["b"]);
+  assert.equal(subgraphA.adjacent("b"), ["c", "d"]);
+  assert.equal(subgraphA.adjacent("d"), ["c"]);
+  assert.equal(subgraphA.adjacent("c"), []);
+  assert.equal(subgraphE.adjacent("e"), ["c"]);
+  assert.equal(subgraphE.adjacent("c"), []);
+  assert.equal(subgraphE.adjacent("a"), [], "not found other root");
+});
+
+test("get subgraph from given inter-graph vertex", () => {
+  // arrange
+  const graph = emptyGraph()
+    .addVertices(["a", "b", "c", "d", "e"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  // do
+  const subgraph = graph.subgraphOf("d");
+
+  // verify
+  assert.is(subgraph.edges.length, 1);
+  assert.is(subgraph.vertices.length, 2);
+  assert.equal(subgraph.adjacent("d"), ["c"]);
+  assert.equal(subgraph.adjacent("c"), []);
+});
+
+test("can detect intersection between two graphs", () => {
+  // arrange
+  const graph1 = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  const graph2 = emptyGraph().addVertices(["b", "d", "c"]).directTo("b", "d").directTo("c", "b");
+
+  // do
+
+  // verify
+  assert.is(graph1.intersect(graph2), true, "between graph1 and graph2");
+  assert.is(graph2.intersect(graph1), true, "between graph2 and graph1");
+});
+
+test("do not intersect if not found any same edges", () => {
+  // arrange
+  const graph1 = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  const graph2 = emptyGraph().addVertices(["b", "d", "c"]).directTo("d", "b").directTo("c", "b");
+
+  // do
+
+  // verify
+  assert.is(graph1.intersect(graph2), false, "between graph1 and graph2");
+  assert.is(graph2.intersect(graph1), false, "between graph2 and graph1");
+});
+
 test.run();

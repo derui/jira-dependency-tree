@@ -30,6 +30,9 @@ export type Graph = {
   // Return result that given graph is intersected
   intersect(graph: Graph): boolean;
 
+  // Return new graph is merged with graph. If given graph is not intersected with this, return null.
+  merge(graph: Graph): Graph | null;
+
   readonly edges: Edge[];
   readonly vertices: Vertex[];
 };
@@ -174,6 +177,23 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       }
 
       return false;
+    },
+
+    merge(graph: Graph) {
+      if (!this.intersect(graph)) {
+        return null;
+      }
+
+      const edges = Array.from(this.edges);
+      const vertices = new Set([...this.vertices, ...graph.vertices]);
+
+      for (const edge of graph.edges) {
+        if (!edges.some((e) => deepEqual(e, edge))) {
+          edges.push(edge);
+        }
+      }
+
+      return makeGraph(edges, Array.from(vertices));
     },
 
     directTo(from, to) {

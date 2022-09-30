@@ -224,4 +224,28 @@ test("do not intersect if not found any same edges", () => {
   assert.is(graph2.intersect(graph1), false, "between graph2 and graph1");
 });
 
+test("merge between graphs that are intesected each other", () => {
+  // arrange
+  const graph1 = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  const graph2 = emptyGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
+
+  // do
+  const merged = graph1.merge(graph2)!!;
+
+  // verify
+  assert.is(merged.edges.length, 5, "edge of graph");
+  assert.is(merged.vertices.length, 5, "vertices of graph");
+  assert.equal(merged.adjacent("a"), ["b"]);
+  assert.equal(merged.adjacent("b"), ["c", "d"]);
+  assert.equal(merged.adjacent("d"), ["c"]);
+  assert.equal(merged.adjacent("c"), []);
+  assert.equal(merged.adjacent("e"), ["b"]);
+});
+
 test.run();

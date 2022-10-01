@@ -248,4 +248,21 @@ test("merge between graphs that are intesected each other", () => {
   assert.equal(merged.adjacent("e"), ["b"]);
 });
 
+test("merge return same graph if merged same graph", () => {
+  // arrange
+  const graph = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c");
+
+  // do
+  const merged = graph.merge(graph)!!;
+
+  // verify
+  assert.equal(merged.edges, graph.edges, "edge of graph");
+  assert.equal(merged.vertices, graph.vertices, "vertices of graph");
+});
+
 test.run();

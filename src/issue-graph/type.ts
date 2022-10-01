@@ -14,6 +14,22 @@ export type LeveledIssue = {
   indexInLevel: number;
 } & SimulationNodeDatum;
 
+export type LayoutedLeveledVertex = {
+  vertex: string;
+  level: number;
+  indexInLevel: number;
+  x: number;
+  y: number;
+};
+
+export type LayoutedLeveledIssue = {
+  issue: Issue;
+  level: number;
+  indexInLevel: number;
+  x: number;
+  y: number;
+};
+
 export type IssueLink = {
   source: LeveledIssue;
   target: LeveledIssue;

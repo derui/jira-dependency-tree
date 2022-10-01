@@ -3,9 +3,9 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import * as d3 from "d3";
 import { buildIssueGraph } from "@/issue-graph/issue";
-import { Configuration, D3Node, IssueLink, LeveledIssue } from "@/issue-graph/type";
-
-const MAX_LEVEL = 100;
+import { Configuration, D3Node, IssueLink, LayoutedLeveledIssue } from "@/issue-graph/type";
+import { calculateLayouts } from "./issue-layout";
+import { Position, Size } from "@/type";
 
 const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
   const issueGraph = issues.reduce((graph, issue) => {
@@ -16,48 +16,54 @@ const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
   return issueGraph;
 };
 
-const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue[]) {
+const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue[], nodeSize: Size) {
   const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.key, issue);
     return accum;
   }, new Map<string, Issue>());
-  const accum: LeveledIssue[] = [];
 
-  for (let i = 0; i < MAX_LEVEL; i += 1) {
-    const level = graph.levelAt(i);
-    if (!level.length) {
-      break;
-    }
+  const layouts = calculateLayouts(graph, nodeSize);
+  let basePosition: Position = { x: 0, y: 0 };
+  const groupedIssues: LayoutedLeveledIssue[][] = [];
 
-    level.forEach((v, indexInLevel) => {
-      const issue = issueMap.get(v);
-
-      if (!issue) return;
-
-      accum.push({ issue, level: i, indexInLevel });
+  for (const layout of layouts) {
+    const layoutedIssues = layout.vertices.map(({ vertex, baseX: x, baseY: y, ...rest }) => {
+      return {
+        issue: issueMap.get(vertex)!,
+        ...rest,
+        baseX: x + basePosition.x,
+        baseY: y + basePosition.y,
+      };
     });
+
+    groupedIssues.push(layoutedIssues);
+    basePosition = { x: basePosition.x, y: basePosition.y + layout.size.height + nodeSize.height };
   }
 
-  return accum;
+  return groupedIssues;
 };
 
-const makeLinkData = function makeLinkData(graph: Graph, issues: LeveledIssue[]) {
-  const issueMap = issues.reduce((accum, issue) => {
+const makeLinkData = function makeLinkData(graph: Graph, issues: LayoutedLeveledIssue[][]) {
+  const issueMap = issues.flat().reduce((accum, issue) => {
     accum.set(issue.issue.key, issue);
     return accum;
-  }, new Map<string, LeveledIssue>());
+  }, new Map<string, LayoutedLeveledIssue>());
 
-  return graph.vertices.reduce((accum, v) => {
+  return graph.vertices.reduce<IssueLink[]>((accum, v) => {
+    const source = issueMap.get(v);
+    if (!source) {
+      return accum;
+    }
+
     graph.adjacent(v).forEach((adjacent) => {
-      const source = issueMap.get(v);
       const target = issueMap.get(adjacent);
 
-      if (!source || !target) return;
+      if (!target) return;
 
       accum.push({ source, target });
     });
     return accum;
-  }, [] as { source: LeveledIssue; target: LeveledIssue }[]);
+  }, []);
 };
 
 export const makeForceGraph = function makeForceGraph(
@@ -67,7 +73,7 @@ export const makeForceGraph = function makeForceGraph(
   configuration: Configuration
 ) {
   const issueGraph = makeIssueGraph(issues);
-  const leveledIssues = makeLeveledIssues(issueGraph, issues);
+  const leveledIssues = makeLeveledIssues(issueGraph, issues, configuration.nodeSize);
   const linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
@@ -89,10 +95,6 @@ export const makeForceGraph = function makeForceGraph(
   // define ticked event handler
   const ticked = function ticked() {
     issueNodes.attr("transform", (d) => {
-      const x = d.level * (configuration.nodeSize.width * 2.5);
-      // update positions for link calculation
-      d.x = x;
-
       return `translate(${d.x},${d.y})`;
     });
 
@@ -121,25 +123,24 @@ export const makeForceGraph = function makeForceGraph(
   };
 
   // force between nodes
-  const simulation = d3
-    .forceSimulation<LeveledIssue>()
-    .nodes(leveledIssues)
-    .on("tick", ticked)
-    .force(
-      "link",
-      d3
-        .forceLink<LeveledIssue, IssueLink>(linkData)
-        .id((d) => d.issue.key)
-        .distance(30)
-    )
-    .force("center", d3.forceY(configuration.canvasSize.height / 2))
-    .force("charge", d3.forceManyBody().strength(-10))
-    .force("collision", d3.forceCollide(configuration.nodeSize.width / 2))
-    .velocityDecay(0.5);
-
-  // define initial position
-  simulation.nodes().forEach((d) => {
-    d.x = d.level * (configuration.nodeSize.width * 1.75);
-    d.y = (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
+  leveledIssues.forEach((issueUnit) => {
+    const simulation = d3
+      .forceSimulation<LayoutedLeveledIssue>()
+      .nodes(issueUnit)
+      .on("tick", ticked)
+      .force(
+        "fx",
+        d3.forceX<LayoutedLeveledIssue>().x((d) => d.baseX)
+      )
+      .force(
+        "fy",
+        d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY)
+      );
+    // define initial position
+    simulation.nodes().forEach((d) => {
+      d.x = d.level * (configuration.nodeSize.width * 1.75);
+      d.y =
+        (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
+    });
   });
 };

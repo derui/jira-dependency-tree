@@ -79,8 +79,8 @@ const layoutGraph = function layoutGraph(graph: Graph, nodeSize: Size): Layouted
           vertex,
           level,
           indexInLevel: index,
-          x: calculateX(level, nodeSize),
-          y: calculateY(index, nodeSize),
+          baseX: calculateX(level, nodeSize),
+          baseY: calculateY(index, nodeSize),
         };
       });
     })
@@ -111,8 +111,8 @@ const layoutOrphanGraphs = function layoutOrphanGraphs(graphs: Graph[], nodeSize
         vertex: g.vertices[0],
         level,
         indexInLevel,
-        x: calculateX(level, nodeSize),
-        y: calculateY(indexInLevel, nodeSize),
+        baseX: calculateX(level, nodeSize),
+        baseY: calculateY(indexInLevel, nodeSize),
       };
     });
   });

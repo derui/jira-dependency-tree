@@ -1,6 +1,6 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueLink, IssueNode, LeveledIssue } from "@/issue-graph/type";
+import { Configuration, D3Node, IssueLink, IssueNode, LayoutedLeveledIssue } from "@/issue-graph/type";
 import { makeTextMeasure } from "./text-measure";
 import * as d3 from "d3";
 
@@ -86,13 +86,13 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
 
 export const buildIssueGraph = function buildIssueGraph(
   container: D3Node<any>,
-  data: LeveledIssue[],
+  data: LayoutedLeveledIssue[][],
   project: Project,
   configuration: Configuration
 ) {
   const issueNode = container
     .selectAll("g")
-    .data(data)
+    .data(data.flat())
     .join("g")
     .attr("class", "graph-issue")
     .on("click", (_, d) => {

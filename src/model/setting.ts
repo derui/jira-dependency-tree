@@ -34,7 +34,7 @@ export type Setting = {
 
 export const settingFactory = function settingFactory(argument: SettingArgument): Setting {
   return {
-    issueSize: argument.issueNodeSize ?? { width: 192, height: 64 },
+    issueSize: argument.issueNodeSize ?? { width: 160, height: 80 },
     credentials: argument.credentials ?? {},
     userDomain: argument.userDomain,
 

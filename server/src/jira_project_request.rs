@@ -1,12 +1,12 @@
 use std::error::Error;
 
 use isahc::{http::request::Builder, ReadResponseExt, Request, RequestExt};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use crate::jira_issue_request::JiraUrl;
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraStatus {
     pub id: String,
@@ -14,7 +14,7 @@ pub struct JiraStatus {
     pub status_category: String,
 }
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueStatusCategory {
     pub id: Option<String>,
@@ -22,7 +22,7 @@ pub struct JiraIssueStatusCategory {
     pub color_name: Option<String>,
 }
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueType {
     pub id: String,
@@ -30,7 +30,7 @@ pub struct JiraIssueType {
     pub avatar_url: Option<String>,
 }
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraProject {
     pub id: u64,

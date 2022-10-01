@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use isahc::{ReadResponseExt, Request, RequestExt};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 use crate::{IssueLoadingRequest, JiraAuhtorization};
@@ -33,13 +33,13 @@ impl JiraUrl for JiraAuhtorization {
     }
 }
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueLink {
     pub outward_issue: Option<String>,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraSubtask {
     pub key: String,
@@ -50,7 +50,7 @@ pub struct JiraSubtask {
     pub self_url: Option<String>,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssue {
     pub key: String,

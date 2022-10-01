@@ -170,7 +170,7 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
     intersect(graph: Graph) {
       for (const edgeThis of this.edges) {
         for (const edgeOther of graph.edges) {
-          if (deepEqual(edgeThis, edgeOther)) {
+          if (deepEqual(edgeThis, edgeOther) || edgeThis[0] === edgeOther[0] || edgeThis[1] === edgeOther[1]) {
             return true;
           }
         }
@@ -188,7 +188,7 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       const vertices = new Set([...this.vertices, ...graph.vertices]);
 
       for (const edge of graph.edges) {
-        if (!edges.some((e) => deepEqual(e, edge))) {
+        if (edges.every((e) => !deepEqual(e, edge))) {
           edges.push(edge);
         }
       }

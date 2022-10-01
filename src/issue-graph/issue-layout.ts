@@ -130,7 +130,7 @@ const layoutOrphanGraphs = function layoutOrphanGraphs(graphs: Graph[], nodeSize
   };
 };
 
-export const calculateLayouts = function calculateLayouts(graph: Graph, nodeSize: Size): LayoutedGraph[] {
+export const calculateLayouts = function calculateLayouts(graph: Graph, nodeSize: Size) {
   const subgraphs = getSubgraphs(graph);
 
   const orphanGraphs = subgraphs.filter((g) => g.vertices.length === 1);
@@ -139,5 +139,8 @@ export const calculateLayouts = function calculateLayouts(graph: Graph, nodeSize
   const layoutedOrphanGraph = layoutOrphanGraphs(orphanGraphs, nodeSize);
   const layoutedGraphs = otherGraphs.map((g) => layoutGraph(g, nodeSize));
 
-  return layoutedGraphs.concat(orphanGraphs.length ? [layoutedOrphanGraph] : []);
+  return {
+    graphs: layoutedGraphs,
+    orphans: orphanGraphs.length ? layoutedOrphanGraph : undefined,
+  };
 };

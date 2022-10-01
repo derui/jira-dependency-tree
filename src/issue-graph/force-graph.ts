@@ -22,11 +22,11 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
     return accum;
   }, new Map<string, Issue>());
 
-  const layouts = calculateLayouts(graph, nodeSize);
+  const { graphs, orphans } = calculateLayouts(graph, nodeSize);
   let basePosition: Position = { x: 0, y: 0 };
   const groupedIssues: LayoutedLeveledIssue[][] = [];
 
-  for (const layout of layouts) {
+  for (const layout of graphs) {
     const layoutedIssues = layout.vertices.map(({ vertex, baseX: x, baseY: y, ...rest }) => {
       return {
         issue: issueMap.get(vertex)!,
@@ -38,6 +38,19 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
 
     groupedIssues.push(layoutedIssues);
     basePosition = { x: basePosition.x, y: basePosition.y + layout.size.height + nodeSize.height };
+  }
+
+  if (orphans) {
+    const layoutedIssues = orphans.vertices.map(({ vertex, baseX: x, baseY: y, ...rest }) => {
+      return {
+        issue: issueMap.get(vertex)!,
+        ...rest,
+        baseX: x - orphans.size.width - nodeSize.width * 2,
+        baseY: y,
+      };
+    });
+
+    groupedIssues.push(layoutedIssues);
   }
 
   return groupedIssues;

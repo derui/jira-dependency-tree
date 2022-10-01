@@ -215,7 +215,7 @@ test("do not intersect if not found any same edges", () => {
     .directTo("b", "d")
     .directTo("d", "c");
 
-  const graph2 = emptyGraph().addVertices(["b", "d", "c"]).directTo("d", "b").directTo("c", "b");
+  const graph2 = emptyGraph().addVertices(["d", "c", "e", "f"]).directTo("c", "f").directTo("c", "e");
 
   // do
 

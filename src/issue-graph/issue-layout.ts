@@ -64,10 +64,9 @@ const layoutGraph = function layoutGraph(graph: Graph, nodeSize: Size): Layouted
     }
   }
 
-  const largestWidth = leveledVertices[leveledVertices.length - 1]?.length ?? 0;
   const sizeOfGraph: Size = {
     height: calculateHeight(largestLevel[1], nodeSize),
-    width: calculateWidth(largestWidth, nodeSize),
+    width: calculateWidth(leveledVertices.length, nodeSize),
   };
   const layoutedVertices = leveledVertices
     .map((vertices, level) => {
@@ -140,5 +139,5 @@ export const calculateLayouts = function calculateLayouts(graph: Graph, nodeSize
   const layoutedOrphanGraph = layoutOrphanGraphs(orphanGraphs, nodeSize);
   const layoutedGraphs = otherGraphs.map((g) => layoutGraph(g, nodeSize));
 
-  return [...layoutedGraphs, layoutedOrphanGraph];
+  return layoutedGraphs.concat(orphanGraphs.length ? [layoutedOrphanGraph] : []);
 };

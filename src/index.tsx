@@ -55,14 +55,7 @@ const jiraLoader = function jiraLoader(
 
   return isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
-    issueEvents: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
-      return {
-        env: env,
-        credential,
-        projectKey,
-      };
-    }),
-    projectEvents: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
+    events: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
       return {
         env: env,
         credential,

@@ -15,8 +15,7 @@ type State = {
 
 export type JiraLoaderSources = {
   HTTP: HTTPSource;
-  projectEvents: Stream<IssueRequest>;
-  issueEvents: Stream<IssueRequest>;
+  events: Stream<IssueRequest>;
 };
 
 export type JiraLoaderSinks = {
@@ -27,17 +26,20 @@ export type JiraLoaderSinks = {
 export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraLoaderSinks {
   const issueLoaderSinks = isolate(JiraIssueLoader, { HTTP: "issues" })({
     HTTP: sources.HTTP,
-    events: sources.issueEvents,
+    events: sources.events,
   });
   const projectLoaderSinks = isolate(JiraProjectLoader, { HTTP: "project" })({
     HTTP: sources.HTTP,
-    events: sources.projectEvents,
+    events: sources.events,
   });
+
+  const value$ = sources.events.map(() => xs.combine(issueLoaderSinks.issues, projectLoaderSinks.project)).flatten();
 
   const initialReducer$ = xs.of(() => {
     return { issues: [], project: undefined };
   });
-  const reducer$: Stream<Reducer<State>> = xs.combine(issueLoaderSinks.issues, projectLoaderSinks.project).map(
+
+  const reducer$: Stream<Reducer<State>> = value$.map(
     ([issues, project]): Reducer<State> =>
       () => {
         return { issues, project };

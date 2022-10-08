@@ -97,7 +97,7 @@ export const ProjectInformation = function ProjectInformation(
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).map(() => name)).flatten();
+  const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).mapTo(name)).flatten();
 
   const value$ = xs.combine(submittedName$, actions.syncClicked$).map(([v]) => v);
 

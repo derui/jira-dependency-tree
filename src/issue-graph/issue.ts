@@ -96,13 +96,22 @@ export const buildIssueGraph = function buildIssueGraph(
     .join("g")
     .attr("class", "graph-issue")
     .on("click", (_, d) => {
-      d3.selectAll<d3.BaseType, IssueLink>(".issue-link").attr("stroke-width", (linkd) => {
-        if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
-          return 2;
-        } else {
-          return 1;
-        }
-      });
+      d3.selectAll<d3.BaseType, IssueLink>(".issue-link")
+        .attr("stroke", (linkd) => {
+          if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
+            /* .color-primary-0 { color:  } */
+            return "#A4393C";
+          } else {
+            return "black";
+          }
+        })
+        .attr("stroke-width", (linkd) => {
+          if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
+            return 2;
+          } else {
+            return 1;
+          }
+        });
     });
   buildIssueNode(issueNode, project, configuration);
 

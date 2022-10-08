@@ -139,14 +139,13 @@
 
 .project-information__input-label {
   flex: 0 0 auto;
-  background-color: rgb(var(--primary-1));
   color: rgb(var(--primary-4));
   padding: var(--space-base);
-  border-radius: 4px;
 }
 
 .project-information__name-input {
   flex: 1 1 auto;
+  width: 100%;
   margin-left: var(--space-large);
   padding: var(--space-base) var(--space-large);
   border: 1px solid transparent;

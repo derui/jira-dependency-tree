@@ -153,12 +153,11 @@ fn load_issue_recursive(
     match json["issues"].as_array() {
         None => Ok(Vec::from_iter(issues.iter().cloned())),
         Some(got_issues) => {
-            let issue_len = got_issues.len();
             let total_size = json["total"].as_u64().unwrap_or_default() as usize;
 
             issues.append(as_issue(got_issues).as_mut());
 
-            if total_size <= issues.len() + issue_len {
+            if total_size <= issues.len() {
                 return Ok(Vec::from_iter(issues.iter().cloned()));
             }
 

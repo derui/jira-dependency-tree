@@ -20,7 +20,7 @@ const intent = function intent(sources: ZoomSliderSources) {
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const zoom$ = actions.props$.map((v) => v.zoom);
+  const zoom$ = actions.props$.map((v) => Math.round(v.zoom));
 
   return zoom$;
 };

@@ -86,6 +86,25 @@ test("level get from multiple root", () => {
   assert.equal(graph.levelAt(2), []);
 });
 
+test("should be largest level ", () => {
+  // arrange
+
+  // do
+  const graph = emptyGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("a", "c")
+    .directTo("c", "d")
+    .directTo("a", "d");
+
+  // verify
+  assert.equal(graph.levelAt(0), ["a"]);
+  assert.equal(graph.levelAt(1), ["b"]);
+  assert.equal(graph.levelAt(2), ["c"]);
+  assert.equal(graph.levelAt(3), ["d"]);
+});
+
 test("level get from multiple edges", () => {
   // arrange
 

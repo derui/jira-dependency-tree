@@ -92,17 +92,16 @@ test("should be largest level ", () => {
   // do
   const graph = emptyGraph()
     .addVertices(["a", "b", "c", "d"])
-    .directTo("a", "b")
+    .directTo("a", "d")
+    .directTo("b", "d")
     .directTo("b", "c")
-    .directTo("a", "c")
-    .directTo("c", "d")
-    .directTo("a", "d");
+    .directTo("c", "d");
 
   // verify
-  assert.equal(graph.levelAt(0), ["a"]);
-  assert.equal(graph.levelAt(1), ["b"]);
-  assert.equal(graph.levelAt(2), ["c"]);
-  assert.equal(graph.levelAt(3), ["d"]);
+  assert.equal(graph.adjacent("c"), ["d"], "d is adjacent of c");
+  assert.equal(graph.levelAt(0), ["a", "b"], "level 0");
+  assert.equal(graph.levelAt(1), ["c"], "level 1");
+  assert.equal(graph.levelAt(2), ["d"], "level 2");
 });
 
 test("level get from multiple edges", () => {

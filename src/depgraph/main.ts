@@ -82,25 +82,26 @@ const findRoots = function findRoots(mat: AdjacentMatrix) {
 };
 
 const dfs = function dfs(mat: AdjacentMatrix, root: Vertex, work: (node: Vertex, depth: number) => void) {
-  const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, seen: Set<Vertex>) => {
+  const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, seen: Map<Vertex, number>) => {
     work(node, depth);
 
     const nextNodes = mat[node] || new Set();
 
     for (const nextNode of nextNodes) {
-      if (seen.has(nextNode)) {
+      if (seen.has(nextNode) && seen.get(nextNode)! >= depth) {
         continue;
       }
-      seen.add(nextNode);
+      seen.set(nextNode, depth);
       recursiveDfs(mat, nextNode, depth + 1, seen);
     }
   };
 
-  recursiveDfs(mat, root, 0, new Set());
+  recursiveDfs(mat, root, 0, new Map());
 };
 
 const largestLevelOf = function largestLevelOf(mat: AdjacentMatrix, target: Vertex) {
   let largestLevel = 0;
+
   findRoots(mat).forEach((root) => {
     dfs(mat, root, (node, depth) => {
       if (node === target && depth >= largestLevel) {

@@ -133,13 +133,6 @@ export const buildIssueGraph = function buildIssueGraph(
             return "black";
           }
         })
-        .attr("stroke-width", (linkd) => {
-          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
-            return 1;
-          } else {
-            return 1;
-          }
-        })
         .attr("marker-end", (linkd) => {
           if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
             return "url(#selected-arrowhead)";

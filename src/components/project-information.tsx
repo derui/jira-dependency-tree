@@ -19,7 +19,6 @@ type ProjectInformationSinks = ComponentSinks<{
 
 const intent = function intent(sources: ProjectInformationSources) {
   const nameClicked$ = selectAsMain(sources, ".project-information__name").events("click").mapTo(true);
-  const syncClicked$ = selectAsMain(sources, ".project-information__synchronize").events("click").mapTo(true);
   const submit$ = selectAsMain(sources, ".project-information__form")
     .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(false);
@@ -29,7 +28,7 @@ const intent = function intent(sources: ProjectInformationSources) {
       return (v.target as HTMLInputElement).value;
     });
 
-  return { props$: sources.props, nameClicked$, nameChanged$, submit$, syncClicked$ };
+  return { props$: sources.props, nameClicked$, nameChanged$, submit$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
@@ -65,15 +64,6 @@ const view = function view(state$: ReturnType<typeof model>) {
         >
           {name}
         </span>
-        <div class={{ "project-information__toolbar": true }}>
-          <span>
-            <button
-              class={{ "project-information__synchronize": true }}
-              attrs={{ disabled: !projectGiven }}
-              dataset={{ testid: "sync" }}
-            ></button>
-          </span>
-        </div>
         <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: "editor" }}>
           <form class={{ "project-information__form": true }} attrs={{ method: "dialog" }}>
             <label class={{ "project-information__input-container": true }}>
@@ -99,10 +89,8 @@ export const ProjectInformation = function ProjectInformation(
 
   const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).mapTo(name)).flatten();
 
-  const value$ = xs.combine(submittedName$, actions.syncClicked$).map(([v]) => v);
-
   return {
     DOM: view(state$),
-    value: xs.merge(submittedName$, value$),
+    value: submittedName$,
   };
 };

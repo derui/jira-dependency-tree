@@ -2,21 +2,15 @@
   background-color: white;
   position: absolute;
   display: grid;
-  grid-template-columns: 240px 40px;
+  grid-template-columns: 280px;
   grid-template-areas:
-    "name toolbar"
-    "form form";
+    "name"
+    "form";
   left: var(--space-large);
   top: var(--space-large);
   border: 1px solid rgb(var(--secondary-1-3));
   border-radius: var(--space-large);
   align-items: center;
-}
-
-.project-information__toolbar {
-  grid-area: toolbar;
-  display: flex;
-  padding: var(--space-base) var(--space-base) var(--space-base) 0;
 }
 
 .project-information__name {
@@ -33,6 +27,7 @@
   border-bottom: 1px solid transparent;
   transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
   line-height: 1.5em;
+  padding: var(--space-base) var(--space-base) var(--space-base) 0;
 
   &:hover:not(&.--need-configuration) {
     color: rgb(var(--secondary-2-4));
@@ -42,51 +37,6 @@
   &.--need-configuration {
     color: gray;
     text-decoration-color: gray;
-  }
-}
-
-.project-information__synchronize {
-  padding: var(--space-small);
-  outline: none;
-  background: none;
-  border: 1px solid transparent;
-  transition: border 0.1s ease-out, background-color 0.1s ease-out;
-  cursor: pointer;
-  height: 32px;
-  width: 32px;
-  border-radius: 16px;
-
-  &[disabled] {
-    cursor: initial;
-  }
-
-  &::before {
-    content: "";
-    display: inline-block;
-    flex: 0 0 auto;
-    mask: url("/assets/svg/reload.svg");
-    mask-size: cover;
-    width: 100%;
-    height: 100%;
-    background-color: rgb(var(--complement-3));
-    transition: background-color 0.1s ease-out;
-  }
-
-  &[disabled]::before {
-    background-color: lightgray;
-  }
-
-  &:not([disabled]):hover {
-    border: 1px solid rgb(var(--complement-3));
-  }
-
-  &:not([disabled]):active {
-    border: 1px solid rgb(var(--complement-3));
-    background-color: rgb(var(--complement-3));
-
-    &:before {
-      background-color: rgb(var(--complement-1));
-    }
   }
 }
 

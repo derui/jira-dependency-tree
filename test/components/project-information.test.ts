@@ -24,7 +24,6 @@ test("initial display when project is not configured", async () => {
       return {
         name: select("[data-testid=name]", vtree)[0].text,
         needConfiguration: select("[data-testid=name]", vtree)[0].data?.class!["--need-configuration"],
-        syncDisabled: select("[data-testid=sync]", vtree)[0].data?.attrs?.disabled,
         shown: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
       };
     });
@@ -32,7 +31,6 @@ test("initial display when project is not configured", async () => {
       a: {
         name: "Click here",
         needConfiguration: true,
-        syncDisabled: true,
         shown: true,
       },
     });
@@ -71,14 +69,12 @@ test("show project name", async () => {
       return {
         name: select("[data-testid=name]", vtree)[0].text,
         needConfiguration: select("[data-testid=name]", vtree)[0].data?.class!["--need-configuration"],
-        syncDisabled: select("[data-testid=sync]", vtree)[0].data?.attrs?.disabled,
       };
     });
     const expected$ = Time.diagram("(a|)", {
       a: {
         name: "name",
         needConfiguration: false,
-        syncDisabled: false,
       },
     });
 

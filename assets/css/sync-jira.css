@@ -1,0 +1,62 @@
+@keyframes sync-jira-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-jira {
+  position: absolute;
+  top: var(--space-large);
+  left: calc(var(--space-large) * 2 + 240px);
+}
+
+.sync-jira__container {
+  position: relative;
+}
+
+.sync-jira__main {
+  padding: var(--space-small);
+  outline: none;
+  background: none;
+  border: 1px solid rgb(var(--complement-3));
+  transition: border 0.1s ease-out, background-color 0.1s ease-out;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+
+  &.--syncing {
+    animation: sync-jira-loading 1s linear infinite;
+  }
+
+  &[disabled] {
+    cursor: initial;
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask: url("/assets/svg/reload.svg");
+    mask-size: cover;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(var(--complement-3));
+    transition: background-color 0.1s ease-out;
+  }
+
+  &[disabled]::before {
+    background-color: lightgray;
+  }
+
+  &:not([disabled]):active {
+    background-color: rgb(var(--complement-3));
+
+    &:before {
+      background-color: rgb(var(--complement-1));
+    }
+  }
+}

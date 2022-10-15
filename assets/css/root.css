@@ -3,6 +3,7 @@
 @import "./user-configuration.css";
 @import "./project-information.css";
 @import "./zoom-slider.css";
+@import "./sync-jira.css";
 
 html,
 body,

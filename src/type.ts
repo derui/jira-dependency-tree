@@ -36,3 +36,10 @@ export type Position = {
   x: number;
   y: number;
 };
+
+export const LoaderStatus = {
+  LOADING: "LOADING",
+  COMPLETED: "COMPLETED",
+} as const;
+
+export type LoaderState = typeof LoaderStatus[keyof typeof LoaderStatus];

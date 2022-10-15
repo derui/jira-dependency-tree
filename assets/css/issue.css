@@ -2,6 +2,13 @@
   stroke: rgb(0 0 0);
   fill: rgb(255 255 255);
 
+  transition: stroke 0.1s ease, stroke-width, 0.1s ease;
+
+  &:hover {
+    stroke: rgb(var(--secondary-1-4));
+    stroke-width: 2;
+  }
+
   &.--not-found {
     stroke: rgb(var(--primary-3));
   }

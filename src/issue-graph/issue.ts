@@ -135,9 +135,16 @@ export const buildIssueGraph = function buildIssueGraph(
         })
         .attr("stroke-width", (linkd) => {
           if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
-            return 2;
+            return 1;
           } else {
             return 1;
+          }
+        })
+        .attr("marker-end", (linkd) => {
+          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
+            return "url(#selected-arrowhead)";
+          } else {
+            return "url(#arrowhead)";
           }
         });
     });

@@ -34,6 +34,19 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
     .append("polygon")
     .attr("points", "0 0, 10 3.5, 0 7");
 
+  defs
+    .append("marker")
+    .attr("id", "selected-arrowhead")
+    .attr("markerWidth", 10)
+    .attr("markerHeight", 7)
+    .attr("refX", 10)
+    .attr("refY", 3.5)
+    .attr("orient", "auto")
+    .append("polygon")
+    .attr("fill", "#A4393C")
+    .attr("stroke", "#A4393C")
+    .attr("points", "0 0, 10 3.5, 0 7");
+
   defineFilters(defs);
 
   // definition for text backgrounds

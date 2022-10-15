@@ -9,7 +9,7 @@
     "start:tsc": "tsc --watch",
     "start:vite": "vite",
     "start": "npm-run-all -p start:tsc start:vite start:css copy-assets",
-    "build:bundle": "NODE_ENV=production vite build --sourcemap",
+    "build:bundle": "NODE_ENV=production vite build",
     "build:css": "postcss -o dist/assets/css/app.css assets/css/root.css",
     "build": "npm-run-all -s build:bundle build:css copy-assets",
     "lint:css": "stylelint --config stylelint.config.js 'assets/css/**/*.css'",

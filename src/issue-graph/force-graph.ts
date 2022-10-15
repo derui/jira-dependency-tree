@@ -27,32 +27,30 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
   const groupedIssues: LayoutedLeveledIssue[][] = [];
 
   for (const layout of graphs) {
-    const layoutedIssues = layout.vertices
-      .filter((v) => !!issueMap.get(v.vertex))
-      .map(({ vertex, baseX: x, baseY: y, ...rest }) => {
-        return {
-          issue: issueMap.get(vertex)!,
-          ...rest,
-          baseX: x + basePosition.x,
-          baseY: y + basePosition.y,
-        };
-      });
+    const layoutedIssues = layout.vertices.map(({ vertex, baseX: x, baseY: y, ...rest }) => {
+      return {
+        issueKey: vertex,
+        issue: issueMap.get(vertex),
+        ...rest,
+        baseX: x + basePosition.x,
+        baseY: y + basePosition.y,
+      };
+    });
 
     groupedIssues.push(layoutedIssues);
     basePosition = { x: basePosition.x, y: basePosition.y + layout.size.height + nodeSize.height };
   }
 
   if (orphans) {
-    const layoutedIssues = orphans.vertices
-      .filter((v) => !!issueMap.get(v.vertex))
-      .map(({ vertex, baseX: x, baseY: y, ...rest }) => {
-        return {
-          issue: issueMap.get(vertex)!,
-          ...rest,
-          baseX: x - orphans.size.width - nodeSize.width * 2,
-          baseY: y,
-        };
-      });
+    const layoutedIssues = orphans.vertices.map(({ vertex, baseX: x, baseY: y, ...rest }) => {
+      return {
+        issueKey: vertex,
+        issue: issueMap.get(vertex),
+        ...rest,
+        baseX: x - orphans.size.width - nodeSize.width * 2,
+        baseY: y,
+      };
+    });
 
     groupedIssues.push(layoutedIssues);
   }
@@ -62,7 +60,7 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
 
 const makeLinkData = function makeLinkData(graph: Graph, issues: LayoutedLeveledIssue[][]) {
   const issueMap = issues.flat().reduce((accum, issue) => {
-    accum.set(issue.issue.key, issue);
+    accum.set(issue.issueKey, issue);
     return accum;
   }, new Map<string, LayoutedLeveledIssue>());
 

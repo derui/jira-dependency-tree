@@ -17,7 +17,8 @@ export type LayoutedLeveledVertex = {
 };
 
 export type LayoutedLeveledIssue = {
-  issue: Issue;
+  issueKey: string;
+  issue: Issue | undefined;
   level: number;
   indexInLevel: number;
   baseX: number;

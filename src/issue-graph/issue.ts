@@ -16,7 +16,15 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
 
   node
     .append("rect")
-    .attr("class", "issue-node-outer")
+    .attr("class", (d) => {
+      const classes = ["issue-node-outer"];
+
+      if (!d.issue) {
+        classes.push("--not-found");
+      }
+
+      return classes.join(" ");
+    })
     .attr("stroke-size", 1)
     .attr("width", configuration.nodeSize.width)
     .attr("height", configuration.nodeSize.height)
@@ -29,20 +37,30 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("class", "issue-key")
     .attr("y", IssueSizes.paddingY)
     .attr("x", IssueSizes.paddingX)
-    .text((d) => d.issue.key);
+    .text((d) => d.issueKey);
 
   // issue link
   node
     .append("svg:image")
-    .attr("class", "issue-self-link")
+    .attr("class", (d) => {
+      const classes = ["issue-self-link"];
+
+      if (!d.issue) {
+        classes.push("--disabled");
+      }
+
+      return classes.join(" ");
+    })
     .attr("y", IssueSizes.paddingY * 2)
     .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
     .attr("width", IssueSizes.iconSize)
     .attr("height", IssueSizes.iconSize)
     .attr("xlink:href", "/assets/svg/exit.svg")
     .on("click", (_, d) => {
-      const url = new URL(d.issue.selfUrl);
-      window.open(`${url.origin}/browse/${d.issue.key}`, "_blank");
+      if (d.issue) {
+        const url = new URL(d.issue.selfUrl);
+        window.open(`${url.origin}/browse/${d.issueKey}`, "_blank");
+      }
     });
 
   // issue summary
@@ -53,7 +71,11 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("y", IssueSizes.paddingY + IssueSizes.textHeight)
     .attr("x", IssueSizes.paddingX)
     .text((d) => {
-      return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
+      if (d.issue) {
+        return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
+      }
+
+      return "";
     });
 
   // issue status
@@ -63,6 +85,8 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
     .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
     .attr("filter", (d) => {
+      if (!d.issue) return null;
+
       const status = project.findStatusBy(d.issue.statusId);
       switch (status?.statusCategory) {
         case StatusCategory.TODO:
@@ -79,6 +103,10 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
       return null;
     })
     .text((d) => {
+      if (!d.issue) {
+        return "";
+      }
+
       const status = project.findStatusBy(d.issue.statusId);
       return status?.name ?? "";
     });
@@ -98,7 +126,7 @@ export const buildIssueGraph = function buildIssueGraph(
     .on("click", (_, d) => {
       d3.selectAll<d3.BaseType, IssueLink>(".issue-link")
         .attr("stroke", (linkd) => {
-          if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
+          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
             /* .color-primary-0 { color:  } */
             return "#A4393C";
           } else {
@@ -106,7 +134,7 @@ export const buildIssueGraph = function buildIssueGraph(
           }
         })
         .attr("stroke-width", (linkd) => {
-          if (linkd.source.issue.key === d.issue.key || linkd.target.issue.key === d.issue.key) {
+          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
             return 2;
           } else {
             return 1;

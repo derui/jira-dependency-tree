@@ -1,6 +1,10 @@
 .issue-node-outer {
   stroke: rgb(0 0 0);
   fill: rgb(255 255 255);
+
+  &.--not-found {
+    stroke: rgb(var(--primary-3));
+  }
 }
 
 .issue-link {
@@ -15,4 +19,8 @@
 
 .issue-self-link {
   cursor: pointer;
+
+  &.--disabled {
+    display: none;
+  }
 }

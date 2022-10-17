@@ -7,7 +7,7 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
-import isolate from "@cycle/isolate";
+import isolate, { Component } from "@cycle/isolate";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import produce from "immer";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
@@ -19,6 +19,14 @@ import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
 import equal from "fast-deep-equal/es6";
+import {
+  SyncJiraState as SyncJiraState,
+  SyncJira,
+  SyncJiraProps,
+  SyncJiraSinks,
+  SyncJiraSources,
+} from "./components/sync-jira";
+import { LoaderStatus } from "./type";
 
 type MainSources = {
   DOM: DOMSource;
@@ -41,25 +49,27 @@ type MainState = {
     issues: Issue[];
     project: Project | undefined;
   };
+  projectKey: string | undefined;
   setting: Setting;
-};
+} & { jiraSync: SyncJiraState };
 
-const jiraLoader = function jiraLoader(
-  sources: MainSources,
-  projectInformationSink: ReturnType<typeof ProjectInformation>
-) {
+const jiraLoader = function jiraLoader(sources: MainSources) {
   const credential$ = sources.state
     .select<MainState["setting"]>("setting")
     .stream.map((v) => v.toCredential())
     .filter(filterUndefined);
 
+  const project$ = sources.state.select<MainState["projectKey"]>("projectKey").stream.filter(filterUndefined);
+
+  const sync$ = sources.state.select<MainState["jiraSync"]>("jiraSync").stream;
+
   return isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
-    events: xs.combine(projectInformationSink.value, credential$).map(([projectKey, credential]) => {
+    events: xs.combine(project$, credential$, sync$).map(([projectKey, credential, _]) => {
       return {
         env: env,
         credential,
-        projectKey,
+        projectKey: projectKey,
       };
     }),
   });
@@ -77,25 +87,38 @@ const main = function main(sources: MainSources): MainSinks {
     DOM: sources.DOM,
     props: sources.state
       .select<MainState["data"]>("data")
-      .stream.map<ProjectInformationProps>((data) => ({ project: data.project })),
+      .select<MainState["data"]["project"]>("project")
+      .stream.startWith(undefined)
+      .map<ProjectInformationProps>((data) => ({ project: data })),
   });
-
-  const jiraLoaderSink = jiraLoader(sources, projectInformationSink);
+  const jiraLoaderSink = jiraLoader(sources);
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
     DOM: sources.DOM,
     props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
   });
 
+  const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
+    DOM: sources.DOM,
+    props: xs
+      .combine(
+        sources.state.select<MainState["setting"]>("setting").stream.map((v) => v.isSetupFinished()),
+        sources.state.select<MainState["jiraSync"]>("jiraSync").stream.map((v) => v)
+      )
+      .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
+  });
+
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
   const zoomSlider$ = zoomSliderSink.DOM;
+  const syncJira$ = syncJiraSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$)
-    .map(([userConfiguration, projectInformation, zoomSlider]) => (
+    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$)
+    .map(([userConfiguration, projectInformation, zoomSlider, syncJira]) => (
       <div class={{ "app-root": true }}>
         {userConfiguration}
         {projectInformation}
+        {syncJira}
         {zoomSlider}
       </div>
     ));
@@ -125,8 +148,24 @@ const main = function main(sources: MainSources): MainSinks {
   });
 
   const initialReducer$ = xs.of(() => {
-    return { data: { issues: [], project: undefined }, setting: settingFactory({}) };
+    return {
+      data: { issues: [], project: undefined },
+      setting: settingFactory({}),
+      jiraSync: LoaderStatus.COMPLETED,
+      projectKey: undefined,
+    };
   });
+
+  const projectReducer$ = projectInformationSink.value.map(
+    (v) =>
+      function (prevState?: MainState) {
+        if (!prevState) return undefined;
+
+        return produce(prevState, (draft) => {
+          draft.projectKey = v;
+        });
+      }
+  );
 
   const environmentReducer$ = userConfigurationSink.value.map(
     (v) =>
@@ -139,7 +178,7 @@ const main = function main(sources: MainSources): MainSinks {
       }
   );
 
-  const jiraLoaderReducer$ = jiraLoaderSink.state.map((v) => {
+  const jiraLoaderReducer$ = jiraLoaderSink.state.map<Reducer<MainState>>((v) => {
     return function (prevState?: MainState) {
       if (!prevState) return undefined;
       const data = v(prevState.data);
@@ -148,6 +187,7 @@ const main = function main(sources: MainSources): MainSinks {
       return produce(prevState, (draft) => {
         draft.data.issues = data?.issues ?? draft.data.issues;
         draft.data.project = data?.project ?? draft.data.project;
+        draft.jiraSync = LoaderStatus.COMPLETED;
       });
     };
   });
@@ -165,9 +205,28 @@ const main = function main(sources: MainSources): MainSinks {
     .filter(filterNull)
     .map<StorageSink>((v) => ({ settings: v }));
 
+  const syncjiraReducer$ = syncJiraSink.value.map(() => {
+    return function name(prevState?: MainState) {
+      if (!prevState) {
+        return undefined;
+      }
+
+      return produce(prevState, (draft) => {
+        draft.jiraSync = LoaderStatus.LOADING;
+      });
+    };
+  });
+
   return {
     DOM: vnode$,
-    state: xs.merge(initialReducer$, storageReducer$, environmentReducer$, jiraLoaderReducer$),
+    state: xs.merge(
+      initialReducer$,
+      storageReducer$,
+      environmentReducer$,
+      jiraLoaderReducer$,
+      syncjiraReducer$,
+      projectReducer$
+    ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(jiraLoaderSink.HTTP),
     STORAGE: storage$,

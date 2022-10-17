@@ -2,20 +2,22 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { selectAsMain } from "@/components/helper";
-import { LoaderState } from "@/type";
+import { LoaderState, LoaderStatus } from "@/type";
 
 export interface SyncJiraProps {
   status: LoaderState;
   setupFinished: boolean;
 }
 
+export type SyncJiraState = LoaderState;
+
 export type SyncJiraEvent = "REQUEST";
 
-type SyncJiraSources = ComponentSources<{
+export type SyncJiraSources = ComponentSources<{
   props: MemoryStream<SyncJiraProps>;
 }>;
 
-type SyncJiraSinks = ComponentSinks<{
+export type SyncJiraSinks = ComponentSinks<{
   value: Stream<SyncJiraEvent>;
 }>;
 
@@ -25,8 +27,14 @@ const intent = function intent(sources: SyncJiraSources) {
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const allowSync$ = actions.props$.map((v) => v.status === "COMPLETED" && v.setupFinished);
-  const syncing$ = actions.props$.map((v) => v.status === "LOADING" && v.setupFinished);
+  const status = actions.props$.map((v) => v.status).debug("log");
+  const setupFinished = actions.props$.map((v) => v.setupFinished);
+  const allowSync$ = xs
+    .combine(status, setupFinished)
+    .map(([status, setupFinished]) => status === "COMPLETED" && setupFinished);
+  const syncing$ = xs
+    .combine(status, setupFinished)
+    .map(([status, setupFinished]) => status === LoaderStatus.LOADING && setupFinished);
 
   return xs.combine(allowSync$, syncing$).map(([allowSync, syncing]) => ({ allowSync, syncing }));
 };

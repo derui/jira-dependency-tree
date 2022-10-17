@@ -3,14 +3,14 @@
     transform: rotate(0deg);
   }
   100% {
-    transform: rotate(360deg);
+    transform: rotate(-360deg);
   }
 }
 
 .sync-jira {
   position: absolute;
-  top: var(--space-large);
-  left: calc(var(--space-large) * 2 + 240px);
+  top: calc(var(--space-large) + var(--space-small));
+  left: calc(var(--space-large) * 2 + 280px);
 }
 
 .sync-jira__container {
@@ -32,8 +32,13 @@
     animation: sync-jira-loading 1s linear infinite;
   }
 
+  &:not([disabled]):hover {
+    background-color: rgb(var(--complement-1));
+  }
+
   &[disabled] {
     cursor: initial;
+    border-color: rgb(var(--complement-1));
   }
 
   &::before {
@@ -49,7 +54,7 @@
   }
 
   &[disabled]::before {
-    background-color: lightgray;
+    background-color: rgb(var(--complement-1));
   }
 
   &:not([disabled]):active {

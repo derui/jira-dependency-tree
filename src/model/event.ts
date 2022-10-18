@@ -6,7 +6,17 @@ export type Credential = {
   email: string;
 };
 
-export type IssueRequest = {
+export type Events = GetWholeDataRequest | SyncIssuesRequest;
+
+export type GetWholeDataRequest = {
+  kind: "GetWholeDataRequest";
+  env: Env;
+  credential: Credential;
+  projectKey: string;
+};
+
+export type SyncIssuesRequest = {
+  kind: "SyncIssuesRequest";
   env: Env;
   credential: Credential;
   projectKey: string;

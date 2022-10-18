@@ -1,4 +1,4 @@
-import { IssueRequest } from "@/model/event";
+import { Events } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions } from "@cycle/http";
 import xs, { Stream } from "xstream";
@@ -6,7 +6,7 @@ import { selectResponse } from "@/components/helper";
 
 export type JiraIssueLoaderSources = {
   HTTP: HTTPSource;
-  events: Stream<IssueRequest>;
+  events: Stream<Events>;
 };
 
 export type JiraIssueLoaderSinks = {

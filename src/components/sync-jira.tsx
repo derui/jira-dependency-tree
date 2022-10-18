@@ -27,7 +27,7 @@ const intent = function intent(sources: SyncJiraSources) {
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const status = actions.props$.map((v) => v.status).debug("log");
+  const status = actions.props$.map((v) => v.status);
   const setupFinished = actions.props$.map((v) => v.setupFinished);
   const allowSync$ = xs
     .combine(status, setupFinished)

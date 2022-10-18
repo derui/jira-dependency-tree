@@ -27,6 +27,7 @@ import {
   SyncJiraSources,
 } from "./components/sync-jira";
 import { LoaderStatus } from "./type";
+import { Events } from "./model/event";
 
 type MainSources = {
   DOM: DOMSource;
@@ -57,21 +58,38 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
   const credential$ = sources.state
     .select<MainState["setting"]>("setting")
     .stream.map((v) => v.toCredential())
-    .filter(filterUndefined);
-
-  const project$ = sources.state.select<MainState["projectKey"]>("projectKey").stream.filter(filterUndefined);
-
-  const sync$ = sources.state.select<MainState["jiraSync"]>("jiraSync").stream;
+    .filter(filterUndefined)
+    .remember();
+  const project$ = sources.state
+    .select<MainState["projectKey"]>("projectKey")
+    .stream.filter(filterUndefined)
+    .remember();
+  const sync$ = sources.state
+    .select<MainState["jiraSync"]>("jiraSync")
+    .stream.filter((v) => v === LoaderStatus.LOADING)
+    .map(() =>
+      xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
+        return {
+          kind: "SyncIssuesRequest",
+          env: env,
+          credential,
+          projectKey: projectKey,
+        };
+      })
+    )
+    .flatten();
+  const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
+    return {
+      kind: "GetWholeDataRequest",
+      env: env,
+      credential,
+      projectKey: projectKey,
+    };
+  });
 
   return isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
-    events: xs.combine(project$, credential$, sync$).map(([projectKey, credential, _]) => {
-      return {
-        env: env,
-        credential,
-        projectKey: projectKey,
-      };
-    }),
+    events: xs.merge(sync$, requestChangeEvent$),
   });
 };
 

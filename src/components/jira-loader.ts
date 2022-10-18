@@ -1,4 +1,4 @@
-import { IssueRequest } from "@/model/event";
+import { Events } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { HTTPSource, RequestInput } from "@cycle/http";
@@ -15,7 +15,7 @@ type State = {
 
 export type JiraLoaderSources = {
   HTTP: HTTPSource;
-  events: Stream<IssueRequest>;
+  events: Stream<Events>;
 };
 
 export type JiraLoaderSinks = {
@@ -30,10 +30,22 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
   });
   const projectLoaderSinks = isolate(JiraProjectLoader, { HTTP: "project" })({
     HTTP: sources.HTTP,
-    events: sources.events,
+    events: sources.events.filter((v) => v.kind === "GetWholeDataRequest"),
   });
 
-  const value$ = sources.events.map(() => xs.combine(issueLoaderSinks.issues, projectLoaderSinks.project)).flatten();
+  const value$ = sources.events
+    .map((e) => {
+      let project$ = xs.of<Project | undefined>(undefined);
+      switch (e.kind) {
+        case "GetWholeDataRequest":
+          project$ = projectLoaderSinks.project.map<Project | undefined>((v) => v);
+        default:
+          break;
+      }
+
+      return xs.combine(issueLoaderSinks.issues, project$);
+    })
+    .flatten();
 
   const initialReducer$ = xs.of(() => {
     return { issues: [], project: undefined };

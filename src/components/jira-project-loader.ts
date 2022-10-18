@@ -1,4 +1,4 @@
-import { IssueRequest } from "@/model/event";
+import { Events } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
@@ -7,7 +7,7 @@ import { selectResponse } from "@/components/helper";
 
 export type JiraProjectLoaderSources = {
   HTTP: HTTPSource;
-  events: Stream<IssueRequest>;
+  events: Stream<Events>;
 };
 
 export type JiraProjectLoaderSinks = {
@@ -37,12 +37,7 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
   });
 
   const project$ = selectResponse(sources.HTTP)
-    .map((r) =>
-      r.replaceError((v) => {
-        console.log(v);
-        return xs.of();
-      })
-    )
+    .map((r) => r.replaceError(() => xs.of()))
     .flatten()
     .filter((response) => response.status === 200)
     .map((response) => {

@@ -34,4 +34,12 @@ export interface Configuration {
   nodeSize: Size;
 
   canvasSize: Size;
+
+  layoutDirection: LayoutDirection;
 }
+
+export const LayoutDirection = Object.freeze({
+  Vertical: "Vertical",
+  Horizontal: "Horizontal",
+} as const);
+export type LayoutDirection = typeof LayoutDirection[keyof typeof LayoutDirection];

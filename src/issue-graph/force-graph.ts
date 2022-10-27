@@ -3,8 +3,8 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import * as d3 from "d3";
 import { buildIssueGraph } from "@/issue-graph/issue";
-import { Configuration, D3Node, IssueLink, LayoutedLeveledIssue } from "@/issue-graph/type";
-import { calculateLayouts } from "./issue-layout";
+import { Configuration, D3Node, IssueLink, LayoutDirection, LayoutedLeveledIssue } from "@/issue-graph/type";
+import { calculateLayouts, LayoutedGraph } from "./issue-layout";
 import { Position, Size } from "@/type";
 
 const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
@@ -16,7 +16,26 @@ const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
   return issueGraph;
 };
 
-const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue[], nodeSize: Size) {
+const getNextPositionBy = function getNextPositionBy(
+  position: Position,
+  layout: LayoutedGraph,
+  nodeSize: Size,
+  direction: LayoutDirection
+) {
+  switch (direction) {
+    case LayoutDirection.Horizontal:
+      return { x: position.x + layout.size.width + nodeSize.width, y: position.y };
+    case LayoutDirection.Vertical:
+      return { x: position.x, y: position.y + layout.size.height + nodeSize.height };
+  }
+};
+
+const makeLeveledIssues = function makeLeveledIssues(
+  graph: Graph,
+  issues: Issue[],
+  nodeSize: Size,
+  direction: LayoutDirection
+) {
   const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.key, issue);
     return accum;
@@ -38,7 +57,7 @@ const makeLeveledIssues = function makeLeveledIssues(graph: Graph, issues: Issue
     });
 
     groupedIssues.push(layoutedIssues);
-    basePosition = { x: basePosition.x, y: basePosition.y + layout.size.height + nodeSize.height };
+    basePosition = getNextPositionBy(basePosition, layout, nodeSize, direction);
   }
 
   if (orphans) {
@@ -88,7 +107,7 @@ export const makeForceGraph = function makeForceGraph(
   configuration: Configuration
 ) {
   const issueGraph = makeIssueGraph(issues);
-  const leveledIssues = makeLeveledIssues(issueGraph, issues, configuration.nodeSize);
+  const leveledIssues = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.layoutDirection);
   const linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);

@@ -21,7 +21,7 @@ const getSubgraphs = function getSubgraphs(graph: Graph): Graph[] {
 };
 
 // layout of a graph.
-type LayoutedGraph = {
+export type LayoutedGraph = {
   center: Position;
   size: Size;
   vertices: LayoutedLeveledVertex[];

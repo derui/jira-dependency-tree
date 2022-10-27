@@ -7,11 +7,13 @@ import { Size } from "@/type";
 import { Selection } from "d3";
 import { filterNull, Rect } from "@/util/basic";
 import { PanZoomState } from "./pan-zoom";
+import { LayoutDirection } from "@/issue-graph/type";
 
 export interface IssueGraphSink {
   panZoom: PanZoomState;
   issues: Issue[];
   project: Project;
+  layoutDirection: LayoutDirection;
 }
 
 export interface IssueGraphSource {}
@@ -45,15 +47,15 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     };
 
     sink$.filter(filterNull).subscribe({
-      next: ({ panZoom, issues, project }) => {
+      next: ({ panZoom, issues, project, layoutDirection }) => {
         if (svg === null) {
-          svg = makeIssueGraphRoot(issues, project, configuration);
+          svg = makeIssueGraphRoot(issues, project, { ...configuration, layoutDirection });
           document.querySelector(parentSelector)?.append(svg.node() as Node);
           svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
         } else if (prevIssues !== issues || prevProject !== project) {
           svg.remove();
 
-          svg = makeIssueGraphRoot(issues, project, configuration);
+          svg = makeIssueGraphRoot(issues, project, { ...configuration, layoutDirection });
           document.querySelector(parentSelector)?.append(svg.node() as Node);
           svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
         }

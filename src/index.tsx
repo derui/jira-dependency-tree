@@ -145,15 +145,15 @@ const main = function main(sources: MainSources): MainSinks {
     .combine(
       sources.state.stream.map(({ data }) => data.issues),
       sources.state.stream.map(({ data }) => data.project).filter(filterUndefined),
-      sources.state.stream.map(({ setting }) => setting.layoutDirection),
+      sources.state.stream.map(({ setting }) => setting.graphLayout),
       sources.panZoom.state
     )
-    .map(([issues, project, layoutDirection, panZoomState]) => {
+    .map(([issues, project, graphLayout, panZoomState]) => {
       return {
         panZoom: panZoomState,
         issues,
         project,
-        layoutDirection,
+        graphLayout,
       };
     });
 

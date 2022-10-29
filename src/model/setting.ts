@@ -1,4 +1,4 @@
-import { LayoutDirection } from "@/issue-graph/type";
+import { GraphLayout } from "@/issue-graph/type";
 import { Size } from "@/type";
 import produce from "immer";
 import { Credential } from "./event";
@@ -16,7 +16,7 @@ export type SettingArgument = {
     jiraToken?: string;
   };
 
-  layoutDirection?: LayoutDirection;
+  graphLayout?: GraphLayout;
 };
 
 export type Setting = {
@@ -26,12 +26,12 @@ export type Setting = {
     jiraToken?: string;
   };
   readonly userDomain?: string;
-  readonly layoutDirection: LayoutDirection;
+  readonly graphLayout: GraphLayout;
 
   isSetupFinished(): boolean;
   applyCredentials(jiraToken: string, email: string): Setting;
   applyUserDomain(userDomain: string): Setting;
-  changeDirection(layoutDirection: LayoutDirection): Setting;
+  changeDirection(layoutDirection: GraphLayout): Setting;
 
   toCredential(): Credential | undefined;
   toArgument(): SettingArgument;
@@ -42,7 +42,7 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
     issueSize: argument.issueNodeSize ?? { width: 160, height: 80 },
     credentials: argument.credentials ?? {},
     userDomain: argument.userDomain,
-    layoutDirection: argument.layoutDirection ?? LayoutDirection.Vertical,
+    graphLayout: argument.graphLayout ?? GraphLayout.Vertical,
 
     isSetupFinished() {
       return !!this.credentials.jiraToken && !!this.credentials.email && !!this.userDomain;
@@ -53,13 +53,13 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
         issueNodeSize: Object.assign({}, this.issueSize),
         userDomain: this.userDomain,
         credentials: Object.assign({}, this.credentials),
-        layoutDirection: this.layoutDirection,
+        graphLayout: this.graphLayout,
       };
     },
 
     changeDirection(layoutDirection) {
       return produce(this, (draft) => {
-        draft.layoutDirection = layoutDirection;
+        draft.graphLayout = layoutDirection;
       });
     },
 

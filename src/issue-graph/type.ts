@@ -35,11 +35,11 @@ export interface Configuration {
 
   canvasSize: Size;
 
-  layoutDirection: LayoutDirection;
+  graphLayout: GraphLayout;
 }
 
-export const LayoutDirection = Object.freeze({
+export const GraphLayout = Object.freeze({
   Vertical: "Vertical",
   Horizontal: "Horizontal",
 } as const);
-export type LayoutDirection = typeof LayoutDirection[keyof typeof LayoutDirection];
+export type GraphLayout = typeof GraphLayout[keyof typeof GraphLayout];

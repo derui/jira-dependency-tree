@@ -28,6 +28,8 @@ import {
 } from "./components/sync-jira";
 import { LoaderStatus } from "./type";
 import { Events } from "./model/event";
+import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
+import { GraphLayout } from "./issue-graph/type";
 
 type MainSources = {
   DOM: DOMSource;
@@ -52,7 +54,7 @@ type MainState = {
   };
   projectKey: string | undefined;
   setting: Setting;
-} & { jiraSync: SyncJiraState };
+} & { jiraSync: SyncJiraState } & { sideToolbar: SideToolbarState };
 
 const jiraLoader = function jiraLoader(sources: MainSources) {
   const credential$ = sources.state
@@ -124,6 +126,14 @@ const main = function main(sources: MainSources): MainSinks {
       )
       .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
   });
+  const sideToolbarSink$ = isolate(
+    SideToolbar,
+    "sideToolbar"
+  )({
+    DOM: sources.DOM,
+    props: xs.of<GraphLayout>(GraphLayout.Horizontal).remember(),
+    state: sources.state,
+  });
 
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
@@ -131,13 +141,14 @@ const main = function main(sources: MainSources): MainSinks {
   const syncJira$ = syncJiraSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$)
-    .map(([userConfiguration, projectInformation, zoomSlider, syncJira]) => (
+    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbarSink$.DOM)
+    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar]) => (
       <div class={{ "app-root": true }}>
         {userConfiguration}
         {projectInformation}
         {syncJira}
         {zoomSlider}
+        {sideToolbar}
       </div>
     ));
 
@@ -173,6 +184,9 @@ const main = function main(sources: MainSources): MainSinks {
       setting: settingFactory({}),
       jiraSync: LoaderStatus.COMPLETED,
       projectKey: undefined,
+      sideToolbar: {
+        graphLayout: GraphLayout.Horizontal,
+      },
     };
   });
 
@@ -245,7 +259,8 @@ const main = function main(sources: MainSources): MainSinks {
       environmentReducer$,
       jiraLoaderReducer$,
       syncjiraReducer$,
-      projectReducer$
+      projectReducer$,
+      sideToolbarSink$.state as Stream<Reducer<any>>
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(jiraLoaderSink.HTTP),

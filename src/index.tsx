@@ -56,6 +56,8 @@ type MainState = {
   setting: Setting;
 } & { jiraSync: SyncJiraState } & { sideToolbar: SideToolbarState };
 
+type Storage = SettingArgument & { graphLayout?: GraphLayout };
+
 const jiraLoader = function jiraLoader(sources: MainSources) {
   const credential$ = sources.state
     .select<MainState["setting"]>("setting")
@@ -126,6 +128,7 @@ const main = function main(sources: MainSources): MainSinks {
       )
       .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
   });
+
   const sideToolbarSink$ = isolate(
     SideToolbar,
     "sideToolbar"
@@ -156,7 +159,7 @@ const main = function main(sources: MainSources): MainSinks {
     .combine(
       sources.state.stream.map(({ data }) => data.issues),
       sources.state.stream.map(({ data }) => data.project).filter(filterUndefined),
-      sources.state.stream.map(({ setting }) => setting.graphLayout),
+      sources.state.stream.map(({ sideToolbar }) => sideToolbar.graphLayout),
       sources.panZoom.state
     )
     .map(([issues, project, graphLayout, panZoomState]) => {
@@ -168,12 +171,13 @@ const main = function main(sources: MainSources): MainSinks {
       };
     });
 
-  const storageReducer$ = sources.STORAGE.select<SettingArgument>("settings").map((v) => {
+  const storageReducer$ = sources.STORAGE.select<Storage>("settings").map((v) => {
     return function (prevState?: MainState) {
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
         draft.setting = settingFactory(v);
+        draft.sideToolbar.graphLayout = v.graphLayout ?? prevState.sideToolbar.graphLayout;
       });
     };
   });
@@ -226,18 +230,21 @@ const main = function main(sources: MainSources): MainSinks {
     };
   });
 
-  const storage$ = sources.state.stream
-    .map((v) => v.setting)
-    .fold<SettingArgument | null>((accum, v) => {
+  const storage$ = xs
+    .combine(
+      sources.state.select<MainState["setting"]>("setting").stream,
+      sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream
+    )
+    .fold<Storage | null>((accum, [v, toolBar]) => {
       if (!accum) {
-        return v.toArgument();
+        return { ...v.toArgument(), graphLayout: toolBar.graphLayout };
       }
 
-      const newArg = v.toArgument();
+      const newArg = { ...v.toArgument(), GraphLayout: toolBar.graphLayout };
       return equal(newArg, accum) ? accum : newArg;
     }, null)
     .filter(filterNull)
-    .map<StorageSink>((v) => ({ settings: v }));
+    .map<StorageSink>((v) => v);
 
   const syncjiraReducer$ = syncJiraSink.value.map(() => {
     return function name(prevState?: MainState) {
@@ -260,7 +267,7 @@ const main = function main(sources: MainSources): MainSinks {
       jiraLoaderReducer$,
       syncjiraReducer$,
       projectReducer$,
-      sideToolbarSink$.state as Stream<Reducer<any>>
+      sideToolbarSink$.state as Stream<Reducer<MainState>>
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(jiraLoaderSink.HTTP),

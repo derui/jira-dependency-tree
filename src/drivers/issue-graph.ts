@@ -40,6 +40,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     let svgSize: DOMRect;
     let prevIssues: Issue[] | null = null;
     let prevProject: Project | null = null;
+    let prevLayout: GraphLayout | null = null;
 
     const configuration = {
       nodeSize,
@@ -52,7 +53,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
           svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
           document.querySelector(parentSelector)?.append(svg.node() as Node);
           svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
-        } else if (prevIssues !== issues || prevProject !== project) {
+        } else if (prevIssues !== issues || prevProject !== project || prevLayout !== graphLayout) {
           svg.remove();
 
           svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
@@ -64,6 +65,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
         configuration.canvasSize = { width: svgSize.width, height: svgSize.height };
         prevIssues = issues;
         prevProject = project;
+        prevLayout = graphLayout;
       },
     });
 

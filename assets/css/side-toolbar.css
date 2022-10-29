@@ -8,6 +8,7 @@
   border-radius: calc(var(--base-border-radius) * 2);
 
   list-style: none;
+  box-shadow: var(--box-shadow);
 }
 
 .side-toolbar__graph-layout {
@@ -63,6 +64,7 @@
   visibility: hidden;
   transition: left 0.15s ease, opacity 0.15s ease;
   opacity: 0;
+  box-shadow: var(--box-shadow);
 
   &.--opened {
     visibility: visible;

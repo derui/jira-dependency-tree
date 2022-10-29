@@ -31,11 +31,7 @@ const intent = function intent(sources: SideToolbarSources) {
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const layout$ = xs.merge(
-    actions.state$.map((v) => v.graphLayout),
-    actions.verticalClicked$,
-    actions.horizontalClicked$
-  );
+  const layout$ = xs.merge(actions.state$.map((v) => v.graphLayout));
   const layouterOpened$ = xs
     .merge(
       actions.layouterClicked$.mapTo("layouter" as const),
@@ -94,9 +90,13 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
       };
     };
   });
+  const changedLayout$ = xs.merge(actions.verticalClicked$, actions.horizontalClicked$);
+  const reducer$ = changedLayout$.map<Reducer<SideToolbarState>>((v) => () => {
+    return { graphLayout: v };
+  });
 
   return {
     DOM: view(state$),
-    state: xs.merge(initialReducer$),
+    state: xs.merge(initialReducer$, reducer$),
   };
 };

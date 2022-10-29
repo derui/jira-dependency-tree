@@ -92,7 +92,7 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
             if (zoom < 100) {
               zoomScale = delta * 2.5;
             }
-            zoom = Math.max(Math.min(zoom + zoomScale, 200), 1);
+            zoom = Math.max(Math.min(zoom + -1 * zoomScale, 200), 1);
 
             listener.next({ pan, zoomPercentage: zoom });
           });

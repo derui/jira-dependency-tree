@@ -4,6 +4,7 @@
 @import "./project-information.css";
 @import "./zoom-slider.css";
 @import "./sync-jira.css";
+@import "./side-toolbar.css";
 
 html,
 body,

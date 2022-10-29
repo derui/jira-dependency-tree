@@ -18,3 +18,19 @@ export const tick = async function tick() {
     setTimeout(resolve, 0);
   });
 };
+
+// short cut function to run component with Time
+// Usage:
+// await componentTest((done) => {
+//   ....
+
+//     Time.run(done)
+// })
+export const componentTest = function componentTest(f: (done: (error: any) => void) => void) {
+  return new Promise<void>(async (resolve, rej) => {
+    f((e) => {
+      if (e) rej(e);
+      else resolve();
+    });
+  });
+};

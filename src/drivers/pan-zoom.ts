@@ -87,11 +87,8 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
           });
 
           const wheelListener = makeWheelListener((delta) => {
-            let zoomScale = delta * 5;
+            let zoomScale = delta * 5 * (zoom / 100);
 
-            if (zoom < 100) {
-              zoomScale = delta * 2.5;
-            }
             zoom = Math.max(Math.min(zoom + -1 * zoomScale, 200), 1);
 
             listener.next({ pan, zoomPercentage: zoom });

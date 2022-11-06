@@ -1,0 +1,122 @@
+.project-toolbar {
+  display: inline-flex;
+  padding: var(--space-base);
+  background-color: white;
+  border-radius: calc(var(--base-border-radius) * 2);
+  margin: 0;
+
+  list-style: none;
+  box-shadow: var(--box-shadow);
+}
+
+.project-toolbar__sprint-selector {
+  display: flex;
+  flex: 1 1 auto;
+  background-color: white;
+  padding: var(--space-small);
+  transition: color 0.15s ease-out;
+  cursor: pointer;
+  color: black;
+
+  &:hover {
+    color: rgb(var(--complement-3));
+  }
+
+  /* style for opened */
+  &.--opened {
+    color: rgb(var(--complement-3));
+  }
+
+  &:hover::before {
+    background-color: rgb(var(--complement-3));
+  }
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask: url("/assets/svg/tablar-icons/run.svg");
+    mask-size: cover;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    background-color: black;
+    transition: background-color 0.15s ease-out;
+  }
+
+  /* style for opened */
+  &.--opened {
+    &::before {
+      background-color: rgb(var(--complement-3));
+    }
+  }
+}
+
+.sprint-selector__main {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: calc(var(--space-base) + 48px);
+  left: 0;
+  padding: var(--space-base);
+  background-color: white;
+  border-radius: var(--base-border-radius);
+  box-shadow: var(--box-shadow);
+  width: 0;
+  overflow: hidden;
+  visibility: hidden;
+  transition: width 0.15s ease, opacity 0.15s ease;
+  opacity: 0;
+  white-space: nowrap;
+
+  &.--opened {
+    visibility: visible;
+    opacity: 1;
+    width: 256px;
+  }
+}
+
+.sprint-selector__label {
+  display: flex;
+  flex: 1 1 auto;
+  padding: var(--space-base);
+  margin-bottom: var(--space-small);
+  cursor: pointer;
+  align-items: center;
+}
+
+.sprint-selector__radio {
+  margin: 0;
+  margin-right: var(--space-base);
+  display: none;
+}
+
+.sprint-selector__checkbox {
+  display: inline-block;
+  flex: 0 0 auto;
+  background-color: white;
+  padding: var(--space-small);
+  transition: background-color 0.15s ease-out;
+  height: var(--icon-size);
+  width: var(--icon-size);
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask-size: cover;
+    width: 100%;
+    height: 100%;
+    background-color: gray;
+    transition: background-color 0.15s ease-out;
+    mask: url("/assets/svg/tablar-icons/square.svg");
+    mask-size: cover;
+  }
+
+  &.--checked {
+    &::before {
+      mask: url("/assets/svg/tablar-icons/square-check.svg");
+      mask-size: cover;
+      background-color: rgb(var(--secondary-1-3));
+    }
+  }
+}

@@ -74,28 +74,38 @@ const view = function view(state$: ReturnType<typeof model>) {
             <span class={{ "sprint-selector__current-type": true }}>{currentType}</span>
           </li>
         </ul>
-        <div class={{ "sprint-selector__main": true, "--opened": selectorOpened }} dataset={{ testid: "selector" }}>
-          <label class={{ "sprint-selector__label": true }}>
-            <span
-              class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "current" }}
-            ></span>
-            <input
-              class={{ "sprint-selector__radio": true }}
-              attrs={{ type: "radio", name: "sprint", value: "current" }}
-            ></input>
-            Current Sprint
-          </label>
-          <label class={{ "sprint-selector__label": true }}>
-            <span
-              class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "suggestion" }}
-            ></span>
-            <input
-              class={{ "sprint-selector__radio": true }}
-              attrs={{ type: "radio", name: "sprint", value: "suggestion" }}
-            ></input>
-            Other Sprint
-          </label>
-        </div>
+        <ul class={{ "sprint-selector__main": true, "--opened": selectorOpened }} dataset={{ testid: "selector" }}>
+          <li>
+            <label class={{ "sprint-selector__label": true }}>
+              <span
+                class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "current" }}
+              ></span>
+              <input
+                class={{ "sprint-selector__radio": true }}
+                attrs={{ type: "radio", name: "sprint", value: "current" }}
+              ></input>
+              Current Sprint
+            </label>
+          </li>
+          <li>
+            <label class={{ "sprint-selector__label": true }}>
+              <span
+                class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "suggestion" }}
+              ></span>
+              <input
+                class={{ "sprint-selector__radio": true }}
+                attrs={{ type: "radio", name: "sprint", value: "suggestion" }}
+              ></input>
+              Other Sprint
+            </label>
+          </li>
+          <li class={{ "sprint-selector__footer": true }}>
+            <button class={{ "sprint-selector__cancel": true }}>Cancel</button>
+            <button class={{ "sprint-selector__submit": true }} attrs={{ type: "submit" }}>
+              Apply
+            </button>
+          </li>
+        </ul>
       </div>
     );
   });

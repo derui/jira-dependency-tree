@@ -2,6 +2,7 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import xs, { MemoryStream } from "xstream";
 import { selectAsMain } from "./helper";
+import { filterUndefined } from "@/util/basic";
 
 interface Suggestion {
   label: string;
@@ -19,16 +20,29 @@ type SuggestorSources = ComponentSources<{
 type SuggestorSinks = ComponentSinks<{}>;
 
 const intent = function intent(sources: SuggestorSources) {
-  const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click").mapTo(true);
-  return { openerClicked$, props$: sources.props };
+  const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click", { bubbles: false }).mapTo(true);
+  const termInputted$ = selectAsMain(sources, ".suggestor-main__term-input")
+    .events("input")
+    .map((e) => {
+      if (!e.currentTarget) {
+        return undefined;
+      } else {
+        return (e.currentTarget as HTMLInputElement).value;
+      }
+    })
+    .filter(filterUndefined);
+
+  return { openerClicked$, props$: sources.props, termInputted$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   const opened$ = actions.openerClicked$.fold((accum) => !accum, false);
   const suggestions$ = actions.props$.map((v) => v.suggestions);
 
-  return xs.combine(opened$, suggestions$).map(([opened, suggestions]) => {
-    return { opened, disabled: suggestions.length === 0, suggestions };
+  return xs.combine(opened$, suggestions$, actions.termInputted$.startWith("")).map(([opened, suggestions, term]) => {
+    const filteredSuggestions = suggestions.filter((suggestion) => suggestion.label.includes(term));
+
+    return { opened, disabled: suggestions.length === 0, suggestions: filteredSuggestions };
   });
 };
 

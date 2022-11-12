@@ -1,7 +1,6 @@
 .suggestor {
   display: inline-block;
   position: relative;
-  border-radius: calc(var(--base-border-radius) * 2);
   padding: 0;
   margin: 0;
 }
@@ -17,6 +16,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   border: none;
+  border-radius: var(--base-border-radius);
 
   &:hover {
     color: rgb(var(--complement-3));

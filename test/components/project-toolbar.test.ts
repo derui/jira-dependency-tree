@@ -45,7 +45,7 @@ test("open selector when it clicked", async () => {
     const Time = mockTimeSource();
     const click$ = Time.diagram("--a|", { a: { target: {} } });
     const dom = mockDOMSource({
-      ".project-toolbar__sprint-selector": {
+      ".project-toolbar__search-condition-editor": {
         click: click$,
       },
     });

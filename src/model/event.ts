@@ -8,16 +8,30 @@ export type Credential = {
 
 export type Events = GetWholeDataRequest | SyncIssuesRequest;
 
-export type GetWholeDataRequest = {
+export interface GetWholeDataRequest {
   kind: "GetWholeDataRequest";
   env: Env;
   credential: Credential;
   projectKey: string;
-};
+}
 
-export type SyncIssuesRequest = {
+export interface SyncIssuesRequest {
   kind: "SyncIssuesRequest";
   env: Env;
   credential: Credential;
   projectKey: string;
-};
+}
+
+type SprintCondition = { kind: "current" } | { kind: "suggestion"; sprintName: string };
+export interface SearchCondition {
+  sprint?: SprintCondition;
+  epic?: string;
+}
+
+export interface SearchIssueRequest {
+  kind: "SearchIssueRequest";
+  env: Env;
+  credential: Credential;
+  projectKey: string;
+  condition: SearchCondition;
+}

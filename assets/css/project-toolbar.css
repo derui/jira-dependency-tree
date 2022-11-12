@@ -9,7 +9,7 @@
   box-shadow: var(--box-shadow);
 }
 
-.project-toolbar__sprint-selector {
+.project-toolbar__search-condition-editor {
   display: flex;
   flex: 1 1 auto;
   background-color: white;
@@ -35,7 +35,7 @@
     content: "";
     display: inline-block;
     flex: 0 0 auto;
-    mask: url("/assets/svg/tablar-icons/run.svg");
+    mask: url("/assets/svg/tablar-icons/search.svg");
     mask-size: cover;
     width: var(--icon-size);
     height: var(--icon-size);
@@ -51,13 +51,13 @@
   }
 }
 
-.sprint-selector__main {
+.search-condition-editor__main {
   position: absolute;
   display: flex;
   flex-direction: column;
   top: calc(var(--space-base) + 48px);
   left: 0;
-  padding: var(--space-base);
+  padding: 0;
   background-color: white;
   border-radius: var(--base-border-radius);
   box-shadow: var(--box-shadow);
@@ -77,7 +77,7 @@
   }
 }
 
-.sprint-selector__label {
+.search-condition-editor__label {
   display: flex;
   flex: 1 1 auto;
   padding: var(--space-base);
@@ -86,13 +86,13 @@
   align-items: center;
 }
 
-.sprint-selector__radio {
+.search-condition-editor__radio {
   margin: 0;
   margin-right: var(--space-base);
   display: none;
 }
 
-.sprint-selector__checkbox {
+.search-condition-editor__checkbox {
   display: inline-block;
   flex: 0 0 auto;
   background-color: white;
@@ -124,46 +124,45 @@
 }
 
 /* footer */
-.sprint-selector__footer {
+.search-condition-editor__footer {
   display: flex;
   flex: 1 1 auto;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0 var(--space-base) 0;
+  padding: var(--space-base);
+  padding-top: calc(var(--space-base) - 1px);
+  border-top: 1px solid rgb(1 1 1 / 10%);
 }
 
-.sprint-selector__submit,
-.sprint-selector__cancel {
+.search-condition-editor__submit,
+.search-condition-editor__cancel {
   flex: 0 0 auto;
   align-self: flex-end;
   right: 0;
   bottom: 0;
-  margin-top: var(--space-base);
   padding: var(--space-base);
   border-radius: 4px;
   transition: background-color 0.2s ease-in-out;
 }
 
-.sprint-selector__submit {
-  border: 1px solid rgb(var(--complement-0));
-  background-color: rgb(var(--complement-1) / 30%);
-  color: rgb(var(--secondary-2-4));
-  transition: background-color 0.2s ease-in-out;
+.search-condition-editor__submit {
+  border: 1px solid rgb(var(--secondary-1-0));
+  background-color: rgb(var(--secondary-1-1));
+  color: white;
 
   &:hover {
-    background-color: rgb(var(--complement-1) / 60%);
+    background-color: rgb(var(--secondary-1-2));
   }
 
   &:active {
-    background-color: rgb(var(--complement-1));
+    background-color: rgb(var(--secondary-1-3));
   }
 }
 
-.sprint-selector__cancel {
+.search-condition-editor__cancel {
   border: 1px solid black;
   background-color: white;
   color: black;
-  transition: background-color 0.2s ease-in-out;
 
   &:hover {
     background-color: lightgray / 60%;

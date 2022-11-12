@@ -4,13 +4,13 @@ import { selectAsMain } from "@/components/helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { Stream } from "xstream";
 import produce from "immer";
+import { SearchCondition } from "@/model/event";
 
-type SelectedSprint = { kind: "current" } | { kind: "suggestion"; sprintName: string };
-type SelectedSprintKind = "current" | "suggestion";
+type ConditionType = "sprint" | "epic";
 
 export interface ProjectToolbarState {
-  selectedSprintKind: SelectedSprintKind;
-  suggestedSprint?: string;
+  conditionType: ConditionType;
+  currentSearchCondition: SearchCondition;
 }
 
 type ProjectToolbarSources = ComponentSources<{
@@ -19,89 +19,77 @@ type ProjectToolbarSources = ComponentSources<{
 
 type ProjectToolbarSinks = ComponentSinks<{
   state: Stream<Reducer<ProjectToolbarState>>;
-  value: Stream<SelectedSprint>;
+  value: Stream<SearchCondition>;
 }>;
 
 const intent = function intent(sources: ProjectToolbarSources) {
-  const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__sprint-selector").events("click");
+  const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
   const changed = selectAsMain(sources, "input[type=radio]")
     .events("change")
     .map((event) => {
-      return (event.target as HTMLInputElement).value as SelectedSprintKind;
+      return (event.target as HTMLInputElement).value as ConditionType;
     });
 
-  return { state$: sources.state.stream, layouterClicked$: selectorOpenerClicked, changed };
+  return { state$: sources.state.stream, openerClicked$: selectorOpenerClicked, changed };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const currentSelectedSprint$ = actions.state$.map((v) => v.selectedSprintKind);
-  const suggestionSprint$ = actions.state$.map((v) => v.suggestedSprint);
-  const selectorOpened$ = xs.merge(actions.layouterClicked$.mapTo("layouter" as const)).fold((accum, v) => {
-    switch (v) {
-      case "layouter":
-        return !accum;
-    }
-  }, false);
+  const currentConditionType$ = actions.state$.map((v) => v.conditionType);
+  const selectorOpened$ = xs
+    .merge(actions.openerClicked$.mapTo("search-condition-editor" as const))
+    .fold((accum, v) => {
+      switch (v) {
+        case "search-condition-editor":
+          return !accum;
+      }
+    }, false);
 
-  return xs
-    .combine(currentSelectedSprint$, selectorOpened$, suggestionSprint$)
-    .map(([currentSelectedSprint, selectorOpened, suggestedSprint]) => {
-      return { currentSelectedSprint, selectorOpened, suggestedSprint };
-    });
+  return xs.combine(currentConditionType$, selectorOpened$).map(([currentConditionType, selectorOpened]) => {
+    return { currentConditionType, selectorOpened };
+  });
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ currentSelectedSprint, selectorOpened, suggestedSprint }) => {
-    let currentType = "Editing...";
-    if (!selectorOpened) {
-      switch (currentSelectedSprint) {
-        case "current":
-          currentType = "Current Sprint";
-          break;
-        case "suggestion":
-          currentType = suggestedSprint ?? "Select Sprint";
-          break;
-      }
-    }
-
+  return state$.map(({ currentConditionType, selectorOpened }) => {
     return (
       <div class={{ "project-toolbar-wrapper": true }}>
         <ul class={{ "project-toolbar": true }} dataset={{ testid: "main" }}>
           <li
-            class={{ "project-toolbar__sprint-selector": true, "--opened": selectorOpened }}
+            class={{ "project-toolbar__search-condition-editor": true, "--opened": selectorOpened }}
             dataset={{ testid: "opener" }}
-          >
-            <span class={{ "sprint-selector__current-type": true }}>{currentType}</span>
-          </li>
+          ></li>
         </ul>
-        <ul class={{ "sprint-selector__main": true, "--opened": selectorOpened }} dataset={{ testid: "selector" }}>
+        <ul
+          class={{ "search-condition-editor__main": true, "--opened": selectorOpened }}
+          dataset={{ testid: "selector" }}
+        >
           <li>
-            <label class={{ "sprint-selector__label": true }}>
+            <label class={{ "search-condition-editor__label": true }}>
               <span
-                class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "current" }}
+                class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
               ></span>
               <input
-                class={{ "sprint-selector__radio": true }}
-                attrs={{ type: "radio", name: "sprint", value: "current" }}
+                class={{ "search-condition-editor__radio": true }}
+                attrs={{ type: "radio", name: "type", value: "sprint" }}
               ></input>
-              Current Sprint
+              Sprint
             </label>
           </li>
           <li>
-            <label class={{ "sprint-selector__label": true }}>
+            <label class={{ "search-condition-editor__label": true }}>
               <span
-                class={{ "sprint-selector__checkbox": true, "--checked": currentSelectedSprint === "suggestion" }}
+                class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "epic" }}
               ></span>
               <input
-                class={{ "sprint-selector__radio": true }}
-                attrs={{ type: "radio", name: "sprint", value: "suggestion" }}
+                class={{ "search-condition-editor__radio": true }}
+                attrs={{ type: "radio", name: "type", value: "epic" }}
               ></input>
-              Other Sprint
+              Epic
             </label>
           </li>
-          <li class={{ "sprint-selector__footer": true }}>
-            <button class={{ "sprint-selector__cancel": true }}>Cancel</button>
-            <button class={{ "sprint-selector__submit": true }} attrs={{ type: "submit" }}>
+          <li class={{ "search-condition-editor__footer": true }}>
+            <button class={{ "search-condition-editor__cancel": true }}>Cancel</button>
+            <button class={{ "search-condition-editor__submit": true }} attrs={{ type: "submit" }}>
               Apply
             </button>
           </li>
@@ -117,7 +105,8 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
 
   const initialReducer$ = xs.of<Reducer<ProjectToolbarState>>(() => {
     return {
-      selectedSprintKind: "current",
+      conditionType: "sprint",
+      currentSearchCondition: {},
     };
   });
 
@@ -126,7 +115,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
-        draft.selectedSprintKind = selectedSprint;
+        draft.conditionType = selectedSprint;
       });
     };
   });

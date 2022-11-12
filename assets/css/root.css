@@ -6,6 +6,7 @@
 @import "./sync-jira.css";
 @import "./side-toolbar.css";
 @import "./project-toolbar.css";
+@import "./suggestor.css";
 
 html,
 body,

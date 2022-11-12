@@ -16,7 +16,7 @@ test("button is disabled if no any suggestion", async () => {
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: xs.of<SuggestorProps<unknown>>({ suggestions: [] }).remember(),
+      props: xs.of<SuggestorProps>({ suggestions: [] }).remember(),
     });
 
     // Act

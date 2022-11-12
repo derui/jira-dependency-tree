@@ -3,56 +3,65 @@ import { ComponentSinks, ComponentSources } from "@/components/type";
 import xs, { MemoryStream } from "xstream";
 import { selectAsMain } from "./helper";
 
-interface Suggestion<T> {
+interface Suggestion {
   label: string;
-  value: T;
+  value: unknown;
 }
 
-export interface SuggestorProps<T> {
-  suggestions: Suggestion<T>[];
+export interface SuggestorProps {
+  suggestions: Suggestion[];
 }
 
-type SuggestorSources<T> = ComponentSources<{
-  props: MemoryStream<SuggestorProps<T>>;
+type SuggestorSources = ComponentSources<{
+  props: MemoryStream<SuggestorProps>;
 }>;
 
 type SuggestorSinks = ComponentSinks<{}>;
 
-const intent = function intent<T>(sources: SuggestorSources<T>) {
+const intent = function intent(sources: SuggestorSources) {
   const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click").mapTo(true);
-  return { openerClicked$ };
+  return { openerClicked$, props$: sources.props };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const opened = actions.openerClicked$.fold((accum) => !accum, false);
+  const opened$ = actions.openerClicked$.fold((accum) => !accum, false);
+  const suggestions$ = actions.props$.map((v) => v.suggestions);
 
-  return xs.combine(opened).map(([opened]) => {
-    return { opened };
+  return xs.combine(opened$, suggestions$).map(([opened, suggestions]) => {
+    return { opened, disabled: suggestions.length === 0, suggestions };
   });
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ opened }) => {
+  return state$.map(({ opened, disabled, suggestions }) => {
+    const elements = suggestions.map((obj) => {
+      return (
+        <li class={{ "suggestor-suggestions__suggestion": true }}>
+          <span class={{ "suggestor-suggestions__suggestion-label": true }}>{obj.label}</span>
+        </li>
+      );
+    });
+
     return (
       <div class={{ suggestor: true }}>
         <button
           class={{ suggestor__opener: true, "--opened": opened }}
-          attrs={{ "data-testid": "opener", disabled: true }}
+          attrs={{ "data-testid": "opener", disabled: disabled }}
         >
           Open
         </button>
         <div class={{ suggestor__main: true, "--opened": opened }}>
-          <span class={{ "suggestor-main__searcher": true }}>
-            <input class={{ "suggestor-main__searcher-input": true }} />
+          <span class={{ "suggestor-main__term": true }}>
+            <input class={{ "suggestor-main__term-input": true }} attrs={{ placeholder: "term" }} />
           </span>
-          <select class={{ "suggestor-main__suggestions": true }}></select>
+          <ul class={{ "suggestor-main__suggestions": true }}>{elements}</ul>
         </div>
       </div>
     );
   });
 };
 
-export const Suggestor = function Suggestor<T>(sources: SuggestorSources<T>): SuggestorSinks {
+export const Suggestor = function Suggestor(sources: SuggestorSources): SuggestorSinks {
   const actions = intent(sources);
   const state$ = model(actions);
 

@@ -5,6 +5,7 @@ import { selectAsMain } from "./helper";
 import { filterUndefined } from "@/util/basic";
 
 interface Suggestion {
+  id: string;
   label: string;
   value: unknown;
 }
@@ -51,7 +52,9 @@ const view = function view(state$: ReturnType<typeof model>) {
     const elements = suggestions.map((obj) => {
       return (
         <li class={{ "suggestor-suggestions__suggestion": true }}>
-          <span class={{ "suggestor-suggestions__suggestion-label": true }}>{obj.label}</span>
+          <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
+            {obj.label}
+          </span>
         </li>
       );
     });
@@ -64,9 +67,12 @@ const view = function view(state$: ReturnType<typeof model>) {
         >
           Open
         </button>
-        <div class={{ suggestor__main: true, "--opened": opened }}>
+        <div class={{ suggestor__main: true, "--opened": opened }} attrs={{ "data-testid": "main" }}>
           <span class={{ "suggestor-main__term": true }}>
-            <input class={{ "suggestor-main__term-input": true }} attrs={{ placeholder: "term" }} />
+            <input
+              class={{ "suggestor-main__term-input": true }}
+              attrs={{ placeholder: "term", "data-testid": "term" }}
+            />
           </span>
           <ul class={{ "suggestor-main__suggestions": true }}>{elements}</ul>
         </div>

@@ -55,7 +55,7 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
     .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
     .attr("width", IssueSizes.iconSize)
     .attr("height", IssueSizes.iconSize)
-    .attr("xlink:href", "/assets/svg/exit.svg")
+    .attr("xlink:href", "/assets/svg/tablar-icons/door-exit.svg")
     .on("click", (_, d) => {
       if (d.issue) {
         const url = new URL(d.issue.selfUrl);

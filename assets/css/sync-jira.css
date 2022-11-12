@@ -45,7 +45,7 @@
     content: "";
     display: inline-block;
     flex: 0 0 auto;
-    mask: url("/assets/svg/reload.svg");
+    mask: url("/assets/svg/tablar-icons/refresh.svg");
     mask-size: cover;
     width: 100%;
     height: 100%;

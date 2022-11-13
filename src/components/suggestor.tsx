@@ -50,7 +50,7 @@ const intent = function intent(sources: SuggestorSources) {
       }
     })
     .filter(filterUndefined);
-  const enterPressed$ = termInput$.events("keypress").map((e) => e.key === "Enter");
+  const enterPressed$ = termInput$.events("keypress").filter((e) => e.key === "Enter");
 
   const suggestionClicked$ = selectAsMain(sources, ".suggestor-suggestions__suggestion")
     .events("click", { bubbles: false })
@@ -64,7 +64,20 @@ const intent = function intent(sources: SuggestorSources) {
     changeSuggestionSelection$,
     suggestionClicked$,
     enterPressed$,
+    termInputElement$: termInput$.element(),
   };
+};
+
+const effects = function effects(opened$: MemoryStream<boolean>, actions: ReturnType<typeof intent>): Stream<void> {
+  return opened$
+    .filter((v) => v)
+    .map(() => {
+      return actions.termInputElement$.map((el) => {
+        (el as HTMLInputElement).focus();
+      });
+    })
+    .flatten()
+    .startWith(undefined);
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
@@ -116,10 +129,11 @@ const model = function model(actions: ReturnType<typeof intent>) {
       disabled$,
       filteredSuggestions$,
       xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
-      suggestionMap$
+      suggestionMap$,
+      effects(opened$, actions)
     )
-    .map(([opened, disabled, suggestions, index, suggestionMap]) => {
-      return { opened, disabled, suggestions, index, suggestionMap };
+    .map(([opened, disabled, suggestions, index, suggestionMap, effect]) => {
+      return { opened, disabled, suggestions, index, suggestionMap, effect };
     });
 };
 

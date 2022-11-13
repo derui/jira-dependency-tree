@@ -1,6 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import xs, { MemoryStream } from "xstream";
+import xs, { Stream, MemoryStream } from "xstream";
 import { selectAsMain } from "./helper";
 import { filterUndefined } from "@/util/basic";
 
@@ -18,7 +18,9 @@ type SuggestorSources = ComponentSources<{
   props: MemoryStream<SuggestorProps>;
 }>;
 
-type SuggestorSinks = ComponentSinks<{}>;
+type SuggestorSinks = ComponentSinks<{
+  value: Stream<Suggestion>;
+}>;
 
 const intent = function intent(sources: SuggestorSources) {
   const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click", { bubbles: false }).mapTo(true);
@@ -48,22 +50,32 @@ const intent = function intent(sources: SuggestorSources) {
       }
     })
     .filter(filterUndefined);
+  const enterPressed$ = termInput$.events("keypress").map((e) => e.key === "Enter");
 
   const suggestionClicked$ = selectAsMain(sources, ".suggestor-suggestions__suggestion")
     .events("click", { bubbles: false })
     .map((e) => (e.target as Element).attributes.getNamedItem("data-id")?.value)
     .filter(filterUndefined);
 
-  return { openerClicked$, props$: sources.props, termInputted$, changeSuggestionSelection$, suggestionClicked$ };
+  return {
+    openerClicked$,
+    props$: sources.props,
+    termInputted$,
+    changeSuggestionSelection$,
+    suggestionClicked$,
+    enterPressed$,
+  };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const opened$ = xs.merge(actions.openerClicked$, actions.suggestionClicked$.mapTo(false)).fold((accum, open) => {
-    if (!open) {
-      return false;
-    }
-    return !accum;
-  }, false);
+  const opened$ = xs
+    .merge(actions.openerClicked$, actions.suggestionClicked$.mapTo(false), actions.enterPressed$.mapTo(false))
+    .fold((accum, open) => {
+      if (!open) {
+        return false;
+      }
+      return !accum;
+    }, false);
   const originalSuggestions$ = actions.props$.map((v) => v.suggestions);
   const suggestionMap$ = originalSuggestions$.map((suggestions) => {
     const map = new Map<string, [number, Suggestion]>();
@@ -99,9 +111,15 @@ const model = function model(actions: ReturnType<typeof intent>) {
     }, 0);
 
   return xs
-    .combine(opened$, disabled$, filteredSuggestions$, xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$))
-    .map(([opened, disabled, suggestions, index]) => {
-      return { opened, disabled, suggestions, index };
+    .combine(
+      opened$,
+      disabled$,
+      filteredSuggestions$,
+      xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
+      suggestionMap$
+    )
+    .map(([opened, disabled, suggestions, index, suggestionMap]) => {
+      return { opened, disabled, suggestions, index, suggestionMap };
     });
 };
 
@@ -146,7 +164,19 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
   const actions = intent(sources);
   const state$ = model(actions);
 
+  const valueOnEntered$ = actions.suggestionClicked$
+    .map(() => {
+      return state$
+        .map(({ suggestionMap, index }) =>
+          Array.from(suggestionMap.values()).find(([suggestionIndex]) => index === suggestionIndex)
+        )
+        .filter(filterUndefined)
+        .map((v) => v[1]);
+    })
+    .flatten();
+
   return {
     DOM: view(state$),
+    value: valueOnEntered$,
   };
 };

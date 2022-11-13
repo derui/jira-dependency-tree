@@ -22,17 +22,18 @@ type SuggestorSinks = ComponentSinks<{}>;
 
 const intent = function intent(sources: SuggestorSources) {
   const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click", { bubbles: false }).mapTo(true);
-  const termInputted$ = selectAsMain(sources, ".suggestor-main__term-input")
+  const termInput$ = selectAsMain(sources, ".suggestor-main__term-input");
+  const termInputted$ = termInput$
     .events("input")
     .map((e) => {
       if (!e.currentTarget) {
         return undefined;
-      } else {
-        return (e.currentTarget as HTMLInputElement).value;
       }
+      return (e.currentTarget as HTMLInputElement).value;
     })
     .filter(filterUndefined);
-  const changeSuggestionSelection$ = selectAsMain(sources, ".suggestor-main__term-input")
+
+  const changeSuggestionSelection$ = termInput$
     .events("keydown")
     .map((e) => {
       switch (e.key) {
@@ -48,17 +49,43 @@ const intent = function intent(sources: SuggestorSources) {
     })
     .filter(filterUndefined);
 
-  return { openerClicked$, props$: sources.props, termInputted$, changeSuggestionSelection$ };
+  const suggestionClicked$ = selectAsMain(sources, ".suggestor-suggestions__suggestion")
+    .events("click", { bubbles: false })
+    .map((e) => (e.target as Element).attributes.getNamedItem("data-id")?.value)
+    .filter(filterUndefined);
+
+  return { openerClicked$, props$: sources.props, termInputted$, changeSuggestionSelection$, suggestionClicked$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const opened$ = actions.openerClicked$.fold((accum) => !accum, false);
-  const suggestions$ = actions.props$.map((v) => v.suggestions);
-  const disabled$ = suggestions$.map((v) => v.length === 0);
+  const opened$ = xs.merge(actions.openerClicked$, actions.suggestionClicked$.mapTo(false)).fold((accum, open) => {
+    if (!open) {
+      return false;
+    }
+    return !accum;
+  }, false);
+  const originalSuggestions$ = actions.props$.map((v) => v.suggestions);
+  const suggestionMap$ = originalSuggestions$.map((suggestions) => {
+    const map = new Map<string, [number, Suggestion]>();
+
+    suggestions.forEach((suggestion, index) => {
+      map.set(suggestion.id, [index, suggestion]);
+    });
+
+    return map;
+  });
+
+  const disabled$ = originalSuggestions$.map((v) => v.length === 0);
   const filteredSuggestions$ = xs
-    .combine(actions.termInputted$.startWith(""), suggestions$)
+    .combine(actions.termInputted$.startWith(""), originalSuggestions$)
     .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.includes(term)));
-  const suggestionsLength$ = xs.merge(suggestions$, filteredSuggestions$).map((v) => v.length);
+  const suggestionsLength$ = xs.merge(originalSuggestions$, filteredSuggestions$).map((v) => v.length);
+
+  const clickedSuggestionIndex$ = actions.suggestionClicked$
+    .map((id) => {
+      return suggestionMap$.map((v) => v.get(id)![0]);
+    })
+    .flatten();
 
   const selectedSuggestionIndex$ = xs
     .combine(actions.changeSuggestionSelection$, suggestionsLength$)
@@ -72,7 +99,7 @@ const model = function model(actions: ReturnType<typeof intent>) {
     }, 0);
 
   return xs
-    .combine(opened$, disabled$, filteredSuggestions$, selectedSuggestionIndex$)
+    .combine(opened$, disabled$, filteredSuggestions$, xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$))
     .map(([opened, disabled, suggestions, index]) => {
       return { opened, disabled, suggestions, index };
     });
@@ -82,7 +109,10 @@ const view = function view(state$: ReturnType<typeof model>) {
   return state$.map(({ opened, disabled, suggestions, index }) => {
     const elements = suggestions.map((obj, cur) => {
       return (
-        <li class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}>
+        <li
+          class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}
+          attrs={{ "data-id": obj.id }}
+        >
           <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
             {obj.label}
           </span>
@@ -102,7 +132,7 @@ const view = function view(state$: ReturnType<typeof model>) {
           <span class={{ "suggestor-main__term": true }}>
             <input
               class={{ "suggestor-main__term-input": true }}
-              attrs={{ placeholder: "term", "data-testid": "term" }}
+              attrs={{ placeholder: "term", "data-testid": "term", value: "" }}
             />
           </span>
           <ul class={{ "suggestor-main__suggestions": true }}>{elements}</ul>

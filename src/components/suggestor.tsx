@@ -28,7 +28,7 @@ const intent = function intent(sources: SuggestorSources) {
   const termInputted$ = termInput$
     .events("input")
     .map((e) => {
-      if (!e.currentTarget) {
+      if (!e.target) {
         return undefined;
       }
       return (e.currentTarget as HTMLInputElement).value;
@@ -104,12 +104,10 @@ const model = function model(actions: ReturnType<typeof intent>) {
   const filteredSuggestions$ = xs
     .combine(actions.termInputted$.startWith(""), originalSuggestions$)
     .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.includes(term)));
-  const suggestionsLength$ = xs.merge(originalSuggestions$, filteredSuggestions$).map((v) => v.length);
+  const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$
-    .map((id) => {
-      return suggestionMap$.map((v) => v.get(id)![0]);
-    })
+    .map((id) => suggestionMap$.map((v) => v.get(id)![0]))
     .flatten();
 
   const selectedSuggestionIndex$ = xs
@@ -133,17 +131,18 @@ const model = function model(actions: ReturnType<typeof intent>) {
       effects(opened$, actions)
     )
     .map(([opened, disabled, suggestions, index, suggestionMap, effect]) => {
-      return { opened, disabled, suggestions, index, suggestionMap, effect };
-    });
+      return { opened, disabled, suggestions, index, suggestionMap, effect, currentSuggestion: suggestions[index] };
+    })
+    .remember();
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ opened, disabled, suggestions, index }) => {
+  return state$.map(({ opened, disabled, suggestions, index, currentSuggestion }) => {
     const elements = suggestions.map((obj, cur) => {
       return (
         <li
           class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}
-          attrs={{ "data-id": obj.id }}
+          attrs={{ "data-id": obj.id, "data-testid": "suggestionWrapper" }}
         >
           <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
             {obj.label}
@@ -158,7 +157,7 @@ const view = function view(state$: ReturnType<typeof model>) {
           class={{ suggestor__opener: true, "--opened": opened }}
           attrs={{ "data-testid": "opener", disabled: disabled }}
         >
-          Open
+          {currentSuggestion?.label ?? ""}
         </button>
         <div class={{ suggestor__main: true, "--opened": opened }} attrs={{ "data-testid": "main" }}>
           <span class={{ "suggestor-main__term": true }}>
@@ -178,19 +177,14 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const valueOnEntered$ = actions.suggestionClicked$
-    .map(() => {
-      return state$
-        .map(({ suggestionMap, index }) =>
-          Array.from(suggestionMap.values()).find(([suggestionIndex]) => index === suggestionIndex)
-        )
-        .filter(filterUndefined)
-        .map((v) => v[1]);
-    })
+  const value$ = state$
+    .map(({ suggestions, index }) => suggestions.at(index))
+    .filter(filterUndefined)
+    .map((suggestion) => xs.merge(actions.suggestionClicked$, actions.enterPressed$).mapTo(suggestion))
     .flatten();
 
   return {
     DOM: view(state$),
-    value: valueOnEntered$,
+    value: value$,
   };
 };

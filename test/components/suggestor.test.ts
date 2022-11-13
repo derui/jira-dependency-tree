@@ -2,7 +2,7 @@ import { Suggestor, SuggestorProps } from "@/components/suggestor";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { componentTest } from "test/helper";
+import { componentTest, elements } from "test/helper";
 import { suite } from "uvu";
 import xs from "xstream";
 
@@ -16,7 +16,7 @@ test("button is disabled if no any suggestion", async () => {
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: xs.of<SuggestorProps>({ suggestions: [] }).remember(),
+      props: Time.diagram("x", { x: { suggestions: [] } }).remember(),
     });
 
     // Act
@@ -27,7 +27,7 @@ test("button is disabled if no any suggestion", async () => {
     });
 
     // Assert
-    const expected$ = Time.diagram("(a|)", {
+    const expected$ = Time.diagram("a", {
       a: {
         noSuggestion: true,
       },
@@ -51,7 +51,7 @@ test("open main when button clicked", async () => {
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: xs.of<SuggestorProps>({ suggestions: [{ id: "id", label: "label", value: 1 }] }).remember(),
+      props: Time.diagram("x", { x: { suggestions: [{ id: "id", label: "label", value: 1 }] } }).remember(),
     });
 
     // Act
@@ -91,14 +91,14 @@ test("display suggestions", async () => {
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: xs
-        .of<SuggestorProps>({
+      props: Time.diagram("x", {
+        x: {
           suggestions: [
             { id: "id1", label: "label", value: 1 },
             { id: "id2", label: "label2", value: 1 },
           ],
-        })
-        .remember(),
+        },
+      }).remember(),
     });
 
     // Act
@@ -109,7 +109,7 @@ test("display suggestions", async () => {
     });
 
     // Assert
-    const expected$ = Time.diagram("(a|)", {
+    const expected$ = Time.diagram("a", {
       a: {
         suggestions: ["label", "label2"],
       },

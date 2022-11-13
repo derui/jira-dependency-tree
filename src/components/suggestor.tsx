@@ -32,26 +32,57 @@ const intent = function intent(sources: SuggestorSources) {
       }
     })
     .filter(filterUndefined);
+  const changeSuggestionSelection$ = selectAsMain(sources, ".suggestor-main__term-input")
+    .events("keydown")
+    .map((e) => {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          return "down" as const;
+        case "ArrowUp":
+          e.preventDefault();
+          return "up" as const;
+        default:
+          return undefined;
+      }
+    })
+    .filter(filterUndefined);
 
-  return { openerClicked$, props$: sources.props, termInputted$ };
+  return { openerClicked$, props$: sources.props, termInputted$, changeSuggestionSelection$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   const opened$ = actions.openerClicked$.fold((accum) => !accum, false);
   const suggestions$ = actions.props$.map((v) => v.suggestions);
+  const disabled$ = suggestions$.map((v) => v.length === 0);
+  const filteredSuggestions$ = xs
+    .combine(actions.termInputted$.startWith(""), suggestions$)
+    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.includes(term)));
+  const suggestionsLength$ = xs.merge(suggestions$, filteredSuggestions$).map((v) => v.length);
 
-  return xs.combine(opened$, suggestions$, actions.termInputted$.startWith("")).map(([opened, suggestions, term]) => {
-    const filteredSuggestions = suggestions.filter((suggestion) => suggestion.label.includes(term));
+  const selectedSuggestionIndex$ = xs
+    .combine(actions.changeSuggestionSelection$, suggestionsLength$)
+    .fold((index, [move, length]) => {
+      switch (move) {
+        case "up":
+          return Math.max(0, index - 1);
+        case "down":
+          return Math.min(length - 1, index + 1);
+      }
+    }, 0);
 
-    return { opened, disabled: suggestions.length === 0, suggestions: filteredSuggestions };
-  });
+  return xs
+    .combine(opened$, disabled$, filteredSuggestions$, selectedSuggestionIndex$)
+    .map(([opened, disabled, suggestions, index]) => {
+      return { opened, disabled, suggestions, index };
+    });
 };
 
 const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ opened, disabled, suggestions }) => {
-    const elements = suggestions.map((obj) => {
+  return state$.map(({ opened, disabled, suggestions, index }) => {
+    const elements = suggestions.map((obj, cur) => {
       return (
-        <li class={{ "suggestor-suggestions__suggestion": true }}>
+        <li class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}>
           <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
             {obj.label}
           </span>

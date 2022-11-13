@@ -94,7 +94,7 @@ test("use given value when it passed", async () => {
     const domain$ = Time.diagram("--------|");
     const cred$ = Time.diagram("--------|");
     const email$ = Time.diagram("--------|");
-    const submit$ = Time.diagram("----x----|", { x: { target: {} } });
+    const submit$ = Time.diagram("----x---|", { x: { target: {} } });
     const dom = mockDOMSource({
       ".user-configuration__user-domain": {
         input: domain$,
@@ -117,7 +117,7 @@ test("use given value when it passed", async () => {
     });
 
     const actual$ = sinks.value.map((v) => v);
-    const expected$ = Time.diagram("----x----|", { x: { jiraToken: "cred", userDomain: "domain", email: "email" } });
+    const expected$ = Time.diagram("----x---|", { x: { jiraToken: "cred", userDomain: "domain", email: "email" } });
 
     // Assert
     Time.assertEqual(actual$, expected$);

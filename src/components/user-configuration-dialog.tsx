@@ -108,7 +108,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   return {
     DOM: view(state$),
     value: state$
-      .map(({ jiraToken, email, userDomain }) => actions.submit$.map(() => ({ jiraToken, email, userDomain })))
+      .map(({ jiraToken, email, userDomain }) => actions.submit$.take(1).map(() => ({ jiraToken, email, userDomain })))
       .flatten(),
   };
 };

@@ -1,5 +1,6 @@
 pub mod jira_issue_request;
 pub mod jira_project_request;
+pub mod jira_suggestion_request;
 
 use isahc::http::Method;
 use lambda_http::{Body, Error, Request, Response};
@@ -15,6 +16,12 @@ pub struct JiraAuhtorization {
 
 #[derive(Deserialize)]
 pub struct IssueLoadingRequest {
+    pub authorization: JiraAuhtorization,
+    pub project: String,
+}
+
+#[derive(Deserialize)]
+pub struct SuggestionRequest {
     pub authorization: JiraAuhtorization,
     pub project: String,
 }

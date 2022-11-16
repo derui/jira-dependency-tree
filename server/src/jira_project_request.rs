@@ -41,7 +41,7 @@ pub struct JiraProject {
     pub issue_types: Vec<JiraIssueType>,
 }
 
-fn build_partial_request(path: &str, url: &impl JiraUrl) -> Builder {
+pub(crate) fn build_partial_request(path: &str, url: &impl JiraUrl) -> Builder {
     let jira_url = url.get_url(path);
 
     Request::get(jira_url)

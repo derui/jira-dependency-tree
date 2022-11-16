@@ -34,10 +34,10 @@ fn load_board(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error
     match json["values"]
         .as_array()
         .and_then(|values| values.get(0))
-        .and_then(|value| value.as_str())
+        .and_then(|value| value["id"].as_u64())
     {
-        None => Err("can not found baord".into()),
-        Some(value) => Ok(String::from(value)),
+        None => Err("can not found board".into()),
+        Some(value) => Ok(value.to_string()),
     }
 }
 
@@ -67,7 +67,7 @@ fn load_sprints_recursive(
 
             got_sprints.iter().for_each(|sprint| {
                 suggestions.push(JiraSuggestion {
-                    value: sprint["id"].as_str().unwrap_or_default().into(),
+                    value: sprint["id"].as_u64().unwrap_or_default().to_string(),
                     display_name: sprint["name"].as_str().unwrap_or_default().into(),
                 })
             });
@@ -97,6 +97,6 @@ pub fn get_suggestions(url: impl JiraUrl, project: &str) -> Option<JiraSuggestio
             let sprints = load_sprints(&board_id, &url);
             Some(JiraSuggestions { sprints })
         }
-        Err(_) => None,
+        Err(e) => panic!("{}", e),
     }
 }

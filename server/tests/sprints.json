@@ -1,0 +1,24 @@
+{
+  "maxResults": 50,
+  "startAt": 0,
+  "isLast": true,
+  "values": [
+    {
+      "id": 5,
+      "self": "https://derui.atlassian.net/rest/agile/1.0/sprint/5",
+      "state": "active",
+      "name": "ABC スプリント 5",
+      "startDate": "2022-10-11T12:55:47.834Z",
+      "endDate": "2022-10-12T00:02:46.000Z",
+      "originBoardId": 1,
+      "goal": ""
+    },
+    {
+      "id": 6,
+      "self": "https://derui.atlassian.net/rest/agile/1.0/sprint/6",
+      "state": "future",
+      "name": "ABC スプリント 6",
+      "originBoardId": 1
+    }
+  ]
+}

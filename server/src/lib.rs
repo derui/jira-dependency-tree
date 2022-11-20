@@ -42,6 +42,11 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
             &Method::OPTIONS => preflight,
             _ => unmatch,
         },
+        "/prod/get-suggestions" => match event.method() {
+            &Method::GET => execute_get_suggestions(&event).await,
+            &Method::OPTIONS => preflight,
+            _ => unmatch,
+        },
         _ => unmatch,
     }
 }
@@ -95,6 +100,32 @@ async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> 
     Ok(resp)
 }
 
+async fn execute_get_suggestions(event: &Request) -> Result<Response<Body>, Error> {
+    let json: SuggestionRequest = match event.body() {
+        Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
+        _ => Err("Invalid body type"),
+    }?;
+
+    let project =
+        jira_suggestion_request::get_suggestions(json.authorization.clone(), &json.project)
+            .expect("Not found");
+
+    // Return something that implements IntoResponse.
+    // It will be serialized to the right response event automatically by the runtime
+    let resp = Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Method", "GET,OPTIONS")
+        .body(
+            serde_json::to_string(&project)
+                .expect("unexpected format")
+                .into(),
+        )
+        .map_err(Box::new)?;
+    Ok(resp)
+}
+
 fn not_found() -> Result<Response<Body>, Error> {
     let builder = Response::builder().status(404);
     let json = json!({});
@@ -106,7 +137,7 @@ fn preflight() -> Result<Response<Body>, Error> {
     let json = json!({});
     Ok(builder
         .header("Access-Control-Allow-Origin", "*")
-        .header("Access-Control-Allow-Method", "POST,OPTIONS")
+        .header("Access-Control-Allow-Method", "GET,POST,OPTIONS")
         .header("Access-Control-Allow-Headers", "content-type,x-api-key")
         .body(Body::Text(json.to_string()))?)
 }

@@ -1,12 +1,10 @@
 use std::error::Error;
 
-use isahc::{http::request::Builder, ReadResponseExt, Request, RequestExt};
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
+use isahc::{ReadResponseExt, RequestExt};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{
-    jira_issue_request::JiraUrl, jira_project_request::build_partial_request, IssueLoadingRequest,
-};
+use crate::{jira_issue_request::JiraUrl, jira_project_request::build_partial_request};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -85,7 +83,7 @@ fn load_sprints_recursive(
 fn load_sprints(board_id: &str, url: &impl JiraUrl) -> Vec<JiraSuggestion> {
     let mut vec: Vec<JiraSuggestion> = Vec::new();
 
-    load_sprints_recursive(board_id, url, &mut vec, 0 as usize).unwrap_or_default()
+    load_sprints_recursive(board_id, url, &mut vec, 0_usize).unwrap_or_default()
 }
 
 // load all issues from Jira API

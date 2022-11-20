@@ -6,7 +6,7 @@ export type Credential = {
   email: string;
 };
 
-export type Events = GetWholeDataRequest | SyncIssuesRequest;
+export type Events = GetWholeDataRequest | SyncIssuesRequest | GetSuggestionRequest;
 
 export interface GetWholeDataRequest {
   kind: "GetWholeDataRequest";
@@ -17,6 +17,13 @@ export interface GetWholeDataRequest {
 
 export interface SyncIssuesRequest {
   kind: "SyncIssuesRequest";
+  env: Env;
+  credential: Credential;
+  projectKey: string;
+}
+
+export interface GetSuggestionRequest {
+  kind: "GetSuggestionRequest";
   env: Env;
   credential: Credential;
   projectKey: string;

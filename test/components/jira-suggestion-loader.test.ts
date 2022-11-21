@@ -1,6 +1,4 @@
-import { JiraProjectLoader } from "@/components/jira-project-loader";
 import { JiraSuggestionLoader } from "@/components/jira-suggestions-loader";
-import { projectFactory } from "@/model/project";
 import { suggestionFactory } from "@/model/suggestion";
 import { mockTimeSource } from "@cycle/time";
 import { suite } from "uvu";

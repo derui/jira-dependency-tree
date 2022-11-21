@@ -5,6 +5,8 @@ import { Reducer, StateSource } from "@cycle/state";
 import xs, { Stream } from "xstream";
 import produce from "immer";
 import { SearchCondition } from "@/model/event";
+import { Suggestor } from "./suggestor";
+import { source } from "@cycle/dom";
 
 type ConditionType = "sprint" | "epic";
 
@@ -49,8 +51,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
   });
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
-  return state$.map(({ currentConditionType, selectorOpened }) => {
+const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
+  return xs.combine(state$, suggestor).map(([{ currentConditionType, selectorOpened }, suggestor]) => {
     return (
       <div class={{ "project-toolbar-wrapper": true }}>
         <ul class={{ "project-toolbar": true }} dataset={{ testid: "main" }}>
@@ -63,7 +65,7 @@ const view = function view(state$: ReturnType<typeof model>) {
           class={{ "search-condition-editor__main": true, "--opened": selectorOpened }}
           dataset={{ testid: "selector" }}
         >
-          <li>
+          <li class={{ "search-condition-editor__cell": true }}>
             <label class={{ "search-condition-editor__label": true }}>
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
@@ -74,8 +76,11 @@ const view = function view(state$: ReturnType<typeof model>) {
               ></input>
               Sprint
             </label>
+            <span class={{ "search-condition-editor__input": true, "--selected": currentConditionType === "sprint" }}>
+              {suggestor}
+            </span>
           </li>
-          <li>
+          <li class={{ "search-condition-editor__cell": true }}>
             <label class={{ "search-condition-editor__label": true }}>
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "epic" }}
@@ -103,6 +108,21 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   const actions = intent(sources);
   const state$ = model(actions);
 
+  const suggestor = Suggestor({
+    ...sources,
+    props: xs
+      .of({
+        suggestions: [
+          {
+            id: "id",
+            label: "label",
+            value: "value" as unknown,
+          },
+        ],
+      })
+      .remember(),
+  });
+
   const initialReducer$ = xs.of<Reducer<ProjectToolbarState>>(() => {
     return {
       conditionType: "sprint",
@@ -121,7 +141,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   });
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, suggestor.DOM),
     state: xs.merge(initialReducer$, changeReducer$),
     value: xs.never(),
   };

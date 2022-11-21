@@ -62,7 +62,6 @@
   border-radius: var(--base-border-radius);
   box-shadow: var(--box-shadow);
   width: 0;
-  overflow: hidden;
   visibility: hidden;
   transition: width 0.15s ease, opacity 0.15s ease;
   opacity: 0;
@@ -73,7 +72,21 @@
   &.--opened {
     visibility: visible;
     opacity: 1;
-    width: 256px;
+    width: 328px;
+  }
+}
+
+.search-condition-editor__cell {
+  display: flex;
+  align-items: center;
+}
+
+.search-condition-editor__input {
+  display: none;
+  flex: 0 0 auto;
+
+  &.--selected {
+    display: flex;
   }
 }
 

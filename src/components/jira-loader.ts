@@ -12,8 +12,8 @@ import { JiraSuggestionLoader } from "./jira-suggestions-loader";
 
 type State = {
   issues: Issue[];
-  project: Project | undefined;
-  suggestion: Suggestion | undefined;
+  project?: Project;
+  suggestion?: Suggestion;
 };
 
 export type JiraLoaderSources = {

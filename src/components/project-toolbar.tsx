@@ -91,6 +91,12 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
               ></input>
               Epic
             </label>
+            <span class={{ "search-condition-editor__input": true, "--selected": currentConditionType === "epic" }}>
+              <span class={{ "search-condition-editor__epic-selector": true }}>
+                <span class={{ "search-condition-epic-selector__icon": true }}></span>
+                <input class={{ "search-condition-epic-selector__input": true }} attrs={{ type: "text" }}></input>
+              </span>
+            </span>
           </li>
           <li class={{ "search-condition-editor__footer": true }}>
             <button class={{ "search-condition-editor__cancel": true }}>Cancel</button>

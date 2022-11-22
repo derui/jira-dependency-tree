@@ -79,24 +79,60 @@
 .search-condition-editor__cell {
   display: flex;
   align-items: center;
+  padding: var(--space-base);
+  margin-bottom: var(--space-small);
 }
 
 .search-condition-editor__input {
-  display: none;
-  flex: 0 0 auto;
+  visibility: hidden;
+  display: flex;
+  flex: 1 1 auto;
+  border-bottom: 1px solid rgb(var(--complement-3));
 
   &.--selected {
-    display: flex;
+    visibility: visible;
+  }
+}
+
+.search-condition-editor__epic-selector {
+  flex: 1 1 auto;
+  align-items: center;
+  display: flex;
+}
+
+.search-condition-epic-selector__input {
+  flex: 1 1 auto;
+  width: 100%;
+  margin: var(--space-base);
+  border: 1px solid transparent;
+  outline: 1px solid transparent;
+  transition: outline 0.2s ease-out, border-radius 0.2s ease-out;
+}
+
+.search-condition-epic-selector__icon {
+  flex: 0 0 auto;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    mask-size: cover;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    background-color: rgb(var(--complement-3));
+    transition: background-color 0.15s ease-out;
+    mask: url("/assets/svg/tablar-icons/search.svg");
+    mask-size: cover;
   }
 }
 
 .search-condition-editor__label {
   display: flex;
   flex: 1 1 auto;
-  padding: var(--space-base);
-  margin-bottom: var(--space-small);
   cursor: pointer;
   align-items: center;
+  /* content width - suggestor width */
+  width: 112px;
 }
 
 .search-condition-editor__radio {

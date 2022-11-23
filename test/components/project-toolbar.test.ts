@@ -1,11 +1,12 @@
 import { ProjectToolbar } from "@/components/project-toolbar";
-import { GraphLayout } from "@/issue-graph/type";
+import { suggestionFactory } from "@/model/suggestion";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { withState } from "@cycle/state";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
 import { suite } from "uvu";
+import xs from "xstream";
 
 const test = suite("components/ProjectToolbar");
 
@@ -17,6 +18,7 @@ test("initial state is given prop", async () => {
 
     const sinks = withState(ProjectToolbar)({
       DOM: dom as any,
+      props: xs.of(suggestionFactory({})).remember(),
     });
 
     // Act
@@ -52,6 +54,7 @@ test("open selector when it clicked", async () => {
 
     const sinks = withState(ProjectToolbar)({
       DOM: dom as any,
+      props: xs.of(suggestionFactory({})).remember(),
     });
 
     // Act

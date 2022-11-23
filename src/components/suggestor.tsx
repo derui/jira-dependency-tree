@@ -54,7 +54,7 @@ const intent = function intent(sources: SuggestorSources) {
 
   const suggestionClicked$ = selectAsMain(sources, ".suggestor-suggestions__suggestion")
     .events("click", { bubbles: false })
-    .map((e) => (e.target as Element).attributes.getNamedItem("data-id")?.value)
+    .map((e) => (e.currentTarget as Element).attributes.getNamedItem("data-id")?.value)
     .filter(filterUndefined);
 
   return {

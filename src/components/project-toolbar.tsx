@@ -2,10 +2,11 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { selectAsMain } from "@/components/helper";
 import { Reducer, StateSource } from "@cycle/state";
-import xs, { Stream } from "xstream";
+import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
 import { SearchCondition } from "@/model/event";
 import { Suggestor } from "./suggestor";
+import { Suggestion } from "@/model/suggestion";
 
 type ConditionType = "sprint" | "epic";
 
@@ -15,6 +16,7 @@ export interface ProjectToolbarState {
 }
 
 type ProjectToolbarSources = ComponentSources<{
+  props: MemoryStream<Suggestion>;
   state: StateSource<ProjectToolbarState>;
 }>;
 
@@ -115,16 +117,9 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
 
   const suggestor = Suggestor({
     ...sources,
-    props: xs
-      .of({
-        suggestions: [
-          {
-            id: "id",
-            label: "label",
-            value: "value" as unknown,
-          },
-        ],
-      })
+    props: sources.props
+      .map((v) => v.sprints.map((item) => ({ id: item.id, label: item.displayName, value: item.value as unknown })))
+      .map((v) => ({ suggestions: v }))
       .remember(),
   });
 

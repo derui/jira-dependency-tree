@@ -31,7 +31,7 @@ import { Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
 import { ProjectToolbar, ProjectToolbarState } from "./components/project-toolbar";
-import { Suggestion } from "./model/suggestion";
+import { Suggestion, suggestionFactory } from "./model/suggestion";
 
 type MainSources = {
   DOM: DOMSource;
@@ -57,7 +57,7 @@ type MainState = {
   };
   projectKey: string | undefined;
   setting: Setting;
-} & { jiraSync: SyncJiraState } & { sideToolbar: SideToolbarState } & { projectToolbar: ProjectToolbarState };
+} & { jiraSync?: SyncJiraState } & { sideToolbar?: SideToolbarState } & { projectToolbar?: ProjectToolbarState };
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
@@ -130,7 +130,7 @@ const main = function main(sources: MainSources): MainSinks {
     props: xs
       .combine(
         sources.state.select<MainState["setting"]>("setting").stream.map((v) => v.isSetupFinished()),
-        sources.state.select<MainState["jiraSync"]>("jiraSync").stream.map((v) => v)
+        sources.state.select<MainState["jiraSync"]>("jiraSync").stream.filter(filterUndefined)
       )
       .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
   });
@@ -144,7 +144,17 @@ const main = function main(sources: MainSources): MainSinks {
     state: sources.state,
   });
 
-  const projectToolbarSink = isolate(ProjectToolbar, "projectToolbar")({ ...sources });
+  const projectToolbarSink = isolate(
+    ProjectToolbar,
+    "projectToolbar"
+  )({
+    ...sources,
+    props: sources.state
+      .select<MainState["data"]>("data")
+      .stream.map((v) => v.suggestion)
+      .filter(filterUndefined)
+      .startWith(suggestionFactory({})),
+  });
 
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
@@ -172,7 +182,7 @@ const main = function main(sources: MainSources): MainSinks {
     .combine(
       sources.state.stream.map(({ data }) => data.issues),
       sources.state.stream.map(({ data }) => data.project).filter(filterUndefined),
-      sources.state.stream.map(({ sideToolbar }) => sideToolbar.graphLayout),
+      sources.state.stream.map(({ sideToolbar }) => sideToolbar?.graphLayout).filter(filterUndefined),
       sources.panZoom.state
     )
     .map(([issues, project, graphLayout, panZoomState]) => {
@@ -190,7 +200,9 @@ const main = function main(sources: MainSources): MainSinks {
 
       return produce(prevState, (draft) => {
         draft.setting = settingFactory(v);
-        draft.sideToolbar.graphLayout = v.graphLayout ?? prevState.sideToolbar.graphLayout;
+        if (v.graphLayout) {
+          draft.sideToolbar = { graphLayout: v.graphLayout };
+        }
       });
     };
   });
@@ -251,7 +263,7 @@ const main = function main(sources: MainSources): MainSinks {
   const storage$ = xs
     .combine(
       sources.state.select<MainState["setting"]>("setting").stream,
-      sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream
+      sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream.filter(filterUndefined)
     )
     .fold<Storage | null>((accum, [v, toolBar]) => {
       if (!accum) {

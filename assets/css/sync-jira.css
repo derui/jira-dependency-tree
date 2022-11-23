@@ -23,19 +23,19 @@
   padding: var(--space-small);
   outline: none;
   background: none;
-  border: 1px solid rgb(var(--complement-3));
+  border: 1px solid transparent;
   transition: border 0.1s ease-out, background-color 0.1s ease-out;
   cursor: pointer;
   height: 32px;
   width: 32px;
   border-radius: 16px;
 
-  &.--syncing {
-    animation: sync-jira-loading 1s linear infinite;
+  &:hover {
+    border: 1px solid rgb(var(--complement-3));
   }
 
-  &:not([disabled]):hover {
-    background-color: rgb(var(--complement-1));
+  &.--syncing {
+    animation: sync-jira-loading 1s linear infinite;
   }
 
   &[disabled] {

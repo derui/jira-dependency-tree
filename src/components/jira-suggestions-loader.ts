@@ -22,7 +22,7 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
   const request$ = events$.map<RequestOptions>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/get-suggestions`,
-      method: "GET",
+      method: "POST",
       type: "application/json",
       headers: {
         "x-api-key": e.env.apiKey,

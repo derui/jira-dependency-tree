@@ -313,21 +313,3 @@ run(withState(main), {
   HTTP: makeHTTPDriver(),
   STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
 });
-
-// run(withState(ProjectToolbar), {
-//   DOM: makeDOMDriver("#root"),
-// });
-
-// run(Suggestor, {
-//   DOM: makeDOMDriver("#root"),
-//   props: () =>
-//     xs
-//       .of<SuggestorProps>({
-//         suggestions: [
-//           { id: "1", label: "label", value: "foo" },
-//           { id: '2', label: "baz", value: 1 },
-//           { id: '3', label: "foobar", value: 2 },
-//         ],
-//       })
-//       .remember(),
-// });

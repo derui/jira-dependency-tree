@@ -44,7 +44,6 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
         },
         "/prod/get-suggestions" => match event.method() {
             &Method::GET => execute_get_suggestions(&event).await,
-            &Method::OPTIONS => preflight,
             _ => unmatch,
         },
         _ => unmatch,
@@ -116,7 +115,7 @@ async fn execute_get_suggestions(event: &Request) -> Result<Response<Body>, Erro
         .status(200)
         .header("content-type", "application/json")
         .header("Access-Control-Allow-Origin", "*")
-        .header("Access-Control-Allow-Method", "GET,OPTIONS")
+        .header("Access-Control-Allow-Method", "GET")
         .body(
             serde_json::to_string(&project)
                 .expect("unexpected format")

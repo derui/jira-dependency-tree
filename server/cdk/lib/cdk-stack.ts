@@ -30,7 +30,6 @@ export class CdkStack extends cdk.Stack {
     project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
     const suggestions = restApi.root.addResource("get-suggestions");
     suggestions.addMethod("GET", integration, { apiKeyRequired: true });
-    suggestions.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     new apigw.RateLimitedApiKey(this, "default", {
       apiKeyName: "default",

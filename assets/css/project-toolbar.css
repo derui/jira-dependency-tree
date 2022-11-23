@@ -10,7 +10,6 @@
   border-radius: calc(var(--base-border-radius) * 2);
   margin: 0;
   list-style: none;
-  box-shadow: var(--box-shadow);
 }
 
 .project-toolbar__search-condition-editor {

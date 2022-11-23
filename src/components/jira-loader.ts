@@ -29,7 +29,7 @@ export type JiraLoaderSinks = {
 export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraLoaderSinks {
   const issueLoaderSinks = isolate(JiraIssueLoader, { HTTP: "issues" })({
     HTTP: sources.HTTP,
-    events: sources.events.filter((v) => v.kind !== "GetSuggestionRequest"),
+    events: sources.events,
   });
   const projectLoaderSinks = isolate(JiraProjectLoader, { HTTP: "project" })({
     HTTP: sources.HTTP,
@@ -54,7 +54,7 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
   );
 
   return {
-    HTTP: xs.merge(issueLoaderSinks.HTTP, projectLoaderSinks.HTTP, suggestionLoaderSinks.HTTP),
+    HTTP: xs.merge(issueLoaderSinks.HTTP, projectLoaderSinks.HTTP),
     state: xs.merge(initialReducer$, reducer$),
   };
 };

@@ -46,7 +46,6 @@
   display: inline-block;
   visibility: hidden;
   background-color: rgb(var(--primary-3) / 70%);
-
   width: 8px;
   height: 8px;
   border-radius: 4px;

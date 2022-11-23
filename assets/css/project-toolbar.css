@@ -1,6 +1,7 @@
 .project-toolbar-wrapper {
   position: relative;
 }
+
 .project-toolbar {
   display: inline-flex;
   grid-area: project-toolbar;
@@ -8,7 +9,6 @@
   background-color: white;
   border-radius: calc(var(--base-border-radius) * 2);
   margin: 0;
-
   list-style: none;
   box-shadow: var(--box-shadow);
 }
@@ -26,15 +26,6 @@
     color: rgb(var(--complement-3));
   }
 
-  /* style for opened */
-  &.--opened {
-    color: rgb(var(--complement-3));
-  }
-
-  &:hover::before {
-    background-color: rgb(var(--complement-3));
-  }
-
   &::before {
     content: "";
     display: inline-block;
@@ -47,8 +38,14 @@
     transition: background-color 0.15s ease-out;
   }
 
+  &:hover::before {
+    background-color: rgb(var(--complement-3));
+  }
+
   /* style for opened */
   &.--opened {
+    color: rgb(var(--complement-3));
+
     &::before {
       background-color: rgb(var(--complement-3));
     }
@@ -120,7 +117,6 @@
     content: "";
     display: inline-block;
     flex: 0 0 auto;
-    mask-size: cover;
     width: var(--icon-size);
     height: var(--icon-size);
     background-color: rgb(var(--complement-3));
@@ -135,6 +131,7 @@
   flex: 1 1 auto;
   cursor: pointer;
   align-items: center;
+
   /* content width - suggestor width */
   width: 112px;
 }
@@ -158,7 +155,6 @@
     content: "";
     display: inline-block;
     flex: 0 0 auto;
-    mask-size: cover;
     width: 100%;
     height: 100%;
     background-color: gray;
@@ -170,7 +166,6 @@
   &.--checked {
     &::before {
       mask: url("/assets/svg/tablar-icons/square-check.svg");
-      mask-size: cover;
       background-color: rgb(var(--secondary-1-3));
     }
   }

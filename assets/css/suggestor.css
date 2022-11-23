@@ -25,10 +25,11 @@
   /* style for opened */
   &.--opened {
     color: rgb(var(--complement-3));
-  }
 
-  &:hover::after {
-    background-color: rgb(var(--complement-3));
+    &::after {
+      background-color: rgb(var(--complement-3));
+      transform: rotate(180deg);
+    }
   }
 
   &::after {
@@ -46,12 +47,8 @@
     transition: background-color 0.15s ease-out, transform 0.2s ease;
   }
 
-  /* style for opened */
-  &.--opened {
-    &::after {
-      background-color: rgb(var(--complement-3));
-      transform: rotate(180deg);
-    }
+  &:hover::after {
+    background-color: rgb(var(--complement-3));
   }
 }
 
@@ -128,9 +125,6 @@
     background-color: rgb(var(--secondary-1-1) / 30%);
     border-left: 2px solid rgb(var(--secondary-1-2));
   }
-}
-
-.suggestor-suggestions__suggestion-label {
 }
 
 .suggestor__label {

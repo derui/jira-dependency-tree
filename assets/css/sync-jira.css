@@ -2,6 +2,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(-360deg);
   }
@@ -61,7 +62,7 @@
   &:not([disabled]):active {
     background-color: rgb(var(--complement-3));
 
-    &:before {
+    &::before {
       background-color: rgb(var(--complement-1));
     }
   }

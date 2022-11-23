@@ -1,12 +1,12 @@
-@import "./variable.css";
-@import "./issue.css";
-@import "./user-configuration.css";
-@import "./project-information.css";
-@import "./zoom-slider.css";
-@import "./sync-jira.css";
-@import "./side-toolbar.css";
-@import "./project-toolbar.css";
-@import "./suggestor.css";
+@import url("./variable.css");
+@import url("./issue.css");
+@import url("./user-configuration.css");
+@import url("./project-information.css");
+@import url("./zoom-slider.css");
+@import url("./sync-jira.css");
+@import url("./side-toolbar.css");
+@import url("./project-toolbar.css");
+@import url("./suggestor.css");
 
 html,
 body,
@@ -35,7 +35,6 @@ body,
   margin-top: var(--space-large);
   margin-left: var(--space-large);
   align-items: center;
-
   grid-template-columns: 280px calc(32px + var(--space-base) * 2) 1fr 32px;
   grid-template-areas: "project-information sync-jira project-toolbar user-configuration";
 }

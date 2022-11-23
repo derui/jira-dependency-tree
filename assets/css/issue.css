@@ -1,7 +1,6 @@
 .issue-node-outer {
   stroke: rgb(0 0 0);
   fill: rgb(255 255 255);
-
   transition: stroke 0.1s ease, stroke-width, 0.1s ease;
 
   &:hover {

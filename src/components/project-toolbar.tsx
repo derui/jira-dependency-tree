@@ -27,23 +27,29 @@ type ProjectToolbarSinks = ComponentSinks<{
 
 const intent = function intent(sources: ProjectToolbarSources) {
   const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
+  const cancelClicked$ = selectAsMain(sources, ".search-condition-editor__cancel").events("click");
   const changed = selectAsMain(sources, "input[type=radio]")
     .events("change")
     .map((event) => {
       return (event.target as HTMLInputElement).value as ConditionType;
     });
 
-  return { state$: sources.state.stream, openerClicked$: selectorOpenerClicked, changed };
+  return { state$: sources.state.stream, openerClicked$: selectorOpenerClicked, changed, cancelClicked$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   const currentConditionType$ = actions.state$.map((v) => v.conditionType);
   const selectorOpened$ = xs
-    .merge(actions.openerClicked$.mapTo("search-condition-editor" as const))
+    .merge(
+      actions.openerClicked$.mapTo("search-condition-editor" as const),
+      actions.cancelClicked$.mapTo("cancel" as const)
+    )
     .fold((accum, v) => {
       switch (v) {
         case "search-condition-editor":
           return !accum;
+        case "cancel":
+          return false;
       }
     }, false);
 

@@ -80,4 +80,47 @@ test("open selector when it clicked", async () => {
   });
 });
 
+test("close selector when cancel button is clicked", async () => {
+  await componentTest((done) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const click$ = Time.diagram("--a|", { a: { target: {} } });
+    const cancelClick$ = Time.diagram("---a|", { a: { target: {} } });
+    const dom = mockDOMSource({
+      ".project-toolbar__search-condition-editor": {
+        click: click$,
+      },
+      ".search-condition-editor__cancel": {
+        click: cancelClick$,
+      },
+    });
+
+    const sinks = withState(ProjectToolbar)({
+      DOM: dom as any,
+      props: xs.of(suggestionFactory({})).remember(),
+    });
+
+    // Act
+    const actual$ = sinks.DOM.map((vtree) => {
+      return {
+        selectorOpened: select("[data-testid=selector]", vtree)[0].data?.class!!["--opened"],
+      };
+    });
+
+    // Assert
+    const expected$ = Time.diagram("a-ba", {
+      a: {
+        selectorOpened: false,
+      },
+      b: {
+        selectorOpened: true,
+      },
+    });
+
+    Time.assertEqual(actual$, expected$);
+
+    Time.run(done);
+  });
+});
+
 test.run();

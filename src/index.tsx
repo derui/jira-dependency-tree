@@ -30,6 +30,8 @@ import { LoaderStatus } from "./type";
 import { Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
+import { ProjectToolbar, ProjectToolbarState } from "./components/project-toolbar";
+import { Suggestion } from "./model/suggestion";
 
 type MainSources = {
   DOM: DOMSource;
@@ -50,11 +52,12 @@ type MainSinks = {
 type MainState = {
   data: {
     issues: Issue[];
-    project: Project | undefined;
+    project?: Project;
+    suggestion?: Suggestion;
   };
   projectKey: string | undefined;
   setting: Setting;
-} & { jiraSync: SyncJiraState } & { sideToolbar: SideToolbarState };
+} & { jiraSync: SyncJiraState } & { sideToolbar: SideToolbarState } & { projectToolbar: ProjectToolbarState };
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
@@ -64,10 +67,12 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
     .stream.map((v) => v.toCredential())
     .filter(filterUndefined)
     .remember();
+
   const project$ = sources.state
     .select<MainState["projectKey"]>("projectKey")
     .stream.filter(filterUndefined)
     .remember();
+
   const sync$ = sources.state
     .select<MainState["jiraSync"]>("jiraSync")
     .stream.filter((v) => v === LoaderStatus.LOADING)
@@ -82,6 +87,7 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
       })
     )
     .flatten();
+
   const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
     return {
       kind: "GetWholeDataRequest",
@@ -129,7 +135,7 @@ const main = function main(sources: MainSources): MainSinks {
       .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
   });
 
-  const sideToolbarSink$ = isolate(
+  const sideToolbarSink = isolate(
     SideToolbar,
     "sideToolbar"
   )({
@@ -138,18 +144,25 @@ const main = function main(sources: MainSources): MainSinks {
     state: sources.state,
   });
 
+  const projectToolbarSink = isolate(ProjectToolbar, "projectToolbar")({ ...sources });
+
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
   const zoomSlider$ = zoomSliderSink.DOM;
   const syncJira$ = syncJiraSink.DOM;
+  const sideToolbar$ = sideToolbarSink.DOM;
+  const projectToolbar$ = projectToolbarSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbarSink$.DOM)
-    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar]) => (
+    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectToolbar$)
+    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectToolbar]) => (
       <div class={{ "app-root": true }}>
-        {userConfiguration}
-        {projectInformation}
-        {syncJira}
+        <div class={{ "top-toolbar": true }}>
+          {projectInformation}
+          {syncJira}
+          {projectToolbar}
+          {userConfiguration}
+        </div>
         {zoomSlider}
         {sideToolbar}
       </div>
@@ -182,14 +195,18 @@ const main = function main(sources: MainSources): MainSinks {
     };
   });
 
-  const initialReducer$ = xs.of(() => {
+  const initialReducer$ = xs.of<Reducer<MainState>>(() => {
     return {
-      data: { issues: [], project: undefined },
+      data: { issues: [] },
       setting: settingFactory({}),
       jiraSync: LoaderStatus.COMPLETED,
       projectKey: undefined,
       sideToolbar: {
         graphLayout: GraphLayout.Horizontal,
+      },
+      projectToolbar: {
+        conditionType: "sprint",
+        currentSearchCondition: {},
       },
     };
   });
@@ -225,6 +242,7 @@ const main = function main(sources: MainSources): MainSinks {
       return produce(prevState, (draft) => {
         draft.data.issues = data?.issues ?? draft.data.issues;
         draft.data.project = data?.project ?? draft.data.project;
+        draft.data.suggestion = data?.suggestion ?? draft.data.suggestion;
         draft.jiraSync = LoaderStatus.COMPLETED;
       });
     };
@@ -267,7 +285,8 @@ const main = function main(sources: MainSources): MainSinks {
       jiraLoaderReducer$,
       syncjiraReducer$,
       projectReducer$,
-      sideToolbarSink$.state as Stream<Reducer<MainState>>
+      sideToolbarSink.state as Stream<Reducer<MainState>>,
+      projectToolbarSink.state as Stream<Reducer<MainState>>
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(jiraLoaderSink.HTTP),
@@ -282,3 +301,21 @@ run(withState(main), {
   HTTP: makeHTTPDriver(),
   STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
 });
+
+// run(withState(ProjectToolbar), {
+//   DOM: makeDOMDriver("#root"),
+// });
+
+// run(Suggestor, {
+//   DOM: makeDOMDriver("#root"),
+//   props: () =>
+//     xs
+//       .of<SuggestorProps>({
+//         suggestions: [
+//           { id: "1", label: "label", value: "foo" },
+//           { id: '2', label: "baz", value: 1 },
+//           { id: '3', label: "foobar", value: 2 },
+//         ],
+//       })
+//       .remember(),
+// });

@@ -1,5 +1,9 @@
+.project-toolbar-wrapper {
+  position: relative;
+}
 .project-toolbar {
   display: inline-flex;
+  grid-area: project-toolbar;
   padding: var(--space-base);
   background-color: white;
   border-radius: calc(var(--base-border-radius) * 2);

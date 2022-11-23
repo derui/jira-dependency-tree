@@ -6,7 +6,6 @@ import xs, { Stream } from "xstream";
 import produce from "immer";
 import { SearchCondition } from "@/model/event";
 import { Suggestor } from "./suggestor";
-import { source } from "@cycle/dom";
 
 type ConditionType = "sprint" | "epic";
 

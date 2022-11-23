@@ -5,7 +5,6 @@ import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 import { Setting } from "@/model/setting";
-import { source } from "@cycle/dom";
 
 export type UserConfigurationProps = {
   setting: Setting;

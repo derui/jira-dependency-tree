@@ -28,3 +28,14 @@ body,
   bottom: 16px;
   left: 16px;
 }
+
+.top-toolbar {
+  display: grid;
+  flex-direction: row;
+  margin-top: var(--space-large);
+  margin-left: var(--space-large);
+  align-items: center;
+
+  grid-template-columns: 280px calc(32px + var(--space-base) * 2) 1fr 32px;
+  grid-template-areas: "project-information sync-jira project-toolbar user-configuration";
+}

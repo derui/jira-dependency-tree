@@ -1,8 +1,8 @@
 .user-configuration {
-  position: absolute;
   display: flex;
+  grid-area: user-configuration;
+  position: relative;
   right: var(--space-large);
-  top: var(--space-large);
 }
 
 .user-configuration__toolbar {

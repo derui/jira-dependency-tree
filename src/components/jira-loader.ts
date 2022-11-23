@@ -37,7 +37,7 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
   });
   const suggestionLoaderSinks = isolate(JiraSuggestionLoader, { HTTP: "suggestion" })({
     HTTP: sources.HTTP,
-    events: sources.events.filter((v) => v.kind === "GetSuggestionRequest"),
+    events: sources.events.filter((v) => v.kind === "GetSuggestionRequest" || v.kind === "GetWholeDataRequest"),
   });
 
   const value$ = xs.combine(issueLoaderSinks.issues, projectLoaderSinks.project, suggestionLoaderSinks.suggestion);

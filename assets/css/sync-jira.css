@@ -8,9 +8,10 @@
 }
 
 .sync-jira {
-  position: absolute;
+  display: flex;
+  justify-content: center;
+  grid-area: sync-jira;
   top: calc(var(--space-large) + var(--space-small));
-  left: calc(var(--space-large) * 2 + 280px);
 }
 
 .sync-jira__container {

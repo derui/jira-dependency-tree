@@ -1,4 +1,4 @@
-import { Events } from "@/model/event";
+import { Events, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions } from "@cycle/http";
 import xs, { Stream } from "xstream";
@@ -31,6 +31,7 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
           user_domain: e.credential.userDomain,
         },
         project: e.projectKey,
+        condition: eventToCondition(e),
       },
     };
   });
@@ -101,4 +102,17 @@ const mergeTasks = function mergeTasks(issues: Issue[]): Issue[] {
   }
 
   return Array.from(map.values());
+};
+
+const eventToCondition = function eventToCondition(e: Events): SearchCondition | undefined {
+  switch (e.kind) {
+    case "SyncIssuesRequest": {
+      return {
+        sprint: e.condition?.sprint,
+        epic: e.condition?.epic,
+      };
+    }
+    default:
+      return;
+  }
 };

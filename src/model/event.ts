@@ -30,8 +30,7 @@ export interface GetSuggestionRequest {
   projectKey: string;
 }
 
-type SprintCondition = { kind: "current" } | { kind: "suggestion"; sprintName: string };
 export interface SearchCondition {
-  sprint?: SprintCondition;
+  sprint?: string;
   epic?: string;
 }

@@ -8,7 +8,7 @@ import { SearchCondition } from "@/model/event";
 import { Suggestor } from "./suggestor";
 import { Suggestion } from "@/model/suggestion";
 
-type ConditionType = "sprint" | "epic";
+type ConditionType = "default" | "sprint" | "epic";
 
 export interface ProjectToolbarState {
   conditionType: ConditionType;
@@ -28,13 +28,22 @@ type ProjectToolbarSinks = ComponentSinks<{
 const intent = function intent(sources: ProjectToolbarSources) {
   const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
   const cancelClicked$ = selectAsMain(sources, ".search-condition-editor__cancel").events("click");
-  const changed = selectAsMain(sources, "input[type=radio]")
+  const typeChanged$ = selectAsMain(sources, "input[type=radio][name=type]")
     .events("change")
     .map((event) => {
       return (event.target as HTMLInputElement).value as ConditionType;
     });
+  const epicChanged$ = selectAsMain(sources, "input[type=radio][name=epic]")
+    .events("change")
+    .map((event) => (event.target as HTMLInputElement).value);
 
-  return { state$: sources.state.stream, openerClicked$: selectorOpenerClicked, changed, cancelClicked$ };
+  return {
+    state$: sources.state.stream,
+    openerClicked$: selectorOpenerClicked,
+    typeChanged$,
+    cancelClicked$,
+    epicChanged$,
+  };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
@@ -79,6 +88,18 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
               ></span>
               <input
                 class={{ "search-condition-editor__radio": true }}
+                attrs={{ type: "radio", name: "type", value: "default" }}
+              ></input>
+              Default <span class={{ "search-condition-editor__description": true }}>Current sprint</span>
+            </label>
+          </li>
+          <li class={{ "search-condition-editor__cell": true }}>
+            <label class={{ "search-condition-editor__label": true }}>
+              <span
+                class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
+              ></span>
+              <input
+                class={{ "search-condition-editor__radio": true }}
                 attrs={{ type: "radio", name: "type", value: "sprint" }}
               ></input>
               Sprint
@@ -101,7 +122,10 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
             <span class={{ "search-condition-editor__input": true, "--selected": currentConditionType === "epic" }}>
               <span class={{ "search-condition-editor__epic-selector": true }}>
                 <span class={{ "search-condition-epic-selector__icon": true }}></span>
-                <input class={{ "search-condition-epic-selector__input": true }} attrs={{ type: "text" }}></input>
+                <input
+                  class={{ "search-condition-epic-selector__input": true }}
+                  attrs={{ type: "text", name: "epic" }}
+                ></input>
               </span>
             </span>
           </li>
@@ -131,12 +155,20 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
 
   const initialReducer$ = xs.of<Reducer<ProjectToolbarState>>(() => {
     return {
-      conditionType: "sprint",
+      conditionType: "default",
       currentSearchCondition: {},
     };
   });
 
-  const changeReducer$ = actions.changed.map<Reducer<ProjectToolbarState>>((selectedSprint) => {
+  const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
+    return { epic: v };
+  });
+  const conditionForSprint$ = suggestor.value.map<SearchCondition>((v) => {
+    return { sprint: v.value as string };
+  });
+
+  const value$ = xs.merge(conditionForEpic$, conditionForSprint$);
+  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectToolbarState>>((selectedSprint) => {
     return (prevState?: ProjectToolbarState) => {
       if (!prevState) return undefined;
 
@@ -145,10 +177,19 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
       });
     };
   });
+  const valueChangeReducer$ = value$.map<Reducer<ProjectToolbarState>>((condition) => {
+    return (prevState?: ProjectToolbarState) => {
+      if (!prevState) return undefined;
+
+      return produce(prevState, (draft) => {
+        draft.currentSearchCondition = condition;
+      });
+    };
+  });
 
   return {
     DOM: view(state$, suggestor.DOM),
-    state: xs.merge(initialReducer$, changeReducer$),
-    value: xs.never(),
+    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$),
+    value: value$,
   };
 };

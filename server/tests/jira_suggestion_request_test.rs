@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
-    jira_issue_request::JiraUrl,
     jira_suggestion_request::{get_suggestions, JiraSuggestion},
+    jira_url::JiraUrl,
 };
 
 struct TestRequest<'a> {

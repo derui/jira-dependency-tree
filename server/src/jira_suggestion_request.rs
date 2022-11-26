@@ -4,7 +4,7 @@ use isahc::{ReadResponseExt, RequestExt};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{jira_issue_request::JiraUrl, jira_project_request::build_partial_request};
+use crate::{jira_project_request::build_partial_request, jira_url::JiraUrl};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -39,7 +39,7 @@ fn load_board(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error
     }
 }
 
-// load all issues from Jira API
+// load all sprints from Jira API
 fn load_sprints_recursive(
     board_id: &str,
     url: &impl JiraUrl,

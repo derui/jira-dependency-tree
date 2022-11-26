@@ -1,18 +1,13 @@
 pub mod jira_issue_request;
 pub mod jira_project_request;
 pub mod jira_suggestion_request;
+pub mod jira_url;
 
 use isahc::http::Method;
+use jira_url::JiraAuhtorization;
 use lambda_http::{Body, Error, Request, Response};
 use serde::Deserialize;
 use serde_json::json;
-
-#[derive(Deserialize, Clone, Debug)]
-pub struct JiraAuhtorization {
-    pub jira_token: String,
-    pub email: String,
-    pub user_domain: String,
-}
 
 #[derive(Deserialize)]
 pub struct IssueLoadingRequest {

@@ -1,37 +1,8 @@
-use std::collections::HashMap;
-
 use isahc::{ReadResponseExt, Request, RequestExt};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use crate::{IssueLoadingRequest, JiraAuhtorization};
-
-pub trait JiraUrl {
-    // get full url with path
-    fn get_url(&self, path: &str) -> String;
-
-    fn get_base_headers(&self) -> HashMap<String, String>;
-}
-
-impl JiraUrl for JiraAuhtorization {
-    fn get_url(&self, path: &str) -> String {
-        let path = path.trim_start_matches(' ');
-        let path = path.trim_start_matches('/');
-        format!("https://{}.atlassian.net/{}", self.user_domain, path)
-    }
-
-    fn get_base_headers(&self) -> HashMap<String, String> {
-        let mut map = HashMap::new();
-        let auth = format!("{}:{}", self.email, self.jira_token);
-
-        map.insert(
-            String::from("authorization"),
-            format!("Basic {}", base64::encode(auth)),
-        );
-
-        map
-    }
-}
+use crate::{jira_url::JiraUrl, IssueLoadingRequest};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -171,69 +142,4 @@ pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraI
     let mut vec: Vec<JiraIssue> = Vec::new();
 
     load_issue_recursive(request, url, &mut vec).unwrap_or_default()
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::JiraAuhtorization;
-
-    use super::JiraUrl;
-
-    #[test]
-    fn get_url_for_jira_cloud() {
-        // arrange
-        let auth = JiraAuhtorization {
-            jira_token: String::from("token"),
-            email: String::from("test@example.com"),
-            user_domain: String::from("domain"),
-        };
-
-        // do
-        let url = auth.get_url("test/path");
-
-        // verify
-        assert_eq!(url, "https://domain.atlassian.net/test/path");
-    }
-
-    #[test]
-    fn should_strip_lead_slash_from_path() {
-        // arrange
-        let auth = JiraAuhtorization {
-            jira_token: String::from("token"),
-            email: String::from("test@example.com"),
-            user_domain: String::from("domain"),
-        };
-
-        // do
-        let url = auth.get_url("/lead/slash");
-        let multi_lead_slashes = auth.get_url("///lead/slash");
-
-        // verify
-        assert_eq!(url, "https://domain.atlassian.net/lead/slash");
-        assert_eq!(
-            multi_lead_slashes,
-            "https://domain.atlassian.net/lead/slash"
-        );
-    }
-
-    #[test]
-    fn get_authorization_header() {
-        // arrange
-        let auth = JiraAuhtorization {
-            jira_token: String::from("token"),
-            email: String::from("test@example.com"),
-            user_domain: String::from("domain"),
-        };
-
-        // do
-        let headers = auth.get_base_headers();
-
-        // verify
-        assert_eq!(
-            headers
-                .get("authorization")
-                .expect("can not found authorization"),
-            "Basic dGVzdEBleGFtcGxlLmNvbTp0b2tlbg=="
-        );
-    }
 }

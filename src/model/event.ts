@@ -13,6 +13,7 @@ export interface GetWholeDataRequest {
   env: Env;
   credential: Credential;
   projectKey: string;
+  condition?: SearchCondition;
 }
 
 export interface SyncIssuesRequest {
@@ -20,6 +21,7 @@ export interface SyncIssuesRequest {
   env: Env;
   credential: Credential;
   projectKey: string;
+  condition?: SearchCondition;
 }
 
 export interface GetSuggestionRequest {
@@ -33,12 +35,4 @@ type SprintCondition = { kind: "current" } | { kind: "suggestion"; sprintName: s
 export interface SearchCondition {
   sprint?: SprintCondition;
   epic?: string;
-}
-
-export interface SearchIssueRequest {
-  kind: "SearchIssueRequest";
-  env: Env;
-  credential: Credential;
-  projectKey: string;
-  condition: SearchCondition;
 }

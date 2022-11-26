@@ -15,7 +15,7 @@ export type JiraIssueLoaderSinks = {
 };
 
 export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoaderSources): JiraIssueLoaderSinks {
-  const events$ = sources.events;
+  const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "SyncIssuesRequest");
   const request$ = events$.map<RequestOptions>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/load-issues`,

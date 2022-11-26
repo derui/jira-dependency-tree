@@ -16,7 +16,7 @@ export type JiraProjectLoaderSinks = {
 };
 
 export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProjectLoaderSources): JiraProjectLoaderSinks {
-  const events$ = sources.events;
+  const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest");
   const request$ = events$.map<RequestOptions>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/load-project`,

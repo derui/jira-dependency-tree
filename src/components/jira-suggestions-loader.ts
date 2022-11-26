@@ -18,7 +18,7 @@ export type JiraSuggestionLoaderSinks = {
 export const JiraSuggestionLoader = function JiraSuggestionLoader(
   sources: JiraSuggestionLoaderSources
 ): JiraSuggestionLoaderSinks {
-  const events$ = sources.events;
+  const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "GetSuggestionRequest");
   const request$ = events$.map<RequestOptions>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/get-suggestions`,

@@ -9,19 +9,10 @@ use lambda_http::{Body, Error, Request, Response};
 use serde::Deserialize;
 use serde_json::json;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Default)]
 pub struct IssueSearchCondition {
     pub sprint: Option<String>,
     pub epic: Option<String>,
-}
-
-impl Default for IssueSearchCondition {
-    fn default() -> Self {
-        Self {
-            sprint: None,
-            epic: None,
-        }
-    }
 }
 
 #[derive(Deserialize)]

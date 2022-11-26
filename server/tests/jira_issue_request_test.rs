@@ -67,6 +67,7 @@ fn request_to_get_an_issue() {
             user_domain: "domain".to_string(),
         },
         project: "project".to_string(),
+        condition: None,
     };
     let result = load_issue(&request, url);
 
@@ -120,6 +121,7 @@ fn request_to_get_simplest_issue() {
             user_domain: "domain".to_string(),
         },
         project: "project".to_string(),
+        condition: None,
     };
     let result = load_issue(&request, url);
 
@@ -158,6 +160,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
             user_domain: "domain".to_string(),
         },
         project: "project".to_string(),
+        condition: None,
     };
     let result = load_issue(&request, url);
 

@@ -10,9 +10,16 @@ use serde::Deserialize;
 use serde_json::json;
 
 #[derive(Deserialize)]
+pub struct IssueSearchCondition {
+    pub sprint: Option<String>,
+    pub epic: Option<String>,
+}
+
+#[derive(Deserialize)]
 pub struct IssueLoadingRequest {
     pub authorization: JiraAuhtorization,
     pub project: String,
+    pub condition: Option<IssueSearchCondition>,
 }
 
 #[derive(Deserialize)]

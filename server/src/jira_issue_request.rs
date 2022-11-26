@@ -2,7 +2,7 @@ use isahc::{ReadResponseExt, Request, RequestExt};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
-use crate::{jira_url::JiraUrl, IssueLoadingRequest};
+use crate::{jira_url::JiraUrl, IssueLoadingRequest, IssueSearchCondition};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -95,6 +95,26 @@ fn as_issue(issues: &[Value]) -> Vec<JiraIssue> {
         .collect()
 }
 
+fn request_to_jql(request: &IssueLoadingRequest) -> String {
+    match &request.condition {
+        Some(IssueSearchCondition {
+            sprint: Some(sprint),
+            epic: None,
+        }) => format!("project = \"{}\" AND Sprint = {}", request.project, sprint),
+        Some(IssueSearchCondition {
+            sprint: None,
+            epic: Some(epic),
+        }) => format!(
+            "project = \"{}\" AND parent = \"{}\"",
+            request.project, epic
+        ),
+        _ => format!(
+            "project = \"{}\" AND Sprint in openSprints()",
+            request.project
+        ),
+    }
+}
+
 // load all issues from Jira API
 fn load_issue_recursive(
     request: &IssueLoadingRequest,
@@ -103,7 +123,7 @@ fn load_issue_recursive(
 ) -> Result<Vec<JiraIssue>, Box<dyn std::error::Error>> {
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
-        "jql": format!("project = \"{}\" AND Sprint in openSprints()", request.project),
+        "jql": request_to_jql(request),
         "startAt": issues.len(),
         "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
     });

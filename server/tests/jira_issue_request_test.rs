@@ -4,7 +4,7 @@ use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     jira_issue_request::{load_issue, JiraIssueLink},
     jira_url::{JiraAuhtorization, JiraUrl},
-    IssueLoadingRequest,
+    IssueLoadingRequest, IssueSearchCondition,
 };
 
 struct TestRequest<'a> {
@@ -175,4 +175,76 @@ fn request_to_get_simplest_issue_with_subtasks() {
     assert_eq!(result[0].links.len(), 1);
     assert_eq!(result[0].subtasks.len(), 1);
     assert_eq!(result[0].subtasks[0].key, "key-2");
+}
+
+#[test]
+fn request_to_search_with_sprint() {
+    // arrange
+    let server = httpmock::MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .body_contains("Sprint = abc");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("issue.json"));
+    });
+
+    // do
+    let url = TestRequest { server: &server };
+    let request = IssueLoadingRequest {
+        authorization: JiraAuhtorization {
+            email: "email".to_string(),
+            jira_token: "token".to_string(),
+            user_domain: "domain".to_string(),
+        },
+        project: "project".to_string(),
+        condition: Some(IssueSearchCondition {
+            sprint: Some("abc".to_string()),
+            ..Default::default()
+        }),
+    };
+    load_issue(&request, url);
+
+    // verify
+    mock.assert();
+}
+
+#[test]
+fn request_to_search_with_epic() {
+    // arrange
+    let server = httpmock::MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .body_contains("parent = \\\"abc\\\"");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("issue.json"));
+    });
+
+    // do
+    let url = TestRequest { server: &server };
+    let request = IssueLoadingRequest {
+        authorization: JiraAuhtorization {
+            email: "email".to_string(),
+            jira_token: "token".to_string(),
+            user_domain: "domain".to_string(),
+        },
+        project: "project".to_string(),
+        condition: Some(IssueSearchCondition {
+            epic: Some("abc".to_string()),
+            ..Default::default()
+        }),
+    };
+    load_issue(&request, url);
+
+    // verify
+    mock.assert();
 }

@@ -15,6 +15,15 @@ pub struct IssueSearchCondition {
     pub epic: Option<String>,
 }
 
+impl Default for IssueSearchCondition {
+    fn default() -> Self {
+        Self {
+            sprint: None,
+            epic: None,
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct IssueLoadingRequest {
     pub authorization: JiraAuhtorization,

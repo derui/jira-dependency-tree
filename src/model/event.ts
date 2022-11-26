@@ -13,7 +13,6 @@ export interface GetWholeDataRequest {
   env: Env;
   credential: Credential;
   projectKey: string;
-  condition?: SearchCondition;
 }
 
 export interface SyncIssuesRequest {

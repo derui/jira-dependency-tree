@@ -1,5 +1,5 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ComponentSinkBase, ComponentSinks, ComponentSourceBase, ComponentSources } from "./type";
+import { ComponentSinkBase, ComponentSourceBase } from "./type";
 import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
@@ -79,7 +79,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen
         </ul>
         <ul
           class={{ "search-condition-editor__main": true, "--opened": selectorOpened }}
-          dataset={{ testid: "selector" }}
+          dataset={{ testid: gen("selector") }}
         >
           <li class={{ "search-condition-editor__cell": true }}>
             <label
@@ -87,11 +87,11 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen
               dataset={{ testid: gen("search-condition-default") }}
             >
               <span
-                class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
+                class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "default" }}
               ></span>
               <input
                 class={{ "search-condition-editor__radio": true }}
-                attrs={{ type: "radio", name: "type", value: "default" }}
+                attrs={{ type: "radio", name: "type", value: "default", checked: currentConditionType === "default" }}
               ></input>
               Default <span class={{ "search-condition-editor__description": true }}>Current sprint</span>
             </label>
@@ -106,7 +106,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen
               ></span>
               <input
                 class={{ "search-condition-editor__radio": true }}
-                attrs={{ type: "radio", name: "type", value: "sprint" }}
+                attrs={{ type: "radio", name: "type", value: "sprint", checked: currentConditionType === "sprint" }}
               ></input>
               Sprint
             </label>
@@ -115,13 +115,16 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen
             </span>
           </li>
           <li class={{ "search-condition-editor__cell": true }}>
-            <label class={{ "search-condition-editor__label": true }} dataset={{ testid: "search-condition-epic" }}>
+            <label
+              class={{ "search-condition-editor__label": true }}
+              dataset={{ testid: gen("search-condition-epic") }}
+            >
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "epic" }}
               ></span>
               <input
                 class={{ "search-condition-editor__radio": true }}
-                attrs={{ type: "radio", name: "type", value: "epic" }}
+                attrs={{ type: "radio", name: "type", value: "epic", checked: currentConditionType === "epic" }}
               ></input>
               Epic
             </label>

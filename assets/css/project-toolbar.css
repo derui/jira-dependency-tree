@@ -221,3 +221,9 @@
     background-color: lightgray;
   }
 }
+
+.search-condition-editor__description {
+  margin-left: var(--space-base);
+  font-size: calc(var(--small-font-size));
+  color: gray;
+}

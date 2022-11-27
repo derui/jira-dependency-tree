@@ -51,6 +51,7 @@
     "chokidar": "^3.5.3",
     "chokidar-cli": "^3.0.0",
     "cssnano": "^5.1.14",
+    "cypress": "^11.2.0",
     "esbuild": "^0.15.13",
     "esbuild-register": "^3.3.3",
     "eslint": "^8.26.0",

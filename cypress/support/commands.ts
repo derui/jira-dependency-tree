@@ -1,4 +1,8 @@
 /// <reference types="cypress" />
+
+import run, { Drivers, Sources } from "@cycle/run";
+import { DOMSource, makeDOMDriver } from "@cycle/dom";
+
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -11,8 +15,21 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
+const mount = function mount<D extends Drivers>(
+  component: (source: Sources<D> & { DOM: DOMSource; state?: any }) => any,
+  drivers: D
+): void {
+  const dispose = run(component, {
+    ...drivers,
+    DOM: makeDOMDriver("#root"),
+  });
+
+  // unmount component automatically
+  Cypress.once("test:after:run", dispose);
+};
+
+Cypress.Commands.add("mount", mount);
+
 //
 // -- This is a child command --
 // Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
@@ -25,13 +42,10 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      mount: typeof mount;
+    }
+  }
+}

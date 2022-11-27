@@ -1,6 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ComponentSinks, ComponentSources } from "@/components/type";
-import { selectAsMain } from "@/components/helper";
+import { ComponentSinkBase, ComponentSinks, ComponentSourceBase, ComponentSources } from "./type";
+import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
@@ -15,15 +15,15 @@ export interface ProjectToolbarState {
   currentSearchCondition: SearchCondition;
 }
 
-type ProjectToolbarSources = ComponentSources<{
+interface ProjectToolbarSources extends ComponentSourceBase {
   props: MemoryStream<Suggestion>;
   state: StateSource<ProjectToolbarState>;
-}>;
+}
 
-type ProjectToolbarSinks = ComponentSinks<{
+interface ProjectToolbarSinks extends ComponentSinkBase {
   state: Stream<Reducer<ProjectToolbarState>>;
   value: Stream<SearchCondition>;
-}>;
+}
 
 const intent = function intent(sources: ProjectToolbarSources) {
   const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
@@ -67,14 +67,14 @@ const model = function model(actions: ReturnType<typeof intent>) {
   });
 };
 
-const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
+const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen: TestIdGenerator) {
   return xs.combine(state$, suggestor).map(([{ currentConditionType, selectorOpened }, suggestor]) => {
     return (
       <div class={{ "project-toolbar-wrapper": true }}>
-        <ul class={{ "project-toolbar": true }} dataset={{ testid: "main" }}>
+        <ul class={{ "project-toolbar": true }} dataset={{ testid: gen("root") }}>
           <li
             class={{ "project-toolbar__search-condition-editor": true, "--opened": selectorOpened }}
-            dataset={{ testid: "opener" }}
+            dataset={{ testid: gen("condition-editor") }}
           ></li>
         </ul>
         <ul
@@ -82,7 +82,10 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
           dataset={{ testid: "selector" }}
         >
           <li class={{ "search-condition-editor__cell": true }}>
-            <label class={{ "search-condition-editor__label": true }}>
+            <label
+              class={{ "search-condition-editor__label": true }}
+              dataset={{ testid: gen("search-condition-default") }}
+            >
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
               ></span>
@@ -94,7 +97,10 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
             </label>
           </li>
           <li class={{ "search-condition-editor__cell": true }}>
-            <label class={{ "search-condition-editor__label": true }}>
+            <label
+              class={{ "search-condition-editor__label": true }}
+              dataset={{ testid: gen("search-condition-sprint") }}
+            >
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
               ></span>
@@ -109,7 +115,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
             </span>
           </li>
           <li class={{ "search-condition-editor__cell": true }}>
-            <label class={{ "search-condition-editor__label": true }}>
+            <label class={{ "search-condition-editor__label": true }} dataset={{ testid: "search-condition-epic" }}>
               <span
                 class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "epic" }}
               ></span>
@@ -125,6 +131,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any) {
                 <input
                   class={{ "search-condition-epic-selector__input": true }}
                   attrs={{ type: "text", name: "epic" }}
+                  dataset={{ testid: gen("epic-input") }}
                 ></input>
               </span>
             </span>
@@ -151,6 +158,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
       .map((v) => v.sprints.map((item) => ({ id: item.id, label: item.displayName, value: item.value as unknown })))
       .map((v) => ({ suggestions: v }))
       .remember(),
+    testid: "sprint-suggestor",
   });
 
   const initialReducer$ = xs.of<Reducer<ProjectToolbarState>>(() => {
@@ -188,7 +196,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   });
 
   return {
-    DOM: view(state$, suggestor.DOM),
+    DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
     state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$),
     value: value$,
   };

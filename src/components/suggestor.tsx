@@ -1,7 +1,7 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import xs, { Stream, MemoryStream } from "xstream";
-import { selectAsMain } from "./helper";
+import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { filterUndefined } from "@/util/basic";
 
 interface Suggestion {
@@ -136,13 +136,13 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .remember();
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerator) {
   return state$.map(({ opened, disabled, suggestions, index, currentSuggestion }) => {
     const elements = suggestions.map((obj, cur) => {
       return (
         <li
           class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}
-          attrs={{ "data-id": obj.id, "data-testid": "suggestionWrapper" }}
+          attrs={{ "data-id": obj.id, "data-testid": gen("suggestion") }}
         >
           <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
             {obj.label}
@@ -152,18 +152,18 @@ const view = function view(state$: ReturnType<typeof model>) {
     });
 
     return (
-      <div class={{ suggestor: true }}>
+      <div class={{ suggestor: true }} dataset={{ testid: gen("suggestor-root") }}>
         <button
           class={{ suggestor__opener: true, "--opened": opened }}
-          attrs={{ "data-testid": "opener", disabled: disabled }}
+          attrs={{ "data-testid": gen("suggestor-opener"), disabled: disabled }}
         >
           {currentSuggestion?.label ?? ""}
         </button>
-        <div class={{ suggestor__main: true, "--opened": opened }} attrs={{ "data-testid": "main" }}>
+        <div class={{ suggestor__main: true, "--opened": opened }} dataset={{ testid: gen("search-dialog") }}>
           <span class={{ "suggestor-main__term": true }}>
             <input
               class={{ "suggestor-main__term-input": true }}
-              attrs={{ placeholder: "term", "data-testid": "term", value: "" }}
+              attrs={{ placeholder: "term", "data-testid": gen("term"), value: "" }}
             />
           </span>
           <ul class={{ "suggestor-main__suggestions": true }}>{elements}</ul>
@@ -184,7 +184,7 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
     .flatten();
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
     value: value$,
   };
 };

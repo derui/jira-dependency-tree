@@ -14,3 +14,11 @@ export const selectResponse = function selectResponse(http: HTTPSource, category
 
   return res$;
 };
+
+export type TestIdGenerator = ReturnType<typeof generateTestId>;
+
+export const generateTestId = function generateTestId(parent: string | undefined, separator: string = "/") {
+  const fixedParent = parent ? `${parent}${separator}` : "";
+
+  return (id: string) => `${fixedParent}${id}`;
+};

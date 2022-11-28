@@ -82,15 +82,18 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
     .select<MainState["jiraSync"]>("jiraSync")
     .stream.filter((v) => v === LoaderStatus.LOADING)
     .map(() =>
-      xs.combine(project$, credential$, condition$).map<Events>(([projectKey, credential, condition]) => {
-        return {
-          kind: "SyncIssuesRequest",
-          env: env,
-          credential,
-          projectKey: projectKey,
-          condition,
-        };
-      })
+      xs
+        .combine(project$, credential$, condition$)
+        .map<Events>(([projectKey, credential, condition]) => {
+          return {
+            kind: "SyncIssuesRequest",
+            env: env,
+            credential,
+            projectKey: projectKey,
+            condition,
+          };
+        })
+        .take(1)
     )
     .flatten();
 

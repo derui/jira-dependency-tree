@@ -12,7 +12,7 @@ type ConditionType = "default" | "sprint" | "epic";
 
 export interface ProjectToolbarState {
   conditionType: ConditionType;
-  currentSearchCondition: SearchCondition;
+  currentSearchCondition: SearchCondition | undefined;
 }
 
 interface ProjectToolbarSources extends ComponentSourceBase {
@@ -22,18 +22,18 @@ interface ProjectToolbarSources extends ComponentSourceBase {
 
 interface ProjectToolbarSinks extends ComponentSinkBase {
   state: Stream<Reducer<ProjectToolbarState>>;
-  value: Stream<SearchCondition>;
 }
 
 const intent = function intent(sources: ProjectToolbarSources) {
   const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
   const cancelClicked$ = selectAsMain(sources, ".search-condition-editor__cancel").events("click");
-  const typeChanged$ = selectAsMain(sources, "input[type=radio][name=type]")
+  const submitClicked$ = selectAsMain(sources, ".search-condition-editor__submit").events("click");
+  const typeChanged$ = selectAsMain(sources, ".search-condition-editor__radio")
     .events("change")
     .map((event) => {
       return (event.target as HTMLInputElement).value as ConditionType;
     });
-  const epicChanged$ = selectAsMain(sources, "input[type=radio][name=epic]")
+  const epicChanged$ = selectAsMain(sources, ".search-condition-epic-selector__input")
     .events("change")
     .map((event) => (event.target as HTMLInputElement).value);
 
@@ -43,6 +43,7 @@ const intent = function intent(sources: ProjectToolbarSources) {
     typeChanged$,
     cancelClicked$,
     epicChanged$,
+    submitClicked$,
   };
 };
 
@@ -51,13 +52,15 @@ const model = function model(actions: ReturnType<typeof intent>) {
   const selectorOpened$ = xs
     .merge(
       actions.openerClicked$.mapTo("search-condition-editor" as const),
-      actions.cancelClicked$.mapTo("cancel" as const)
+      actions.cancelClicked$.mapTo("cancel" as const),
+      actions.submitClicked$.mapTo("submit" as const)
     )
     .fold((accum, v) => {
       switch (v) {
         case "search-condition-editor":
           return !accum;
         case "cancel":
+        case "submit":
           return false;
       }
     }, false);
@@ -177,17 +180,25 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   const conditionForSprint$ = suggestor.value.map<SearchCondition>((v) => {
     return { sprint: v.value as string };
   });
+  const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo(undefined);
 
-  const value$ = xs.merge(conditionForEpic$, conditionForSprint$);
-  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectToolbarState>>((selectedSprint) => {
+  const value$ = xs
+    .merge(conditionForEpic$, conditionForSprint$, conditionForDefault$)
+    .map((v) => {
+      return actions.submitClicked$.mapTo(v);
+    })
+    .flatten();
+
+  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectToolbarState>>((conditionType) => {
     return (prevState?: ProjectToolbarState) => {
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
-        draft.conditionType = selectedSprint;
+        draft.conditionType = conditionType;
       });
     };
   });
+
   const valueChangeReducer$ = value$.map<Reducer<ProjectToolbarState>>((condition) => {
     return (prevState?: ProjectToolbarState) => {
       if (!prevState) return undefined;
@@ -201,6 +212,5 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   return {
     DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
     state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$),
-    value: value$,
   };
 };

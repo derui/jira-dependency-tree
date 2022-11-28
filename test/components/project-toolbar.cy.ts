@@ -33,7 +33,7 @@ describe("components/ProjectToolbar", () => {
     });
 
     cy.get("[data-testid=condition-editor]").click().should("have.class", "--opened");
-    cy.contains("Cancel").click();
+    cy.contains("Apply").click();
     cy.get("[data-testid=condition-editor]").should("not.have.class", "--opened");
   });
 });

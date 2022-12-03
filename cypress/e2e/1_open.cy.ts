@@ -11,5 +11,10 @@ describe("open", () => {
       .and("contain.text", "Click here");
     cy.testid("project-information/editor").should("not.have.class", "--opened");
     cy.testid("zoom-slider/current-zoom").should("contain.text", "100%");
+
+    // side toolbar
+    cy.testid("side-toolbar/graph-layout").should("not.have.class", "--opened");
+    cy.testid("side-toolbar/horizontal").should("have.class", "--selected");
+    cy.testid("side-toolbar/vertical").should("not.have.class", "--selected");
   });
 });

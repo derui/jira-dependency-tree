@@ -155,6 +155,7 @@ const main = function main(sources: MainSources): MainSinks {
     DOM: sources.DOM,
     props: xs.of<GraphLayout>(GraphLayout.Horizontal).remember(),
     state: sources.state,
+    testid: "side-toolbar",
   });
 
   const projectToolbarSink = isolate(

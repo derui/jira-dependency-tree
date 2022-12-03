@@ -1,6 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 import { GraphLayout } from "@/issue-graph/type";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
@@ -52,25 +52,25 @@ const model = function model(actions: ReturnType<typeof intent>) {
   });
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ layout, layouterOpened }) => {
     return (
-      <ul class={{ "side-toolbar": true }} dataset={{ testid: "main" }}>
+      <ul class={{ "side-toolbar": true }}>
         <li
           class={{ "side-toolbar__graph-layout": true, "--opened": layouterOpened }}
-          dataset={{ testid: "graph-layout" }}
+          dataset={{ testid: gen("graph-layout") }}
         >
           <div
             class={{ "graph-layout__graph-layouter": true, "--opened": layouterOpened }}
-            dataset={{ testid: "layouter" }}
+            dataset={{ testid: gen("layouter") }}
           >
             <span
               class={{ "graph-layouter__horizontal": true, "--selected": layout === GraphLayout.Horizontal }}
-              dataset={{ testid: "horizontal" }}
+              dataset={{ testid: gen("horizontal") }}
             ></span>
             <span
               class={{ "graph-layouter__vertical": true, "--selected": layout === GraphLayout.Vertical }}
-              dataset={{ testid: "vertical" }}
+              dataset={{ testid: gen("vertical") }}
             ></span>
           </div>
         </li>
@@ -96,7 +96,7 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
   });
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
     state: xs.merge(initialReducer$, reducer$),
   };
 };

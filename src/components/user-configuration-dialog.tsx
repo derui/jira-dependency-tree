@@ -1,6 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line
 import xs, { Stream } from "xstream";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 
 export type UserConfigurationState = {
@@ -67,7 +67,7 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .remember();
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ jiraToken, email, userDomain, allowSubmit }) => (
     <form class={{ "user-configuration__form": true }} attrs={{ method: "dialog" }}>
       <label class={{ "user-configuration__input-container": true }}>
@@ -75,6 +75,7 @@ const view = function view(state$: ReturnType<typeof model>) {
         <input
           class={{ "user-configuration__user-domain": true }}
           attrs={{ type: "text", placeholder: "required", value: userDomain }}
+          dataset={{ testid: gen("user-domain") }}
         />
       </label>
       <label class={{ "user-configuration__input-container": true }}>
@@ -82,6 +83,7 @@ const view = function view(state$: ReturnType<typeof model>) {
         <input
           class={{ "user-configuration__email": true }}
           attrs={{ type: "text", placeholder: "required", value: email }}
+          dataset={{ testid: gen("email") }}
         />
       </label>
       <label class={{ "user-configuration__input-container": true }}>
@@ -89,11 +91,13 @@ const view = function view(state$: ReturnType<typeof model>) {
         <input
           class={{ "user-configuration__credential": true }}
           attrs={{ type: "text", placeholder: "required", value: jiraToken }}
+          dataset={{ testid: gen("jira-token") }}
         />
       </label>
       <input
         class={{ "user-configuration__submitter": true }}
         attrs={{ type: "submit", disabled: !allowSubmit, value: "Apply" }}
+        dataset={{ testid: gen("submit") }}
       />
     </form>
   ));
@@ -106,7 +110,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const state$ = model(actions);
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
     value: state$
       .map(({ jiraToken, email, userDomain }) => actions.submit$.take(1).map(() => ({ jiraToken, email, userDomain })))
       .flatten(),

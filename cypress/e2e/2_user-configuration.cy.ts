@@ -1,5 +1,5 @@
 describe("user-configuration", () => {
-  it("open editor", () => {
+  it("open editor and apply state", () => {
     cy.visit("/");
 
     cy.testid("user-configuration/opener").click().should("have.class", "--opened");
@@ -19,5 +19,23 @@ describe("user-configuration", () => {
 
     // still sync jira button is disabled
     cy.testid("sync-jira/button").should("have.attr", "disabled");
+  });
+
+  it("restore state when reopened", () => {
+    cy.visit("/");
+
+    cy.testid("user-configuration/opener").click();
+
+    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/dialog/submit").click();
+
+    cy.testid("user-configuration/opener").click();
+
+    // all state is same on last state
+    cy.testid("user-configuration/dialog/user-domain").should("have.value", "domain");
+    cy.testid("user-configuration/dialog/email").should("have.value", "email");
+    cy.testid("user-configuration/dialog/jira-token").should("have.value", "token");
   });
 });

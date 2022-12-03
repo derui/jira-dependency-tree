@@ -2,6 +2,7 @@
 
 import run, { Drivers, Sources } from "@cycle/run";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
+import { APIMockDefinition, APIMocks } from "./mocks";
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -30,11 +31,56 @@ const mount = function mount<D extends Drivers>(
 
 Cypress.Commands.add("mount", mount);
 
+// shortcut function for testid
 const getByTestId = function getByTestId(testid: string) {
   return cy.get(`[data-testid="${testid}"]`);
 };
 
 Cypress.Commands.add("testid", getByTestId);
+
+const mockAPI = function mockAPI(apiMocks: APIMocks) {
+  cy.window().then((window) => {
+    const handlers: any[] = [];
+
+    Object.keys(apiMocks).map((key) => {
+      const apiMock = apiMocks[key];
+      let definition: APIMockDefinition;
+
+      if (typeof apiMock === "string") {
+        definition = { fixture: apiMock };
+      } else {
+        definition = apiMock;
+      }
+
+      let rest: typeof window.msw.rest.post;
+
+      switch (definition.method) {
+        case "POST":
+          rest = window.msw.rest.post;
+          break;
+        case "GET":
+        default:
+          rest = window.msw.rest.get;
+          break;
+      }
+
+      cy.fixture(definition.fixture).then((fixture) => {
+        const handler = rest(key, (req, res, ctx) => {
+          return res(
+            ctx.status(definition.status ?? 200),
+            ctx.set("content-type", definition.contentType ?? "application/json"),
+            ctx.body(fixture)
+          );
+        });
+        handlers.push(handler);
+      });
+    });
+
+    window.msw.worker.resetHandlers(...handlers);
+  });
+};
+
+Cypress.Commands.add("mockAPI", mockAPI);
 
 //
 // -- This is a child command --
@@ -53,6 +99,7 @@ declare global {
     interface Chainable {
       mount: typeof mount;
       testid: typeof getByTestId;
+      mockAPI: typeof mockAPI;
     }
   }
 }

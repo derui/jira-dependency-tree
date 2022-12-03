@@ -24,16 +24,8 @@
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
-    "types": ["cypress"],
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "types": ["cypress", "node"]
   },
-  "include": [
-    "src",
-    "test",
-    "cypress",
-  ],
-  "exclude": ["node_modules"],
+  "include": ["**/*.ts"],
   "noEmit": true
 }

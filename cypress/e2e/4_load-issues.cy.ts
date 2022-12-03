@@ -1,27 +1,31 @@
+import { post } from "support/mocks";
+
 describe("load issues", () => {
   beforeEach(() => {
+    cy.visit("/");
+
     cy.mockAPI({
-      "http://localhost:3000/load-issues": "basic/issues",
-      "http://localhost:3000/load-project": "basic/project",
-      "http://localhost:3000/load-suggestions": "basic/suggestions",
+      "http://localhost:3000/load-issues": post("basic/issues"),
+      "http://localhost:3000/load-project": post("basic/project"),
+      "http://localhost:3000/get-suggestions": post("basic/suggestions"),
     });
   });
 
   it("open editor and input project key", () => {
-    cy.visit("/");
-
     // open editor
     cy.testid("project-information/name").click();
-    cy.testid("project-information/editor").should("have.class", "--show");
-
-    // assert input
-    cy.testid("project-information/name-input").should("have.attr", "placeholder").and("include", "required");
-    cy.testid("project-information/name-input").type("KEY").should("have.value", "KEY");
+    cy.testid("project-information/name-input").type("KEY");
     cy.testid("project-information/submit").click();
+    cy.testid("user-configuration/opener").click();
 
-    // Apply and check after.
-    cy.testid("project-information/editor").should("not.have.class", "--show");
-    cy.testid("project-information/name").should("contain.text", "Click here");
-    cy.testid("project-information/marker").should("have.class", "--show");
+    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/dialog/submit").click();
+
+    // load project.
+    cy.testid("project-information/name").should("contain", "Testing Project");
+    cy.testid("project-information/marker").should("not.have.class", "--show");
+    cy.testid("sync-jira/button").should("not.have.attr", "disabled");
   });
 });

@@ -1,5 +1,3 @@
-import { setupWorker, rest } from "msw";
-
 // response given fixture from specified with this type.
 // Response status is always 200, and content-type is always application/json.
 export type SimpleAPIMockDefinition = string;
@@ -20,19 +18,16 @@ export interface APIMocks {
   [k: string]: APIMock;
 }
 
-// create empty worker
-const worker = setupWorker();
-
-window.msw = {
-  worker,
-  rest,
+export const get = function get(fixture: string): APIMockDefinition {
+  return {
+    fixture,
+    method: "GET",
+  };
 };
 
-declare global {
-  interface Window {
-    msw: {
-      worker: typeof worker;
-      rest: typeof rest;
-    };
-  }
-}
+export const post = function post(fixture: string): APIMockDefinition {
+  return {
+    fixture,
+    method: "POST",
+  };
+};

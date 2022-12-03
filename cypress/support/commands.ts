@@ -3,6 +3,7 @@
 import run, { Drivers, Sources } from "@cycle/run";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { APIMockDefinition, APIMocks } from "./mocks";
+import { rest } from "msw";
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -39,43 +40,44 @@ const getByTestId = function getByTestId(testid: string) {
 Cypress.Commands.add("testid", getByTestId);
 
 const mockAPI = function mockAPI(apiMocks: APIMocks) {
-  const handlers: any[] = [];
+  cy.window()
+    .its("msw")
+    .then((msw) => {
+      Object.keys(apiMocks).map((key) => {
+        const apiMock = apiMocks[key];
+        let definition: APIMockDefinition;
 
-  Object.keys(apiMocks).map((key) => {
-    const apiMock = apiMocks[key];
-    let definition: APIMockDefinition;
+        if (typeof apiMock === "string") {
+          definition = { fixture: apiMock };
+        } else {
+          definition = apiMock;
+        }
 
-    if (typeof apiMock === "string") {
-      definition = { fixture: apiMock };
-    } else {
-      definition = apiMock;
-    }
+        let rest: typeof msw.rest.all;
 
-    let rest: typeof window.msw.rest.all;
+        switch (definition.method) {
+          case "POST":
+            rest = msw.rest.post;
+            break;
+          case "GET":
+          default:
+            rest = msw.rest.get;
+            break;
+        }
 
-    switch (definition.method) {
-      case "POST":
-        rest = window.msw.rest.post;
-        break;
-      case "GET":
-      default:
-        rest = window.msw.rest.get;
-        break;
-    }
+        cy.fixture(definition.fixture).then((fixture) => {
+          const handler = rest(key, (req, res, ctx) => {
+            return res.once(
+              ctx.status(definition.status || 200),
+              ctx.set("content-type", definition.contentType || "application/json"),
+              ctx.body(JSON.stringify(fixture))
+            );
+          });
 
-    cy.fixture(definition.fixture).then((fixture) => {
-      const handler = rest(key, (req, res, ctx) => {
-        return res(
-          ctx.status(definition.status || 200),
-          ctx.set("content-type", definition.contentType || "application/json"),
-          ctx.body(fixture)
-        );
+          msw.worker.use(handler);
+        });
       });
-      handlers.push(handler);
     });
-  });
-
-  window.msw.worker.resetHandlers(...handlers);
 };
 
 Cypress.Commands.add("mockAPI", mockAPI);
@@ -99,5 +101,12 @@ declare global {
       testid: typeof getByTestId;
       mockAPI: typeof mockAPI;
     }
+  }
+
+  interface Window {
+    msw: {
+      worker: any;
+      rest: typeof rest;
+    };
   }
 }

@@ -324,6 +324,12 @@ const main = function main(sources: MainSources): MainSinks {
   };
 };
 
+if (process.env.NODE_ENV === "development") {
+  const { worker } = await import("./mock-worker");
+
+  worker.start();
+}
+
 run(withState(main), {
   DOM: makeDOMDriver("#root"),
   issueGraph: makeIssueGraphDriver("#root"),

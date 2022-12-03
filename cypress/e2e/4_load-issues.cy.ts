@@ -1,8 +1,10 @@
 describe("load issues", () => {
   beforeEach(() => {
-    cy.mockAPI({});
-
-    cy.visit("/");
+    cy.mockAPI({
+      "http://localhost:3000/load-issues": "basic/issues",
+      "http://localhost:3000/load-project": "basic/project",
+      "http://localhost:3000/load-suggestions": "basic/suggestions",
+    });
   });
 
   it("open editor and input project key", () => {

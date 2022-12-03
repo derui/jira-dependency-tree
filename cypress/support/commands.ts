@@ -39,45 +39,43 @@ const getByTestId = function getByTestId(testid: string) {
 Cypress.Commands.add("testid", getByTestId);
 
 const mockAPI = function mockAPI(apiMocks: APIMocks) {
-  cy.window().then((window) => {
-    const handlers: any[] = [];
+  const handlers: any[] = [];
 
-    Object.keys(apiMocks).map((key) => {
-      const apiMock = apiMocks[key];
-      let definition: APIMockDefinition;
+  Object.keys(apiMocks).map((key) => {
+    const apiMock = apiMocks[key];
+    let definition: APIMockDefinition;
 
-      if (typeof apiMock === "string") {
-        definition = { fixture: apiMock };
-      } else {
-        definition = apiMock;
-      }
+    if (typeof apiMock === "string") {
+      definition = { fixture: apiMock };
+    } else {
+      definition = apiMock;
+    }
 
-      let rest: typeof window.msw.rest.post;
+    let rest: typeof window.msw.rest.all;
 
-      switch (definition.method) {
-        case "POST":
-          rest = window.msw.rest.post;
-          break;
-        case "GET":
-        default:
-          rest = window.msw.rest.get;
-          break;
-      }
+    switch (definition.method) {
+      case "POST":
+        rest = window.msw.rest.post;
+        break;
+      case "GET":
+      default:
+        rest = window.msw.rest.get;
+        break;
+    }
 
-      cy.fixture(definition.fixture).then((fixture) => {
-        const handler = rest(key, (req, res, ctx) => {
-          return res(
-            ctx.status(definition.status ?? 200),
-            ctx.set("content-type", definition.contentType ?? "application/json"),
-            ctx.body(fixture)
-          );
-        });
-        handlers.push(handler);
+    cy.fixture(definition.fixture).then((fixture) => {
+      const handler = rest(key, (req, res, ctx) => {
+        return res(
+          ctx.status(definition.status || 200),
+          ctx.set("content-type", definition.contentType || "application/json"),
+          ctx.body(fixture)
+        );
       });
+      handlers.push(handler);
     });
-
-    window.msw.worker.resetHandlers(...handlers);
   });
+
+  window.msw.worker.resetHandlers(...handlers);
 };
 
 Cypress.Commands.add("mockAPI", mockAPI);

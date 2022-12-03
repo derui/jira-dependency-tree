@@ -24,7 +24,7 @@
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
-    "types": ["vite/client", "cypress"],
+    "types": ["vite/client"],
     "paths": {
       "@/*": ["src/*"]
     }

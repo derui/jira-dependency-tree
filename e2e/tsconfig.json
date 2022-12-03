@@ -21,10 +21,12 @@
     "jsxFactory": "jsx",
     "jsxFragmentFactory": "Fragment",
     "incremental": true,
-    "baseUrl": ".",
-    "outDir": "generated",
-    "types": ["cypress", "node"]
+    "baseUrl": "."
   },
-  "include": ["**/*.ts"],
-  "noEmit": true
+  "src": [
+    "**/*.ts"
+  ],
+  "include": [
+    "./support"
+  ]
 }

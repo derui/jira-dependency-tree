@@ -59,6 +59,7 @@ const config: PlaywrightTestConfig = {
   webServer: {
     command: "npm run start",
     port: 5173,
+    reuseExistingServer: true,
   },
 };
 

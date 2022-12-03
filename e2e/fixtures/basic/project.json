@@ -1,0 +1,71 @@
+{
+  "id": 10000,
+  "key": "TES",
+  "name": "Testing Project",
+  "statuses": [
+    {
+      "id": "10002",
+      "name": "Done",
+      "statusCategory": "DONE"
+    },
+    {
+      "id": "10001",
+      "name": "In Progress",
+      "statusCategory": "IN_PROGRESS"
+    },
+    {
+      "id": "10000",
+      "name": "To Do",
+      "statusCategory": "TODO"
+    }
+  ],
+  "statusCategories": [
+    {
+      "id": null,
+      "name": "カテゴリがありません",
+      "colorName": "medium-gray"
+    },
+    {
+      "id": null,
+      "name": "To Do",
+      "colorName": "blue-gray"
+    },
+    {
+      "id": null,
+      "name": "進行中",
+      "colorName": "yellow"
+    },
+    {
+      "id": null,
+      "name": "完了",
+      "colorName": "green"
+    }
+  ],
+  "issueTypes": [
+    {
+      "id": "10001",
+      "name": "ストーリー",
+      "avatarUrl": null
+    },
+    {
+      "id": "10002",
+      "name": "タスク",
+      "avatarUrl": null
+    },
+    {
+      "id": "10003",
+      "name": "バグ",
+      "avatarUrl": null
+    },
+    {
+      "id": "10004",
+      "name": "エピック",
+      "avatarUrl": null
+    },
+    {
+      "id": "10005",
+      "name": "サブタスク",
+      "avatarUrl": null
+    }
+  ]
+}

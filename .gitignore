@@ -5,3 +5,6 @@ dist/
 src/env.prod.ts
 .firebaserc
 .firebase
+/test-results/
+/playwright-report/
+/playwright/.cache/

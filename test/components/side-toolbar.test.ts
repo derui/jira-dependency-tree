@@ -18,6 +18,7 @@ test("initial state is given prop", async () => {
     const sinks = withState(SideToolbar)({
       DOM: dom as any,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
+      testid: undefined,
     });
 
     // Act
@@ -56,6 +57,7 @@ test("open layouter when it clicked", async () => {
     const sinks = withState(SideToolbar)({
       DOM: dom as any,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
+      testid: undefined,
     });
 
     // Act
@@ -95,6 +97,7 @@ test("change layout when specific layout is clicked", async () => {
     const sinks = withState(SideToolbar)({
       DOM: dom as any,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
+      testid: undefined,
     });
 
     // Act
@@ -141,6 +144,7 @@ test("should close layouter if value changed", async () => {
     const sinks = withState(SideToolbar)({
       DOM: dom as any,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
+      testid: undefined,
     });
 
     // Act

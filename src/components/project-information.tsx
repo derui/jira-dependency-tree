@@ -2,7 +2,7 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
 
 export interface ProjectInformationProps {
@@ -50,30 +50,35 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .map(([{ project }, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ projectGiven, opened, name, key }) => {
     return (
-      <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: "main" }}>
+      <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: gen("main") }}>
         <span
           class={{ "project-information__marker": true, "--show": !projectGiven }}
-          dataset={{ testid: "marker" }}
+          dataset={{ testid: gen("marker") }}
         ></span>
         <span
           class={{ "project-information__name": true, "--need-configuration": !projectGiven }}
-          dataset={{ testid: "name" }}
+          dataset={{ testid: gen("name") }}
         >
           {name}
         </span>
-        <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: "editor" }}>
+        <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: gen("editor") }}>
           <form class={{ "project-information__form": true }} attrs={{ method: "dialog" }}>
             <label class={{ "project-information__input-container": true }}>
               <span class={{ "project-information__input-label": true }}>Key</span>
               <input
                 class={{ "project-information__name-input": true }}
                 attrs={{ type: "text", placeholder: "required", value: key }}
+                dataset={{ testid: gen("name-input") }}
               />
             </label>
-            <input class={{ "project-information__submitter": true }} attrs={{ type: "submit", value: "Apply" }} />
+            <input
+              class={{ "project-information__submitter": true }}
+              attrs={{ type: "submit", value: "Apply" }}
+              dataset={{ testid: gen("submit") }}
+            />
           </form>
         </div>
       </div>
@@ -90,7 +95,7 @@ export const ProjectInformation = function ProjectInformation(
   const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).mapTo(name)).flatten();
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
     value: submittedName$,
   };
 };

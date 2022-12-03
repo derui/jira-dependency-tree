@@ -1,6 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
@@ -40,18 +40,22 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return xs.combine(opened, actions.props$).map(([opened, { setupFinished }]) => ({ opened, setupFinished }));
 };
 
-const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNode>) {
+const view = function view(
+  state$: ReturnType<typeof model>,
+  dialog: Stream<VNode>,
+  gen: ReturnType<typeof generateTestId>
+) {
   return xs.combine(state$, dialog).map(([{ opened, setupFinished }, dialog]) => (
     <div class={{ "user-configuration": true }}>
       <div class={{ "user-configuration__toolbar": true }}>
         <span
           class={{ "user-configuration__marker": true, "--show": !setupFinished }}
-          dataset={{ testid: "marker" }}
+          dataset={{ testid: gen("marker") }}
         ></span>
 
         <button
           class={{ "user-configuration__opener": true, "--opened": opened }}
-          dataset={{ testid: "opener" }}
+          dataset={{ testid: gen("opener") }}
         ></button>
       </div>
       <div
@@ -59,7 +63,6 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
           "user-configuration__dialog-container": true,
           "--hidden": !opened,
         }}
-        dataset={{ testid: "dialog" }}
       >
         {dialog}
       </div>
@@ -68,6 +71,7 @@ const view = function view(state$: ReturnType<typeof model>, dialog: Stream<VNod
 };
 
 export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
+  const gen = generateTestId(sources.testid);
   const dialog = isolate(
     UserConfigurationDialog,
     "userConfigurationDialog"
@@ -78,13 +82,14 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
       email: v.setting.credentials.email,
       jiraToken: v.setting.credentials.jiraToken,
     })),
+    testid: gen("dialog"),
   });
 
   const actions = intent(sources, dialog.value);
   const state$ = model(actions);
 
   return {
-    DOM: view(state$, dialog.DOM),
+    DOM: view(state$, dialog.DOM, gen),
     value: dialog.value,
   };
 };

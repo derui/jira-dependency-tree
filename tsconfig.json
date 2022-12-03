@@ -31,8 +31,7 @@
   },
   "include": [
     "src",
-    "test",
-    "cypress"
+    "test"
   ],
   "exclude": ["node_modules"],
   "noEmit": true

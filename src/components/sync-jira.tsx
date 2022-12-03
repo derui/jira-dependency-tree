@@ -1,7 +1,7 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 import { LoaderState, LoaderStatus } from "@/type";
 
 export interface SyncJiraProps {
@@ -39,15 +39,15 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return xs.combine(allowSync$, syncing$).map(([allowSync, syncing]) => ({ allowSync, syncing }));
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ allowSync, syncing }) => {
     return (
-      <div class={{ "sync-jira": true }} dataset={{ testid: "sync-jira" }}>
+      <div class={{ "sync-jira": true }} dataset={{ testid: gen("root") }}>
         <span class={{ "sync-jira__container": true }}>
           <button
             class={{ "sync-jira__main": true, "--syncing": syncing }}
             attrs={{ disabled: !allowSync }}
-            dataset={{ testid: "sync-jira-main" }}
+            dataset={{ testid: gen("button") }}
           ></button>
         </span>
       </div>
@@ -62,7 +62,7 @@ export const SyncJira = function SyncJira(sources: SyncJiraSources): SyncJiraSin
   const value$ = actions.clicked$.mapTo<SyncJiraEvent>("REQUEST");
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
     value: value$,
   };
 };

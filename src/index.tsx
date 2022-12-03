@@ -119,6 +119,7 @@ const main = function main(sources: MainSources): MainSinks {
       setting: environment,
       setupFinished: environment.isSetupFinished(),
     })),
+    testid: "user-configuration",
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     DOM: sources.DOM,
@@ -127,6 +128,7 @@ const main = function main(sources: MainSources): MainSinks {
       .select<MainState["data"]["project"]>("project")
       .stream.startWith(undefined)
       .map<ProjectInformationProps>((data) => ({ project: data })),
+    testid: "project-information",
   });
   const jiraLoaderSink = jiraLoader(sources);
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
@@ -136,6 +138,7 @@ const main = function main(sources: MainSources): MainSinks {
 
   const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
     DOM: sources.DOM,
+    testid: "sync-jira",
     props: xs
       .combine(
         sources.state.select<MainState["setting"]>("setting").stream.map((v) => v.isSetupFinished()),

@@ -17,7 +17,6 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "resolveJsonModule": false,
-    "isolatedModules": true,
     "jsx": "react",
     "jsxFactory": "jsx",
     "jsxFragmentFactory": "Fragment",

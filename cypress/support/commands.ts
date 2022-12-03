@@ -30,6 +30,12 @@ const mount = function mount<D extends Drivers>(
 
 Cypress.Commands.add("mount", mount);
 
+const getByTestId = function getByTestId(testid: string) {
+  return cy.get(`[data-testid="${testid}"]`);
+};
+
+Cypress.Commands.add("testid", getByTestId);
+
 //
 // -- This is a child command --
 // Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
@@ -46,6 +52,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       mount: typeof mount;
+      testid: typeof getByTestId;
     }
   }
 }

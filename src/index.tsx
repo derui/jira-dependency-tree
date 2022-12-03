@@ -143,9 +143,13 @@ const main = function main(sources: MainSources): MainSinks {
     props: xs
       .combine(
         sources.state.select<MainState["setting"]>("setting").stream.map((v) => v.isSetupFinished()),
+        sources.state
+          .select<MainState["projectKey"]>("projectKey")
+          .stream.map((v) => !!v)
+          .startWith(false),
         sources.state.select<MainState["jiraSync"]>("jiraSync").stream.filter(filterUndefined)
       )
-      .map<SyncJiraProps>(([setupFinished, status]) => ({ setupFinished, status })),
+      .map<SyncJiraProps>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
   });
 
   const sideToolbarSink = isolate(

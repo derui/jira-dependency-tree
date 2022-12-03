@@ -16,5 +16,8 @@ describe("user-configuration", () => {
     // closed dialog automatically and marker is hidden
     cy.testid("user-configuration/opener").should("not.have.class", "--opened");
     cy.testid("user-configuration/marker").should("not.have.class", "--showed");
+
+    // still sync jira button is disabled
+    cy.testid("sync-jira/button").should("have.attr", "disabled");
   });
 });

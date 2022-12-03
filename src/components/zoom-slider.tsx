@@ -1,7 +1,7 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { MemoryStream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { selectAsMain } from "@/components/helper";
+import { generateTestId, selectAsMain } from "@/components/helper";
 
 export interface ZoomSliderProps {
   zoom: number;
@@ -25,11 +25,14 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return zoom$;
 };
 
-const view = function view(state$: ReturnType<typeof model>) {
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map((zoom) => {
     return (
-      <div class={{ "zoom-slider": true }} dataset={{ testid: "main" }}>
-        <span class={{ "zoom-slider__current-zoom": true }} dataset={{ testid: "current-zoom" }}>{`${zoom}%`}</span>
+      <div class={{ "zoom-slider": true }}>
+        <span
+          class={{ "zoom-slider__current-zoom": true }}
+          dataset={{ testid: gen("current-zoom") }}
+        >{`${zoom}%`}</span>
       </div>
     );
   });
@@ -40,6 +43,6 @@ export const ZoomSlider = function ZoomSlider(sources: ZoomSliderSources): ZoomS
   const state$ = model(actions);
 
   return {
-    DOM: view(state$),
+    DOM: view(state$, generateTestId(sources.testid)),
   };
 };

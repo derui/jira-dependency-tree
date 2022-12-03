@@ -1,4 +1,4 @@
-describe("open empty", () => {
+describe("open", () => {
   it("open and initial display", () => {
     cy.visit("/");
 
@@ -10,5 +10,6 @@ describe("open empty", () => {
       .should("have.class", "--need-configuration")
       .and("contain.text", "Click here");
     cy.testid("project-information/editor").should("not.have.class", "--opened");
+    cy.testid("zoom-slider/current-zoom").should("contain.text", "100%");
   });
 });

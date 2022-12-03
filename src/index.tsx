@@ -134,6 +134,7 @@ const main = function main(sources: MainSources): MainSinks {
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
     DOM: sources.DOM,
     props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
+    testid: "zoom-slider",
   });
 
   const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({

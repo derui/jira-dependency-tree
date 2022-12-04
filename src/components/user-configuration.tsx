@@ -63,6 +63,7 @@ const view = function view(
           "user-configuration__dialog-container": true,
           "--hidden": !opened,
         }}
+        dataset={{ testid: gen("dialog-container") }}
       >
         {dialog}
       </div>

@@ -21,8 +21,8 @@ test("initial display when component can not sync", async () => {
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        mainSync: select("[data-testid=sync-jira-main]", vtree)[0].data?.class!["--syncing"],
-        mainDisabled: select("[data-testid=sync-jira-main]", vtree)[0].data?.attrs!.disabled,
+        mainSync: select("[data-testid=button]", vtree)[0].data?.class!["--syncing"],
+        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs!.disabled,
       };
     });
     const expected$ = Time.diagram("(a|)", {
@@ -56,8 +56,8 @@ test("initial display when component can sync", async () => {
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        mainSync: select("[data-testid=sync-jira-main]", vtree)[0].data?.class!["--syncing"],
-        mainDisabled: select("[data-testid=sync-jira-main]", vtree)[0].data?.attrs!.disabled,
+        mainSync: select("[data-testid=button]", vtree)[0].data?.class!["--syncing"],
+        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs!.disabled,
       };
     });
     const expected$ = Time.diagram("(a|)", {

@@ -20,6 +20,8 @@ type SuggestorSources = ComponentSources<{
 
 type SuggestorSinks = ComponentSinks<{
   value: Stream<Suggestion>;
+  // send term when no have any suggestions.
+  term: Stream<string>;
 }>;
 
 const intent = function intent(sources: SuggestorSources) {
@@ -31,7 +33,7 @@ const intent = function intent(sources: SuggestorSources) {
       if (!e.target) {
         return undefined;
       }
-      return (e.currentTarget as HTMLInputElement).value;
+      return (e.target as HTMLInputElement).value;
     })
     .filter(filterUndefined);
 
@@ -142,9 +144,9 @@ const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerato
       return (
         <li
           class={{ "suggestor-suggestions__suggestion": true, "--selected": cur === index }}
-          attrs={{ "data-id": obj.id, "data-testid": gen("suggestion") }}
+          dataset={{ id: obj.id, testid: gen("suggestions") }}
         >
-          <span class={{ "suggestor-suggestions__suggestion-label": true }} attrs={{ "data-testid": "suggestion" }}>
+          <span class={{ "suggestor-suggestions__suggestion-label": true }} dataset={{ testid: "suggestion" }}>
             {obj.label}
           </span>
         </li>
@@ -183,8 +185,17 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
     .map((suggestion) => xs.merge(actions.suggestionClicked$, actions.enterPressed$).mapTo(suggestion))
     .flatten();
 
+  const term$ = actions.props$
+    .map((v) => v.suggestions)
+    .filter((v) => v.length === 0)
+    .map(() => {
+      return actions.termInputted$.startWith("").filter((v) => v.length > 0);
+    })
+    .flatten();
+
   return {
     DOM: view(state$, generateTestId(sources.testid)),
     value: value$,
+    term: term$,
   };
 };

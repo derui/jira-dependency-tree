@@ -57,7 +57,7 @@ test("do not open dialog initially", async () => {
     const actual$ = sinks.DOM.map((vtree) => {
       return {
         opener: select("[data-testid=opener]", vtree)[0].data?.class,
-        dialog: select("[data-testid=dialog]", vtree)[0].data?.class,
+        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class,
         marker: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
       };
     });
@@ -118,7 +118,7 @@ test("close dialog automatically when it applied", async () => {
     const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {
         opener: select("[data-testid=opener]", vtree)[0].data?.class!["--opened"],
-        dialog: select("[data-testid=dialog]", vtree)[0].data?.class!["--hidden"],
+        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class!["--hidden"],
       };
     });
     const expected$ = Time.diagram("-a(aa)b-----|", {

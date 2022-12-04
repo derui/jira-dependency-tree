@@ -22,7 +22,7 @@ test("button is disabled if no any suggestion", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        noSuggestion: select("[data-testid=opener]", vtree)[0].data?.attrs?.disabled,
+        noSuggestion: select("[data-testid=suggestor-opener]", vtree)[0].data?.attrs?.disabled,
       };
     });
 
@@ -57,9 +57,9 @@ test("open main when button clicked", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        buttonDisabled: select("[data-testid=opener]", vtree)[0].data?.attrs?.disabled,
-        buttonOpened: select("[data-testid=opener]", vtree)[0].data?.class!["--opened"],
-        mainOpened: select("[data-testid=main]", vtree)[0].data?.class!["--opened"],
+        buttonDisabled: select("[data-testid=suggestor-opener]", vtree)[0].data?.attrs?.disabled,
+        buttonOpened: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--opened"],
+        mainOpened: select("[data-testid=search-dialog]", vtree)[0].data?.class!["--opened"],
       };
     });
 
@@ -114,6 +114,72 @@ test("display suggestions", async () => {
         suggestions: ["label", "label2"],
       },
     });
+
+    Time.assertEqual(actual$, expected$);
+
+    Time.run(done);
+  });
+});
+
+test("send term when suggestions is empty", async () => {
+  await componentTest((done) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const dom = mockDOMSource({
+      ".suggestor__opener": {
+        click: Time.diagram("-a", { a: {} }),
+      },
+      ".suggestor-main__term-input": {
+        input: Time.diagram("--a", { a: { target: { value: "x" } } }),
+      },
+    });
+
+    const sinks = Suggestor({
+      DOM: dom as any,
+      props: Time.diagram("x", {
+        x: { suggestions: [] },
+      }).remember(),
+    });
+
+    // Act
+    const actual$ = sinks.term;
+
+    // Assert
+    const expected$ = Time.diagram("--a", {
+      a: "x",
+    });
+
+    Time.assertEqual(actual$, expected$);
+
+    Time.run(done);
+  });
+});
+
+test("do not send term when suggestions is not empty", async () => {
+  await componentTest((done) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const dom = mockDOMSource({
+      ".suggestor__opener": {
+        click: Time.diagram("-a", { a: {} }),
+      },
+      ".suggestor-main__term-input": {
+        input: Time.diagram("--a", { a: { target: { value: "x" } } }),
+      },
+    });
+
+    const sinks = Suggestor({
+      DOM: dom as any,
+      props: Time.diagram("x", {
+        x: { suggestions: [{ id: "id", label: "label", value: "value" }] },
+      }).remember(),
+    });
+
+    // Act
+    const actual$ = sinks.term;
+
+    // Assert
+    const expected$ = Time.diagram("---");
 
     Time.assertEqual(actual$, expected$);
 

@@ -156,10 +156,11 @@ const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerato
     return (
       <div class={{ suggestor: true }} dataset={{ testid: gen("suggestor-root") }}>
         <button
-          class={{ suggestor__opener: true, "--opened": opened }}
-          attrs={{ "data-testid": gen("suggestor-opener"), disabled: disabled }}
+          class={{ suggestor__opener: true, "--opened": opened, "--empty": !currentSuggestion }}
+          attrs={{ disabled: disabled }}
+          dataset={{ testid: gen("suggestor-opener") }}
         >
-          {currentSuggestion?.label ?? ""}
+          {currentSuggestion?.label ?? "Not selected"}
         </button>
         <div class={{ suggestor__main: true, "--opened": opened }} dataset={{ testid: gen("search-dialog") }}>
           <span class={{ "suggestor-main__term": true }}>

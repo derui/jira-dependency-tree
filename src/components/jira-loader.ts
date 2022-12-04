@@ -61,11 +61,11 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
       }
   );
   const suggestionsReducer$: Stream<Reducer<State>> = suggestionLoaderSinks.suggestion.map(
-    (suggestions): Reducer<State> =>
+    (suggestion): Reducer<State> =>
       (prevState) => {
         if (!prevState) return prevState;
 
-        return { ...prevState, suggestions };
+        return { ...prevState, suggestion };
       }
   );
 

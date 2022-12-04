@@ -1,6 +1,7 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import xs, { Stream, MemoryStream } from "xstream";
+import debounce from "xstream/extra/debounce";
 import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { filterUndefined } from "@/util/basic";
 
@@ -102,10 +103,9 @@ const model = function model(actions: ReturnType<typeof intent>) {
     return map;
   });
 
-  const disabled$ = originalSuggestions$.map((v) => v.length === 0);
   const filteredSuggestions$ = xs
     .combine(actions.termInputted$.startWith(""), originalSuggestions$)
-    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.includes(term)));
+    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)));
   const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$
@@ -126,20 +126,19 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return xs
     .combine(
       opened$,
-      disabled$,
       filteredSuggestions$,
       xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
       suggestionMap$,
       effects(opened$, actions)
     )
-    .map(([opened, disabled, suggestions, index, suggestionMap, effect]) => {
-      return { opened, disabled, suggestions, index, suggestionMap, effect, currentSuggestion: suggestions[index] };
+    .map(([opened, suggestions, index, suggestionMap, effect]) => {
+      return { opened, suggestions, index, suggestionMap, effect, currentSuggestion: suggestions[index] };
     })
     .remember();
 };
 
 const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerator) {
-  return state$.map(({ opened, disabled, suggestions, index, currentSuggestion }) => {
+  return state$.map(({ opened, suggestions, index, currentSuggestion }) => {
     const elements = suggestions.map((obj, cur) => {
       return (
         <li
@@ -157,7 +156,6 @@ const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerato
       <div class={{ suggestor: true }} dataset={{ testid: gen("suggestor-root") }}>
         <button
           class={{ suggestor__opener: true, "--opened": opened, "--empty": !currentSuggestion }}
-          attrs={{ disabled: disabled }}
           dataset={{ testid: gen("suggestor-opener") }}
         >
           {currentSuggestion?.label ?? "Not selected"}
@@ -180,17 +178,25 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const value$ = state$
-    .map(({ suggestions, index }) => suggestions.at(index))
-    .filter(filterUndefined)
-    .map((suggestion) => xs.merge(actions.suggestionClicked$, actions.enterPressed$).mapTo(suggestion))
+  const value$ = xs
+    .merge(actions.suggestionClicked$, actions.enterPressed$)
+    .map(() => {
+      return state$
+        .map(({ suggestions, index }) => suggestions.at(index))
+        .filter(filterUndefined)
+        .take(1);
+    })
     .flatten();
 
   const term$ = actions.props$
     .map((v) => v.suggestions)
     .filter((v) => v.length === 0)
     .map(() => {
-      return actions.termInputted$.startWith("").filter((v) => v.length > 0);
+      return actions.termInputted$
+        .startWith("")
+        .filter((v) => v.length > 0)
+        .compose(debounce(200))
+        .take(1);
     })
     .flatten();
 

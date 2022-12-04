@@ -223,8 +223,18 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
+  const termResetReducer$ = suggestor.value.map<Reducer<ProjectToolbarState>>(() => {
+    return (prevState?: ProjectToolbarState) => {
+      if (!prevState) return undefined;
+
+      return produce(prevState, (draft) => {
+        draft.lastTerm = undefined;
+      });
+    };
+  });
+
   return {
     DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
-    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$, termReducer$),
+    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$, termReducer$, termResetReducer$),
   };
 };

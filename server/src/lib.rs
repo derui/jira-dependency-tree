@@ -26,6 +26,7 @@ pub struct IssueLoadingRequest {
 pub struct SuggestionRequest {
     pub authorization: JiraAuhtorization,
     pub project: String,
+    pub input_value: String,
 }
 
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
@@ -108,9 +109,12 @@ async fn execute_get_suggestions(event: &Request) -> Result<Response<Body>, Erro
         _ => Err("Invalid body type"),
     }?;
 
-    let project =
-        jira_suggestion_request::get_suggestions(json.authorization.clone(), &json.project)
-            .expect("Not found");
+    let project = jira_suggestion_request::get_suggestions(
+        json.authorization.clone(),
+        &json.project,
+        &json.input_value,
+    )
+    .expect("Not found");
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime

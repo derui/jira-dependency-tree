@@ -27,37 +27,53 @@ fn request_to_get_suggestions() {
     let server = httpmock::MockServer::start();
     let project_mock = server.mock(|when, then| {
         when.method(Method::GET)
-            .path("/rest/agile/1.0/board")
-            .query_param("projectLocation", "ABC")
+            .path("/rest/api/3/jql/autocompletedata")
+            .query_param("projectIds", "ABC")
             .header("content-type", "application/json")
             .header("authorization", "foo");
 
         then.status(200)
             .header("content-type", "application/json")
-            .body(include_str!("board.json"));
+            .body(include_str!("autocompletedata.json"));
     });
     server.mock(|when, then| {
         when.method(Method::GET)
-            .path("/rest/agile/1.0/board/1/sprint")
-            .query_param("state", "active,future")
-            .query_param("startAt", "0")
+            .path("/rest/api/3/jql/autocompletedata/suggestions")
+            .query_param("fieldName", "cf[10020]")
+            .query_param("fieldValue", "v")
             .header("content-type", "application/json")
             .header("authorization", "foo");
 
         then.status(200)
             .header("content-type", "application/json")
-            .body(include_str!("sprints.json"));
+            .body(include_str!("suggestions.json"));
     });
 
     // do
     let url = TestRequest { server: &server };
-    let result = get_suggestions(url, "ABC").unwrap();
+    let result = get_suggestions(url, "ABC", "v").unwrap();
 
     // verify
     project_mock.assert();
     assert_eq!(
         result.sprints,
         vec![
+            JiraSuggestion {
+                value: "1".into(),
+                display_name: "ABC スプリント 1".into()
+            },
+            JiraSuggestion {
+                value: "2".into(),
+                display_name: "ABC スプリント 2".into()
+            },
+            JiraSuggestion {
+                value: "3".into(),
+                display_name: "ABC スプリント 3".into()
+            },
+            JiraSuggestion {
+                value: "4".into(),
+                display_name: "ABC スプリント 4".into()
+            },
             JiraSuggestion {
                 value: "5".into(),
                 display_name: "ABC スプリント 5".into()

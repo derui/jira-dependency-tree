@@ -19,9 +19,9 @@ pub struct JiraSuggestions {
     pub sprints: Vec<JiraSuggestion>,
 }
 
-fn load_board(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error>> {
+fn get_sprint_field_id(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error>> {
     let mut res = build_partial_request(
-        &format!("/rest/agile/1.0/board?projectLocation={}", project),
+        &format!("/rest/api/3/jql/autocompletedata?projectIds={}", project),
         url,
     )
     .body(())?
@@ -29,10 +29,31 @@ fn load_board(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error
 
     let json: Value = res.json()?;
 
-    match json["values"]
+    match json["visibleFieldNames"]
         .as_array()
-        .and_then(|values| values.get(0))
-        .and_then(|value| value["id"].as_u64())
+        .and_then(|values| {
+            values.iter().find(|v| {
+                let if_value = v["value"]
+                    .as_str()
+                    .unwrap_or_default()
+                    .to_lowercase()
+                    .contains("sprint");
+                let if_type = v["types"]
+                    .as_array()
+                    .and_then(|types| {
+                        types.iter().find(|typ| {
+                            typ.as_str()
+                                .unwrap_or_default()
+                                .to_lowercase()
+                                .contains("sprint")
+                        })
+                    })
+                    .is_some();
+
+                if_value || if_type
+            })
+        })
+        .and_then(|value| value["cfid"].as_str())
     {
         None => Err("can not found board".into()),
         Some(value) => Ok(value.to_string()),
@@ -40,16 +61,15 @@ fn load_board(project: &str, url: &impl JiraUrl) -> Result<String, Box<dyn Error
 }
 
 // load all sprints from Jira API
-fn load_sprints_recursive(
-    board_id: &str,
+fn load_sprints(
+    sprint_field_id: &str,
+    input_value: &str,
     url: &impl JiraUrl,
-    suggestions: &mut Vec<JiraSuggestion>,
-    start_at: usize,
 ) -> Result<Vec<JiraSuggestion>, Box<dyn std::error::Error>> {
     let mut res = build_partial_request(
         &format!(
-            "/rest/agile/1.0/board/{}/sprint?state=active,future&startAt={}",
-            board_id, start_at
+            "/rest/api/3/jql/autocompletedata/suggestions?fieldName={}&fieldValue={}",
+            sprint_field_id, input_value
         ),
         url,
     )
@@ -57,44 +77,43 @@ fn load_sprints_recursive(
     .send()?;
 
     let json: Value = res.json()?;
+    let mut vec: Vec<JiraSuggestion> = Vec::new();
 
-    match json["values"].as_array() {
-        None => Ok(Vec::from_iter(suggestions.iter().cloned())),
+    match json["results"].as_array() {
+        None => Ok(Vec::new()),
         Some(got_sprints) => {
-            let is_last = json["isLast"].as_bool().unwrap_or_default();
-
             got_sprints.iter().for_each(|sprint| {
-                suggestions.push(JiraSuggestion {
-                    value: sprint["id"].as_u64().unwrap_or_default().to_string(),
-                    display_name: sprint["name"].as_str().unwrap_or_default().into(),
+                vec.push(JiraSuggestion {
+                    value: sprint["value"].as_str().unwrap_or_default().to_string(),
+                    // do not need bold tags that are inserted by API
+                    display_name: sprint["displayName"]
+                        .as_str()
+                        .unwrap_or_default()
+                        .replace("<b>", "")
+                        .replace("</b>", "")
+                        .into(),
                 })
             });
 
-            if is_last {
-                return Ok(Vec::from_iter(suggestions.iter().cloned()));
-            }
-
-            load_sprints_recursive(board_id, url, suggestions, start_at + got_sprints.len())
+            Ok(vec.clone())
         }
     }
 }
 
-// load issue with request
-fn load_sprints(board_id: &str, url: &impl JiraUrl) -> Vec<JiraSuggestion> {
-    let mut vec: Vec<JiraSuggestion> = Vec::new();
-
-    load_sprints_recursive(board_id, url, &mut vec, 0_usize).unwrap_or_default()
-}
-
 // load all issues from Jira API
-pub fn get_suggestions(url: impl JiraUrl, project: &str) -> Option<JiraSuggestions> {
-    let board_id = load_board(project, &url);
+pub fn get_suggestions(
+    url: impl JiraUrl,
+    project: &str,
+    input_value: &str,
+) -> Option<JiraSuggestions> {
+    let sprint_id = get_sprint_field_id(project, &url);
 
-    match board_id {
-        Ok(board_id) => {
-            let sprints = load_sprints(&board_id, &url);
-            Some(JiraSuggestions { sprints })
+    let sprints = sprint_id.and_then(|sprint_id| load_sprints(&sprint_id, input_value, &url));
+    match sprints {
+        Ok(sprints) => Some(JiraSuggestions { sprints }),
+        Err(e) => {
+            println!("{}", e.to_string());
+            None
         }
-        Err(e) => panic!("{}", e),
     }
 }

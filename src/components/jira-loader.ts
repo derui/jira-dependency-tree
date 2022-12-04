@@ -40,21 +40,37 @@ export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraL
     events: sources.events.filter((v) => v.kind === "GetSuggestionRequest" || v.kind === "GetWholeDataRequest"),
   });
 
-  const value$ = xs.combine(issueLoaderSinks.issues, projectLoaderSinks.project, suggestionLoaderSinks.suggestion);
-
   const initialReducer$ = xs.of(() => {
     return { issues: [], project: undefined, suggestion: undefined };
   });
 
-  const reducer$: Stream<Reducer<State>> = value$.map(
-    ([issues, project, suggestion]): Reducer<State> =>
-      () => {
-        return { issues, project, suggestion };
+  const issuesReducer$: Stream<Reducer<State>> = issueLoaderSinks.issues.map(
+    (issues): Reducer<State> =>
+      (prevState) => {
+        if (!prevState) return prevState;
+
+        return { ...prevState, issues };
+      }
+  );
+  const projectReducer$: Stream<Reducer<State>> = projectLoaderSinks.project.map(
+    (project): Reducer<State> =>
+      (prevState) => {
+        if (!prevState) return prevState;
+
+        return { ...prevState, project };
+      }
+  );
+  const suggestionsReducer$: Stream<Reducer<State>> = suggestionLoaderSinks.suggestion.map(
+    (suggestions): Reducer<State> =>
+      (prevState) => {
+        if (!prevState) return prevState;
+
+        return { ...prevState, suggestions };
       }
   );
 
   return {
     HTTP: xs.merge(issueLoaderSinks.HTTP, projectLoaderSinks.HTTP, suggestionLoaderSinks.HTTP),
-    state: xs.merge(initialReducer$, reducer$),
+    state: xs.merge(initialReducer$, issuesReducer$, projectReducer$, suggestionsReducer$),
   };
 };

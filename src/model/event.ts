@@ -28,6 +28,7 @@ export interface GetSuggestionRequest {
   env: Env;
   credential: Credential;
   projectKey: string;
+  term: string;
 }
 
 export interface SearchCondition {

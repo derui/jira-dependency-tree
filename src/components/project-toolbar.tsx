@@ -13,6 +13,7 @@ type ConditionType = "default" | "sprint" | "epic";
 export interface ProjectToolbarState {
   conditionType: ConditionType;
   currentSearchCondition: SearchCondition | undefined;
+  lastTerm: string | undefined;
 }
 
 interface ProjectToolbarSources extends ComponentSourceBase {
@@ -171,6 +172,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     return {
       conditionType: "default",
       currentSearchCondition: {},
+      lastTerm: undefined,
     };
   });
 
@@ -209,8 +211,20 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
+  const termReducer$ = suggestor.term.map<Reducer<ProjectToolbarState>>((lastTerm) => {
+    return (prevState?: ProjectToolbarState) => {
+      if (!prevState) return undefined;
+
+      return produce(prevState, (draft) => {
+        if (lastTerm.length > 0) {
+          draft.lastTerm = lastTerm;
+        }
+      });
+    };
+  });
+
   return {
     DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
-    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$),
+    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$, termReducer$),
   };
 };

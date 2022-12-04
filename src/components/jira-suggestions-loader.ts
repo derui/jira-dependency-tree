@@ -1,4 +1,4 @@
-import { Events } from "@/model/event";
+import { Events, GetSuggestionRequest } from "@/model/event";
 import { HTTPSource } from "@cycle/http";
 import { RequestOptions } from "http";
 import xs, { Stream } from "xstream";
@@ -18,7 +18,7 @@ export type JiraSuggestionLoaderSinks = {
 export const JiraSuggestionLoader = function JiraSuggestionLoader(
   sources: JiraSuggestionLoaderSources
 ): JiraSuggestionLoaderSinks {
-  const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "GetSuggestionRequest");
+  const events$ = sources.events.filter((v) => v.kind === "GetSuggestionRequest" && v.term.length > 0);
   const request$ = events$.map<RequestOptions>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/get-suggestions`,
@@ -34,6 +34,7 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
           user_domain: e.credential.userDomain,
         },
         project: e.projectKey,
+        input_value: (e as GetSuggestionRequest).term,
       },
     };
   });

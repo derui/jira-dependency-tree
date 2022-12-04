@@ -97,6 +97,12 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
     )
     .flatten();
 
+  const lastTerm$ = sources.state
+    .select<MainState["projectToolbar"]>("projectToolbar")
+    .stream.map((v) => v?.lastTerm)
+    .filter(filterUndefined)
+    .remember();
+
   const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
     return {
       kind: "GetWholeDataRequest",
@@ -106,9 +112,21 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
     };
   });
 
+  const suggestionEvent$ = xs
+    .combine(project$, credential$, lastTerm$)
+    .map<Events>(([projectKey, credential, term]) => {
+      return {
+        kind: "GetSuggestionRequest",
+        env: env,
+        credential,
+        projectKey: projectKey,
+        term,
+      };
+    });
+
   return isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
-    events: xs.merge(sync$, requestChangeEvent$),
+    events: xs.merge(sync$, requestChangeEvent$, suggestionEvent$),
   });
 };
 
@@ -234,10 +252,6 @@ const main = function main(sources: MainSources): MainSinks {
       sideToolbar: {
         graphLayout: GraphLayout.Horizontal,
       },
-      projectToolbar: {
-        conditionType: "sprint",
-        currentSearchCondition: {},
-      },
     };
   });
 
@@ -324,7 +338,7 @@ const main = function main(sources: MainSources): MainSinks {
   };
 };
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.CI === "ci") {
   const { worker } = await import("./mock-worker");
 
   worker.start();

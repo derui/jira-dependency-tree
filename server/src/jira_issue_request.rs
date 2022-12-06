@@ -105,7 +105,7 @@ fn request_to_jql(request: &IssueLoadingRequest) -> String {
             sprint: None,
             epic: Some(epic),
         }) => format!(
-            "project = \"{}\" AND parent = \"{}\"",
+            "project = \"{}\" AND parentEpic = \"{}\"",
             request.project, epic
         ),
         _ => format!(

@@ -222,7 +222,7 @@ fn request_to_search_with_epic() {
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
             .header("authorization", "foo")
-            .body_contains("parent = \\\"abc\\\"");
+            .body_contains("parentEpic = \\\"abc\\\"");
 
         then.status(200)
             .header("content-type", "application/json")

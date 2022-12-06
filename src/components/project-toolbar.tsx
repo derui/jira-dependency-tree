@@ -5,7 +5,7 @@ import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
 import { SearchCondition } from "@/model/event";
-import { Suggestor } from "./suggestor";
+import { Suggestor, SuggestorProps } from "./suggestor";
 import { Suggestion } from "@/model/suggestion";
 
 type ConditionType = "default" | "sprint" | "epic";
@@ -39,6 +39,7 @@ const intent = function intent(sources: ProjectToolbarSources) {
     .map((event) => (event.target as HTMLInputElement).value);
 
   return {
+    props$: sources.props,
     state$: sources.state.stream,
     openerClicked$: selectorOpenerClicked,
     typeChanged$,
@@ -66,9 +67,15 @@ const model = function model(actions: ReturnType<typeof intent>) {
       }
     }, false);
 
-  return xs.combine(currentConditionType$, selectorOpened$).map(([currentConditionType, selectorOpened]) => {
-    return { currentConditionType, selectorOpened };
-  });
+  const suggestions$ = actions.props$.map((v) =>
+    v.sprints.map((item) => ({ id: item.id, label: item.displayName, value: item.value as unknown }))
+  );
+
+  return xs
+    .combine(currentConditionType$, selectorOpened$, suggestions$)
+    .map(([currentConditionType, selectorOpened, suggestions]) => {
+      return { currentConditionType, selectorOpened, suggestions };
+    });
 };
 
 const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen: TestIdGenerator) {
@@ -161,9 +168,13 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
 
   const suggestor = Suggestor({
     ...sources,
-    props: sources.props
-      .map((v) => v.sprints.map((item) => ({ id: item.id, label: item.displayName, value: item.value as unknown })))
-      .map((v) => ({ suggestions: v }))
+    props: state$
+      .map<SuggestorProps>((v) => {
+        return {
+          loading: false,
+          suggestions: v.suggestions,
+        };
+      })
       .remember(),
     testid: "sprint-suggestor",
   });
@@ -211,27 +222,31 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
-  const termReducer$ = suggestor.term.map<Reducer<ProjectToolbarState>>((lastTerm) => {
-    return (prevState?: ProjectToolbarState) => {
-      if (!prevState) return undefined;
+  const termReducer$ = suggestor.value
+    .filter((v) => v.kind === "term")
+    .map<Reducer<ProjectToolbarState>>((lastTerm) => {
+      return (prevState?: ProjectToolbarState) => {
+        if (!prevState) return undefined;
 
-      return produce(prevState, (draft) => {
-        if (lastTerm.length > 0) {
-          draft.lastTerm = lastTerm;
-        }
-      });
-    };
-  });
+        return produce(prevState, (draft) => {
+          if (lastTerm.kind === "term" && lastTerm.value.length > 0) {
+            draft.lastTerm = lastTerm.value;
+          }
+        });
+      };
+    });
 
-  const termResetReducer$ = suggestor.value.map<Reducer<ProjectToolbarState>>(() => {
-    return (prevState?: ProjectToolbarState) => {
-      if (!prevState) return undefined;
+  const termResetReducer$ = suggestor.value
+    .filter((v) => v.kind === "submit")
+    .map<Reducer<ProjectToolbarState>>(() => {
+      return (prevState?: ProjectToolbarState) => {
+        if (!prevState) return undefined;
 
-      return produce(prevState, (draft) => {
-        draft.lastTerm = undefined;
-      });
-    };
-  });
+        return produce(prevState, (draft) => {
+          draft.lastTerm = undefined;
+        });
+      };
+    });
 
   return {
     DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),

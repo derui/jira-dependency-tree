@@ -100,7 +100,8 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
   const lastTerm$ = sources.state
     .select<MainState["projectToolbar"]>("projectToolbar")
     .stream.map((v) => v?.lastTerm)
-    .filter(filterUndefined);
+    .filter(filterUndefined)
+    .filter((v) => v.length > 0);
 
   const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
     return {

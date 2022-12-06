@@ -22,7 +22,7 @@ test("button is disabled if no any suggestion", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        noSuggestion: select("[data-testid=suggestor-opener]", vtree)[0].data?.attrs?.disabled,
+        noSuggestion: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--empty"],
       };
     });
 
@@ -57,7 +57,7 @@ test("open main when button clicked", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        buttonDisabled: select("[data-testid=suggestor-opener]", vtree)[0].data?.attrs?.disabled,
+        buttonDisabled: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--empty"],
         buttonOpened: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--opened"],
         mainOpened: select("[data-testid=search-dialog]", vtree)[0].data?.class!["--opened"],
       };
@@ -142,11 +142,11 @@ test("send term when suggestions is empty", async () => {
     });
 
     // Act
-    const actual$ = sinks.term;
+    const actual$ = sinks.value;
 
     // Assert
     const expected$ = Time.diagram("--a", {
-      a: "x",
+      a: { kind: "term", value: "x" },
     });
 
     Time.assertEqual(actual$, expected$);
@@ -176,7 +176,7 @@ test("do not send term when suggestions is not empty", async () => {
     });
 
     // Act
-    const actual$ = sinks.term;
+    const actual$ = sinks.value.filter((v) => v.kind === "term");
 
     // Assert
     const expected$ = Time.diagram("---");

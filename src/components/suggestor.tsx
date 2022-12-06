@@ -11,6 +11,19 @@ interface Suggestion {
   value: unknown;
 }
 
+// send term when no have any suggestions.
+type SuggestorTermEvent = {
+  kind: "term";
+  value: string;
+};
+
+type SuggestorSubmitEvent = {
+  kind: "submit";
+  value: unknown;
+};
+
+export type SuggestorEvent = SuggestorTermEvent | SuggestorSubmitEvent;
+
 export interface SuggestorProps {
   suggestions: Suggestion[];
 }
@@ -20,9 +33,7 @@ type SuggestorSources = ComponentSources<{
 }>;
 
 type SuggestorSinks = ComponentSinks<{
-  value: Stream<Suggestion>;
-  // send term when no have any suggestions.
-  term: Stream<string>;
+  value: Stream<SuggestorEvent>;
 }>;
 
 const intent = function intent(sources: SuggestorSources) {
@@ -154,12 +165,15 @@ const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerato
 
     return (
       <div class={{ suggestor: true }} dataset={{ testid: gen("suggestor-root") }}>
-        <button
-          class={{ suggestor__opener: true, "--opened": opened, "--empty": !currentSuggestion }}
-          dataset={{ testid: gen("suggestor-opener") }}
-        >
-          {currentSuggestion?.label ?? "Not selected"}
-        </button>
+        <span class={{ "suggestor__opener-container": true }}>
+          <button
+            class={{ suggestor__opener: true, "--opened": opened, "--empty": !currentSuggestion }}
+            dataset={{ testid: gen("suggestor-opener") }}
+          >
+            {currentSuggestion?.label ?? "Not selected"}
+          </button>
+          <span class={{ "suggestor__opener-icon": true, "--opened": opened }}></span>
+        </span>
         <div class={{ suggestor__main: true, "--opened": opened }} dataset={{ testid: gen("search-dialog") }}>
           <span class={{ "suggestor-main__term": true }}>
             <input
@@ -178,31 +192,24 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const value$ = xs
+  const submitEvent$ = xs
     .merge(actions.suggestionClicked$, actions.enterPressed$)
     .map(() => {
       return state$
         .map(({ suggestions, index }) => suggestions.at(index))
         .filter(filterUndefined)
+        .map<SuggestorSubmitEvent>((v) => ({ kind: "submit", value: v.value }))
         .take(1);
     })
     .flatten();
 
-  const term$ = actions.props$
-    .map((v) => v.suggestions)
-    .filter((v) => v.length === 0)
-    .map(() => {
-      return actions.termInputted$
-        .startWith("")
-        .filter((v) => v.length > 0)
-        .compose(debounce(200))
-        .take(1);
-    })
-    .flatten();
+  const termEvent$ = actions.termInputted$
+    .filter((v) => v.length > 0)
+    .compose(debounce(500))
+    .map<SuggestorTermEvent>((v) => ({ kind: "term", value: v }));
 
   return {
     DOM: view(state$, generateTestId(sources.testid)),
-    value: value$,
-    term: term$,
+    value: xs.merge(submitEvent$, termEvent$),
   };
 };

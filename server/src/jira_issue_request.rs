@@ -32,16 +32,26 @@ impl JiraIssue {
             links: self
                 .links
                 .iter()
-                .filter(|v| map.contains_key(&v.outward_issue))
-                .map(|v| JiraIssueLink {
-                    outward_issue: v.outward_issue.clone(),
+                .filter_map(|v| {
+                    if map.contains_key(&v.outward_issue) {
+                        Some(JiraIssueLink {
+                            outward_issue: v.outward_issue.clone(),
+                        })
+                    } else {
+                        None
+                    }
                 })
                 .collect(),
             subtasks: self
                 .subtasks
                 .iter()
-                .filter(|v| map.contains_key(*v))
-                .map(|v| v.into())
+                .filter_map(|v| {
+                    if map.contains_key(v) {
+                        Some(v.into())
+                    } else {
+                        None
+                    }
+                })
                 .collect(),
             ..self.clone()
         }
@@ -53,12 +63,9 @@ fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
     value
         .iter()
         .filter_map(|v| {
-            v["outwardIssue"]
-                .as_object()
-                .and_then(|obj| obj["key"].as_str())
-                .map(|v| JiraIssueLink {
-                    outward_issue: v.to_string(),
-                })
+            v["outwardIssue"]["key"].as_str().map(|v| JiraIssueLink {
+                outward_issue: v.to_string(),
+            })
         })
         .collect()
 }
@@ -110,18 +117,17 @@ fn as_issue_keys(issue: &Value) -> HashSet<String> {
 
     issue["fields"]["issuelinks"].as_array().map(|v| {
         v.iter().for_each(|v| {
-            keys.insert(
-                v["outwardIssue"]["key"]
-                    .as_str()
-                    .expect("key must not null")
-                    .to_string(),
-            );
+            if let Some(key) = v["outwardIssue"]["key"].as_str() {
+                keys.insert(key.to_string());
+            }
         })
     });
 
     issue["fields"]["subtasks"].as_array().map(|v| {
         v.iter().for_each(|v| {
-            keys.insert(v["key"].as_str().expect("key must not null").to_string());
+            if let Some(key) = v["key"].as_str() {
+                keys.insert(key.to_string());
+            }
         })
     });
 

@@ -48,15 +48,12 @@ const view = function view(
   return xs.combine(state$, dialog).map(([{ opened, setupFinished }, dialog]) => (
     <div class={{ "user-configuration": true }}>
       <div class={{ "user-configuration__toolbar": true }}>
-        <span
-          class={{ "user-configuration__marker": true, "--show": !setupFinished }}
-          dataset={{ testid: gen("marker") }}
-        ></span>
-
-        <button
-          class={{ "user-configuration__opener": true, "--opened": opened }}
-          dataset={{ testid: gen("opener") }}
-        ></button>
+        <button class={{ "user-configuration__opener": true, "--opened": opened }} dataset={{ testid: gen("opener") }}>
+          <span
+            class={{ "user-configuration__marker": true, "--show": !setupFinished }}
+            dataset={{ testid: gen("marker") }}
+          ></span>
+        </button>
       </div>
       <div
         class={{

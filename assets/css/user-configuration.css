@@ -9,18 +9,23 @@
   position: relative;
   flex: 1 1 auto;
   flex-direction: column;
+  background-color: white;
+  padding: var(--space-base);
 }
 
 .user-configuration__opener {
-  padding: var(--space-small);
+  position: relative;
   outline: none;
   background: none;
-  border: 1px solid transparent;
-  transition: border 0.1s ease-out;
+  border: none;
+  display: flex;
+  flex: 1 1 auto;
+  background-color: white;
+  padding: var(--space-small);
+  transition: color 0.15s ease-out;
   cursor: pointer;
-  height: 32px;
-  width: 32px;
-  border-radius: 16px;
+  color: black;
+  border-radius: var(--icon-size);
 
   &::before {
     content: "";
@@ -28,19 +33,22 @@
     flex: 0 0 auto;
     mask: url("/assets/svg/tablar-icons/settings.svg");
     mask-size: cover;
-    width: 100%;
-    height: 100%;
+    width: var(--icon-size);
+    height: var(--icon-size);
     background-color: rgb(var(--secondary-1-3));
+    transition: background-color 0.15s ease-out;
   }
 
   &:hover {
-    border: 1px solid rgb(var(--secondary-1-3));
+    background-color: rgb(var(--secondary-1-3));
+
+    &::before {
+      background-color: white;
+    }
   }
 
   &.--opened {
-    border: 1px solid rgb(var(--secondary-1-3));
     background-color: rgb(var(--secondary-1-3));
-    border-radius: 16px 16px 0 0;
 
     &::before {
       background-color: white;
@@ -51,7 +59,7 @@
 .user-configuration__dialog-container {
   background-color: white;
   position: absolute;
-  top: 32px;
+  top: calc(48px + var(--space-base));
   right: 0;
   border: 1px solid rgb(var(--secondary-1-3));
   box-shadow: var(--box-shadow);
@@ -72,14 +80,16 @@
 .user-configuration__user-domain {
   margin-left: var(--space-large);
   padding: var(--space-base) var(--space-large);
-  border: 1px solid transparent;
-  border-bottom: 1px solid rgb(var(--primary-3));
+  border: 1px solid var(--light-gray);
   outline: 1px solid transparent;
-  transition: outline 0.2s ease-out, border-radius 0.2s ease-out;
+  background-color: rgba(0 0 0 20%);
+  border-radius: var(--space-small);
+  transition: outline 0.15s ease-out, background-color 0.15s ease-out, border-color 0.15s ease-out;
 
   &:focus {
+    background-color: white;
     outline: 1px solid rgb(var(--primary-3));
-    border-radius: var(--space-small);
+    border-color: rgb(var(--primary-3));
   }
 }
 
@@ -104,7 +114,7 @@
   border-top: 1px solid rgb(var(--secondary-1-3));
   background-color: rgb(var(--secondary-2-1) / 30%);
   color: rgb(var(--secondary-2-4));
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 
   &[disabled] {
     color: gray;

@@ -22,18 +22,23 @@ const intent = function intent(sources: ProjectInformationSources) {
   const submit$ = selectAsMain(sources, ".project-information__form")
     .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(false);
+  const cancel$ = selectAsMain(sources, ".project-information__cancel")
+    .events("click", { preventDefault: true, bubbles: false })
+    .mapTo(false);
   const nameChanged$ = selectAsMain(sources, ".project-information__name-input")
     .events("input")
     .map((v) => {
       return (v.target as HTMLInputElement).value;
     });
 
-  return { props$: sources.props, nameClicked$, nameChanged$, submit$ };
+  return { props$: sources.props, nameClicked$, nameChanged$, submit$, cancel$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   const project$ = actions.props$.map((v) => v.project);
-  const opened$ = xs.merge(actions.nameClicked$, actions.submit$).fold((accum, value) => !!value || !accum, false);
+  const opened$ = xs
+    .merge(actions.nameClicked$, actions.submit$, actions.cancel$)
+    .fold((accum, value) => !!value || !accum, false);
   const name$ = project$
     .filter(filterUndefined)
     .map((v) => v.name)
@@ -66,19 +71,28 @@ const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typ
         </span>
         <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: gen("editor") }}>
           <form class={{ "project-information__form": true }} attrs={{ method: "dialog" }}>
-            <label class={{ "project-information__input-container": true }}>
-              <span class={{ "project-information__input-label": true }}>Key</span>
+            <div class={{ "project-information__main": true }}>
+              <label class={{ "project-information__input-container": true }}>
+                <span class={{ "project-information__input-label": true }}>Key</span>
+                <input
+                  class={{ "project-information__name-input": true }}
+                  attrs={{ type: "text", placeholder: "required", value: key }}
+                  dataset={{ testid: gen("name-input") }}
+                />
+              </label>
+            </div>
+            <div class={{ "project-information__footer": true }}>
               <input
-                class={{ "project-information__name-input": true }}
-                attrs={{ type: "text", placeholder: "required", value: key }}
-                dataset={{ testid: gen("name-input") }}
+                class={{ "project-information__cancel": true }}
+                attrs={{ type: "button", value: "Cancel" }}
+                dataset={{ testid: gen("cancel") }}
               />
-            </label>
-            <input
-              class={{ "project-information__submitter": true }}
-              attrs={{ type: "submit", value: "Apply" }}
-              dataset={{ testid: gen("submit") }}
-            />
+              <input
+                class={{ "project-information__submit": true }}
+                attrs={{ type: "submit", value: "Apply" }}
+                dataset={{ testid: gen("submit") }}
+              />
+            </div>
           </form>
         </div>
       </div>

@@ -65,6 +65,9 @@
   --complement-3: 24 106 20;
   --complement-4: 5 71 1;
 
+  /* other common colors */
+  --light-gray: rgba(0 0 0 / 10%);
+
   /* component */
   --card-width: 48px;
   --card-height: 78px;

@@ -20,7 +20,7 @@
   transition: color 0.15s ease-out;
   cursor: pointer;
   color: black;
-  border-radius: 24px;
+  border-radius: var(--icon-size);
 
   &::before {
     content: "";
@@ -88,7 +88,6 @@
   visibility: hidden;
   display: flex;
   flex: 1 1 auto;
-  border-bottom: 1px solid rgb(var(--complement-3));
 
   &.--selected {
     visibility: visible;
@@ -96,6 +95,7 @@
 }
 
 .search-condition-editor__epic-selector {
+  position: relative;
   flex: 1 1 auto;
   align-items: center;
   display: flex;
@@ -104,14 +104,31 @@
 .search-condition-epic-selector__input {
   flex: 1 1 auto;
   width: 100%;
-  margin: var(--space-base);
-  border: 1px solid transparent;
+
+  /* common input style */
+  padding: var(--space-base) var(--space-large);
+  padding-left: calc(var(--icon-size) + var(--space-small) + var(--space-small));
+  border: 1px solid var(--light-gray);
   outline: 1px solid transparent;
-  transition: outline 0.2s ease-out, border-radius 0.2s ease-out;
+  background-color: rgba(0 0 0 20%);
+  border-radius: var(--space-small);
+  transition: outline 0.15s ease-out, background-color 0.15s ease-out, border-color 0.15s ease-out;
+
+  &.--selected {
+    visibility: visible;
+  }
+
+  &:focus {
+    background-color: white;
+    outline: 1px solid rgb(var(--primary-3));
+    border-color: rgb(var(--primary-3));
+  }
 }
 
 .search-condition-epic-selector__icon {
-  flex: 0 0 auto;
+  position: absolute;
+  left: var(--space-small);
+  top: var(--space-small);
 
   &::before {
     content: "";
@@ -119,7 +136,7 @@
     flex: 0 0 auto;
     width: var(--icon-size);
     height: var(--icon-size);
-    background-color: rgb(var(--complement-3));
+    background-color: gray;
     transition: background-color 0.15s ease-out;
     mask: url("/assets/svg/tablar-icons/search.svg");
     mask-size: cover;
@@ -134,6 +151,7 @@
 
   /* content width - suggestor width */
   width: 112px;
+  color: rgb(var(--primary-3));
 }
 
 .search-condition-editor__radio {
@@ -166,7 +184,7 @@
   &.--checked {
     &::before {
       mask: url("/assets/svg/tablar-icons/square-check.svg");
-      background-color: rgb(var(--secondary-1-3));
+      background-color: rgb(var(--primary-3));
     }
   }
 }
@@ -179,7 +197,7 @@
   justify-content: space-between;
   padding: var(--space-base);
   padding-top: calc(var(--space-base) - 1px);
-  border-top: 1px solid rgb(1 1 1 / 10%);
+  border-top: 1px solid var(--light-gray);
 }
 
 .search-condition-editor__submit,
@@ -190,7 +208,7 @@
   bottom: 0;
   padding: var(--space-base);
   border-radius: 4px;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .search-condition-editor__submit {

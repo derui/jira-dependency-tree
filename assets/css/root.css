@@ -39,6 +39,6 @@ body,
   margin-top: var(--space-large);
   margin-left: var(--space-large);
   align-items: center;
-  grid-template-columns: 280px calc(48px + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 32px;
+  grid-template-columns: 280px calc(48px + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px;
   grid-template-areas: "project-information project-toolbar sync-jira spacer user-configuration";
 }

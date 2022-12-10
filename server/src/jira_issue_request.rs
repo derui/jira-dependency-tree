@@ -34,6 +34,7 @@ pub struct JiraIssue {
     pub subtasks: Vec<JiraSubtask>,
 }
 
+/// json to issue link
 fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
     value
         .iter()
@@ -46,6 +47,7 @@ fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
         .collect()
 }
 
+/// json to subtask
 fn as_subtasks(value: &[Value]) -> Vec<JiraSubtask> {
     value
         .iter()
@@ -65,7 +67,7 @@ fn as_subtasks(value: &[Value]) -> Vec<JiraSubtask> {
         .collect()
 }
 
-// json to JiraIssue
+/// json to JiraIssue
 fn as_issue(issues: &[Value]) -> Vec<JiraIssue> {
     issues
         .iter()
@@ -115,15 +117,15 @@ fn request_to_jql(request: &IssueLoadingRequest) -> String {
     }
 }
 
-// load all issues from Jira API
+/// load all issues from Jira API with JQL
 fn load_issue_recursive(
-    request: &IssueLoadingRequest,
+    jql: &str,
     url: impl JiraUrl,
     issues: &mut Vec<JiraIssue>,
 ) -> Result<Vec<JiraIssue>, Box<dyn std::error::Error>> {
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
-        "jql": request_to_jql(request),
+        "jql": jql,
         "startAt": issues.len(),
         "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
     });
@@ -152,7 +154,7 @@ fn load_issue_recursive(
                 return Ok(Vec::from_iter(issues.iter().cloned()));
             }
 
-            load_issue_recursive(request, url, issues)
+            load_issue_recursive(jql, url, issues)
         }
     }
 }
@@ -160,6 +162,7 @@ fn load_issue_recursive(
 // load issue with request
 pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraIssue> {
     let mut vec: Vec<JiraIssue> = Vec::new();
+    let jql = request_to_jql(request);
 
-    load_issue_recursive(request, url, &mut vec).unwrap_or_default()
+    load_issue_recursive(&jql, url, &mut vec).unwrap_or_default()
 }

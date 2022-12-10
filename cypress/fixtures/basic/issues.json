@@ -38,38 +38,10 @@
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10043",
     "links": [],
     "subtasks": [
-      {
-        "key": "TES-46",
-        "summary": "task 2-2",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10045"
-      },
-      {
-        "key": "TES-47",
-        "summary": "task 2-3",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10046"
-      },
-      {
-        "key": "TES-48",
-        "summary": "task 2-4",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10047"
-      },
-      {
-        "key": "TES-49",
-        "summary": "task 2-5",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10048"
-      }
+      "TES-46",
+      "TES-47",
+      "TES-48",
+      "TES-49"
     ]
   },
   {
@@ -125,86 +97,16 @@
       }
     ],
     "subtasks": [
-      {
-        "key": "TES-30",
-        "summary": "bug 11-1",
-        "description": null,
-        "statusId": "10002",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10029"
-      },
-      {
-        "key": "TES-31",
-        "summary": "bug 11-2",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10030"
-      },
-      {
-        "key": "TES-32",
-        "summary": "bug 11-3",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10031"
-      },
-      {
-        "key": "TES-33",
-        "summary": "bug 11-4",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10032"
-      },
-      {
-        "key": "TES-34",
-        "summary": "bug 11-5",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10033"
-      },
-      {
-        "key": "TES-35",
-        "summary": "bug 11-6",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10034"
-      },
-      {
-        "key": "TES-36",
-        "summary": "bug 11-7",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10035"
-      },
-      {
-        "key": "TES-37",
-        "summary": "bug 11-8",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10036"
-      },
-      {
-        "key": "TES-38",
-        "summary": "bug 11-9",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10037"
-      },
-      {
-        "key": "TES-39",
-        "summary": "bug 11-10",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10038"
-      }
+      "TES-30",
+      "TES-31",
+      "TES-32",
+      "TES-33",
+      "TES-34",
+      "TES-35",
+      "TES-36",
+      "TES-37",
+      "TES-38",
+      "TES-39"
     ]
   },
   {
@@ -360,38 +262,10 @@
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10007",
     "links": [],
     "subtasks": [
-      {
-        "key": "TES-15",
-        "summary": "a",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10014"
-      },
-      {
-        "key": "TES-16",
-        "summary": "b",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10015"
-      },
-      {
-        "key": "TES-17",
-        "summary": "d",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10016"
-      },
-      {
-        "key": "TES-18",
-        "summary": "e",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10017"
-      }
+      "TES-15",
+      "TES-16",
+      "TES-17",
+      "TES-18"
     ]
   },
   {
@@ -417,38 +291,10 @@
       }
     ],
     "subtasks": [
-      {
-        "key": "TES-4",
-        "summary": "sub1",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10003"
-      },
-      {
-        "key": "TES-5",
-        "summary": "sub2",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10004"
-      },
-      {
-        "key": "TES-6",
-        "summary": "sub3",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10005"
-      },
-      {
-        "key": "TES-7",
-        "summary": "sub4",
-        "description": null,
-        "statusId": "10000",
-        "typeId": "10005",
-        "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10006"
-      }
+      "TES-4",
+      "TES-5",
+      "TES-6",
+      "TES-7"
     ]
   }
 ]

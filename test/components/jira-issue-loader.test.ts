@@ -80,15 +80,7 @@ test("merge subtask's outward", async () => {
             typeId: "typeid",
             selfUrl: "self",
             links: [],
-            subtasks: [
-              {
-                key: "bar",
-                summary: "bar's summary",
-                statusId: "id",
-                selfUrl: "self",
-                typeId: "type",
-              },
-            ],
+            subtasks: ["bar"],
           },
           {
             key: "bar",
@@ -130,12 +122,12 @@ test("merge subtask's outward", async () => {
     const expected$ = Time.diagram("-b|", {
       b: {
         key: "bar",
-        description: undefined,
+        description: "",
         summary: "bar's summary",
         statusId: "id",
         typeId: "type",
         selfUrl: "self",
-        outwardIssueKeys: ["foo", "baz"],
+        outwardIssueKeys: ["baz", "foo"],
       },
     });
 

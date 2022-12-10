@@ -8,27 +8,28 @@ export type D3Node<T extends BaseType = null> = Selection<T, undefined, null, un
 // The type of issueNode
 export type IssueNode = Selection<BaseType | SVGGElement, LayoutedLeveledIssue, SVGGElement, undefined>;
 
-export type LayoutedLeveledVertex = {
+export interface LayoutedLeveledVertex {
   vertex: string;
   level: number;
   indexInLevel: number;
   baseX: number;
   baseY: number;
-};
+}
 
-export type LayoutedLeveledIssue = {
+export interface LayoutedLeveledIssue extends SimulationNodeDatum {
   issueKey: string;
   issue: Issue | undefined;
   level: number;
   indexInLevel: number;
   baseX: number;
   baseY: number;
-} & SimulationNodeDatum;
+}
 
-export type IssueLink = {
+export interface IssueLink {
   source: LayoutedLeveledIssue;
   target: LayoutedLeveledIssue;
-};
+  display?: boolean;
+}
 
 export interface Configuration {
   nodeSize: Size;

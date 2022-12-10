@@ -1,8 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    default::default,
-    ops::Deref,
-};
+use std::collections::{HashMap, HashSet};
 
 use isahc::{ReadResponseExt, Request, RequestExt};
 use serde::{Deserialize, Serialize};
@@ -38,7 +34,7 @@ impl JiraIssue {
                 .iter()
                 .filter(|v| map.contains_key(&v.outward_issue))
                 .map(|v| JiraIssueLink {
-                    outward_issue: v.outward_issue,
+                    outward_issue: v.outward_issue.clone(),
                 })
                 .collect(),
             subtasks: self
@@ -47,7 +43,7 @@ impl JiraIssue {
                 .filter(|v| map.contains_key(*v))
                 .map(|v| v.into())
                 .collect(),
-            ..*self
+            ..self.clone()
         }
     }
 }
@@ -114,13 +110,18 @@ fn as_issue_keys(issue: &Value) -> HashSet<String> {
 
     issue["fields"]["issuelinks"].as_array().map(|v| {
         v.iter().for_each(|v| {
-            keys.insert(v.as_str().expect("key must not null").to_string());
+            keys.insert(
+                v["outwardIssue"]["key"]
+                    .as_str()
+                    .expect("key must not null")
+                    .to_string(),
+            );
         })
     });
 
     issue["fields"]["subtasks"].as_array().map(|v| {
         v.iter().for_each(|v| {
-            keys.insert(v.as_str().expect("key must not null").to_string());
+            keys.insert(v["key"].as_str().expect("key must not null").to_string());
         })
     });
 
@@ -150,20 +151,21 @@ fn request_to_jql(request: &IssueLoadingRequest) -> String {
 /// load all issues from Jira API with JQL
 fn load_issue_recursive<T, F>(
     jql: &str,
-    url: impl JiraUrl,
-    callback: F,
+    url: &impl JiraUrl,
+    callback: &mut F,
 ) -> Result<(), Box<dyn std::error::Error>>
 where
-    F: FnMut(&Value) -> T,
+    F: FnMut(&mut Value) -> T,
     T: Clone,
 {
-    let jira_url = url.get_url("/rest/api/3/search");
     let mut total = Some(0);
 
     while let Some(current_total) = total {
+        let jira_url = url.get_url("/rest/api/3/search");
         let body = json!({
             "jql": jql,
             "startAt": current_total,
+            "maxResults": 50,
             "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
         });
 
@@ -185,15 +187,15 @@ where
             Some(got_issues) => {
                 let total_size = json["total"].as_u64().unwrap_or_default() as usize;
 
-                got_issues.iter_mut().for_each(|v| {
-                    callback(v);
+                got_issues.clone().iter_mut().for_each(|v| {
+                    (*callback)(v);
                 });
 
-                if total_size <= current_total {
+                if total_size <= current_total || total_size <= 50 {
                     break;
                 }
 
-                total = Some(total_size);
+                total = Some(current_total + got_issues.len());
             }
         }
     }
@@ -206,28 +208,41 @@ pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraI
     let mut loaded_issues = HashMap::new();
     let mut issue_keys: HashSet<String> = HashSet::new();
     let jql = request_to_jql(request);
-    let mut callback = |value| {
+    let mut callback = |value: &mut Value| {
         for v in as_issue_keys(value) {
             issue_keys.insert(v);
         }
 
-        loaded_issues.insert(value["key"].to_string(), as_issue(value));
+        loaded_issues.insert(
+            value["key"].as_str().unwrap_or_default().to_string(),
+            as_issue(value),
+        );
     };
 
     // load all issue keys in jql
-    load_issue_recursive(&jql, url, callback).unwrap_or(());
+    load_issue_recursive(&jql, &url, &mut callback).unwrap_or(());
 
-    let not_full_loaded_keys = issue_keys.difference(&HashSet::from_iter(
-        loaded_issues.keys().into_iter().map(|v| v.to_string()),
-    ));
+    let binding = HashSet::from_iter(loaded_issues.keys().into_iter().map(|v| v.to_string()));
+    let not_full_loaded_keys = issue_keys.difference(&binding);
     let keys = not_full_loaded_keys
         .map(|v| v.to_string())
-        .collect::<Vec<String>>()
-        .join(", ");
-    let jql = format!("key IN ({})", keys);
+        .collect::<Vec<String>>();
 
-    // load issues do not fully-loaded
-    load_issue_recursive(&jql, url, callback).unwrap_or(());
+    if keys.len() > 0 {
+        let jql = format!("key IN ({})", keys.join(","));
+        println!("{}", jql);
+
+        // load issues do not fully-loaded
+        // re-define to avoid borrow-checker
+        let mut callback = |value: &mut Value| {
+            loaded_issues.insert(
+                value["key"].as_str().unwrap_or_default().to_string(),
+                as_issue(value),
+            );
+        };
+
+        load_issue_recursive(&jql, &url, &mut callback).unwrap_or(());
+    }
 
     loaded_issues
         .values()

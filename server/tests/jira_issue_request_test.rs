@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
-    jira_issue_request::{load_issue, JiraIssueLink},
+    jira_issue_request::{load_issue, JiraIssue, JiraIssueLink},
     jira_url::{JiraAuhtorization, JiraUrl},
     IssueLoadingRequest, IssueSearchCondition,
 };
@@ -30,7 +30,8 @@ fn request_to_get_an_issue() {
         when.method(Method::POST)
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
-            .header("authorization", "foo");
+            .header("authorization", "foo")
+            .body_contains("project = ");
 
         then.status(200)
             .header("content-type", "application/json")
@@ -58,6 +59,26 @@ fn request_to_get_an_issue() {
             }));
     });
 
+    server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .body_contains("key IN ");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .json_body(serde_json::json!({
+                "total": 0,
+                "issues": [{
+                    "key": "other",
+                    "fields": {
+                        "summary": ""
+                    }
+                }]
+            }));
+    });
+
     // do
     let url = TestRequest { server: &server };
     let request = IssueLoadingRequest {
@@ -72,8 +93,13 @@ fn request_to_get_an_issue() {
     let result = load_issue(&request, url);
 
     // verify
-    mock.assert();
-    assert_eq!(result.len(), 1);
+    assert_eq!(result.len(), 2);
+    let result = result
+        .iter()
+        .filter(|v| v.key == "test")
+        .take(1)
+        .collect::<Vec<&JiraIssue>>();
+
     assert_eq!(result[0].key, "test");
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
@@ -82,7 +108,7 @@ fn request_to_get_an_issue() {
     assert_eq!(
         result[0].links[0],
         JiraIssueLink {
-            outward_issue: Some("other".to_string())
+            outward_issue: "other".to_string()
         }
     );
 }
@@ -144,11 +170,23 @@ fn request_to_get_simplest_issue_with_subtasks() {
         when.method(Method::POST)
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
-            .header("authorization", "foo");
+            .header("authorization", "foo")
+            .body_contains("project =");
 
         then.status(200)
             .header("content-type", "application/json")
             .body(include_str!("issue.json"));
+    });
+    server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .body_contains("key IN");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("sub-tasks.json"));
     });
 
     // do
@@ -165,16 +203,15 @@ fn request_to_get_simplest_issue_with_subtasks() {
     let result = load_issue(&request, url);
 
     // verify
-    mock.assert();
-    assert_eq!(result.len(), 1);
+    assert_eq!(result.len(), 2);
     assert_eq!(result[0].key, "test");
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
     assert_eq!(result[0].status_id, Some("10001".to_string()));
-    assert_eq!(result[0].links.len(), 1);
+    assert_eq!(result[0].links.len(), 0);
     assert_eq!(result[0].subtasks.len(), 1);
-    assert_eq!(result[0].subtasks[0].key, "key-2");
+    assert_eq!(result[0].subtasks[0], "key-2");
 }
 
 #[test]

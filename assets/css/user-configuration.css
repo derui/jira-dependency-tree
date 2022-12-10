@@ -2,7 +2,6 @@
   display: flex;
   grid-area: user-configuration;
   position: relative;
-  right: var(--space-large);
 }
 
 .user-configuration__toolbar {

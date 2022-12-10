@@ -171,7 +171,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
-    assert_eq!(result[0].status_id, None);
+    assert_eq!(result[0].status_id, Some("10001".to_string()));
     assert_eq!(result[0].links.len(), 1);
     assert_eq!(result[0].subtasks.len(), 1);
     assert_eq!(result[0].subtasks[0].key, "key-2");

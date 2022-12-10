@@ -1,10 +1,11 @@
 import run from "@cycle/run";
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Project } from "./model/project";
-import { DOMSource, makeDOMDriver } from "@cycle/dom";
+import { DOMSource, makeDOMDriver, source } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
+import flatten from "xstream/extra/flattenConcurrently";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import isolate, { Component } from "@cycle/isolate";
@@ -19,14 +20,8 @@ import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
 import equal from "fast-deep-equal/es6";
-import {
-  SyncJiraState as SyncJiraState,
-  SyncJira,
-  SyncJiraProps,
-  SyncJiraSinks,
-  SyncJiraSources,
-} from "./components/sync-jira";
-import { LoaderStatus } from "./type";
+import { SyncJira, SyncJiraProps, SyncJiraSinks, SyncJiraSources } from "./components/sync-jira";
+import { LoaderState, LoaderStatus } from "./type";
 import { Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
@@ -57,11 +52,12 @@ type MainState = {
   };
   projectKey: string | undefined;
   setting: Setting;
-} & { jiraSync?: SyncJiraState } & { sideToolbar?: SideToolbarState } & { projectToolbar?: ProjectToolbarState };
+  loading: LoaderState;
+} & { sideToolbar?: SideToolbarState } & { projectToolbar?: ProjectToolbarState };
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
-const jiraLoader = function jiraLoader(sources: MainSources) {
+const jiraLoader = function jiraLoader(sources: MainSources, syncJiraSync: SyncJiraSinks) {
   const credential$ = sources.state
     .select<MainState["setting"]>("setting")
     .stream.map((v) => v.toCredential())
@@ -78,9 +74,7 @@ const jiraLoader = function jiraLoader(sources: MainSources) {
     .stream.map((v) => v?.currentSearchCondition)
     .remember();
 
-  const sync$ = sources.state
-    .select<MainState["jiraSync"]>("jiraSync")
-    .stream.filter((v) => v === LoaderStatus.LOADING)
+  const sync$ = syncJiraSync.value
     .map(() =>
       xs
         .combine(project$, credential$, condition$)
@@ -148,13 +142,6 @@ const main = function main(sources: MainSources): MainSinks {
       .map<ProjectInformationProps>((data) => ({ project: data })),
     testid: "project-information",
   });
-  const jiraLoaderSink = jiraLoader(sources);
-  const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
-    DOM: sources.DOM,
-    props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
-    testid: "zoom-slider",
-  });
-
   const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
     DOM: sources.DOM,
     testid: "sync-jira",
@@ -165,9 +152,16 @@ const main = function main(sources: MainSources): MainSinks {
           .select<MainState["projectKey"]>("projectKey")
           .stream.map((v) => !!v)
           .startWith(false),
-        sources.state.select<MainState["jiraSync"]>("jiraSync").stream.filter(filterUndefined)
+        sources.state.select<MainState["loading"]>("loading").stream
       )
       .map<SyncJiraProps>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
+  });
+
+  const jiraLoaderSink = jiraLoader(sources, syncJiraSink);
+  const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
+    DOM: sources.DOM,
+    props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
+    testid: "zoom-slider",
   });
 
   const sideToolbarSink = isolate(
@@ -252,6 +246,7 @@ const main = function main(sources: MainSources): MainSinks {
       sideToolbar: {
         graphLayout: GraphLayout.Horizontal,
       },
+      loading: "COMPLETED",
     };
   });
 
@@ -287,7 +282,6 @@ const main = function main(sources: MainSources): MainSinks {
         draft.data.issues = data?.issues ?? draft.data.issues;
         draft.data.project = data?.project ?? draft.data.project;
         draft.data.suggestion = data?.suggestion ?? draft.data.suggestion;
-        draft.jiraSync = LoaderStatus.COMPLETED;
       });
     };
   });
@@ -308,17 +302,25 @@ const main = function main(sources: MainSources): MainSinks {
     .filter(filterNull)
     .map<StorageSink>((v) => v);
 
-  const syncjiraReducer$ = syncJiraSink.value.map(() => {
-    return function name(prevState?: MainState) {
-      if (!prevState) {
-        return undefined;
-      }
+  const HTTP = xs.merge(jiraLoaderSink.HTTP);
 
-      return produce(prevState, (draft) => {
-        draft.jiraSync = LoaderStatus.LOADING;
-      });
-    };
-  });
+  const loadingReducer$ = xs
+    .merge(HTTP.mapTo(true), flatten(sources.HTTP.select() as unknown as Stream<Stream<unknown>>).mapTo(false))
+    .fold((accum, ret) => {
+      return Math.max(ret ? accum + 1 : accum - 1, 0);
+    }, 0)
+    .map((v) => (v === 0 ? "COMPLETED" : "LOADING"))
+    .map((loading: LoaderState) => {
+      return function (prevState?: MainState) {
+        if (!prevState) {
+          return undefined;
+        }
+
+        return produce(prevState, (draft) => {
+          draft.loading = loading;
+        });
+      };
+    });
 
   return {
     DOM: vnode$,
@@ -327,13 +329,13 @@ const main = function main(sources: MainSources): MainSinks {
       storageReducer$,
       environmentReducer$,
       jiraLoaderReducer$,
-      syncjiraReducer$,
       projectReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
-      projectToolbarSink.state as Stream<Reducer<MainState>>
+      projectToolbarSink.state as Stream<Reducer<MainState>>,
+      loadingReducer$
     ),
     issueGraph: issueGraph$,
-    HTTP: xs.merge(jiraLoaderSink.HTTP),
+    HTTP: HTTP,
     STORAGE: storage$,
   };
 };

@@ -61,11 +61,14 @@
   position: absolute;
   top: calc(48px + var(--space-base));
   right: 0;
-  border: 1px solid rgb(var(--secondary-1-3));
+  border-radius: var(--base-border-radius);
   box-shadow: var(--box-shadow);
+  transition: width 0.15s ease, opacity 0.15s ease;
+  width: 0;
+  overflow: hidden;
 
-  &.--hidden {
-    visibility: hidden;
+  &.--opened {
+    width: 360px;
   }
 }
 
@@ -73,6 +76,11 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
+  height: 100%;
+}
+
+.user-configuration__main {
+  padding-bottom: var(--space-large);
 }
 
 .user-configuration__credential,
@@ -106,30 +114,6 @@
   color: rgb(var(--primary-4));
 }
 
-.user-configuration__submitter {
-  margin-top: var(--space-large);
-  padding: var(--space-base);
-  width: 100%;
-  border: none;
-  border-top: 1px solid rgb(var(--secondary-1-3));
-  background-color: rgb(var(--secondary-2-1) / 30%);
-  color: rgb(var(--secondary-2-4));
-  transition: background-color 0.15s ease-in-out;
-
-  &[disabled] {
-    color: gray;
-    background-color: white;
-  }
-
-  &:hover:not([disabled]) {
-    background-color: rgb(var(--secondary-2-1) / 60%);
-  }
-
-  &:active:not([disabled]) {
-    background-color: rgb(var(--secondary-2-1));
-  }
-}
-
 .user-configuration__marker {
   position: absolute;
   top: 0;
@@ -143,5 +127,61 @@
 
   &.--show {
     visibility: visible;
+  }
+}
+
+/* footer */
+.user-configuration__footer {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: var(--space-base);
+  padding-top: calc(var(--space-base) - 1px);
+  border-top: 1px solid var(--light-gray);
+}
+
+.user-configuration__submit,
+.user-configuration__cancel {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  right: 0;
+  bottom: 0;
+  padding: var(--space-base);
+  border-radius: 4px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.user-configuration__submit {
+  border: 1px solid rgb(var(--secondary-1-0));
+  background-color: rgb(var(--secondary-1-1));
+  color: white;
+
+  &:hover {
+    background-color: rgb(var(--secondary-1-2));
+  }
+
+  &:active {
+    background-color: rgb(var(--secondary-1-3));
+  }
+
+  &[disabled] {
+    color: gray;
+    background-color: white;
+    border-color: gray;
+  }
+}
+
+.user-configuration__cancel {
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+
+  &:hover {
+    background-color: lightgray / 60%;
+  }
+
+  &:active {
+    background-color: lightgray;
   }
 }

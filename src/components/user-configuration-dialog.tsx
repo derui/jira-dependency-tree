@@ -9,17 +9,25 @@ export type UserConfigurationState = {
   userDomain: string;
 };
 
+type ConfigurationCancelEvent = { kind: "cancel" };
+type ConfigurationSubmitEvent = { kind: "submit"; state: UserConfigurationState };
+
+type Event = ConfigurationSubmitEvent | ConfigurationCancelEvent;
+
 type UserConfigurationDialogSources = ComponentSources<{
   props: Stream<Partial<UserConfigurationState>>;
 }>;
 
 type UserConfigurationDialogSinks = ComponentSinks<{
-  value: Stream<UserConfigurationState>;
+  value: Stream<Event>;
 }>;
 
 const intent = function intent(sources: UserConfigurationDialogSources) {
   const submit$ = selectAsMain(sources, ".user-configuration__form")
     .events("submit", { preventDefault: true, bubbles: false })
+    .mapTo(true);
+  const cancel$ = selectAsMain(sources, ".user-configuration__cancel")
+    .events("click", { preventDefault: true, bubbles: false })
     .mapTo(true);
   const changeCredential$ = selectAsMain(sources, ".user-configuration__credential")
     .events("input")
@@ -43,6 +51,7 @@ const intent = function intent(sources: UserConfigurationDialogSources) {
     changeCredential$,
     changeUserDomain$,
     changeEmail$,
+    cancel$,
     props$,
   };
 };
@@ -70,35 +79,45 @@ const model = function model(actions: ReturnType<typeof intent>) {
 const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ jiraToken, email, userDomain, allowSubmit }) => (
     <form class={{ "user-configuration__form": true }} attrs={{ method: "dialog" }}>
-      <label class={{ "user-configuration__input-container": true }}>
-        <span class={{ "user-configuration__input-label": true }}>User Domain</span>
+      <div class={{ "user-configuration__main": true }}>
+        <label class={{ "user-configuration__input-container": true }}>
+          <span class={{ "user-configuration__input-label": true }}>User Domain</span>
+          <input
+            class={{ "user-configuration__user-domain": true }}
+            attrs={{ type: "text", placeholder: "required", value: userDomain }}
+            dataset={{ testid: gen("user-domain") }}
+          />
+        </label>
+        <label class={{ "user-configuration__input-container": true }}>
+          <span class={{ "user-configuration__input-label": true }}>Email</span>
+          <input
+            class={{ "user-configuration__email": true }}
+            attrs={{ type: "text", placeholder: "required", value: email }}
+            dataset={{ testid: gen("email") }}
+          />
+        </label>
+        <label class={{ "user-configuration__input-container": true }}>
+          <span class={{ "user-configuration__input-label": true }}>Credential</span>
+          <input
+            class={{ "user-configuration__credential": true }}
+            attrs={{ type: "text", placeholder: "required", value: jiraToken }}
+            dataset={{ testid: gen("jira-token") }}
+          />
+        </label>
+      </div>
+      <div class={{ "user-configuration__footer": true }}>
         <input
-          class={{ "user-configuration__user-domain": true }}
-          attrs={{ type: "text", placeholder: "required", value: userDomain }}
-          dataset={{ testid: gen("user-domain") }}
+          class={{ "user-configuration__cancel": true }}
+          attrs={{ type: "button", value: "Cancel" }}
+          dataset={{ testid: gen("cancel") }}
         />
-      </label>
-      <label class={{ "user-configuration__input-container": true }}>
-        <span class={{ "user-configuration__input-label": true }}>Email</span>
+
         <input
-          class={{ "user-configuration__email": true }}
-          attrs={{ type: "text", placeholder: "required", value: email }}
-          dataset={{ testid: gen("email") }}
+          class={{ "user-configuration__submit": true }}
+          attrs={{ type: "submit", disabled: !allowSubmit, value: "Apply" }}
+          dataset={{ testid: gen("submit") }}
         />
-      </label>
-      <label class={{ "user-configuration__input-container": true }}>
-        <span class={{ "user-configuration__input-label": true }}>Credential</span>
-        <input
-          class={{ "user-configuration__credential": true }}
-          attrs={{ type: "text", placeholder: "required", value: jiraToken }}
-          dataset={{ testid: gen("jira-token") }}
-        />
-      </label>
-      <input
-        class={{ "user-configuration__submitter": true }}
-        attrs={{ type: "submit", disabled: !allowSubmit, value: "Apply" }}
-        dataset={{ testid: gen("submit") }}
-      />
+      </div>
     </form>
   ));
 };
@@ -109,10 +128,16 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const actions = intent(sources);
   const state$ = model(actions);
 
+  const submit$ = state$
+    .map(({ jiraToken, email, userDomain }) =>
+      actions.submit$.take(1).map<Event>(() => ({ kind: "submit", state: { jiraToken, email, userDomain } }))
+    )
+    .flatten();
+
+  const cancel$ = actions.cancel$.mapTo<Event>({ kind: "cancel" });
+
   return {
     DOM: view(state$, generateTestId(sources.testid)),
-    value: state$
-      .map(({ jiraToken, email, userDomain }) => actions.submit$.take(1).map(() => ({ jiraToken, email, userDomain })))
-      .flatten(),
+    value: xs.merge(submit$, cancel$),
   };
 };

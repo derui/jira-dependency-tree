@@ -144,7 +144,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: any, gen
                 <span class={{ "search-condition-epic-selector__icon": true }}></span>
                 <input
                   class={{ "search-condition-epic-selector__input": true }}
-                  attrs={{ type: "text", name: "epic" }}
+                  attrs={{ type: "text", name: "epic", placeholder: "Epic" }}
                   dataset={{ testid: gen("epic-input") }}
                 ></input>
               </span>

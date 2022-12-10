@@ -5,6 +5,7 @@ import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 import { Setting } from "@/model/setting";
+import { filterUndefined } from "@/util/basic";
 
 export type UserConfigurationProps = {
   setting: Setting;
@@ -19,7 +20,7 @@ type UserConfigurationSinks = ComponentSinks<{
   value: Stream<UserConfigurationState>;
 }>;
 
-const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<UserConfigurationState>) {
+const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<any>) {
   const clickOpener$ = selectAsMain(sources, ".user-configuration__opener")
     .events("click", { bubbles: false })
     .mapTo(true);
@@ -33,9 +34,7 @@ const intent = function intent(sources: UserConfigurationSources, dialogValue: S
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const opened = xs
-    .merge(actions.clickOpener$, actions.dialogApplied$)
-    .fold((accum, toggle) => (toggle ? !accum : toggle), false);
+  const opened = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
 
   return xs.combine(opened, actions.props$).map(([opened, { setupFinished }]) => ({ opened, setupFinished }));
 };
@@ -58,7 +57,7 @@ const view = function view(
       <div
         class={{
           "user-configuration__dialog-container": true,
-          "--hidden": !opened,
+          "--opened": opened,
         }}
         dataset={{ testid: gen("dialog-container") }}
       >
@@ -88,6 +87,13 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
 
   return {
     DOM: view(state$, dialog.DOM, gen),
-    value: dialog.value,
+    value: dialog.value
+      .map((v) => {
+        if (v.kind === "submit") {
+          return v.state;
+        }
+        return;
+      })
+      .filter(filterUndefined),
   };
 };

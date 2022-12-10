@@ -64,12 +64,12 @@ test("do not open dialog initially", async () => {
     const expected$ = Time.diagram("a-b------|", {
       a: {
         opener: { "user-configuration__opener": true, "--opened": false },
-        dialog: { "user-configuration__dialog-container": true, "--hidden": true },
+        dialog: { "user-configuration__dialog-container": true, "--opened": false },
         marker: false,
       },
       b: {
         opener: { "user-configuration__opener": true, "--opened": true },
-        dialog: { "user-configuration__dialog-container": true, "--hidden": false },
+        dialog: { "user-configuration__dialog-container": true, "--opened": true },
         marker: false,
       },
     });
@@ -118,12 +118,12 @@ test("close dialog automatically when it applied", async () => {
     const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {
         opener: select("[data-testid=opener]", vtree)[0].data?.class!["--opened"],
-        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class!["--hidden"],
+        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class!["--opened"],
       };
     });
     const expected$ = Time.diagram("-a(aa)b-----|", {
-      a: { opener: true, dialog: false },
-      b: { opener: false, dialog: true },
+      a: { opener: true, dialog: true },
+      b: { opener: false, dialog: false },
     });
 
     // Assert

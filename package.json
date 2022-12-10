@@ -18,12 +18,12 @@
     "copy-assets": "cp -r assets/svg/ dist/assets/",
     "test": "node --loader ./loader.js -r esbuild-register node_modules/uvu/bin.js test",
     "test:watch": "chokidar 'src/**/*.ts' 'src/**/*.tsx' 'test/**/*.ts' 'test/**/*.tsx' -c 'pnpm run test'",
-    "e2e:serve": "npm-run-all -p start cypress:open",
+    "e2e:serve": "conc \"pnpm:start\" \"pnpm:cypress:open\"",
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
     "deploy:production": "firebase deploy",
-    "publish:preview": "npm-run-all -s build deploy:preview",
-    "publish:production": "npm-run-all -s build deploy:production"
+    "publish:preview": "conc -g \"pnpm:build\" \"pnpm:deploy:preview\"",
+    "publish:production": "conc -g \"pnpm:build\" \"pnpm:deploy:production\""
   },
   "author": "derui",
   "license": "MIT",

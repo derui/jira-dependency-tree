@@ -10,7 +10,6 @@
   background-color: white;
   margin: 0;
   list-style: none;
-  transition: border 0.15s ease;
 }
 
 .project-toolbar__search-condition-editor {

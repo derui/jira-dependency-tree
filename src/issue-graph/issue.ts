@@ -1,6 +1,6 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue } from "@/issue-graph/type";
+import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "@/issue-graph/type";
 import { makeTextMeasure } from "./text-measure";
 import { BaseType } from "d3";
 
@@ -14,8 +14,7 @@ const IssueSizes = {
 const buildIssueNode = (container: IssueNode, project: Project, configuration: Configuration) => {
   const measure = makeTextMeasure('13.5px "Noto Sans JP"');
 
-  const node = container.enter().append("svg:g").attr("class", "graph-issue");
-
+  const node = container.enter().append("svg:g");
   node
     .append("rect")
     .attr("class", (d) => {
@@ -118,14 +117,26 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
 
 export const buildIssueGraph = (
   container: D3Node<any>,
-  data: LayoutedLeveledIssue[][],
+  data: LayoutedLeveledIssue[],
   project: Project,
   configuration: Configuration
-): IssueNode => {
-  const issueNode = container
+): [IssueNode, Restarter<LayoutedLeveledIssue[]>] => {
+  let issueNode = container
     .append("svg:g")
     .selectAll<BaseType, LayoutedLeveledIssue>("g")
-    .data(data.flat(), (d) => d.issueKey);
+    .data(data, (d) => d.issueKey);
 
-  return buildIssueNode(issueNode, project, configuration);
+  issueNode = buildIssueNode(issueNode, project, configuration);
+
+  return [
+    issueNode,
+    (data) => {
+      issueNode
+        .data(data)
+        .classed("graph-issue", () => true)
+        .classed("--unfocused", (d) => d.focusing === "unfocused");
+
+      buildIssueNode(issueNode, project, configuration);
+    },
+  ];
 };

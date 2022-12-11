@@ -67,8 +67,8 @@ const makeLeveledIssues = (graph: Graph, issues: Issue[], nodeSize: Size, direct
   return groupedIssues;
 };
 
-const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[][]) => {
-  const issueMap = issues.flat().reduce((accum, issue) => {
+const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
+  const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.issueKey, issue);
     return accum;
   }, new Map<string, LayoutedLeveledIssue>());
@@ -97,7 +97,8 @@ export const makeForceGraph = (
   configuration: Configuration
 ): void => {
   const issueGraph = makeIssueGraph(issues);
-  const leveledIssues = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
+  const leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
+  const leveledIssues = leveledIssueUnits.flat();
   const linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
@@ -108,7 +109,7 @@ export const makeForceGraph = (
   let links: d3.Selection<any, IssueLink, any, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
-  const issueNode = buildIssueGraph(container, leveledIssues, project, configuration);
+  let [issueNode, issueNodeRestarter] = buildIssueGraph(container, leveledIssues, project, configuration);
 
   // define ticked event handler
   const ticked = function ticked() {
@@ -141,7 +142,7 @@ export const makeForceGraph = (
   };
 
   // force between nodes
-  leveledIssues.forEach((issueUnit) => {
+  leveledIssueUnits.forEach((issueUnit) => {
     const simulation = d3
       .forceSimulation<LayoutedLeveledIssue>()
       .nodes(issueUnit)
@@ -198,38 +199,53 @@ export const makeForceGraph = (
         }
       })
       .merge(links);
+
+    issueNodeRestarter(leveledIssues);
   };
 
   // update issues if
-  issueNode.on(
-    "click",
-    (event, d) => {
-      event.stopPropagation();
+  issueNode.on("click", (event, d) => {
+    event.stopPropagation();
 
-      linkData.forEach((link) => {
-        if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
-          link.relatedFocusingIssue = true;
-        } else {
-          link.relatedFocusingIssue = false;
-        }
-        focusingANode = true;
+    focusingANode = true;
+    const focusedIssues = new Set<string>();
 
-        restart();
-      });
-    },
-    { bubble: false }
-  );
+    linkData.forEach((link) => {
+      if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
+        link.relatedFocusingIssue = true;
+        focusedIssues.add(link.source.issueKey);
+        focusedIssues.add(link.target.issueKey);
+      } else {
+        link.relatedFocusingIssue = false;
+      }
+    });
+
+    leveledIssues.forEach((issue) => {
+      if (focusedIssues.has(issue.issueKey)) {
+        issue.focusing = "focused";
+      } else {
+        issue.focusing = "unfocused";
+      }
+    });
+
+    restart();
+  });
 
   // reset focusing when click root canvas
   container.on("click", (event) => {
     event.stopPropagation();
 
+    focusingANode = false;
+
     linkData.forEach((link) => {
       link.relatedFocusingIssue = false;
-      focusingANode = false;
-
-      restart();
     });
+
+    leveledIssues.forEach((issue) => {
+      issue.focusing = "initial";
+    });
+
+    restart();
   });
 
   // call restart to apply a data

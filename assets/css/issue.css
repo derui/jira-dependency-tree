@@ -1,7 +1,7 @@
 .issue-node-outer {
   stroke: rgb(0 0 0);
   fill: rgb(255 255 255);
-  transition: stroke 0.1s ease, stroke-width, 0.1s ease;
+  transition: stroke 0.15s ease-out, stroke-width, 0.15s ease-out;
 
   &:hover {
     stroke: rgb(var(--secondary-1-4));
@@ -30,6 +30,11 @@
   font-size: var(--base-font-size);
   font-family: "Noto Sans JP";
   dominant-baseline: text-before-edge;
+  transition: opacity 0.15s ease-out;
+
+  &.--unfocused {
+    opacity: 0.3;
+  }
 }
 
 .issue-self-link {

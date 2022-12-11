@@ -23,6 +23,7 @@ export interface LayoutedLeveledIssue extends SimulationNodeDatum {
   indexInLevel: number;
   baseX: number;
   baseY: number;
+  focusing?: "focused" | "unfocused" | "initial";
 }
 
 export interface IssueLink {
@@ -46,4 +47,4 @@ export const GraphLayout = Object.freeze({
 export type GraphLayout = typeof GraphLayout[keyof typeof GraphLayout];
 
 /// simple callback when to need restart
-export type Resterter = () => void;
+export type Restarter<T = unknown> = (data: T) => void;

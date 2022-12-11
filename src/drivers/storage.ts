@@ -8,7 +8,7 @@ export type StorageSink = HashMap | undefined;
 
 export interface StorageSource {
   // select by key
-  select<T extends unknown = unknown>(key: string): Stream<T>;
+  select<T = unknown>(key: string): Stream<T>;
 }
 
 export interface StorageIntf {
@@ -46,7 +46,7 @@ export const makeStorageDriver = function makeStorageDriver(
     });
 
     return {
-      select<T extends unknown = unknown>(key: string): Stream<T> {
+      select<T = unknown>(key: string): Stream<T> {
         return source$.filter((v) => Object.keys(v).includes(key)).map((v) => v[key] as T);
       },
     };

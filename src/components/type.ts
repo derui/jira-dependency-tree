@@ -8,7 +8,7 @@ export type ComponentSources<T> = {
 } & T;
 
 // A simple wrapper type for sink
-export type ComponentSinks<T> = {
+export type ComponentSinks<T = object> = {
   DOM: Stream<VNode>;
 } & T;
 

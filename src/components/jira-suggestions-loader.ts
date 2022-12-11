@@ -55,8 +55,8 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
   };
 };
 
-const mapResponse = function mapResponse(body: any): Suggestion {
+const mapResponse = function mapResponse(body: Record<string, unknown>): Suggestion {
   return suggestionFactory({
-    sprints: body.sprints,
+    sprints: body.sprints as { value: string; displayName: string }[],
   });
 };

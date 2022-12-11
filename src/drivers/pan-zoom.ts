@@ -61,7 +61,7 @@ const makeWheelListener = function makeWheelListener(next: (delta: number) => vo
   };
 };
 
-export const makePanZoomDriver = function makePanZoomDriver(selector: string = "body"): Driver<void, PanZoomSource> {
+export const makePanZoomDriver = function makePanZoomDriver(selector = "body"): Driver<void, PanZoomSource> {
   const element = document.querySelector(selector)!;
 
   return function IssueGraphDriver() {
@@ -87,7 +87,7 @@ export const makePanZoomDriver = function makePanZoomDriver(selector: string = "
           });
 
           const wheelListener = makeWheelListener((delta) => {
-            let zoomScale = delta * 5 * (zoom / 100);
+            const zoomScale = delta * 5 * (zoom / 100);
 
             zoom = Math.max(Math.min(zoom + -1 * zoomScale, 200), 1);
 

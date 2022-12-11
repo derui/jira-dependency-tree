@@ -16,7 +16,7 @@ export interface IssueGraphSink {
   graphLayout: GraphLayout;
 }
 
-export interface IssueGraphSource {}
+export type IssueGraphSource = Record<string, never>;
 
 export const makeViewBox = function makeViewBox(panZoom: PanZoomState, rect: Rect) {
   const scale = 100 / panZoom.zoomPercentage;
@@ -52,13 +52,13 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
         if (svg === null) {
           svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
           document.querySelector(parentSelector)?.append(svg.node() as Node);
-          svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
+          svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
         } else if (prevIssues !== issues || prevProject !== project || prevLayout !== graphLayout) {
           svg.remove();
 
           svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
           document.querySelector(parentSelector)?.append(svg.node() as Node);
-          svgSize = document.querySelector(parentSelector)!.getBoundingClientRect();
+          svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
         }
 
         svg.attr("viewBox", makeViewBox(panZoom, svgSize));

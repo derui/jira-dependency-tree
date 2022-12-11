@@ -109,7 +109,7 @@ export const makeForceGraph = (
   let links: d3.Selection<any, IssueLink, any, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
-  let [issueNode, issueNodeRestarter] = buildIssueGraph(container, leveledIssues, project, configuration);
+  const [issueNode, issueNodeRestarter] = buildIssueGraph(container, leveledIssues, project, configuration);
 
   // define ticked event handler
   const ticked = function ticked() {

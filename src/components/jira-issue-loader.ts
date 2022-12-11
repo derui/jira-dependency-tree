@@ -50,25 +50,27 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
   };
 };
 
-const mapResponse = function mapResponse(body: { [k: string]: any }[]): Issue[] {
+const mapResponse = function mapResponse(body: { [k: string]: unknown }[]): Issue[] {
   const subtasks = body
     .map((b) => {
-      return b.subtasks.map((subtask: string) => {
-        return { parent: b.key, subtask };
+      return (b.subtasks as string[]).map((subtask: string) => {
+        return { parent: b.key as string, subtask };
       });
     })
     .flat();
 
   const issues = body.map((b) => {
     return {
-      key: b.key,
-      summary: b.summary,
+      key: b.key as string,
+      summary: b.summary as string,
       description: b.description ?? "",
       statusId: b.statusId ?? "",
       typeId: b.typeId ?? "",
       selfUrl: b.selfUrl ?? "",
-      outwardIssueKeys: b.links.filter((v: any) => !!v.outwardIssue).map((v: any) => v.outwardIssue),
-    };
+      outwardIssueKeys: (b.links as { outwardIssue: string }[])
+        .filter((v) => !!v.outwardIssue)
+        .map((v) => v.outwardIssue),
+    } as Issue;
   });
 
   return mergeTasks(issues, subtasks);

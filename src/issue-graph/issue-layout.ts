@@ -50,7 +50,7 @@ const calculateY = function calculateY(level: number, nodeSize: Size): number {
 const layoutGraph = function layoutGraph(graph: Graph, nodeSize: Size): LayoutedGraph {
   const verticesSize = graph.vertices.length;
   let largestLevel = [0, 0];
-  let leveledVertices: (string[] | undefined)[] = [];
+  const leveledVertices: (string[] | undefined)[] = [];
 
   for (let level = 0; level < verticesSize; level++) {
     const vertices = graph.levelAt(level);

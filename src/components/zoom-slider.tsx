@@ -11,7 +11,7 @@ type ZoomSliderSources = ComponentSources<{
   props: MemoryStream<ZoomSliderProps>;
 }>;
 
-type ZoomSliderSinks = ComponentSinks<{}>;
+type ZoomSliderSinks = ComponentSinks;
 
 const intent = function intent(sources: ZoomSliderSources) {
   const clicked$ = selectAsMain(sources, ".zoom-slider").events("click").mapTo(true);
@@ -38,7 +38,7 @@ const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typ
   });
 };
 
-export const ZoomSlider = function ZoomSlider(sources: ZoomSliderSources): ZoomSliderSinks {
+export const ZoomSlider = (sources: ZoomSliderSources): ZoomSliderSinks => {
   const actions = intent(sources);
   const state$ = model(actions);
 

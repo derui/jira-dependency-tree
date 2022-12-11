@@ -203,7 +203,7 @@ export const makeForceGraph = (
     issueNodeRestarter(leveledIssues);
   };
 
-  // update issues if
+  // update links are related clicked issue
   issueNode.on("click", (event, d) => {
     event.stopPropagation();
 

@@ -7,7 +7,7 @@ import { Configuration, D3Node, IssueLink, GraphLayout, LayoutedLeveledIssue } f
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
 import { Position, Size } from "@/type";
 
-const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
+const makeIssueGraph = (issues: Issue[]) => {
   const issueGraph = issues.reduce((graph, issue) => {
     const edited = graph.addVertex(issue.key);
     return issue.outwardIssueKeys.reduce((graph, key) => graph.directTo(issue.key, key), edited);
@@ -16,12 +16,7 @@ const makeIssueGraph = function makeIssueGraph(issues: Issue[]) {
   return issueGraph;
 };
 
-const getNextPositionBy = function getNextPositionBy(
-  position: Position,
-  layout: LayoutedGraph,
-  nodeSize: Size,
-  direction: GraphLayout
-) {
+const getNextPositionBy = (position: Position, layout: LayoutedGraph, nodeSize: Size, direction: GraphLayout) => {
   switch (direction) {
     case GraphLayout.Horizontal:
       return { x: position.x + layout.size.width + nodeSize.width, y: position.y };
@@ -30,12 +25,7 @@ const getNextPositionBy = function getNextPositionBy(
   }
 };
 
-const makeLeveledIssues = function makeLeveledIssues(
-  graph: Graph,
-  issues: Issue[],
-  nodeSize: Size,
-  direction: GraphLayout
-) {
+const makeLeveledIssues = (graph: Graph, issues: Issue[], nodeSize: Size, direction: GraphLayout) => {
   const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.key, issue);
     return accum;
@@ -77,7 +67,7 @@ const makeLeveledIssues = function makeLeveledIssues(
   return groupedIssues;
 };
 
-const makeLinkData = function makeLinkData(graph: Graph, issues: LayoutedLeveledIssue[][]) {
+const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[][]) => {
   const issueMap = issues.flat().reduce((accum, issue) => {
     accum.set(issue.issueKey, issue);
     return accum;
@@ -100,35 +90,29 @@ const makeLinkData = function makeLinkData(graph: Graph, issues: LayoutedLeveled
   }, []);
 };
 
-export const makeForceGraph = function makeForceGraph(
+export const makeForceGraph = (
   container: D3Node<any>,
   issues: Issue[],
   project: Project,
   configuration: Configuration
-) {
+): void => {
   const issueGraph = makeIssueGraph(issues);
   const leveledIssues = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
   const linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
 
+  let focusingANode = false;
+
   // make link between issues
-  const links = container
-    .selectAll(".issue-link")
-    .data(linkData)
-    .enter()
-    .append("path")
-    .attr("class", "issue-link")
-    .attr("stroke", "#000")
-    .attr("stroke-weight", 1)
-    .attr("marker-end", "url(#arrowhead)");
+  let links: d3.Selection<any, IssueLink, any, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
-  const issueNodes = buildIssueGraph(container, leveledIssues, project, configuration);
+  const issueNode = buildIssueGraph(container, leveledIssues, project, configuration);
 
   // define ticked event handler
   const ticked = function ticked() {
-    issueNodes.attr("transform", (d) => {
+    issueNode.attr("transform", (d) => {
       return `translate(${d.x},${d.y})`;
     });
 
@@ -177,4 +161,77 @@ export const makeForceGraph = function makeForceGraph(
         (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
     });
   });
+
+  const restart = () => {
+    links = links.data(linkData);
+
+    // update existing links
+    links
+      .classed("--selected", (d) => !!d.relatedFocusingIssue)
+      .classed("--unfocused", (d) => !d.relatedFocusingIssue && focusingANode)
+      .attr("marker-end", (d) => {
+        if (d.relatedFocusingIssue) {
+          return "url(#selected-arrowhead)";
+        } else if (focusingANode) {
+          return "url(#unfocusing-arrowhead)";
+        } else {
+          return "url(#arrowhead)";
+        }
+      });
+    // remove old links
+    links.exit().remove();
+
+    // append links with current selector
+    links = links
+      .enter()
+      .append("path")
+      .attr("class", "issue-link")
+      .attr("stroke", "#000")
+      .attr("stroke-weight", 1)
+      .classed("--selected", (d) => !!d.relatedFocusingIssue)
+      .classed("--unfocused", (d) => !d.relatedFocusingIssue && focusingANode)
+      .attr("marker-end", (d) => {
+        if (d.relatedFocusingIssue) {
+          return "url(#selected-arrowhead)";
+        } else {
+          return "url(#arrowhead)";
+        }
+      })
+      .merge(links);
+  };
+
+  // update issues if
+  issueNode.on(
+    "click",
+    (event, d) => {
+      event.stopPropagation();
+
+      linkData.forEach((link) => {
+        if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
+          link.relatedFocusingIssue = true;
+        } else {
+          link.relatedFocusingIssue = false;
+        }
+        focusingANode = true;
+
+        restart();
+      });
+    },
+    { bubble: false }
+  );
+
+  // reset focusing when click root canvas
+  container.on("click", (event) => {
+    event.stopPropagation();
+
+    linkData.forEach((link) => {
+      link.relatedFocusingIssue = false;
+      focusingANode = false;
+
+      restart();
+    });
+  });
+
+  // call restart to apply a data
+  restart();
 };

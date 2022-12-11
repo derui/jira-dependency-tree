@@ -1,18 +1,20 @@
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueLink, IssueNode, LayoutedLeveledIssue } from "@/issue-graph/type";
+import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue } from "@/issue-graph/type";
 import { makeTextMeasure } from "./text-measure";
-import * as d3 from "d3";
+import { BaseType } from "d3";
 
 const IssueSizes = {
   paddingX: 8,
   paddingY: 4,
   textHeight: 20,
   iconSize: 16,
-};
+} as const;
 
-const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project, configuration: Configuration) {
+const buildIssueNode = (container: IssueNode, project: Project, configuration: Configuration) => {
   const measure = makeTextMeasure('13.5px "Noto Sans JP"');
+
+  const node = container.enter().append("svg:g").attr("class", "graph-issue");
 
   node
     .append("rect")
@@ -110,38 +112,20 @@ const buildIssueNode = function buildIssueNode(node: IssueNode, project: Project
       const status = project.findStatusBy(d.issue.statusId);
       return status?.name ?? "";
     });
+
+  return node.merge(container);
 };
 
-export const buildIssueGraph = function buildIssueGraph(
+export const buildIssueGraph = (
   container: D3Node<any>,
   data: LayoutedLeveledIssue[][],
   project: Project,
   configuration: Configuration
-) {
+): IssueNode => {
   const issueNode = container
-    .selectAll("g")
-    .data(data.flat())
-    .join("g")
-    .attr("class", "graph-issue")
-    .on("click", (_, d) => {
-      d3.selectAll<d3.BaseType, IssueLink>(".issue-link")
-        .attr("stroke", (linkd) => {
-          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
-            /* .color-primary-0 { color:  } */
-            return "#A4393C";
-          } else {
-            return "black";
-          }
-        })
-        .attr("marker-end", (linkd) => {
-          if (linkd.source.issueKey === d.issueKey || linkd.target.issueKey === d.issueKey) {
-            return "url(#selected-arrowhead)";
-          } else {
-            return "url(#arrowhead)";
-          }
-        });
-    });
-  buildIssueNode(issueNode, project, configuration);
+    .append("svg:g")
+    .selectAll<BaseType, LayoutedLeveledIssue>("g")
+    .data(data.flat(), (d) => d.issueKey);
 
-  return issueNode;
+  return buildIssueNode(issueNode, project, configuration);
 };

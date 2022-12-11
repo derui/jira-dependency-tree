@@ -3,10 +3,10 @@ import { Size } from "@/type";
 import { BaseType, Selection, SimulationNodeDatum } from "d3";
 
 // The type of common node object in issue graph
-export type D3Node<T extends BaseType = null> = Selection<T, undefined, null, undefined>;
+export type D3Node<T extends BaseType = BaseType, V = undefined> = Selection<T, V, null, undefined>;
 
 // The type of issueNode
-export type IssueNode = Selection<BaseType | SVGGElement, LayoutedLeveledIssue, SVGGElement, undefined>;
+export type IssueNode = Selection<BaseType, LayoutedLeveledIssue, BaseType, undefined>;
 
 export interface LayoutedLeveledVertex {
   vertex: string;
@@ -28,7 +28,7 @@ export interface LayoutedLeveledIssue extends SimulationNodeDatum {
 export interface IssueLink {
   source: LayoutedLeveledIssue;
   target: LayoutedLeveledIssue;
-  display?: boolean;
+  relatedFocusingIssue?: boolean;
 }
 
 export interface Configuration {
@@ -44,3 +44,6 @@ export const GraphLayout = Object.freeze({
   Horizontal: "Horizontal",
 } as const);
 export type GraphLayout = typeof GraphLayout[keyof typeof GraphLayout];
+
+/// simple callback when to need restart
+export type Resterter = () => void;

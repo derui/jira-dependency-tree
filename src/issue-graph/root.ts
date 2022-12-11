@@ -47,12 +47,25 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
     .attr("stroke", "#A4393C")
     .attr("points", "0 0, 10 3.5, 0 7");
 
+  defs
+    .append("marker")
+    .attr("id", "unfocusing-arrowhead")
+    .attr("markerWidth", 10)
+    .attr("markerHeight", 7)
+    .attr("refX", 10)
+    .attr("refY", 3.5)
+    .attr("orient", "auto")
+    .append("polygon")
+    .attr("fill", "var(--light-gray)")
+    .attr("stroke", "var(--light-gray)")
+    .attr("points", "0 0, 10 3.5, 0 7");
+
   defineFilters(defs);
 
   // definition for text backgrounds
-  const g = svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
+  svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 
-  makeForceGraph(g, issues, project, configuration);
+  makeForceGraph(svg, issues, project, configuration);
 
   return svg;
 };

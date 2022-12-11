@@ -15,6 +15,15 @@
 
 .issue-link {
   fill: none;
+  stroke: black;
+
+  &.--selected {
+    stroke: rgb(var(--primary-0));
+  }
+
+  &.--unfocused {
+    stroke: var(--light-gray);
+  }
 }
 
 .graph-issue {

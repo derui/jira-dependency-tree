@@ -1,7 +1,7 @@
 import run from "@cycle/run";
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Project } from "./model/project";
-import { DOMSource, makeDOMDriver, source } from "@cycle/dom";
+import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import xs, { Stream } from "xstream";
@@ -15,7 +15,7 @@ import { UserConfiguration, UserConfigurationProps } from "./components/user-con
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
 import { filterNull, filterUndefined } from "./util/basic";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
-import { JiraLoader } from "./components/jira-loader";
+import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
@@ -57,7 +57,7 @@ type MainState = {
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
-const jiraLoader = function jiraLoader(sources: MainSources, syncJiraSync: SyncJiraSinks) {
+const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
   const credential$ = sources.state
     .select<MainState["setting"]>("setting")
     .stream.map((v) => v.toCredential())
@@ -124,7 +124,7 @@ const jiraLoader = function jiraLoader(sources: MainSources, syncJiraSync: SyncJ
   });
 };
 
-const main = function main(sources: MainSources): MainSinks {
+const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
     DOM: sources.DOM,
     props: sources.state.stream.map<UserConfigurationProps>(({ setting: environment }) => ({

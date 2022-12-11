@@ -18,10 +18,9 @@ module.exports = {
     // project: "./tsconfig.json",
   },
   rules: {
-    "func-style": ["error", "expression", {allowArrowFunctions: true}],
+    "func-style": ["error", "expression"],
     "import/no-unresolved": "off",
     "@typescript-eslint/no-unused-vars": "warn",
-    // "@typescript-eslint/no-unnecessary-type-assertion": "error",
   },
   settings:  {
     "import/parsers": {

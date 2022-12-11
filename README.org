@@ -1,6 +1,18 @@
 * JIRA Dependency Tree
 This project provides web-app to display dependency tree of issues in JIRA with links.
 
+** Features
+- Show dendency graph between JIRA issues
+  - only outward link
+- Switch layout
+  - horizontal/vertical
+- Change issues search condition
+  - Current sprint (default)
+  - In selected sprint
+    - with suggestion
+  - In specified Epic
+- Zoom/Pan on canvas
+
 ** Motivation
 We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.
 

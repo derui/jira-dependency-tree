@@ -1,0 +1,100 @@
+* JIRA Dependency Tree
+This project provides web-app to display dependency tree of issues in JIRA with links.
+
+** Motivation
+We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.
+
+#+begin_quote
+This feature that display issue dependency is one of the most pain point of JIRA Roatmap I think.
+#+end_quote
+
+** Images
+[[file:doc/screenshot.png]]
+
+** Architecture
+JIRA Dependency Tree has frontend and server.
+
+- Frontend
+  - Built on [[https://cycle.js.org][cycle.js]]
+  - Built by [[https://vitejs.dev/][vite]]
+  - Show denedency graph by [[https://d3js.org][D3.js]]
+- Server
+  - Built on [[https://www.rust-lang.org/][Rust]]
+  - Using framework for AWS Lambda
+- Infrastructure
+  - Run on AWS Lambda and API Gateway
+  - Deploying with CDK
+
+** JIRA Token usage
+This application uses JIRA API Token that user generated owned by them. But given tokens does not store any place we promise. we use it only to call JIRA API by server, then destroy from memory.
+
+* Development
+
+#+begin_quote
+Developer do not have personal machine of macOS. We think this application might run on macOS no problem.
+#+end_quote
+
+** Prerequirement
+
+- Docker
+  - Install it as you like
+- AWS SAM CLI
+  - Install via AWS SAM
+- pnpm
+  - install ~npm install -g pnpm~
+- Rust
+  - We recommend to use rustup to setup Rust.
+- AWS CLI Setup
+
+** setup
+#+begin_src shell
+  # root
+  $ pnpm install
+
+  # setup rust
+  $ cd server
+  $ cargo
+
+  # setup cdk
+  $ cd server/cdk
+  $ pnpm install
+#+end_src
+
+** Run application local
+#+begin_src shell
+  $ pnpm run start
+
+  # Run in other terminal
+  $ cd server/cdk
+  # only first time, or we recoomend you run when edit cdk file.
+  $ npx cdk synth --no-staging > template.yml
+  $ sam build
+  $ sam start local-api
+#+end_src
+
+** Publish
+
+*** Frontend
+You should create ~src/env.prod.ts~ before.
+
+#+begin_src typescript
+  import { Env } from "./model/env";
+
+  export const env: Env = {
+    apiBaseUrl: "<URL of API Gateway>",
+    apiKey: "<Generated from CDK deployment>",
+  };
+#+end_src
+
+Then, run publish command. If you want to publish preview channel, call ~publish:preview~ instead.
+
+#+begin_src shell
+  $ pnpm run publish:production
+#+end_src
+
+*** Server
+#+begin_src shell
+  $ cd server/cdk
+  $ npx cdk deploy
+#+end_src
+

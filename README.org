@@ -9,7 +9,7 @@ This feature that display issue dependency is one of the most pain point of JIRA
 #+end_quote
 
 ** Images
-[[file:doc/screenshot.png]]
+[[file:doc/issues.png]]
 
 ** Architecture
 JIRA Dependency Tree has frontend and server.

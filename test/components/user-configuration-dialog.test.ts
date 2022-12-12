@@ -34,7 +34,7 @@ test("allow user to submit if all value is valid", async () => {
     const sinks = UserConfigurationDialog({ DOM: dom as any, props: xs.of({}) });
 
     const actual$ = sinks.DOM.map((vtree) => {
-      return select(".user-configuration__submitter", vtree)[0].data?.attrs?.disabled;
+      return select(".user-configuration__submit", vtree)[0].data?.attrs?.disabled;
     });
     const expected$ = Time.diagram("a-aab----|", { a: true, b: false });
 
@@ -75,7 +75,9 @@ test("get value with submit", async () => {
     const sinks = UserConfigurationDialog({ DOM: dom as any, props: xs.of({}) });
 
     const actual$ = sinks.value.map((v) => v);
-    const expected$ = Time.diagram("----x----|", { x: { jiraToken: "cred", userDomain: "domain", email: "email" } });
+    const expected$ = Time.diagram("----x----|", {
+      x: { kind: "submit", state: { jiraToken: "cred", userDomain: "domain", email: "email" } },
+    });
 
     // Assert
     Time.assertEqual(actual$, expected$);
@@ -117,7 +119,9 @@ test("use given value when it passed", async () => {
     });
 
     const actual$ = sinks.value.map((v) => v);
-    const expected$ = Time.diagram("----x---|", { x: { jiraToken: "cred", userDomain: "domain", email: "email" } });
+    const expected$ = Time.diagram("----x---|", {
+      x: { kind: "submit", state: { jiraToken: "cred", userDomain: "domain", email: "email" } },
+    });
 
     // Assert
     Time.assertEqual(actual$, expected$);

@@ -116,11 +116,20 @@ const model = function model(actions: ReturnType<typeof intent>) {
 
   const filteredSuggestions$ = xs
     .combine(actions.termInputted$.startWith(""), originalSuggestions$)
-    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)));
+    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
+    .debug();
   const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$
-    .map((id) => suggestionMap$.map((v) => v.get(id)![0]))
+    .map((id) =>
+      suggestionMap$.map((v) => {
+        const val: [number, Suggestion] | undefined = v.get(id);
+        if (val) {
+          return val[0];
+        }
+        return;
+      })
+    )
     .flatten();
 
   const selectedSuggestionIndex$ = xs
@@ -143,7 +152,14 @@ const model = function model(actions: ReturnType<typeof intent>) {
       effects(opened$, actions)
     )
     .map(([opened, suggestions, index, suggestionMap, effect]) => {
-      return { opened, suggestions, index, suggestionMap, effect, currentSuggestion: suggestions[index] };
+      return {
+        opened,
+        suggestions,
+        index,
+        suggestionMap,
+        effect,
+        currentSuggestion: index !== undefined ? suggestions[index] : undefined,
+      };
     })
     .remember();
 };
@@ -196,7 +212,7 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
     .merge(actions.suggestionClicked$, actions.enterPressed$)
     .map(() => {
       return state$
-        .map(({ suggestions, index }) => suggestions.at(index))
+        .map(({ suggestions, index }) => (index ? suggestions.at(index) : undefined))
         .filter(filterUndefined)
         .map<SuggestorSubmitEvent>((v) => ({ kind: "submit", value: v.value }))
         .take(1);

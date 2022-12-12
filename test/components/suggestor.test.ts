@@ -1,8 +1,8 @@
-import { Suggestor, SuggestorProps } from "@/components/suggestor";
+import { Suggestor } from "@/components/suggestor";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { componentTest, elements } from "test/helper";
+import { componentTest } from "test/helper";
 import { suite } from "uvu";
 import xs from "xstream";
 
@@ -113,40 +113,6 @@ test("display suggestions", async () => {
       a: {
         suggestions: ["label", "label2"],
       },
-    });
-
-    Time.assertEqual(actual$, expected$);
-
-    Time.run(done);
-  });
-});
-
-test("send term when suggestions is empty", async () => {
-  await componentTest((done) => {
-    // Arrange
-    const Time = mockTimeSource();
-    const dom = mockDOMSource({
-      ".suggestor__opener": {
-        click: Time.diagram("-a", { a: {} }),
-      },
-      ".suggestor-main__term-input": {
-        input: Time.diagram("--a", { a: { target: { value: "x" } } }),
-      },
-    });
-
-    const sinks = Suggestor({
-      DOM: dom as any,
-      props: Time.diagram("x", {
-        x: { suggestions: [] },
-      }).remember(),
-    });
-
-    // Act
-    const actual$ = sinks.value;
-
-    // Assert
-    const expected$ = Time.diagram("--a", {
-      a: { kind: "term", value: "x" },
     });
 
     Time.assertEqual(actual$, expected$);

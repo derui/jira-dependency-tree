@@ -12,7 +12,7 @@
     "start": "concurrently --handle-input \"pnpm:copy-assets\" \"pnpm:start:*\"",
     "build:bundle": "NODE_ENV=production vite build",
     "build:css": "postcss -o dist/assets/css/app.css assets/css/root.css",
-    "build": "conc -g \"pnpm:build:bundle\" \"pnpm:build:css\" \"pnpm:copy-assets\"",
+    "build": "pnpm run build:bundle && pnpm run build:css && pnpm run copy-assets",
     "lint:css": "stylelint --config stylelint.config.cjs 'assets/css/**/*.css'",
     "lint:ts": "eslint --fix --ext .ts,.tsx src/",
     "lint": "conc \"pnpm:lint:*\"",
@@ -23,8 +23,8 @@
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
     "deploy:production": "firebase deploy",
-    "publish:preview": "conc -g \"pnpm:build\" \"pnpm:deploy:preview\"",
-    "publish:production": "conc -g \"pnpm:build\" \"pnpm:deploy:production\""
+    "publish:preview": "pnpm run build && pnpm run deploy:preview",
+    "publish:production": "pnpm run build && pnpm run deploy:production"
   },
   "author": "derui",
   "license": "MIT",

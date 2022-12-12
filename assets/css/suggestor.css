@@ -91,14 +91,14 @@
 }
 
 .suggestor-main__term {
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid rgb(0 0 0 / 20%);
-  padding: var(--space-base) var(--space-large);
+  padding: var(--space-base);
 
-  &::after {
+  &::before {
     content: "";
-    position: absolute;
-    top: var(--space-base);
-    right: var(--space-base);
+    margin-right: var(--space-small);
     display: inline-block;
     flex: 0 0 auto;
     mask: url("/assets/svg/tablar-icons/search.svg");

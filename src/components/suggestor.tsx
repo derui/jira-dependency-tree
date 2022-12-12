@@ -116,8 +116,7 @@ const model = function model(actions: ReturnType<typeof intent>) {
 
   const filteredSuggestions$ = xs
     .combine(actions.termInputted$.startWith(""), originalSuggestions$)
-    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
-    .debug();
+    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)));
   const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$

@@ -67,7 +67,7 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
 
         cy.fixture(definition.fixture).then((fixture) => {
           const handler = rest(key, (req, res, ctx) => {
-            return res.once(
+            return res(
               ctx.status(definition.status || 200),
               ctx.set("content-type", definition.contentType || "application/json"),
               ctx.body(JSON.stringify(fixture))

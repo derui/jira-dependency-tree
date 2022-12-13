@@ -103,32 +103,26 @@ const model = function model(actions: ReturnType<typeof intent>) {
       }
       return !accum;
     }, false);
-  const originalSuggestions$ = actions.props$.map((v) => v.suggestions);
-  const suggestionMap$ = originalSuggestions$.map((suggestions) => {
-    const map = new Map<string, [number, Suggestion]>();
 
-    suggestions.forEach((suggestion, index) => {
-      map.set(suggestion.id, [index, suggestion]);
+  const originalSuggestions$ = actions.props$.map((v) => v.suggestions);
+  const suggestionMap$ = originalSuggestions$.fold((accum, suggestions) => {
+    suggestions.forEach((suggestion) => {
+      accum.set(suggestion.id, suggestion);
     });
 
-    return map;
-  });
+    return accum;
+  }, new Map<string, Suggestion>());
+  const allSuggestions$ = suggestionMap$.map((v) =>
+    Array.from(v.values()).sort(({ id: a }, { id: b }) => a.localeCompare(b))
+  );
 
   const filteredSuggestions$ = xs
-    .combine(actions.termInputted$.startWith(""), originalSuggestions$)
+    .combine(actions.termInputted$.startWith(""), allSuggestions$)
     .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)));
   const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$
-    .map((id) =>
-      suggestionMap$.map((v) => {
-        const val: [number, Suggestion] | undefined = v.get(id);
-        if (val) {
-          return val[0];
-        }
-        return;
-      })
-    )
+    .map((id) => filteredSuggestions$.map((suggestions) => suggestions.findIndex((v) => v.id === id)))
     .flatten();
 
   const selectedSuggestionIndex$ = xs
@@ -147,17 +141,15 @@ const model = function model(actions: ReturnType<typeof intent>) {
       opened$,
       filteredSuggestions$,
       xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
-      suggestionMap$,
       effects(opened$, actions)
     )
-    .map(([opened, suggestions, index, suggestionMap, effect]) => {
+    .map(([opened, suggestions, index, effect]) => {
       return {
         opened,
         suggestions,
         index,
-        suggestionMap,
         effect,
-        currentSuggestion: index !== undefined ? suggestions[index] : undefined,
+        currentSuggestion: index !== -1 ? suggestions[index] : undefined,
       };
     })
     .remember();
@@ -181,10 +173,7 @@ const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerato
     return (
       <div class={{ suggestor: true }} dataset={{ testid: gen("suggestor-root") }}>
         <span class={{ "suggestor__opener-container": true }}>
-          <button
-            class={{ suggestor__opener: true, "--opened": opened, "--empty": !currentSuggestion }}
-            dataset={{ testid: gen("suggestor-opener") }}
-          >
+          <button class={{ suggestor__opener: true, "--opened": opened }} dataset={{ testid: gen("suggestor-opener") }}>
             {currentSuggestion?.label ?? "Not selected"}
           </button>
           <span class={{ "suggestor__opener-icon": true, "--opened": opened }}></span>
@@ -218,10 +207,14 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
     })
     .flatten();
 
-  const termEvent$ = actions.termInputted$
-    .filter((v) => v.length > 0)
-    .compose(debounce(500))
-    .map<SuggestorTermEvent>((v) => ({ kind: "term", value: v }));
+  const termEvent$ = xs
+    .combine(
+      state$.map((v) => v.suggestions.length),
+      actions.termInputted$
+    )
+    .filter(([suggestionLength, term]) => suggestionLength === 0 && term.length > 0)
+    .compose(debounce(250))
+    .map<SuggestorTermEvent>(([, term]) => ({ kind: "term", value: term }));
 
   return {
     DOM: view(state$, generateTestId(sources.testid)),

@@ -1,4 +1,4 @@
-import { Suggestor } from "@/components/suggestor";
+import { Suggestor, SuggestorProps } from "@/components/suggestor";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -8,70 +8,36 @@ import xs from "xstream";
 
 const test = suite("components/Suggestor");
 
-test("button is disabled if no any suggestion", async () => {
-  await componentTest((done) => {
-    // Arrange
-    const Time = mockTimeSource();
-    const dom = mockDOMSource({});
-
-    const sinks = Suggestor({
-      DOM: dom as any,
-      props: Time.diagram("x", { x: { suggestions: [] } }).remember(),
-    });
-
-    // Act
-    const actual$ = sinks.DOM.map((vtree) => {
-      return {
-        noSuggestion: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--empty"],
-      };
-    });
-
-    // Assert
-    const expected$ = Time.diagram("a", {
-      a: {
-        noSuggestion: true,
-      },
-    });
-
-    Time.assertEqual(actual$, expected$);
-
-    Time.run(done);
-  });
-});
-
 test("open main when button clicked", async () => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({
       ".suggestor__opener": {
-        click: Time.diagram("-a", { a: {} }),
+        click: Time.diagram("---a", { a: {} }),
       },
     });
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: Time.diagram("x", { x: { suggestions: [{ id: "id", label: "label", value: 1 }] } }).remember(),
+      props: xs.of<SuggestorProps>({ suggestions: [{ id: "id", label: "label", value: 1 }] }).remember(),
     });
 
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        buttonDisabled: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--empty"],
         buttonOpened: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--opened"],
         mainOpened: select("[data-testid=search-dialog]", vtree)[0].data?.class!["--opened"],
       };
     });
 
     // Assert
-    const expected$ = Time.diagram("ab", {
+    const expected$ = Time.diagram("a--x", {
       a: {
-        buttonDisabled: false,
         buttonOpened: false,
         mainOpened: false,
       },
-      b: {
-        buttonDisabled: false,
+      x: {
         buttonOpened: true,
         mainOpened: true,
       },
@@ -109,9 +75,12 @@ test("display suggestions", async () => {
     });
 
     // Assert
-    const expected$ = Time.diagram("a", {
+    const expected$ = Time.diagram("(xa)", {
       a: {
         suggestions: ["label", "label2"],
+      },
+      x: {
+        suggestions: [],
       },
     });
 

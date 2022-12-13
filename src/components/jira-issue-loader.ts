@@ -84,6 +84,9 @@ const mergeTasks = function mergeTasks(issues: Issue[], subtasks: { parent: stri
 
     if (accumulatedIssues) {
       const outwardIssues = new Set<string>(accumulatedIssues.outwardIssueKeys);
+      if (outwardIssues.has(parent) || outwardIssues.size > 0) {
+        continue;
+      }
       outwardIssues.add(parent);
       accumulatedIssues.outwardIssueKeys = Array.from(outwardIssues);
     }

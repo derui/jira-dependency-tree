@@ -141,8 +141,15 @@ fn not_found() -> Result<Response<Body>, Error> {
 fn preflight() -> Result<Response<Body>, Error> {
     let builder = Response::builder().status(200);
     let json = json!({});
+
+    #[cfg(debug_assertions)]
+    let origin = "http://localhost:5173";
+
+    #[cfg(not(debug_assertions))]
+    let origin = include_str!("../.origin-release");
+
     Ok(builder
-        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Origin", origin.clone())
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .header("Access-Control-Allow-Headers", "content-type,x-api-key")
         .body(Body::Text(json.to_string()))?)

@@ -1,5 +1,5 @@
 import { Events, GetSuggestionRequest } from "@/model/event";
-import { HTTPSource } from "@cycle/http";
+import { HTTPSource, Response } from "@cycle/http";
 import { RequestOptions } from "http";
 import xs, { Stream } from "xstream";
 import { selectResponse } from "@/components/helper";
@@ -40,7 +40,7 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
   });
 
   const suggestion$ = selectResponse(sources.HTTP)
-    .map((r) => r.replaceError(() => xs.of()))
+    .map((r) => r.replaceError(() => xs.of({ status: 500 } as Response)))
     .flatten()
     .filter((response) => response.status === 200)
     .map((response) => {

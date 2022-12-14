@@ -20,7 +20,7 @@
     "test": "node --loader ./loader.js -r esbuild-register node_modules/uvu/bin.js test",
     "test:watch": "chokidar 'src/**/*.ts' 'src/**/*.tsx' 'test/**/*.ts' 'test/**/*.tsx' -c 'pnpm run test'",
     "it:serve": "conc \"pnpm:ci\" \"pnpm:cypress:open\"",
-    "it:run": "conc -k true \"pnpm:ci\" \"cypress run\"",
+    "it:run": "conc -k true \"pnpm:ci\" \"cypress run --browser chromium\"",
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
     "deploy:production": "firebase deploy",

@@ -1,6 +1,6 @@
 .project-toolbar-wrapper {
   position: relative;
-  margin: 0 auto;
+  margin: 0 var(--space-large);
 }
 
 .project-toolbar {
@@ -15,40 +15,27 @@
 .project-toolbar__search-condition-editor {
   display: flex;
   flex: 1 1 auto;
-  background-color: white;
-  padding: var(--space-small);
+  align-items: center;
+  height: 32px;
   transition: color 0.15s ease-out;
+  border-radius: var(--base-border-radius);
   cursor: pointer;
   color: black;
-  border-radius: var(--icon-size);
-
-  &::before {
-    content: "";
-    display: inline-block;
-    flex: 0 0 auto;
-    mask: url("/assets/svg/tablar-icons/search.svg");
-    mask-size: cover;
-    width: var(--icon-size);
-    height: var(--icon-size);
-    background-color: black;
-    transition: background-color 0.15s ease-out;
-  }
+  padding: 0 var(--space-base);
+  font-size: var(--small-font-size);
+  white-space: nowrap;
 
   &:hover {
-    background-color: rgb(var(--secondary-1-3));
-
-    &::before {
-      background-color: white;
-    }
+    color: rgb(var(--secondary-2-4));
+    background-color: rgb(var(--secondary-2-1));
+    text-decoration: underline;
   }
 
   /* style for opened */
   &.--opened {
-    background-color: rgb(var(--secondary-1-3));
-
-    &::before {
-      background-color: white;
-    }
+    color: rgb(var(--secondary-2-4));
+    background-color: rgb(var(--secondary-2-1));
+    text-decoration: underline;
   }
 }
 

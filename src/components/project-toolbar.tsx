@@ -72,9 +72,14 @@ const model = function model(actions: ReturnType<typeof intent>) {
   const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
     return { epic: v };
   });
-  const conditionForSprint$ = actions.suggestedValue$.map<SearchCondition>((v) => {
-    return { sprint: v.value as SuggestedItem };
-  });
+  const conditionForSprint$ = actions.suggestedValue$
+    .map<SearchCondition | undefined>((v) => {
+      if (v.kind === "submit") {
+        return { sprint: v.value as SuggestedItem };
+      }
+      return;
+    })
+    .filter(filterUndefined);
   const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo<SearchCondition>({});
 
   const currentCondition$ = xs.merge(conditionForEpic$, conditionForSprint$, conditionForDefault$).startWith({});

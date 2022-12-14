@@ -146,7 +146,7 @@ fn preflight() -> Result<Response<Body>, Error> {
     let origin = "http://localhost:5173";
 
     #[cfg(not(debug_assertions))]
-    let origin = include_str!("../.origin-release");
+    let origin = include_str!(".origin-release").trim();
 
     Ok(builder
         .header("Access-Control-Allow-Origin", origin.clone())

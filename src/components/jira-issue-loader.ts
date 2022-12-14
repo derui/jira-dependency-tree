@@ -1,4 +1,4 @@
-import { Events, SearchCondition } from "@/model/event";
+import { Events } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
@@ -95,11 +95,11 @@ const mergeTasks = function mergeTasks(issues: Issue[], subtasks: { parent: stri
   return Array.from(map.values());
 };
 
-const eventToCondition = function eventToCondition(e: Events): SearchCondition | undefined {
+const eventToCondition = function eventToCondition(e: Events): { sprint?: string; epic?: string } | undefined {
   switch (e.kind) {
     case "SyncIssuesRequest": {
       return {
-        sprint: e.condition?.sprint,
+        sprint: e.condition?.sprint?.value,
         epic: e.condition?.epic,
       };
     }

@@ -1,4 +1,4 @@
-interface SuggestedItem {
+export interface SuggestedItem {
   id: string;
   value: string;
   displayName: string;

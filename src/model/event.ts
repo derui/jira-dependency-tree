@@ -32,6 +32,9 @@ export interface GetSuggestionRequest {
 }
 
 export interface SearchCondition {
-  sprint?: string;
+  sprint?: {
+    value: string;
+    displayName: string;
+  };
   epic?: string;
 }

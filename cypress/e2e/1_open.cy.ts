@@ -11,6 +11,7 @@ describe("open", () => {
       .and("contain.text", "Click here");
     cy.testid("project-information/editor").should("not.have.class", "--opened");
     cy.testid("zoom-slider/current-zoom").should("contain.text", "100%");
+    cy.testid("condition-editor").should("contain.text", "Current Sprint");
 
     // side toolbar
     cy.testid("side-toolbar/graph-layout").should("not.have.class", "--opened");

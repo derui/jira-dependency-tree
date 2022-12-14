@@ -179,7 +179,11 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: Stream<V
             </li>
             <li class={{ "search-condition-editor__footer": true }}>
               <button class={{ "search-condition-editor__cancel": true }}>Cancel</button>
-              <button class={{ "search-condition-editor__submit": true }} attrs={{ type: "submit" }}>
+              <button
+                class={{ "search-condition-editor__submit": true }}
+                dataset={{ testid: gen("submit") }}
+                attrs={{ type: "submit" }}
+              >
                 Apply
               </button>
             </li>

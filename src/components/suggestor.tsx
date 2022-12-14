@@ -4,6 +4,7 @@ import xs, { Stream, MemoryStream } from "xstream";
 import debounce from "xstream/extra/debounce";
 import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { filterUndefined } from "@/util/basic";
+import { source } from "@cycle/dom";
 
 interface Suggestion {
   id: string;
@@ -86,9 +87,11 @@ const effects = function effects(opened$: MemoryStream<boolean>, actions: Return
   return opened$
     .filter((v) => v)
     .map(() => {
-      return actions.termInputElement$.map((el) => {
-        (el as HTMLInputElement).focus();
-      });
+      return actions.termInputElement$
+        .map((el) => {
+          (el as HTMLInputElement).focus();
+        })
+        .take(1);
     })
     .flatten()
     .startWith(undefined);
@@ -117,8 +120,9 @@ const model = function model(actions: ReturnType<typeof intent>) {
   );
 
   const filteredSuggestions$ = xs
-    .combine(actions.termInputted$.startWith(""), allSuggestions$)
-    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)));
+    .combine(actions.termInputted$, allSuggestions$)
+    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
+    .startWith([]);
   const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
   const clickedSuggestionIndex$ = actions.suggestionClicked$
@@ -200,22 +204,23 @@ export const Suggestor = function Suggestor(sources: SuggestorSources): Suggesto
     .merge(actions.suggestionClicked$, actions.enterPressed$)
     .map(() => {
       return state$
-        .map(({ suggestions, index }) => (index ? suggestions.at(index) : undefined))
+        .map(({ suggestions, index }) => suggestions.at(index) ?? undefined)
         .filter(filterUndefined)
         .map<SuggestorSubmitEvent>((v) => ({ kind: "submit", value: v.value }))
         .take(1);
     })
     .flatten();
 
-  const termEvent$ = xs
-    .combine(
-      state$.map((v) => v.suggestions.length),
-      actions.termInputted$
+  const termEvent$ = actions.termInputted$
+    .filter((v) => v.length > 0)
+    .map((term) =>
+      state$
+        .filter((v) => v.suggestions.length === 0)
+        .mapTo<SuggestorTermEvent>({ kind: "term", value: term })
+        .take(1)
     )
-    .filter(([suggestionLength, term]) => suggestionLength === 0 && term.length > 0)
-    .compose(debounce(250))
-    .map<SuggestorTermEvent>(([, term]) => ({ kind: "term", value: term }));
-
+    .flatten()
+    .compose(debounce(400));
   return {
     DOM: view(state$, generateTestId(sources.testid)),
     value: xs.merge(submitEvent$, termEvent$),

@@ -3,13 +3,12 @@ import { projectFactory } from "@/model/project";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
+import { componentTest } from "test/helper";
 
-const test = suite("components/UserConfiguration");
-
-test("initial display when project is not configured", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("initial display when project is not configured", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -38,15 +37,13 @@ test("initial display when project is not configured", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("show project name", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("show project name", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -81,15 +78,13 @@ test("show project name", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("do not show marker if setup finished", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("do not show marker if setup finished", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -118,15 +113,13 @@ test("do not show marker if setup finished", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("show dialog if name click", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("show dialog if name click", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("-a--|", { a: { target: {} } });
@@ -161,15 +154,13 @@ test("show dialog if name click", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("execute to update project when submit from editor", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("execute to update project when submit from editor", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("-a----|", { a: { target: {} } });
@@ -214,11 +205,7 @@ test("execute to update project when submit from editor", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

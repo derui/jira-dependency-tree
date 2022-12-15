@@ -2,13 +2,12 @@ import { SyncJira, SyncJiraProps } from "@/components/sync-jira";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
+import { componentTest } from "test/helper";
 
-const test = suite("components/SyncJira");
-
-test("initial display when component can not sync", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("initial display when component can not sync", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -35,15 +34,13 @@ test("initial display when component can not sync", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("initial display when component can sync", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("initial display when component can sync", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -70,15 +67,13 @@ test("initial display when component can sync", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("get event when clicked", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("get event when clicked", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("-a--|", { a: { target: {} } });
@@ -102,11 +97,7 @@ test("get event when clicked", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

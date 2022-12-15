@@ -2,12 +2,11 @@ import { ZoomSlider } from "@/components/zoom-slider";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { suite } from "uvu";
+import test from "ava";
+import { componentTest } from "test/helper";
 
-const test = suite("components/ZoomSlider");
-
-test("display current zoom value", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("display current zoom value", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -33,15 +32,13 @@ test("display current zoom value", async () => {
 
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("zoom value must be integer", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("zoom value must be integer", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -67,11 +64,7 @@ test("zoom value must be integer", async () => {
 
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

@@ -3,13 +3,12 @@ import { settingFactory } from "@/model/setting";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
+import { componentTest } from "test/helper";
 
-const test = suite("components/UserConfiguration");
-
-test("do not open dialog initially", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("do not open dialog initially", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
@@ -30,15 +29,13 @@ test("do not open dialog initially", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("do not open dialog initially", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("open dialog when opener clicked", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("--x------|", { x: { target: {} } });
@@ -77,15 +74,13 @@ test("do not open dialog initially", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("close dialog automatically when it applied", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("close dialog automatically when it applied", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("-x-------|", { x: { target: {} } });
@@ -129,11 +124,7 @@ test("close dialog automatically when it applied", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

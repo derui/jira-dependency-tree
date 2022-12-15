@@ -1,10 +1,7 @@
 import { createDependencyRegistrar } from "@/util/dependency-registrar";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+import test from "ava";
 
-const test = suite("dependency registrar");
-
-test("can registrar any type and get any type with key", () => {
+test("can registrar any type and get any type with key", (t) => {
   type dep = {
     name: number;
     name2: string;
@@ -17,17 +14,15 @@ test("can registrar any type and get any type with key", () => {
   const name = registar.resolve("name");
   const name2 = registar.resolve("name2");
 
-  assert.is(name, 5);
-  assert.equal(name2, "foo");
+  t.is(name, 5);
+  t.deepEqual(name2, "foo");
 });
 
-test("throw error if not found", () => {
+test("throw error if not found", (t) => {
   type dep = {
     name: number;
   };
   const registar = createDependencyRegistrar<dep>();
 
-  assert.throws(() => registar.resolve("name"));
+  t.throws(() => registar.resolve("name"));
 });
-
-test.run();

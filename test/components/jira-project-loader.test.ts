@@ -1,13 +1,12 @@
 import { JiraProjectLoader } from "@/components/jira-project-loader";
 import { projectFactory } from "@/model/project";
 import { mockTimeSource } from "@cycle/time";
-import { suite } from "uvu";
+import { componentTest } from "test/helper";
+import test from "ava";
 import xs from "xstream";
 
-const test = suite("components/JiraProjectLoader");
-
-test("load project", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("load project", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
 
@@ -53,11 +52,7 @@ test("load project", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

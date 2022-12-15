@@ -1,10 +1,7 @@
 import { makeStorageDriver, StorageIntf, StorageSink } from "@/drivers/storage";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
 import sinon from "sinon";
-import assert from "assert";
-
-const test = suite("Drivers/Storage");
 
 let mock: StorageIntf;
 
@@ -15,7 +12,7 @@ test.before(() => {
   };
 });
 
-test("do not fluid value if storage has not data", async () => {
+test("do not fluid value if storage has not data", async (t) => {
   await new Promise<void>((resolve, reject) => {
     const driver = makeStorageDriver("key", mock);
 
@@ -28,12 +25,13 @@ test("do not fluid value if storage has not data", async () => {
       });
 
     setTimeout(() => {
+      t.pass();
       resolve();
     }, 50);
   });
 });
 
-test("fluid value if storage has data", async () => {
+test("fluid value if storage has data", async (t) => {
   await new Promise<void>((resolve, reject) => {
     mock = {
       setItem: sinon.fake(),
@@ -45,7 +43,7 @@ test("fluid value if storage has data", async () => {
       .select<string>("key")
       .subscribe({
         next(v) {
-          assert.equal(v, "value");
+          t.deepEqual(v, "value");
           resolve();
         },
       });
@@ -56,7 +54,7 @@ test("fluid value if storage has data", async () => {
   });
 });
 
-test("save data ", async () => {
+test("save data ", async (t) => {
   await new Promise<void>((resolve) => {
     const setItem = sinon.fake();
     mock = {
@@ -68,11 +66,9 @@ test("save data ", async () => {
     driver(xs.of<StorageSink>({ new: { nested: 1 } }));
 
     setTimeout(() => {
-      assert.ok(setItem.calledWith("root", JSON.stringify({ key: "value", new: { nested: 1 } })));
+      t.true(setItem.calledWith("root", JSON.stringify({ key: "value", new: { nested: 1 } })));
 
       resolve();
     }, 50);
   });
 });
-
-test.run();

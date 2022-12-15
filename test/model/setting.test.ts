@@ -1,31 +1,26 @@
 import { settingFactory } from "@/model/setting";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+import test from "ava";
 
-const test = suite("setting");
-
-test("empty setting", () => {
+test("empty setting", (t) => {
   // arrange
 
   // do
   const setting = settingFactory({});
 
   // verify
-  assert.equal(setting.credentials, {});
-  assert.equal(setting.userDomain, undefined);
-  assert.equal(setting.isSetupFinished(), false);
+  t.deepEqual(setting.credentials, {});
+  t.deepEqual(setting.userDomain, undefined);
+  t.deepEqual(setting.isSetupFinished(), false);
 });
 
-test("setup finished if all informations are set", () => {
+test("setup finished if all informations are set", (t) => {
   // arrange
 
   // do
   const setting = settingFactory({}).applyCredentials("cred", "email").applyUserDomain("domain");
 
   // verify
-  assert.equal(setting.credentials, { jiraToken: "cred", email: "email" });
-  assert.equal(setting.userDomain, "domain");
-  assert.equal(setting.isSetupFinished(), true);
+  t.deepEqual(setting.credentials, { jiraToken: "cred", email: "email" });
+  t.deepEqual(setting.userDomain, "domain");
+  t.deepEqual(setting.isSetupFinished(), true);
 });
-
-test.run();

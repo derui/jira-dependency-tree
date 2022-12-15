@@ -2,13 +2,12 @@ import { UserConfigurationDialog, UserConfigurationState } from "@/components/us
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
+import { componentTest } from "test/helper";
 
-const test = suite("components/UserConfigurationDialog");
-
-test("allow user to submit if all value is valid", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("allow user to submit if all value is valid", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const domain$ = Time.diagram("--x------|", { x: { target: { value: "domain" } } });
@@ -41,15 +40,13 @@ test("allow user to submit if all value is valid", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("get value with submit", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("get value with submit", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const domain$ = Time.diagram("--x------|", { x: { target: { value: "domain" } } });
@@ -82,15 +79,13 @@ test("get value with submit", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("use given value when it passed", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("use given value when it passed", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const domain$ = Time.diagram("--------|");
@@ -126,11 +121,7 @@ test("use given value when it passed", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

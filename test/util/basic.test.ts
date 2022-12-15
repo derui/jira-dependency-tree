@@ -1,11 +1,8 @@
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+import test from "ava";
 
 import { difference, filterEmptyString, filterUndefined, Rect } from "@/util/basic";
 
-const test = suite("util");
-
-test("filter empty string", () => {
+test("filter empty string", (t) => {
   // Arrange
 
   // Act
@@ -14,12 +11,12 @@ test("filter empty string", () => {
   const retC = filterEmptyString("a c");
 
   // Assert
-  assert.equal(retA, false, "empty string");
-  assert.equal(retB, false, "blank string");
-  assert.equal(retC, true, "string is not blank neither empty");
+  t.deepEqual(retA, false, "empty string");
+  t.deepEqual(retB, false, "blank string");
+  t.deepEqual(retC, true, "string is not blank neither empty");
 });
 
-test("difference between two sets", () => {
+test("difference between two sets", (t) => {
   // Arrange
   const a = new Set([1, 2, 3, 4, 5]);
   const b = new Set([1, 2, 4, 5, 6]);
@@ -29,41 +26,39 @@ test("difference between two sets", () => {
   const retB = difference(b, a);
 
   // Verify
-  assert.equal(retA, new Set([3]), "ret a - b");
-  assert.equal(retB, new Set([6]), "ret b - a");
+  t.deepEqual(retA, new Set([3]), "ret a - b");
+  t.deepEqual(retB, new Set([6]), "ret b - a");
 });
 
-test("filter undefined", () => {
+test("filter undefined", (t) => {
   // arrange
 
   // do
 
   // verify
-  assert.equal(filterUndefined(undefined), false);
-  assert.equal(filterUndefined("value"), true);
-  assert.equal(filterUndefined(""), true);
+  t.deepEqual(filterUndefined(undefined), false);
+  t.deepEqual(filterUndefined("value"), true);
+  t.deepEqual(filterUndefined(""), true);
 });
 
-test("normal rect", () => {
+test("normal rect", (t) => {
   // arrange
 
   // do
   const rect = new Rect({ top: 0, left: 0, right: 15, bottom: 10 });
 
   // verify
-  assert.equal(rect.width, 15);
-  assert.equal(rect.height, 10);
+  t.deepEqual(rect.width, 15);
+  t.deepEqual(rect.height, 10);
 });
 
-test("invalid rect", () => {
+test("invalid rect", (t) => {
   // arrange
 
   // do
   const rect = new Rect({ top: 100, left: 20, right: 15, bottom: 10 });
 
   // verify
-  assert.equal(rect.width, 0);
-  assert.equal(rect.height, 0);
+  t.deepEqual(rect.width, 0);
+  t.deepEqual(rect.height, 0);
 });
-
-test.run();

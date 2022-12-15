@@ -1,92 +1,89 @@
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+import test from "ava";
 
 import { emptyGraph } from "@/depgraph/main";
 
-const test = suite("depgraph");
-
-test("make empty depgraph", () => {
+test("make empty depgraph", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  assert.is(graph.edges.length, 0);
-  assert.is(graph.vertices.length, 0);
+  t.is(graph.edges.length, 0);
+  t.is(graph.vertices.length, 0);
 });
 
-test("add a vertex to graph", () => {
+test("add a vertex to graph", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a");
 
   // verify
-  assert.is(graph.edges.length, 0);
-  assert.is(graph.vertices.length, 1);
-  assert.equal(graph.levelAt(0), ["a"]);
+  t.is(graph.edges.length, 0);
+  t.is(graph.vertices.length, 1);
+  t.deepEqual(graph.levelAt(0), ["a"]);
 });
 
-test("can not add same label twice", () => {
+test("can not add same label twice", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("a");
 
   // verify
-  assert.is(graph.edges.length, 0);
-  assert.is(graph.vertices.length, 1);
+  t.is(graph.edges.length, 0);
+  t.is(graph.vertices.length, 1);
 });
 
-test("add adjacent between two vertices", () => {
+test("add adjacent between two vertices", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("b").directTo("a", "b");
 
   // verify
-  assert.is(graph.edges.length, 1);
-  assert.is(graph.vertices.length, 2);
-  assert.equal(graph.levelAt(0), ["a"]);
+  t.is(graph.edges.length, 1);
+  t.is(graph.vertices.length, 2);
+  t.deepEqual(graph.levelAt(0), ["a"]);
 });
 
-test("can not accept empty or blank vertex", () => {
+test("can not accept empty or blank vertex", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  assert.throws(() => graph.addVertex(""));
-  assert.throws(() => graph.addVertex("   "));
+  t.throws(() => graph.addVertex(""));
+  t.throws(() => graph.addVertex("   "));
 });
 
-test("level must be greater equal 0", () => {
+test("level must be greater equal 0", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  assert.throws(() => graph.levelAt(-1));
+  t.throws(() => graph.levelAt(-1));
 });
 
-test("level get from multiple root", () => {
+test("level get from multiple root", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("b").addVertex("c").directTo("a", "b");
 
   // verify
-  assert.is(graph.edges.length, 1);
-  assert.is(graph.vertices.length, 3);
-  assert.equal(graph.levelAt(0), ["a", "c"]);
-  assert.equal(graph.levelAt(1), ["b"]);
-  assert.equal(graph.levelAt(2), []);
+  t.is(graph.edges.length, 1);
+  t.is(graph.vertices.length, 3);
+  t.deepEqual(graph.levelAt(0), ["a", "c"]);
+  t.deepEqual(graph.levelAt(1), ["b"]);
+  t.deepEqual(graph.levelAt(2), []);
 });
 
-test("should be largest level ", () => {
+test("should be largest level ", (t) => {
   // arrange
 
   // do
@@ -98,27 +95,27 @@ test("should be largest level ", () => {
     .directTo("c", "d");
 
   // verify
-  assert.equal(graph.adjacent("c"), ["d"], "d is adjacent of c");
-  assert.equal(graph.levelAt(0), ["a", "b"], "level 0");
-  assert.equal(graph.levelAt(1), ["c"], "level 1");
-  assert.equal(graph.levelAt(2), ["d"], "level 2");
+  t.deepEqual(graph.adjacent("c"), ["d"], "d is adjacent of c");
+  t.deepEqual(graph.levelAt(0), ["a", "b"], "level 0");
+  t.deepEqual(graph.levelAt(1), ["c"], "level 1");
+  t.deepEqual(graph.levelAt(2), ["d"], "level 2");
 });
 
-test("level get from multiple edges", () => {
+test("level get from multiple edges", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("b", "c").directTo("d", "c");
 
   // verify
-  assert.is(graph.edges.length, 3);
-  assert.is(graph.vertices.length, 4);
-  assert.equal(graph.levelAt(0), ["a", "d"]);
-  assert.equal(graph.levelAt(1), ["b"]);
-  assert.equal(graph.levelAt(2), ["c"]);
+  t.is(graph.edges.length, 3);
+  t.is(graph.vertices.length, 4);
+  t.deepEqual(graph.levelAt(0), ["a", "d"]);
+  t.deepEqual(graph.levelAt(1), ["b"]);
+  t.deepEqual(graph.levelAt(2), ["c"]);
 });
 
-test("get adjacent vertices from given vertex", () => {
+test("get adjacent vertices from given vertex", (t) => {
   // arrange
 
   // do
@@ -130,36 +127,36 @@ test("get adjacent vertices from given vertex", () => {
     .directTo("d", "c");
 
   // verify
-  assert.is(graph.edges.length, 4);
-  assert.is(graph.vertices.length, 4);
-  assert.equal(graph.adjacent("a"), ["b"]);
-  assert.equal(graph.adjacent("b"), ["c", "d"]);
-  assert.equal(graph.adjacent("d"), ["c"]);
-  assert.equal(graph.adjacent("c"), []);
+  t.is(graph.edges.length, 4);
+  t.is(graph.vertices.length, 4);
+  t.deepEqual(graph.adjacent("a"), ["b"]);
+  t.deepEqual(graph.adjacent("b"), ["c", "d"]);
+  t.deepEqual(graph.adjacent("d"), ["c"]);
+  t.deepEqual(graph.adjacent("c"), []);
 });
 
-test("ignore empty or blank vertices when add multiple vertices to graph at once", () => {
+test("ignore empty or blank vertices when add multiple vertices to graph at once", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["    ", "", "c", "d"]);
 
   // verify
-  assert.is(graph.edges.length, 0);
-  assert.equal(new Set(graph.vertices), new Set(["c", "d"]));
+  t.is(graph.edges.length, 0);
+  t.deepEqual(new Set(graph.vertices), new Set(["c", "d"]));
 });
 
-test("ignore vertex that is not included in graph", () => {
+test("ignore vertex that is not included in graph", (t) => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["c", "d"]);
 
   // verify
-  assert.equal(graph.adjacent("e"), []);
+  t.deepEqual(graph.adjacent("e"), []);
 });
 
-test("get subgraph from given root vertex", () => {
+test("get subgraph from given root vertex", (t) => {
   // arrange
   const graph = emptyGraph()
     .addVertices(["a", "b", "c", "d", "e"])
@@ -174,20 +171,20 @@ test("get subgraph from given root vertex", () => {
   const subgraphE = graph.subgraphOf("e");
 
   // verify
-  assert.is(subgraphA.edges.length, 4, "edge of subgraph A");
-  assert.is(subgraphA.vertices.length, 4, "vertices of subgraph A");
-  assert.is(subgraphE.edges.length, 1);
-  assert.is(subgraphE.vertices.length, 2);
-  assert.equal(subgraphA.adjacent("a"), ["b"]);
-  assert.equal(subgraphA.adjacent("b"), ["c", "d"]);
-  assert.equal(subgraphA.adjacent("d"), ["c"]);
-  assert.equal(subgraphA.adjacent("c"), []);
-  assert.equal(subgraphE.adjacent("e"), ["c"]);
-  assert.equal(subgraphE.adjacent("c"), []);
-  assert.equal(subgraphE.adjacent("a"), [], "not found other root");
+  t.is(subgraphA.edges.length, 4, "edge of subgraph A");
+  t.is(subgraphA.vertices.length, 4, "vertices of subgraph A");
+  t.is(subgraphE.edges.length, 1);
+  t.is(subgraphE.vertices.length, 2);
+  t.deepEqual(subgraphA.adjacent("a"), ["b"]);
+  t.deepEqual(subgraphA.adjacent("b"), ["c", "d"]);
+  t.deepEqual(subgraphA.adjacent("d"), ["c"]);
+  t.deepEqual(subgraphA.adjacent("c"), []);
+  t.deepEqual(subgraphE.adjacent("e"), ["c"]);
+  t.deepEqual(subgraphE.adjacent("c"), []);
+  t.deepEqual(subgraphE.adjacent("a"), [], "not found other root");
 });
 
-test("get subgraph from given inter-graph vertex", () => {
+test("get subgraph from given inter-graph vertex", (t) => {
   // arrange
   const graph = emptyGraph()
     .addVertices(["a", "b", "c", "d", "e"])
@@ -200,13 +197,13 @@ test("get subgraph from given inter-graph vertex", () => {
   const subgraph = graph.subgraphOf("d");
 
   // verify
-  assert.is(subgraph.edges.length, 1);
-  assert.is(subgraph.vertices.length, 2);
-  assert.equal(subgraph.adjacent("d"), ["c"]);
-  assert.equal(subgraph.adjacent("c"), []);
+  t.is(subgraph.edges.length, 1);
+  t.is(subgraph.vertices.length, 2);
+  t.deepEqual(subgraph.adjacent("d"), ["c"]);
+  t.deepEqual(subgraph.adjacent("c"), []);
 });
 
-test("can detect intersection between two graphs", () => {
+test("can detect intersection between two graphs", (t) => {
   // arrange
   const graph1 = emptyGraph()
     .addVertices(["a", "b", "c", "d"])
@@ -220,11 +217,11 @@ test("can detect intersection between two graphs", () => {
   // do
 
   // verify
-  assert.is(graph1.intersect(graph2), true, "between graph1 and graph2");
-  assert.is(graph2.intersect(graph1), true, "between graph2 and graph1");
+  t.is(graph1.intersect(graph2), true, "between graph1 and graph2");
+  t.is(graph2.intersect(graph1), true, "between graph2 and graph1");
 });
 
-test("do not intersect if not found any same edges", () => {
+test("do not intersect if not found any same edges", (t) => {
   // arrange
   const graph1 = emptyGraph()
     .addVertices(["a", "b", "c", "d"])
@@ -238,11 +235,11 @@ test("do not intersect if not found any same edges", () => {
   // do
 
   // verify
-  assert.is(graph1.intersect(graph2), false, "between graph1 and graph2");
-  assert.is(graph2.intersect(graph1), false, "between graph2 and graph1");
+  t.is(graph1.intersect(graph2), false, "between graph1 and graph2");
+  t.is(graph2.intersect(graph1), false, "between graph2 and graph1");
 });
 
-test("merge between graphs that are intesected each other", () => {
+test("merge between graphs that are intesected each other", (t) => {
   // arrange
   const graph1 = emptyGraph()
     .addVertices(["a", "b", "c", "d"])
@@ -254,19 +251,19 @@ test("merge between graphs that are intesected each other", () => {
   const graph2 = emptyGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
 
   // do
-  const merged = graph1.merge(graph2)!!;
+  const merged = graph1.merge(graph2)!;
 
   // verify
-  assert.is(merged.edges.length, 5, "edge of graph");
-  assert.is(merged.vertices.length, 5, "vertices of graph");
-  assert.equal(merged.adjacent("a"), ["b"]);
-  assert.equal(merged.adjacent("b"), ["c", "d"]);
-  assert.equal(merged.adjacent("d"), ["c"]);
-  assert.equal(merged.adjacent("c"), []);
-  assert.equal(merged.adjacent("e"), ["b"]);
+  t.is(merged.edges.length, 5, "edge of graph");
+  t.is(merged.vertices.length, 5, "vertices of graph");
+  t.deepEqual(merged.adjacent("a"), ["b"]);
+  t.deepEqual(merged.adjacent("b"), ["c", "d"]);
+  t.deepEqual(merged.adjacent("d"), ["c"]);
+  t.deepEqual(merged.adjacent("c"), []);
+  t.deepEqual(merged.adjacent("e"), ["b"]);
 });
 
-test("merge return same graph if merged same graph", () => {
+test("merge return same graph if merged same graph", (t) => {
   // arrange
   const graph = emptyGraph()
     .addVertices(["a", "b", "c", "d"])
@@ -276,11 +273,9 @@ test("merge return same graph if merged same graph", () => {
     .directTo("d", "c");
 
   // do
-  const merged = graph.merge(graph)!!;
+  const merged = graph.merge(graph)!;
 
   // verify
-  assert.equal(merged.edges, graph.edges, "edge of graph");
-  assert.equal(merged.vertices, graph.vertices, "vertices of graph");
+  t.deepEqual(merged.edges, graph.edges, "edge of graph");
+  t.deepEqual(merged.vertices, graph.vertices, "vertices of graph");
 });
-
-test.run();

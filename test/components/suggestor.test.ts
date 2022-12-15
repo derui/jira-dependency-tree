@@ -6,7 +6,7 @@ import { componentTest } from "test/helper";
 import test from "ava";
 import xs from "xstream";
 
-test("open main when button clicked", async () => {
+test("open main when button clicked", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -45,9 +45,10 @@ test("open main when button clicked", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
 
-test("display suggestions", async () => {
+test("display suggestions", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -86,9 +87,10 @@ test("display suggestions", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
 
-test("do not send term when suggestions is not empty", async () => {
+test("do not send term when suggestions is not empty", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -118,4 +120,5 @@ test("do not send term when suggestions is not empty", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });

@@ -1,13 +1,12 @@
 import { JiraSuggestionLoader } from "@/components/jira-suggestions-loader";
 import { suggestionFactory } from "@/model/suggestion";
 import { mockTimeSource } from "@cycle/time";
-import { suite } from "uvu";
+import test from "ava";
+import { componentTest } from "test/helper";
 import xs from "xstream";
 
-const test = suite("components/JiraSuggestionLoader");
-
-test("load project", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("load project", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
 
@@ -49,11 +48,7 @@ test("load project", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

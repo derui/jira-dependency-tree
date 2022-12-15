@@ -1,12 +1,11 @@
 import { JiraIssueLoader } from "@/components/jira-issue-loader";
 import { mockTimeSource } from "@cycle/time";
-import { suite } from "uvu";
+import test from "ava";
+import { componentTest } from "test/helper";
 import xs from "xstream";
 
-const test = suite("components/JiraIssueLoader");
-
-test("load issues", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("load issues", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
 
@@ -56,15 +55,13 @@ test("load issues", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("merge subtask's outward", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("merge subtask's outward", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
 
@@ -134,15 +131,13 @@ test("merge subtask's outward", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
 
-test("add parent if subtask's outwards is empty", async () => {
-  await new Promise<void>(async (resolve, rej) => {
+test("add parent if subtask's outwards is empty", async (t) => {
+  await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
 
@@ -199,11 +194,7 @@ test("add parent if subtask's outwards is empty", async () => {
     // Assert
     Time.assertEqual(actual$, expected$);
 
-    Time.run((e) => {
-      if (e) rej(e);
-      else resolve();
-    });
+    Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

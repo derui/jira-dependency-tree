@@ -1,20 +1,17 @@
 import { suggestionFactory } from "@/model/suggestion";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
+import test from "ava";
 
-const test = suite("model/suggestion");
-
-test("empty sprints", () => {
+test("empty sprints", (t) => {
   // arrange
 
   // do
   const setting = suggestionFactory({});
 
   // verify
-  assert.equal(setting.sprints, []);
+  t.deepEqual(setting.sprints, []);
 });
 
-test("use given sprint with id", () => {
+test("use given sprint with id", (t) => {
   // arrange
   const sprints = [
     { value: "foo", displayName: "bar" },
@@ -25,10 +22,8 @@ test("use given sprint with id", () => {
   const setting = suggestionFactory({ sprints });
 
   // verify
-  assert.equal(setting.sprints, [
+  t.deepEqual(setting.sprints, [
     { id: "0", value: "foo", displayName: "bar" },
     { id: "1", value: "value", displayName: "display" },
   ]);
 });
-
-test.run();

@@ -5,11 +5,9 @@ import { withState } from "@cycle/state";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
-import { suite } from "uvu";
+import test from "ava";
 
-const test = suite("components/SideToolbar");
-
-test("initial state is given prop", async () => {
+test("initial state is given prop", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -24,8 +22,8 @@ test("initial state is given prop", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!!["--opened"],
-        horizontalSelected: select("[data-testid=horizontal]", vtree)[0].data?.class!!["--selected"],
+        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"],
+        horizontalSelected: select("[data-testid=horizontal]", vtree)[0].data?.class!["--selected"],
       };
     });
 
@@ -41,9 +39,10 @@ test("initial state is given prop", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
 
-test("open layouter when it clicked", async () => {
+test("open layouter when it clicked", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -63,7 +62,7 @@ test("open layouter when it clicked", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!!["--opened"],
+        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"],
       };
     });
 
@@ -81,9 +80,10 @@ test("open layouter when it clicked", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
 
-test("change layout when specific layout is clicked", async () => {
+test("change layout when specific layout is clicked", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -103,8 +103,8 @@ test("change layout when specific layout is clicked", async () => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        vertical: select("[data-testid=vertical]", vtree)[0].data?.class!!["--selected"],
-        horizontal: select("[data-testid=horizontal]", vtree)[0].data?.class!!["--selected"],
+        vertical: select("[data-testid=vertical]", vtree)[0].data?.class!["--selected"],
+        horizontal: select("[data-testid=horizontal]", vtree)[0].data?.class!["--selected"],
       };
     });
 
@@ -124,9 +124,10 @@ test("change layout when specific layout is clicked", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
 
-test("should close layouter if value changed", async () => {
+test("should close layouter if value changed", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
@@ -149,7 +150,7 @@ test("should close layouter if value changed", async () => {
 
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
-      return select("[data-testid=graph-layout]", vtree)[0].data?.class!!["--opened"];
+      return select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"];
     });
 
     // Assert
@@ -162,6 +163,5 @@ test("should close layouter if value changed", async () => {
 
     Time.run(done);
   });
+  t.pass();
 });
-
-test.run();

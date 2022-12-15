@@ -38,9 +38,9 @@ test("initial display", async (t) => {
 
     Time.assertEqual(actual$, expected$);
 
-    t.pass();
     Time.run(done);
   });
+  t.pass();
 });
 
 test("get value when input changed", async (t) => {
@@ -75,9 +75,9 @@ test("get value when input changed", async (t) => {
 
     Time.assertEqual(actual$, expected$);
 
-    t.pass();
     Time.run(done);
   });
+  t.pass();
 });
 
 test("initial value and placeholder", async (t) => {
@@ -115,7 +115,7 @@ test("initial value and placeholder", async (t) => {
 
     Time.assertEqual(actual$, expected$);
 
-    t.pass();
     Time.run(done);
   });
+  t.pass();
 });

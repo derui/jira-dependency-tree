@@ -1,9 +1,6 @@
 import { projectFactory } from "@/model/project";
 import { StatusCategory } from "@/type";
-import { suite } from "uvu";
-import * as assert from "uvu/assert";
-
-const test = suite("project");
+import test from "ava";
 
 const issueTypes = [
   {
@@ -16,7 +13,7 @@ const statuses = [{ id: "1", name: "TODO", statusCategory: StatusCategory.TODO }
 const statusCategories = [{ id: "3", name: "TODO", colorName: "yellow" }];
 const project = projectFactory({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
 
-test("get issuetype by id", () => {
+test("get issuetype by id", (t) => {
   // arrange
 
   // do
@@ -24,11 +21,11 @@ test("get issuetype by id", () => {
   const notFound = project.findIssueTypeBy("3");
 
   // verify
-  assert.equal(issueType, issueTypes[0]);
-  assert.is(notFound, undefined);
+  t.deepEqual(issueType, issueTypes[0]);
+  t.is(notFound, undefined);
 });
 
-test("get issue status by id", () => {
+test("get issue status by id", (t) => {
   // arrange
 
   // do
@@ -36,8 +33,6 @@ test("get issue status by id", () => {
   const notFound = project.findStatusBy("2");
 
   // verify
-  assert.equal(status, statuses[0]);
-  assert.is(notFound, undefined);
+  t.deepEqual(status, statuses[0]);
+  t.is(notFound, undefined);
 });
-
-test.run();

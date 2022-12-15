@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:css": "postcss --watch -o dist/assets/css/app.css assets/css/root.css",
+    "start:css": "tailwindcss --watch -o dist/assets/css/app.css",
     "start:tsc": "tsc --watch",
     "start:vite": "vite",
     "ci": "CI=true vite",
@@ -72,6 +72,7 @@
     "stylelint": "^14.16.0",
     "stylelint-config-prettier": "^9.0.4",
     "stylelint-config-standard": "^29.0.0",
+    "tailwindcss": "^3.2.4",
     "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.4",
     "uvu": "^0.5.6",

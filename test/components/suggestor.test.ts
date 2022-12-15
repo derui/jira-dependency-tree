@@ -3,10 +3,8 @@ import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
-import { suite } from "uvu";
+import test from "ava";
 import xs from "xstream";
-
-const test = suite("components/Suggestor");
 
 test("open main when button clicked", async () => {
   await componentTest((done) => {
@@ -121,5 +119,3 @@ test("do not send term when suggestions is not empty", async () => {
     Time.run(done);
   });
 });
-
-test.run();

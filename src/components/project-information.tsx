@@ -58,7 +58,10 @@ const model = function model(actions: ReturnType<typeof intent>) {
 const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
   return state$.map(({ projectGiven, opened, name, key }) => {
     return (
-      <div class={{ "project-information": true, "--editor-opened": opened }} dataset={{ testid: gen("main") }}>
+      <div
+        class={{ "w-2": true, "w-full": true, "project-information": true, "--editor-opened": opened }}
+        dataset={{ testid: gen("main") }}
+      >
         <span
           class={{ "project-information__marker": true, "--show": !projectGiven }}
           dataset={{ testid: gen("marker") }}

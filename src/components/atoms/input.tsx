@@ -77,11 +77,13 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
   return state$.map(({ value, placeholder, label }) => {
     return (
       <label class={containerClass}>
-        <span class={labelClass}>{label}</span>
+        <span class={labelClass} dataset={{ testid: gen("label") }}>
+          {label}
+        </span>
         <input
           class={inputClass}
           attrs={{ type: "text", placeholder: placeholder ?? "", value: value }}
-          dataset={{ testid: gen("name-input") }}
+          dataset={{ testid: gen("input") }}
         />
       </label>
     );
@@ -95,6 +97,6 @@ export const Input = (sources: InputSources): InputSinks => {
 
   return {
     DOM: view(state$, gen),
-    value: xs.of(""),
+    value: actions.changed$,
   };
 };

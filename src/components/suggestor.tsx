@@ -4,7 +4,6 @@ import xs, { Stream, MemoryStream } from "xstream";
 import debounce from "xstream/extra/debounce";
 import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { filterUndefined } from "@/util/basic";
-import { source } from "@cycle/dom";
 
 interface Suggestion {
   id: string;
@@ -98,65 +97,63 @@ const effects = function effects(opened$: MemoryStream<boolean>, actions: Return
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const opened$ = xs
-    .merge(actions.openerClicked$, actions.suggestionClicked$.mapTo(false), actions.enterPressed$.mapTo(false))
-    .fold((accum, open) => {
-      if (!open) {
-        return false;
-      }
-      return !accum;
-    }, false);
+  return actions.props$
+    .map((props) => {
+      const opened$ = xs
+        .merge(actions.openerClicked$, actions.suggestionClicked$.mapTo(false), actions.enterPressed$.mapTo(false))
+        .fold((accum, open) => {
+          if (!open) {
+            return false;
+          }
+          return !accum;
+        }, false);
 
-  const originalSuggestions$ = actions.props$.map((v) => v.suggestions);
-  const suggestionMap$ = originalSuggestions$.fold((accum, suggestions) => {
-    suggestions.forEach((suggestion) => {
-      accum.set(suggestion.id, suggestion);
-    });
+      const suggestionMap = props.suggestions.reduce((accum, suggestion) => {
+        accum.set(suggestion.id, suggestion);
 
-    return accum;
-  }, new Map<string, Suggestion>());
-  const allSuggestions$ = suggestionMap$.map((v) =>
-    Array.from(v.values()).sort(({ id: a }, { id: b }) => a.localeCompare(b))
-  );
+        return accum;
+      }, new Map<string, Suggestion>());
+      const allSuggestions = Array.from(suggestionMap.values()).sort(({ id: a }, { id: b }) => a.localeCompare(b));
 
-  const filteredSuggestions$ = xs
-    .combine(actions.termInputted$, allSuggestions$)
-    .map(([term, suggestions]) => suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
-    .startWith([]);
-  const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
+      const filteredSuggestions$ = actions.termInputted$
+        .map((term) => allSuggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
+        .startWith(allSuggestions);
+      const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
 
-  const clickedSuggestionIndex$ = actions.suggestionClicked$
-    .map((id) => filteredSuggestions$.map((suggestions) => suggestions.findIndex((v) => v.id === id)))
-    .flatten();
+      const clickedSuggestionIndex$ = actions.suggestionClicked$
+        .map((id) => filteredSuggestions$.map((suggestions) => suggestions.findIndex((v) => v.id === id)))
+        .flatten();
 
-  const selectedSuggestionIndex$ = xs
-    .combine(actions.changeSuggestionSelection$, suggestionsLength$)
-    .fold((index, [move, length]) => {
-      switch (move) {
-        case "up":
-          return Math.max(0, index - 1);
-        case "down":
-          return Math.min(length - 1, index + 1);
-      }
-    }, 0);
+      const selectedSuggestionIndex$ = xs
+        .combine(actions.changeSuggestionSelection$, suggestionsLength$)
+        .fold((index, [move, length]) => {
+          switch (move) {
+            case "up":
+              return Math.max(0, index - 1);
+            case "down":
+              return Math.min(length - 1, index + 1);
+          }
+        }, 0);
 
-  return xs
-    .combine(
-      opened$,
-      filteredSuggestions$,
-      xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
-      effects(opened$, actions)
-    )
-    .map(([opened, suggestions, index, effect]) => {
-      return {
-        opened,
-        suggestions,
-        index,
-        effect,
-        currentSuggestion: index !== -1 ? suggestions[index] : undefined,
-      };
+      return xs
+        .combine(
+          opened$,
+          filteredSuggestions$,
+          xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
+          effects(opened$, actions)
+        )
+        .map(([opened, suggestions, index, effect]) => {
+          return {
+            opened,
+            suggestions,
+            index,
+            effect,
+            currentSuggestion: index !== -1 ? suggestions[index] : undefined,
+          };
+        })
+        .remember();
     })
-    .remember();
+    .flatten();
 };
 
 const view = function view(state$: ReturnType<typeof model>, gen: TestIdGenerator) {

@@ -1,5 +1,7 @@
 module.exports = {
-  files: [ "test/**/*"],
+  files: [ "test/**/*",
+           '!test/helper.ts'
+         ],
   extensions: {
     "ts": "module"
   },

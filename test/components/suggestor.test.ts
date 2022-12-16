@@ -74,12 +74,9 @@ test("display suggestions", async (t) => {
     });
 
     // Assert
-    const expected$ = Time.diagram("(xa)", {
+    const expected$ = Time.diagram("a", {
       a: {
         suggestions: ["label", "label2"],
-      },
-      x: {
-        suggestions: [],
       },
     });
 

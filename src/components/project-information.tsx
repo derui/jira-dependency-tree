@@ -40,8 +40,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
         .startWith("Click here");
 
       return xs
-        .combine(actions.props$, opened$, name$)
-        .map(([{ project }, opened, name]) => ({ projectGiven: project !== undefined, opened, name }));
+        .combine(opened$, name$)
+        .map(([opened, name]) => ({ projectGiven: v.project !== undefined, opened, name }));
     })
     .flatten();
 };
@@ -111,9 +111,9 @@ const view = function view(
   return xs.combine(state$, nodes$).map(([{ projectGiven, opened, name }, nodes]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("main") }}>
-        <span class={Styles.marker(!projectGiven)} dataset={{ testid: gen("marker") }}></span>
-        <div class={Styles.name(opened)} dataset={{ testid: gen("name") }}>
-          <span>{name}</span>
+        <span class={Styles.marker(!projectGiven)} dataset={{ testid: gen("marker"), show: `${!projectGiven}` }}></span>
+        <div class={Styles.name(opened)}>
+          <span dataset={{ testid: gen("name") }}>{name}</span>
         </div>
         <div></div>
         <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor") }}>

@@ -91,17 +91,14 @@ const view = (
       <ul class={Styles.root}>
         <li class={Styles.graphLayout} dataset={{ testid: gen("graph-layout") }}>
           {nodes.graphLayoutIcon}
-          <div class={Styles.graphLayouter(layouterOpened)} dataset={{ testid: gen("layouter") }}>
-            <span
-              class={{ "graph-layouter__horizontal": true, "--selected": layout === GraphLayout.Horizontal }}
-              dataset={{ testid: gen("horizontal") }}
-            >
+          <div
+            class={Styles.graphLayouter(layouterOpened)}
+            dataset={{ testid: gen("layouter"), opened: `${layouterOpened}` }}
+          >
+            <span class={{ "--selected": layout === GraphLayout.Horizontal }} dataset={{ testid: gen("horizontal") }}>
               {nodes.horizontalIcon}
             </span>
-            <span
-              class={{ "graph-layouter__vertical": true, "--selected": layout === GraphLayout.Vertical }}
-              dataset={{ testid: gen("vertical") }}
-            >
+            <span class={{ "--selected": layout === GraphLayout.Vertical }} dataset={{ testid: gen("vertical") }}>
               {nodes.verticalIcon}
             </span>
           </div>

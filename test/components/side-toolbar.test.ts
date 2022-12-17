@@ -22,15 +22,15 @@ test("initial state is given prop", async (t) => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"],
-        horizontalSelected: select("[data-testid=horizontal]", vtree)[0].data?.class!["--selected"],
+        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened,
+        horizontalSelected: select("[data-testid=horizontal]", vtree)[0].data?.class?.["--selected"],
       };
     });
 
     // Assert
     const expected$ = Time.diagram("-a-", {
       a: {
-        graphLayoutOpened: false,
+        graphLayoutOpened: "false",
         horizontalSelected: true,
       },
     });
@@ -62,17 +62,17 @@ test("open layouter when it clicked", async (t) => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"],
+        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened,
       };
     });
 
     // Assert
     const expected$ = Time.diagram("-ab", {
       a: {
-        graphLayoutOpened: false,
+        graphLayoutOpened: "false",
       },
       b: {
-        graphLayoutOpened: true,
+        graphLayoutOpened: "true",
       },
     });
 
@@ -103,8 +103,8 @@ test("change layout when specific layout is clicked", async (t) => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        vertical: select("[data-testid=vertical]", vtree)[0].data?.class!["--selected"],
-        horizontal: select("[data-testid=horizontal]", vtree)[0].data?.class!["--selected"],
+        vertical: select("[data-testid=vertical]", vtree)[0].data?.class?.["--selected"],
+        horizontal: select("[data-testid=horizontal]", vtree)[0].data?.class?.["--selected"],
       };
     });
 
@@ -150,13 +150,13 @@ test("should close layouter if value changed", async (t) => {
 
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
-      return select("[data-testid=graph-layout]", vtree)[0].data?.class!["--opened"];
+      return select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened;
     });
 
     // Assert
     const expected$ = Time.diagram("-ab(aa)", {
-      a: false,
-      b: true,
+      a: "false",
+      b: "true",
     });
 
     Time.assertEqual(actual$, expected$);

@@ -15,18 +15,18 @@ test("initial display when component can not sync", async (t) => {
     // Act
     const sinks = SyncJira({
       DOM: dom as any,
-      props: xs.of<SyncJiraProps>({ status: "LOADING", setupFinished: false }),
+      props: Time.diagram("x", { x: { status: "LOADING", setupFinished: false } }),
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        mainSync: select("[data-testid=button]", vtree)[0].data?.class!["--syncing"],
-        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs!.disabled,
+        mainSync: select("[data-testid=button]", vtree)[0].data?.class?.["animate-spin"],
+        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs?.disabled,
       };
     });
-    const expected$ = Time.diagram("(a|)", {
+    const expected$ = Time.diagram("a", {
       a: {
-        mainSync: false,
+        mainSync: undefined,
         mainDisabled: true,
       },
     });
@@ -48,18 +48,18 @@ test("initial display when component can sync", async (t) => {
     // Act
     const sinks = SyncJira({
       DOM: dom as any,
-      props: xs.of<SyncJiraProps>({ status: "COMPLETED", setupFinished: true }),
+      props: Time.diagram("x", { x: { status: "COMPLETED", setupFinished: true } }),
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        mainSync: select("[data-testid=button]", vtree)[0].data?.class!["--syncing"],
-        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs!.disabled,
+        mainSync: select("[data-testid=button]", vtree)[0].data?.class?.["animate-spin"],
+        mainDisabled: select("[data-testid=button]", vtree)[0].data?.attrs?.disabled,
       };
     });
-    const expected$ = Time.diagram("(a|)", {
+    const expected$ = Time.diagram("a", {
       a: {
-        mainSync: false,
+        mainSync: undefined,
         mainDisabled: false,
       },
     });
@@ -78,7 +78,7 @@ test("get event when clicked", async (t) => {
     const Time = mockTimeSource();
     const click$ = Time.diagram("-a--|", { a: { target: {} } });
     const dom = mockDOMSource({
-      ".sync-jira__main": {
+      button: {
         click: click$,
       },
     });

@@ -10,20 +10,23 @@ import { Reducer, StateSource } from "@cycle/state";
 import produce from "immer";
 import { filterEmptyString } from "@/util/basic";
 
-export type UserConfigurationState = {
+export type UserConfigurationValue = {
   jiraToken: string;
   email: string;
   userDomain: string;
+};
+
+type UserConfigurationState = UserConfigurationValue & {
   allowSubmit: boolean;
 };
 
 type ConfigurationCancelEvent = { kind: "cancel" };
-type ConfigurationSubmitEvent = { kind: "submit"; state: Omit<UserConfigurationState, "allowSubmit"> };
+type ConfigurationSubmitEvent = { kind: "submit"; state: UserConfigurationValue };
 
 type Event = ConfigurationSubmitEvent | ConfigurationCancelEvent;
 
 interface UserConfigurationDialogSources extends ComponentSourceBase {
-  props: Stream<Partial<UserConfigurationState>>;
+  props: Stream<Partial<UserConfigurationValue>>;
   state: StateSource<UserConfigurationState>;
 }
 

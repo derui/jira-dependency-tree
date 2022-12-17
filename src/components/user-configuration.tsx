@@ -2,22 +2,29 @@ import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint
 import xs, { Stream } from "xstream";
 import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
+import { UserConfigurationDialog, UserConfigurationValue } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
 import { Setting } from "@/model/setting";
 import { filterUndefined } from "@/util/basic";
+import { Reducer, StateSource } from "@cycle/state";
 
 export type UserConfigurationProps = {
   setting: Setting;
   setupFinished: boolean;
 };
 
+type State = {
+  userConfigurationDialog: UserConfigurationValue;
+};
+
 type UserConfigurationSources = ComponentSources<{
   props: Stream<UserConfigurationProps>;
+  state: StateSource<State>;
 }>;
 
 type UserConfigurationSinks = ComponentSinks<{
-  value: Stream<UserConfigurationState>;
+  value: Stream<UserConfigurationValue>;
+  state: Stream<Reducer<State>>;
 }>;
 
 const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<any>) {
@@ -112,8 +119,8 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
     UserConfigurationDialog,
     "userConfigurationDialog"
   )({
-    DOM: sources.DOM,
-    props: sources.props.map<Partial<UserConfigurationState>>((v) => ({
+    ...sources,
+    props: sources.props.map<Partial<UserConfigurationValue>>((v) => ({
       userDomain: v.setting.userDomain,
       email: v.setting.credentials.email,
       jiraToken: v.setting.credentials.jiraToken,
@@ -134,5 +141,6 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
         return;
       })
       .filter(filterUndefined),
+    state: xs.merge(dialog.state as Stream<Reducer<State>>),
   };
 };

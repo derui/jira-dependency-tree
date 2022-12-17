@@ -1,9 +1,13 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinks, ComponentSources } from "@/components/type";
-import { generateTestId, selectAsMain } from "@/components/helper";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { GraphLayout } from "@/issue-graph/type";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
+import isolate from "@cycle/isolate";
+import { Icon, IconProps } from "./atoms/icon";
+import { source } from "@cycle/dom";
+import { AsNodeStream, mergeNodes } from "test/helper";
 
 export interface SideToolbarState {
   graphLayout: GraphLayout;
@@ -52,26 +56,55 @@ const model = function model(actions: ReturnType<typeof intent>) {
   });
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
-  return state$.map(({ layout, layouterOpened }) => {
+const Styles = {
+  root: classes("absolute", "flex", "left-4", "top-half", "p-3", "bg-white", "rounded", "list-none"),
+  graphLayout: classes("relative", "flex-none", "bg-white", "p-2", "transition-colors", "cursor-pointer"),
+  graphLayouter: (opened: boolean) => {
+    return {
+      ...classes(
+        "absolute",
+        "flex",
+        "flex-row",
+        "left-6",
+        "top-3",
+        "p-3",
+        "bg-white",
+        "rounded",
+        "invisible",
+        "transition-left",
+        "shadow-lg",
+        "transition-opacity",
+        "opacity-0"
+      ),
+      ...(opened ? classes("left-7", "opacity-100", "visible") : {}),
+    };
+  },
+  iconButton: classes("flex-none", "bg-white", "p-2", "cursor-pointer"),
+};
+
+const view = (
+  state$: ReturnType<typeof model>,
+  nodes$: AsNodeStream<["graphLayoutIcon", "verticalIcon", "horizontalIcon"]>,
+  gen: ReturnType<typeof generateTestId>
+) => {
+  return xs.combine(state$, nodes$).map(([{ layout, layouterOpened }, nodes]) => {
     return (
-      <ul class={{ "side-toolbar": true }}>
-        <li
-          class={{ "side-toolbar__graph-layout": true, "--opened": layouterOpened }}
-          dataset={{ testid: gen("graph-layout") }}
-        >
-          <div
-            class={{ "graph-layout__graph-layouter": true, "--opened": layouterOpened }}
-            dataset={{ testid: gen("layouter") }}
-          >
+      <ul class={Styles.root}>
+        <li class={Styles.graphLayout} dataset={{ testid: gen("graph-layout") }}>
+          {nodes.graphLayoutIcon}
+          <div class={Styles.graphLayouter(layouterOpened)} dataset={{ testid: gen("layouter") }}>
             <span
               class={{ "graph-layouter__horizontal": true, "--selected": layout === GraphLayout.Horizontal }}
               dataset={{ testid: gen("horizontal") }}
-            ></span>
+            >
+              {nodes.horizontalIcon}
+            </span>
             <span
               class={{ "graph-layouter__vertical": true, "--selected": layout === GraphLayout.Vertical }}
               dataset={{ testid: gen("vertical") }}
-            ></span>
+            >
+              {nodes.verticalIcon}
+            </span>
           </div>
         </li>
       </ul>
@@ -80,6 +113,54 @@ const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typ
 };
 
 export const SideToolbar = function SideToolbar(sources: SideToolbarSources): SideToolbarSinks {
+  const graphLayoutIcon = isolate(
+    Icon,
+    "graphLayoutIcon"
+  )({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "layout-2",
+      size: "m",
+      color: {
+        normal: "secondary1-400",
+        hover: "secondary1-200",
+        active: "secondary1-100",
+      },
+    }),
+  });
+
+  const verticalIcon = isolate(
+    Icon,
+    "verticalIcon"
+  )({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "layout-distribute-vertical",
+      size: "m",
+      color: {
+        normal: "secondary1-400",
+        hover: "secondary1-200",
+        active: "secondary1-100",
+      },
+    }),
+  });
+
+  const horizontalIcon = isolate(
+    Icon,
+    "horizontalIcon"
+  )({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "layout-distribute-horizontal",
+      size: "m",
+      color: {
+        normal: "secondary1-400",
+        hover: "secondary1-200",
+        active: "secondary1-100",
+      },
+    }),
+  });
+
   const actions = intent(sources);
   const state$ = model(actions);
 
@@ -96,7 +177,15 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
   });
 
   return {
-    DOM: view(state$, generateTestId(sources.testid)),
+    DOM: view(
+      state$,
+      mergeNodes({
+        graphLayoutIcon: graphLayoutIcon.DOM,
+        verticalIcon: verticalIcon.DOM,
+        horizontalIcon: horizontalIcon.DOM,
+      }),
+      generateTestId(sources.testid)
+    ),
     state: xs.merge(initialReducer$, reducer$),
   };
 };

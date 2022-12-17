@@ -1,21 +1,11 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Stream } from "xstream";
-import { classes, generateTestId } from "../helper";
+import { classes, generateTestId, selectAsMain } from "../helper";
 import { ComponentSinkBase, ComponentSourceBase } from "../type";
 
 type IconSize = "s" | "m" | "l";
 
-interface Color {
-  normal: string;
-  /**
-   * color when hovered.  if not specified, use same color `normal`
-   */
-  hover?: string;
-  /**
-   * color when actived.  if not specified, use same color `normal`
-   */
-  active?: string;
-}
+type Color = "primary" | "secondary1" | "gray" | "secondary2" | "complement";
 
 export interface IconProps {
   size?: IconSize | undefined;
@@ -27,6 +17,27 @@ export interface IconProps {
 interface IconSources extends ComponentSourceBase {
   props: Stream<IconProps>;
 }
+
+const icons: Record<string, string> = {
+  "chevron-down": "before:[mask:url(/assets/svg/tablar-icons/chevron-down.svg)]",
+  "door-exit": "before:[mask:url(/assets/svg/tablar-icons/door-exit.svg)]",
+  "layout-2": "before:[mask:url(/assets/svg/tablar-icons/layout-2.svg)]",
+  "layout-distribute-horizontal": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-horizontal.svg)]",
+  "layout-distribute-vertical": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-vertical.svg)]",
+  refresh: "before:[mask:url(/assets/svg/tablar-icons/refres.svg)]",
+  search: "before:[mask:url(/assets/svg/tablar-icons/search.svg)]",
+  settings: "before:[mask:url(/assets/svg/tablar-icons/settings.svg)]",
+  "square-check": "before:[mask:url(/assets/svg/tablar-icons/square-check.svg)]",
+  square: "before:[mask:url(/assets/svg/tablar-icons/square.svg)]",
+};
+
+const colors: Record<string, Record<string, boolean>> = {
+  primary: classes("before:bg-lightgray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
+  secondary1: classes("before:bg-lightgray", "before:hover:bg-secondary1-300", "before:active:bg-secondary1-500"),
+  secondary2: classes("before:bg-lightgray", "before:hover:bg-secondary2-300", "before:active:bg-secondary2-500"),
+  complement: classes("before:bg-lightgray", "before:hover:bg-complement-300", "before:active:bg-complement-500"),
+  gray: classes("before:bg-lightgray", "before:hover:bg-lightgray", "before:active:bg-lightgray"),
+};
 
 const intent = (sources: IconSources) => {
   return {
@@ -41,7 +52,7 @@ const model = (actions: ReturnType<typeof intent>) => {
 };
 
 const typeClass = (type: string) => {
-  return classes(`before:[mask:url(/assets/svg/tablar-icons/${type}.svg)]`, "before:[mask-size:cover]");
+  return classes(icons[type], "before:[mask-size:cover]");
 };
 
 const iconBaseClass = classes(
@@ -50,11 +61,13 @@ const iconBaseClass = classes(
   "flex",
   "items-center",
   "justify-center",
+  "rounded",
   "before:content-['']",
   "before:inline-block",
   "before:flex-none",
   "before:w-full",
-  "before:h-full"
+  "before:h-full",
+  "before:transition-colors"
 );
 
 const sizeClass = (size: IconSize) => {
@@ -69,16 +82,12 @@ const sizeClass = (size: IconSize) => {
 };
 
 const colorClass = (color?: Color) => {
-  const normal = color?.normal ?? "black";
-  const hover = color?.hover ?? normal;
-  const active = color?.active ?? normal;
-
-  return classes(`before:bg-${normal}`, `before:active:bg-${active}`, `before:active:${hover}`);
+  return colors[color ?? "primary"];
 };
 
-const smallIconClass = classes("w-4", "h-4");
-const mediumIconClass = classes("w-5", "h-5");
-const largeIconClass = classes("w-6", "h-6");
+const smallIconClass = classes("w-5", "h-5");
+const mediumIconClass = classes("w-6", "h-6");
+const largeIconClass = classes("w-7", "h-7");
 
 const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ size, type, style, color }) => {
@@ -94,6 +103,9 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
   });
 };
 
+/**
+ * do not have any behavior in this component. You do not use this component with `isolate`, then you found problem can not get any bubbling event.
+ */
 export const Icon = (sources: IconSources): ComponentSinkBase => {
   const gen = generateTestId(sources.testid);
   const actions = intent(sources);

@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.tsx'],
+  content: ['./src/**/*.tsx', './src/*.tsx'],
   theme: {
     colors: {
       primary: {
@@ -34,14 +34,15 @@ module.exports = {
       lightgray: "rgb(0 0 0 / 10)",
       white: '#FFF'
     },
-    transitionProperty: {
-      'outline': 'outline',
-      'width': 'width'
+    extend: {
+      transitionProperty: {
+        'outline': 'outline',
+        'width': 'width'
+      },
+      gridTemplateColumns: {
+        'top-toolbar': '280px calc(10em + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px'
+      },
     },
-    gridTemplateColumns: {
-      'top-toolbar': '280px calc(10em + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px'
-    },
-    extend: {},
   },
   plugins: [],
 }

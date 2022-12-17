@@ -22,11 +22,11 @@ type SideToolbarSinks = ComponentSinks<{
 }>;
 
 const intent = function intent(sources: SideToolbarSources) {
-  const layouterClicked$ = selectAsMain(sources, ".side-toolbar__graph-layout").events("click");
-  const verticalClicked$ = selectAsMain(sources, ".graph-layouter__vertical")
+  const layouterClicked$ = selectAsMain(sources, '[data-id="opener"]').events("click");
+  const verticalClicked$ = selectAsMain(sources, '[data-id="vertical"]')
     .events("click", undefined, false)
     .mapTo(GraphLayout.Vertical);
-  const horizontalClicked$ = selectAsMain(sources, ".graph-layouter__horizontal")
+  const horizontalClicked$ = selectAsMain(sources, '[data-id="horizontal"]')
     .events("click", undefined, false)
     .mapTo(GraphLayout.Horizontal);
 
@@ -56,29 +56,28 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("absolute", "flex", "left-4", "top-half", "p-3", "bg-white", "rounded", "list-none"),
-  graphLayout: classes("relative", "flex-none", "bg-white", "p-2", "transition-colors", "cursor-pointer"),
+  root: classes("absolute", "flex", "left-4", "top-half", "bg-white", "rounded", "list-none", "top-1/2"),
+  graphLayout: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-3", "rounded"),
   graphLayouter: (opened: boolean) => {
     return {
       ...classes(
         "absolute",
         "flex",
         "flex-row",
-        "left-6",
-        "top-3",
-        "p-3",
+        "left-16",
+        "top-0",
         "bg-white",
         "rounded",
-        "invisible",
         "transition-left",
         "shadow-lg",
         "transition-opacity",
         "opacity-0"
       ),
-      ...(opened ? classes("left-7", "opacity-100", "visible") : {}),
+      ...(opened ? classes("opacity-100", "visible") : {}),
+      ...(!opened ? classes("invisible") : {}),
     };
   },
-  iconButton: classes("flex-none", "bg-white", "p-2", "cursor-pointer"),
+  iconButton: classes("flex-none", "bg-white", "p-3", "cursor-pointer", "rounded"),
 };
 
 const view = (
@@ -89,16 +88,22 @@ const view = (
   return xs.combine(state$, nodes$).map(([{ layout, layouterOpened }, nodes]) => {
     return (
       <ul class={Styles.root}>
-        <li class={Styles.graphLayout} dataset={{ testid: gen("graph-layout") }}>
+        <li class={Styles.graphLayout} dataset={{ testid: gen("graph-layout"), id: "opener" }}>
           {nodes.graphLayoutIcon}
           <div
             class={Styles.graphLayouter(layouterOpened)}
             dataset={{ testid: gen("layouter"), opened: `${layouterOpened}` }}
           >
-            <span class={{ "--selected": layout === GraphLayout.Horizontal }} dataset={{ testid: gen("horizontal") }}>
+            <span
+              class={{ ...Styles.iconButton, "--selected": layout === GraphLayout.Horizontal }}
+              dataset={{ testid: gen("horizontal"), id: "horizontal" }}
+            >
               {nodes.horizontalIcon}
             </span>
-            <span class={{ "--selected": layout === GraphLayout.Vertical }} dataset={{ testid: gen("vertical") }}>
+            <span
+              class={{ ...Styles.iconButton, "--selected": layout === GraphLayout.Vertical }}
+              dataset={{ testid: gen("vertical"), id: "vertical" }}
+            >
               {nodes.verticalIcon}
             </span>
           </div>
@@ -109,51 +114,30 @@ const view = (
 };
 
 export const SideToolbar = function SideToolbar(sources: SideToolbarSources): SideToolbarSinks {
-  const graphLayoutIcon = isolate(
-    Icon,
-    "graphLayoutIcon"
-  )({
+  const graphLayoutIcon = Icon({
     ...sources,
     props: xs.of<IconProps>({
       type: "layout-2",
       size: "m",
-      color: {
-        normal: "secondary1-400",
-        hover: "secondary1-200",
-        active: "secondary1-100",
-      },
+      color: "secondary1",
     }),
   });
 
-  const verticalIcon = isolate(
-    Icon,
-    "verticalIcon"
-  )({
+  const verticalIcon = Icon({
     ...sources,
     props: xs.of<IconProps>({
       type: "layout-distribute-vertical",
       size: "m",
-      color: {
-        normal: "secondary1-400",
-        hover: "secondary1-200",
-        active: "secondary1-100",
-      },
+      color: "secondary1",
     }),
   });
 
-  const horizontalIcon = isolate(
-    Icon,
-    "horizontalIcon"
-  )({
+  const horizontalIcon = Icon({
     ...sources,
     props: xs.of<IconProps>({
       type: "layout-distribute-horizontal",
       size: "m",
-      color: {
-        normal: "secondary1-400",
-        hover: "secondary1-200",
-        active: "secondary1-100",
-      },
+      color: "secondary1",
     }),
   });
 

@@ -76,11 +76,7 @@ export const SyncJira = function SyncJira(sources: SyncJiraSources): SyncJiraSin
         type: "refresh",
         size: "l",
         style: Styles.icon(syncing),
-        color: {
-          normal: "complement-200",
-          hover: "complement-400",
-          active: "complement-400",
-        },
+        color: "complement",
       };
     }),
   });

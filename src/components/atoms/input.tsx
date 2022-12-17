@@ -52,7 +52,7 @@ const containerClass = classes(
   "flex",
   "flex-auto",
   "items-center",
-  "flex-col",
+  "flex-row",
   "mx-3",
   "justify-between",
   "whitespace-nowrap",

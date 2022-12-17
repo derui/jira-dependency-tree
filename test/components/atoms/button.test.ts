@@ -1,4 +1,4 @@
-import { mockDOMSource, VNode } from "@cycle/dom";
+import { mockDOMSource, span, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
@@ -15,7 +15,7 @@ test("normal button", async (t) => {
       DOM: dom as any,
       props: Time.diagram("x", {
         x: {
-          label: "test",
+          content: span("test"),
           schema: "primary",
         },
       }),
@@ -27,7 +27,7 @@ test("normal button", async (t) => {
 
       return {
         primary: classes.some((v) => v.includes("primary")),
-        label: select("[data-testid=button]", vtree)[0].text,
+        label: select("[data-testid=button]", vtree)[0].children?.[0],
       };
     });
 
@@ -35,7 +35,7 @@ test("normal button", async (t) => {
     const expected$ = Time.diagram("a", {
       a: {
         primary: true,
-        label: "test",
+        label: span("test"),
       },
     });
 
@@ -57,11 +57,11 @@ test("change button schema", async (t) => {
       DOM: dom as any,
       props: Time.diagram("x--a", {
         x: {
-          label: "test",
+          content: span("test"),
           schema: "primary",
         },
         a: {
-          label: "test",
+          label: span("test"),
           schema: "secondary1",
         },
       }),
@@ -111,7 +111,7 @@ test("give click event", async (t) => {
       DOM: dom as any,
       props: Time.diagram("x", {
         x: {
-          label: "test",
+          label: span("test"),
           schema: "primary",
         },
       }),

@@ -1,4 +1,4 @@
-import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
 import { classes, generateTestId, selectAsMain } from "../helper";
 import { ComponentSinkBase, ComponentSourceBase } from "../type";
@@ -6,7 +6,7 @@ import { ComponentSinkBase, ComponentSourceBase } from "../type";
 type ColorSchema = "primary" | "secondary1";
 
 export interface ButtonProps {
-  label: string;
+  content: VNode;
   schema: ColorSchema;
   type?: "normal" | "submit";
   disabled?: boolean;
@@ -36,8 +36,7 @@ const intent = (sources: ButtonSources) => {
 const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$.map((props) => {
     return {
-      label: props.label,
-      schema: props.schema,
+      ...props,
       type: props.type ?? "normal",
       disabled: props.disabled ?? false,
     };
@@ -80,7 +79,7 @@ const Styles = {
 };
 
 const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ label, schema, type, disabled }) => {
+  return state$.map(({ content, schema, type, disabled }) => {
     const style = {
       ...Styles.button,
       ...Styles.color(schema),
@@ -89,13 +88,13 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
     if (type === "normal") {
       return (
         <button class={style} attrs={{ disabled }} dataset={{ testid: gen("button") }}>
-          {label}
+          {content}
         </button>
       );
     } else {
       return (
         <input class={style} attrs={{ type: "submit", disabled }} dataset={{ testid: gen("button") }}>
-          {label}
+          {content}
         </input>
       );
     }

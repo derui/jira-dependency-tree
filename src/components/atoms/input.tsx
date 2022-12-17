@@ -3,7 +3,7 @@ import xs, { Stream } from "xstream";
 import { classes, generateTestId, selectAsMain } from "../helper";
 import { ComponentSinkBase, ComponentSourceBase } from "../type";
 
-interface InputProps {
+export interface InputProps {
   placeholder?: string;
   value: string;
   label: string;
@@ -13,7 +13,7 @@ interface InputSources extends ComponentSourceBase {
   props: Stream<InputProps>;
 }
 
-interface InputSinks extends ComponentSinkBase {
+export interface InputSinks extends ComponentSinkBase {
   value: Stream<string>;
 }
 

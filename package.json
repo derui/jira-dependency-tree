@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start:css": "tailwindcss --watch -o dist/assets/css/app.css",
+    "start:css": "tailwindcss --watch -o dist/assets/css/app.css -i ./assets/css/root.css",
     "start:tsc": "tsc --watch",
     "start:vite": "vite",
     "ci": "CI=true vite",

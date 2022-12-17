@@ -1,12 +1,6 @@
-@import url("./variable.css");
-@import url("./issue.css");
-@import url("./user-configuration.css");
-@import url("./project-information.css");
-@import url("./zoom-slider.css");
-@import url("./sync-jira.css");
-@import url("./side-toolbar.css");
-@import url("./project-toolbar.css");
-@import url("./suggestor.css");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html,
 body,
@@ -21,12 +15,6 @@ body,
 #root {
   overflow: hidden;
   background-color: rgba(0 0 0 / 10%);
-}
-
-.copyrights {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
 }
 
 .top-toolbar {

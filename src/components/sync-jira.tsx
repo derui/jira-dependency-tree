@@ -1,8 +1,10 @@
-import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
-import { ComponentSinks, ComponentSources } from "@/components/type";
-import { generateTestId, selectAsMain } from "@/components/helper";
+import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { LoaderState, LoaderStatus } from "@/type";
+import { Icon, IconProps } from "./atoms/icon";
+import isolate from "@cycle/isolate";
 
 export interface SyncJiraProps {
   status: LoaderState;
@@ -13,16 +15,16 @@ export type SyncJiraState = LoaderState;
 
 export type SyncJiraEvent = "REQUEST";
 
-export type SyncJiraSources = ComponentSources<{
+export interface SyncJiraSources extends ComponentSourceBase {
   props: MemoryStream<SyncJiraProps>;
-}>;
+}
 
-export type SyncJiraSinks = ComponentSinks<{
+export interface SyncJiraSinks extends ComponentSinkBase {
   value: Stream<SyncJiraEvent>;
-}>;
+}
 
 const intent = function intent(sources: SyncJiraSources) {
-  const clicked$ = selectAsMain(sources, ".sync-jira__main").events("click").mapTo(true);
+  const clicked$ = selectAsMain(sources, "button").events("click").mapTo(true);
   return { props$: sources.props, clicked$ };
 };
 
@@ -39,16 +41,27 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return xs.combine(allowSync$, syncing$).map(([allowSync, syncing]) => ({ allowSync, syncing }));
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
-  return state$.map(({ allowSync, syncing }) => {
+const Styles = {
+  root: classes("flex", "justify-center"),
+  container: classes("relative"),
+  main: classes("p-2", "outline-none", "bg-none"),
+  icon: (syncing: boolean) => {
+    return syncing ? classes("animate-spin") : {};
+  },
+};
+
+const view = function view(
+  state$: ReturnType<typeof model>,
+  gen: ReturnType<typeof generateTestId>,
+  nodes$: Stream<{ icon: VNode }>
+) {
+  return xs.combine(state$, nodes$).map(([{ allowSync }, { icon }]) => {
     return (
-      <div class={{ "sync-jira": true }} dataset={{ testid: gen("root") }}>
-        <span class={{ "sync-jira__container": true }}>
-          <button
-            class={{ "sync-jira__main": true, "--syncing": syncing }}
-            attrs={{ disabled: !allowSync }}
-            dataset={{ testid: gen("button") }}
-          ></button>
+      <div class={Styles.root} dataset={{ testid: gen("root") }}>
+        <span class={Styles.container}>
+          <button class={Styles.main} attrs={{ disabled: !allowSync }} dataset={{ testid: gen("button") }}>
+            {icon}
+          </button>
         </span>
       </div>
     );
@@ -59,10 +72,31 @@ export const SyncJira = function SyncJira(sources: SyncJiraSources): SyncJiraSin
   const actions = intent(sources);
   const state$ = model(actions);
 
+  const icon = isolate(Icon, { "*": "icon" })({
+    ...sources,
+    testid: "sync",
+    props: state$.map<IconProps>(({ syncing }) => {
+      return {
+        type: "refresh",
+        size: "l",
+        style: Styles.icon(syncing),
+        color: {
+          normal: "complement-200",
+          hover: "complement-400",
+          active: "complement-400",
+        },
+      };
+    }),
+  });
+
   const value$ = actions.clicked$.mapTo<SyncJiraEvent>("REQUEST");
 
   return {
-    DOM: view(state$, generateTestId(sources.testid)),
+    DOM: view(
+      state$,
+      generateTestId(sources.testid),
+      icon.DOM.map((icon) => ({ icon }))
+    ),
     value: value$,
   };
 };

@@ -27,6 +27,7 @@ import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
 import { ProjectToolbar, ProjectToolbarState } from "./components/project-toolbar";
 import { Suggestion, suggestionFactory } from "./model/suggestion";
+import { classes } from "./components/helper";
 
 type MainSources = {
   DOM: DOMSource;
@@ -56,6 +57,10 @@ type MainState = {
 } & { sideToolbar?: SideToolbarState } & { projectToolbar?: ProjectToolbarState };
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
+
+const Styles = {
+  topToolbar: classes("absolute", "width-full", "top-0", "left-0", "grid", "mt-4", "ml-4", "grid", "grid-cols-5"),
+};
 
 const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
   const credential$ = sources.state
@@ -196,8 +201,8 @@ const main = (sources: MainSources): MainSinks => {
   const vnode$ = xs
     .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectToolbar$)
     .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectToolbar]) => (
-      <div class={{ "app-root": true }}>
-        <div class={{ "top-toolbar": true }}>
+      <div>
+        <div class={Styles.topToolbar}>
           {projectInformation}
           {syncJira}
           {projectToolbar}

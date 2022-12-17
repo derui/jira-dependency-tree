@@ -14,7 +14,8 @@ interface InputSources extends ComponentSourceBase {
 }
 
 export interface InputSinks extends ComponentSinkBase {
-  value: Stream<string>;
+  input: Stream<string>;
+  keypress: Stream<string>;
 }
 
 const intent = (sources: InputSources) => {
@@ -24,9 +25,14 @@ const intent = (sources: InputSources) => {
       return (v.target as HTMLInputElement).value;
     });
 
+  const keypress$ = selectAsMain(sources, 'input[type="text"]')
+    .events("keypress")
+    .map((v) => v.key);
+
   return {
     props$: sources.props,
     changed$,
+    keypress$,
   };
 };
 
@@ -108,6 +114,7 @@ export const Input = (sources: InputSources): InputSinks => {
 
   return {
     DOM: view(state$, gen),
-    value: actions.changed$,
+    input: actions.changed$,
+    keypress: actions.keypress$,
   };
 };

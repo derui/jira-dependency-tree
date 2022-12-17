@@ -14,9 +14,11 @@ test("initial display", async (t) => {
 
     const sinks = Input({
       DOM: dom as any,
-      props: xs.of({
-        value: "",
-        label: "label",
+      props: Time.diagram("x", {
+        x: {
+          value: "",
+          label: "label",
+        },
       }),
     });
 
@@ -29,7 +31,7 @@ test("initial display", async (t) => {
     });
 
     // Assert
-    const expected$ = Time.diagram("(a|)", {
+    const expected$ = Time.diagram("a", {
       a: {
         label: "label",
         input: "",
@@ -66,11 +68,48 @@ test("get value when input changed", async (t) => {
     });
 
     // Act
-    const actual$ = sinks.value;
+    const actual$ = sinks.input;
 
     // Assert
     const expected$ = Time.diagram("--a", {
       a: "foo",
+    });
+
+    Time.assertEqual(actual$, expected$);
+
+    Time.run(done);
+  });
+  t.pass();
+});
+
+test("get pressed key", async (t) => {
+  await componentTest((done) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const dom = mockDOMSource({
+      'input[type="text"]': {
+        keypress: Time.diagram("--a", {
+          a: { key: "a" },
+        }),
+      },
+    });
+
+    const sinks = Input({
+      DOM: dom as any,
+      props: Time.diagram("a--", {
+        a: {
+          value: "",
+          label: "label",
+        },
+      }),
+    });
+
+    // Act
+    const actual$ = sinks.keypress;
+
+    // Assert
+    const expected$ = Time.diagram("--a", {
+      a: "a",
     });
 
     Time.assertEqual(actual$, expected$);

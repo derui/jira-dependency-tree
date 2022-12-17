@@ -16,17 +16,3 @@ body,
   overflow: hidden;
   background-color: rgba(0 0 0 / 10%);
 }
-
-.top-toolbar {
-  position: absolute;
-  width: calc(100% - var(--space-large) * 2);
-  top: 0;
-  left: 0;
-  display: grid;
-  flex-direction: row;
-  margin-top: var(--space-large);
-  margin-left: var(--space-large);
-  align-items: center;
-  grid-template-columns: 280px calc(10em + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px;
-  grid-template-areas: "project-information project-toolbar sync-jira spacer user-configuration";
-}

@@ -2,8 +2,10 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
+import isolate from "@cycle/isolate";
+import { Input, InputProps, InputSinks } from "./atoms/input";
 
 export interface ProjectInformationProps {
   project?: Project;
@@ -17,42 +19,31 @@ type ProjectInformationSinks = ComponentSinks<{
   value: Stream<string>;
 }>;
 
-const intent = function intent(sources: ProjectInformationSources) {
-  const nameClicked$ = selectAsMain(sources, ".project-information__name").events("click").mapTo(true);
-  const submit$ = selectAsMain(sources, ".project-information__form")
-    .events("submit", { preventDefault: true, bubbles: false })
-    .mapTo(false);
-  const cancel$ = selectAsMain(sources, ".project-information__cancel")
-    .events("click", { preventDefault: true, bubbles: false })
-    .mapTo(false);
-  const nameChanged$ = selectAsMain(sources, ".project-information__name-input")
-    .events("input")
-    .map((v) => {
-      return (v.target as HTMLInputElement).value;
-    });
+const intent = function intent(sources: ProjectInformationSources, nameInput: InputSinks) {
+  const nameClicked$ = selectAsMain(sources, '[data-id="name"]').events("click").mapTo(true);
+  const nameChanged$ = nameInput.input;
+  const cancel$ = nameInput.keypress.filter((v) => v === "Escape").mapTo(false);
+  const submit$ = nameInput.keypress.filter((v) => v === "Enter").mapTo(false);
 
-  return { props$: sources.props, nameClicked$, nameChanged$, submit$, cancel$ };
+  return { props$: sources.props, nameClicked$, nameChanged$, cancel$, submit$ };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const project$ = actions.props$.map((v) => v.project);
-  const opened$ = xs
-    .merge(actions.nameClicked$, actions.submit$, actions.cancel$)
-    .fold((accum, value) => !!value || !accum, false);
-  const name$ = project$
-    .filter(filterUndefined)
-    .map((v) => v.name)
-    .startWith("Click here");
-  const key$ = xs
-    .merge(
-      project$.filter(filterUndefined).map((v) => v.key),
-      actions.nameChanged$
-    )
-    .startWith("");
+  return actions.props$
+    .map((v) => {
+      const opened$ = xs.merge(actions.nameClicked$, actions.submit$, actions.cancel$).fold((_, value) => value, false);
 
-  return xs
-    .combine(actions.props$, opened$, name$, key$)
-    .map(([{ project }, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
+      const name$ = xs
+        .of(v.project)
+        .filter(filterUndefined)
+        .map((v) => v.name)
+        .startWith("Click here");
+
+      return xs
+        .combine(actions.props$, opened$, name$)
+        .map(([{ project }, opened, name]) => ({ projectGiven: project !== undefined, opened, name }));
+    })
+    .flatten();
 };
 
 const Styles = {
@@ -83,67 +74,50 @@ const Styles = {
       ...(show ? classes("visible") : {}),
     };
   },
-  name: classes(
-    "ml-4",
-    "overflow-hidden",
-    "text-ellipsis",
-    "w-60",
-    "flex-none",
-    "font-bold",
-    "cursor-pointer",
-    "color-secondary2-400",
-    "border-b-1",
-    "border-b-transparent",
-    "transition-colors",
-    "transition-border",
-    "leading-6",
-    "p-2",
-    "pr-0"
-  ),
+  name: (editing: boolean) => {
+    return {
+      ...classes(
+        "ml-4",
+        "overflow-hidden",
+        "text-ellipsis",
+        "w-60",
+        "flex-none",
+        "font-bold",
+        "cursor-pointer",
+        "color-secondary2-400",
+        "border-b-1",
+        "border-b-transparent",
+        "transition-colors",
+        "transition-border",
+        "leading-6",
+        "p-2",
+        "pr-0"
+      ),
+      ...(editing ? classes("hidden") : {}),
+    };
+  },
+  keyEditor: (editing: boolean) => {
+    return {
+      ...(!editing ? classes("hidden") : {}),
+    };
+  },
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
-  return state$.map(({ projectGiven, opened, name, key }) => {
+const view = function view(
+  state$: ReturnType<typeof model>,
+  nodes$: AsNodeStream<["nameInput"]>,
+  gen: ReturnType<typeof generateTestId>
+) {
+  return xs.combine(state$, nodes$).map(([{ projectGiven, opened, name }, nodes]) => {
     return (
-      <div
-        class={{ "w-2": true, "w-full": true, "project-information": true, "--editor-opened": opened }}
-        dataset={{ testid: gen("main") }}
-      >
-        <span
-          class={{ "project-information__marker": true, "--show": !projectGiven }}
-          dataset={{ testid: gen("marker") }}
-        ></span>
-        <span
-          class={{ "project-information__name": true, "--need-configuration": !projectGiven }}
-          dataset={{ testid: gen("name") }}
-        >
-          {name}
-        </span>
-        <div class={{ "project-information__editor": true, "--show": opened }} dataset={{ testid: gen("editor") }}>
-          <form class={{ "project-information__form": true }} attrs={{ method: "dialog" }}>
-            <div class={{ "project-information__main": true }}>
-              <label class={{ "project-information__input-container": true }}>
-                <span class={{ "project-information__input-label": true }}>Key</span>
-                <input
-                  class={{ "project-information__name-input": true }}
-                  attrs={{ type: "text", placeholder: "required", value: key }}
-                  dataset={{ testid: gen("name-input") }}
-                />
-              </label>
-            </div>
-            <div class={{ "project-information__footer": true }}>
-              <input
-                class={{ "project-information__cancel": true }}
-                attrs={{ type: "button", value: "Cancel" }}
-                dataset={{ testid: gen("cancel") }}
-              />
-              <input
-                class={{ "project-information__submit": true }}
-                attrs={{ type: "submit", value: "Apply" }}
-                dataset={{ testid: gen("submit") }}
-              />
-            </div>
-          </form>
+      <div class={Styles.root} dataset={{ testid: gen("main") }}>
+        <span class={Styles.marker(!projectGiven)} dataset={{ testid: gen("marker") }}></span>
+        <div class={Styles.name(opened)} dataset={{ testid: gen("name") }}>
+          <span>{name}</span>
+        </div>
+        <div></div>
+        <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor") }}>
+          {nodes.nameInput}
         </div>
       </div>
     );
@@ -153,13 +127,26 @@ const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typ
 export const ProjectInformation = function ProjectInformation(
   sources: ProjectInformationSources
 ): ProjectInformationSinks {
-  const actions = intent(sources);
+  const nameInput = isolate(
+    Input,
+    "nameInput"
+  )({
+    ...sources,
+    props: sources.props.map<InputProps>((props) => {
+      return {
+        value: props.project?.key ?? "",
+        placeholder: "Project Key",
+      };
+    }),
+  });
+
+  const actions = intent(sources, nameInput);
   const state$ = model(actions);
 
   const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).mapTo(name)).flatten();
 
   return {
-    DOM: view(state$, generateTestId(sources.testid)),
+    DOM: view(state$, mergeNodes({ nameInput: nameInput.DOM }), generateTestId(sources.testid)),
     value: submittedName$,
   };
 };

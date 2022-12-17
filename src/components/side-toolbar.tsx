@@ -6,8 +6,7 @@ import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Icon, IconProps } from "./atoms/icon";
-import { source } from "@cycle/dom";
-import { AsNodeStream, mergeNodes } from "test/helper";
+import { AsNodeStream, mergeNodes } from "./helper";
 
 export interface SideToolbarState {
   graphLayout: GraphLayout;

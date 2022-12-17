@@ -6,6 +6,7 @@ import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
+import { withState } from "@cycle/state";
 
 test("do not open dialog initially", async (t) => {
   await componentTest((done) => {
@@ -14,9 +15,10 @@ test("do not open dialog initially", async (t) => {
     const dom = mockDOMSource({});
 
     // Act
-    const sinks = UserConfiguration({
+    const sinks = withState(UserConfiguration)({
       DOM: dom as any,
       props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
+      testid: undefined,
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
@@ -46,16 +48,17 @@ test("open dialog when opener clicked", async (t) => {
     });
 
     // Act
-    const sinks = UserConfiguration({
+    const sinks = withState(UserConfiguration)({
       DOM: dom as any,
       props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: true }),
+      testid: undefined,
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
         opener: select("[data-testid=opener]", vtree)[0].data?.class,
         dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class,
-        marker: select("[data-testid=marker]", vtree)[0].data?.class!["--show"],
+        marker: select("[data-testid=marker]", vtree)[0].data?.class?.["--show"],
       };
     });
     const expected$ = Time.diagram("a-b------|", {
@@ -105,15 +108,16 @@ test("close dialog automatically when it applied", async (t) => {
     });
 
     // Act
-    const sinks = UserConfiguration({
+    const sinks = withState(UserConfiguration)({
       DOM: dom as any,
       props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
+      testid: undefined,
     });
 
     const actual$ = sinks.DOM.drop(1).map((vtree) => {
       return {
-        opener: select("[data-testid=opener]", vtree)[0].data?.class!["--opened"],
-        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class!["--opened"],
+        opener: select("[data-testid=opener]", vtree)[0].data?.class?.["--opened"],
+        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class?.["--opened"],
       };
     });
     const expected$ = Time.diagram("-a(aa)b-----|", {

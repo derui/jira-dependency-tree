@@ -47,7 +47,7 @@ module.exports = {
       '192': '192px'
     },
     transitionProperty: {
-      'outline': 'outline'
+      'outline': 'outline',
       'width': 'width'
     },
     gridTemplateColumns: {

@@ -1,6 +1,7 @@
 import { MainDOMSource } from "@cycle/dom";
 import { HTTPSource, Response } from "@cycle/http";
-import { Stream } from "xstream";
+import { VNode } from "snabbdom";
+import xs, { Stream } from "xstream";
 import { ComponentSources } from "./type";
 
 // helper function to select source as MainDOMSource forcely
@@ -32,4 +33,20 @@ export const classes = (...classes: string[]) => {
 
     return accum;
   }, {} as Record<string, boolean>);
+};
+
+export type AsNodeStream<T extends string[]> = Stream<Record<T[number], VNode>>;
+type NodesStream<T extends Record<string, unknown>> = Stream<Record<keyof T, VNode>>;
+
+export const mergeNodes: <T extends Record<string, Stream<VNode>>>(nodes: T) => NodesStream<T> = (nodes) => {
+  const entries = Object.entries(nodes).map(([key, value]) => {
+    return value.map<[keyof typeof nodes, VNode]>((node) => [key, node]);
+  });
+
+  return xs.combine(...entries).map((_nodes) => {
+    return _nodes.reduce((accum, [key, node]) => {
+      accum[key] = node;
+      return accum;
+    }, {} as { [k in keyof typeof nodes]: VNode });
+  });
 };

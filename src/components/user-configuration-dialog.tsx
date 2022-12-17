@@ -5,7 +5,7 @@ import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import isolate from "@cycle/isolate";
 import { Input, InputProps } from "./atoms/input";
 import { Button, ButtonProps } from "./atoms/button";
-import { AsNodeStream, mergeNodes } from "test/helper";
+import { AsNodeStream, mergeNodes } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import produce from "immer";
 import { filterEmptyString } from "@/util/basic";

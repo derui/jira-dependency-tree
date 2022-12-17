@@ -131,7 +131,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
 
 const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
-    DOM: sources.DOM,
+    ...sources,
     props: sources.state.stream.map<UserConfigurationProps>(({ setting: environment }) => ({
       setting: environment,
       setupFinished: environment.isSetupFinished(),

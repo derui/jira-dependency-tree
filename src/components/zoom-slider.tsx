@@ -1,44 +1,44 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { MemoryStream } from "xstream";
-import { ComponentSinks, ComponentSources } from "@/components/type";
-import { generateTestId, selectAsMain } from "@/components/helper";
+import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 
 export interface ZoomSliderProps {
   zoom: number;
 }
 
-type ZoomSliderSources = ComponentSources<{
+interface ZoomSliderSources extends ComponentSourceBase {
   props: MemoryStream<ZoomSliderProps>;
-}>;
+}
 
-type ZoomSliderSinks = ComponentSinks;
-
-const intent = function intent(sources: ZoomSliderSources) {
+const intent = (sources: ZoomSliderSources) => {
   const clicked$ = selectAsMain(sources, ".zoom-slider").events("click").mapTo(true);
 
   return { props$: sources.props, clicked$ };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   const zoom$ = actions.props$.map((v) => Math.round(v.zoom));
 
   return zoom$;
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
+const Styles = {
+  root: classes("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white"),
+  currentZoom: classes("inline-block", "text-center"),
+};
+
+const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map((zoom) => {
     return (
-      <div class={{ "zoom-slider": true }}>
-        <span
-          class={{ "zoom-slider__current-zoom": true }}
-          dataset={{ testid: gen("current-zoom") }}
-        >{`${zoom}%`}</span>
+      <div class={Styles.root}>
+        <span class={Styles.currentZoom} dataset={{ testid: gen("current-zoom") }}>{`${zoom}%`}</span>
       </div>
     );
   });
 };
 
-export const ZoomSlider = (sources: ZoomSliderSources): ZoomSliderSinks => {
+export const ZoomSlider = (sources: ZoomSliderSources): ComponentSinkBase => {
   const actions = intent(sources);
   const state$ = model(actions);
 

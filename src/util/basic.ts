@@ -33,7 +33,9 @@ export const filterNull = function filterNull<T>(value: T | null): value is T {
 };
 
 // A simple type guard to remove blank string
-export const filterEmptyString = function filterEmptyString(value: string): boolean {
+export const filterEmptyString = function filterEmptyString(value: string | undefined): boolean {
+  if (value === undefined) return false;
+
   return value.trim().length > 0;
 };
 

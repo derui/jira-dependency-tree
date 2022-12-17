@@ -9,11 +9,13 @@ test("filter empty string", (t) => {
   const retA = filterEmptyString("");
   const retB = filterEmptyString("   ");
   const retC = filterEmptyString("a c");
+  const retD = filterEmptyString(undefined);
 
   // Assert
   t.deepEqual(retA, false, "empty string");
   t.deepEqual(retB, false, "blank string");
   t.deepEqual(retC, true, "string is not blank neither empty");
+  t.is(retD, false, "undefined is empty");
 });
 
 test("difference between two sets", (t) => {

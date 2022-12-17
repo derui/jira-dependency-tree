@@ -100,12 +100,6 @@ const model = function model<T>(actions: ReturnType<typeof intent<T>>) {
         }, false);
 
       const allSuggestions = props.suggestions.sort(({ id: a }, { id: b }) => a.localeCompare(b));
-      const suggestionMap = allSuggestions.reduce((accum, suggestion) => {
-        accum.set(suggestion.id, suggestion);
-
-        return accum;
-      }, new Map<string, Suggestion<T>>());
-
       const filteredSuggestions$ = actions.termInputted$
         .map((term) => allSuggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
         .startWith(allSuggestions);

@@ -49,12 +49,21 @@ const intent = (sources: UserConfigurationDialogSources) => {
 
 const model = function model(actions: ReturnType<typeof intent>) {
   return xs
-    .combine(actions.props$, actions.state$)
-    .map(([v, state]) => {
+    .merge(
+      actions.props$.map((props) => {
+        return {
+          jiraToken: props.jiraToken ?? "",
+          email: props.email ?? "",
+          userDomain: props.userDomain ?? "",
+        };
+      }),
+      actions.state$
+    )
+    .map((state) => {
       return {
-        jiraToken: state.jiraToken ?? v.jiraToken,
-        email: state.email ?? v.email,
-        userDomain: state.userDomain ?? v.userDomain,
+        jiraToken: state.jiraToken,
+        email: state.email,
+        userDomain: state.userDomain,
         allowSubmit: !!state.jiraToken && !!state.userDomain && !!state.email,
       };
     })
@@ -160,6 +169,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const state$ = model(actions);
 
   const submit$ = state$
+    .filter(({ allowSubmit }) => allowSubmit)
     .map(({ jiraToken, email, userDomain }) =>
       submit.click.take(1).map<Event>(() => ({ kind: "submit", state: { jiraToken, email, userDomain } }))
     )
@@ -191,7 +201,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   });
 
   const stateReducer$ = xs
-    .combine(email.value, userDomain.value, jiraToken.value)
+    .combine(email.input, userDomain.input, jiraToken.input)
     .map<Reducer<UserConfigurationState>>(([email, userDomain, jiraToken]) => {
       return (prevState) => {
         if (!prevState) return;

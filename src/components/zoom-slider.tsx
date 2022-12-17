@@ -18,9 +18,7 @@ const intent = (sources: ZoomSliderSources) => {
 };
 
 const model = (actions: ReturnType<typeof intent>) => {
-  const zoom$ = actions.props$.map((v) => Math.round(v.zoom));
-
-  return zoom$;
+  return actions.props$.map((v) => Math.round(v.zoom));
 };
 
 const Styles = {

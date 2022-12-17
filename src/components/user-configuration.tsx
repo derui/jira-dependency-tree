@@ -1,6 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationValue } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
@@ -28,9 +28,7 @@ type UserConfigurationSinks = ComponentSinks<{
 }>;
 
 const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<any>) {
-  const clickOpener$ = selectAsMain(sources, ".user-configuration__opener")
-    .events("click", { bubbles: false })
-    .mapTo(true);
+  const clickOpener$ = selectAsMain(sources, ".--opener").events("click", { bubbles: false }).mapTo(true);
   const dialogApplied$ = dialogValue.mapTo(false);
 
   return {
@@ -40,14 +38,14 @@ const intent = function intent(sources: UserConfigurationSources, dialogValue: S
   };
 };
 
-const model = function model(actions: ReturnType<typeof intent>, dialog: Stream<VNode>) {
+const model = function model(actions: ReturnType<typeof intent>) {
   return actions.props$
     .map((props) => {
-      const opened = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
+      const opened$ = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
 
-      return xs
-        .combine(opened, dialog)
-        .map(([opened, dialog]) => ({ opened, setupFinished: props.setupFinished, nodes: { dialog } }));
+      return opened$.map((opened) => {
+        return { opened, setupFinished: props.setupFinished };
+      });
     })
     .flatten();
 };
@@ -98,11 +96,15 @@ const Styles = {
   },
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
-  return state$.map(({ opened, setupFinished, nodes: { dialog } }) => (
+const view = function view(
+  state$: ReturnType<typeof model>,
+  nodes: AsNodeStream<["dialog"]>,
+  gen: ReturnType<typeof generateTestId>
+) {
+  return xs.combine(state$, nodes).map(([{ opened, setupFinished }, { dialog }]) => (
     <div class={Styles.root}>
       <div class={Styles.toolbar}>
-        <button class={Styles.opener(opened)} dataset={{ testid: gen("opener") }}>
+        <button class={{ ...Styles.opener(opened), "--opener": true }} dataset={{ testid: gen("opener") }}>
           <span class={Styles.marker(!setupFinished)} dataset={{ testid: gen("marker") }}></span>
         </button>
       </div>
@@ -129,10 +131,10 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
   });
 
   const actions = intent(sources, dialog.value);
-  const state$ = model(actions, dialog.DOM);
+  const state$ = model(actions);
 
   return {
-    DOM: view(state$, gen),
+    DOM: view(state$, mergeNodes({ dialog: dialog.DOM }), gen),
     value: dialog.value
       .map((v) => {
         if (v.kind === "submit") {

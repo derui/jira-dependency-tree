@@ -29,16 +29,12 @@ const intent = function intent(sources: SyncJiraSources) {
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const status = actions.props$.map((v) => v.status);
-  const setupFinished = actions.props$.map((v) => v.setupFinished);
-  const allowSync$ = xs
-    .combine(status, setupFinished)
-    .map(([status, setupFinished]) => status === "COMPLETED" && setupFinished);
-  const syncing$ = xs
-    .combine(status, setupFinished)
-    .map(([status, setupFinished]) => status === LoaderStatus.LOADING && setupFinished);
-
-  return xs.combine(allowSync$, syncing$).map(([allowSync, syncing]) => ({ allowSync, syncing }));
+  return actions.props$.map(({ status, setupFinished }) => {
+    return {
+      allowSync: status === LoaderStatus.COMPLETED && setupFinished,
+      syncing: status === LoaderStatus.LOADING && setupFinished,
+    };
+  });
 };
 
 const Styles = {

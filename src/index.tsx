@@ -336,6 +336,7 @@ const main = (sources: MainSources): MainSinks => {
       projectReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
       projectToolbarSink.state as Stream<Reducer<MainState>>,
+      userConfigurationSink.state as Stream<Reducer<MainState>>,
       loadingReducer$
     ),
     issueGraph: issueGraph$,

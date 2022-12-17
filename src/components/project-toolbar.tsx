@@ -55,38 +55,42 @@ const intent = function intent(
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
-  const currentConditionType$ = actions.state$.map((v) => v.conditionType);
-  const selectorOpened$ = xs
-    .merge(
-      actions.openerClicked$.mapTo("search-condition-editor" as const),
-      actions.cancelClicked$.mapTo("cancel" as const),
-      actions.submitClicked$.mapTo("submit" as const)
-    )
-    .fold((accum, v) => {
-      switch (v) {
-        case "search-condition-editor":
-          return !accum;
-        case "cancel":
-        case "submit":
-          return false;
-      }
-    }, false);
+  return actions.props$
+    .map(() => {
+      const currentConditionType$ = actions.state$.map((v) => v.conditionType);
+      const selectorOpened$ = xs
+        .merge(
+          actions.openerClicked$.mapTo("search-condition-editor" as const),
+          actions.cancelClicked$.mapTo("cancel" as const),
+          actions.submitClicked$.mapTo("submit" as const)
+        )
+        .fold((accum, v) => {
+          switch (v) {
+            case "search-condition-editor":
+              return !accum;
+            case "cancel":
+            case "submit":
+              return false;
+          }
+        }, false);
 
-  const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
-    return { epic: v };
-  });
-  const conditionForSprint$ = actions.suggestedValue$.map<SearchCondition>((v) => {
-    return { sprint: v };
-  });
-  const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo<SearchCondition>({});
+      const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
+        return { epic: v };
+      });
+      const conditionForSprint$ = actions.suggestedValue$.map<SearchCondition>((v) => {
+        return { sprint: v };
+      });
+      const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo<SearchCondition>({});
 
-  const currentCondition$ = xs.merge(conditionForEpic$, conditionForSprint$, conditionForDefault$).startWith({});
+      const currentCondition$ = xs.merge(conditionForEpic$, conditionForSprint$, conditionForDefault$).startWith({});
 
-  return xs
-    .combine(currentConditionType$, selectorOpened$, currentCondition$)
-    .map(([currentConditionType, selectorOpened, currentCondition]) => {
-      return { currentConditionType, selectorOpened, currentCondition };
-    });
+      return xs
+        .combine(currentConditionType$, selectorOpened$, currentCondition$)
+        .map(([currentConditionType, selectorOpened, currentCondition]) => {
+          return { currentConditionType, selectorOpened, currentCondition };
+        });
+    })
+    .flatten();
 };
 
 const currentConditionName = (condition: SearchCondition) => {

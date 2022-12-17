@@ -18,26 +18,26 @@ test("open main when button clicked", async (t) => {
 
     const sinks = Suggestor({
       DOM: dom as any,
-      props: xs.of<SuggestorProps>({ suggestions: [{ id: "id", label: "label", value: 1 }] }).remember(),
+      props: Time.diagram("a", { a: { suggestions: [{ id: "id", label: "label", value: 1 }] } }),
     });
 
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        buttonOpened: select("[data-testid=suggestor-opener]", vtree)[0].data?.class!["--opened"],
-        mainOpened: select("[data-testid=search-dialog]", vtree)[0].data?.class!["--opened"],
+        buttonOpened: select("[data-testid=suggestor-opener]", vtree)[0].data?.dataset?.opened,
+        mainOpened: select("[data-testid=search-dialog]", vtree)[0].data?.dataset?.opened,
       };
     });
 
     // Assert
     const expected$ = Time.diagram("a--x", {
       a: {
-        buttonOpened: false,
-        mainOpened: false,
+        buttonOpened: "false",
+        mainOpened: "false",
       },
       x: {
-        buttonOpened: true,
-        mainOpened: true,
+        buttonOpened: "true",
+        mainOpened: "true",
       },
     });
 
@@ -108,7 +108,7 @@ test("do not send term when suggestions is not empty", async (t) => {
     });
 
     // Act
-    const actual$ = sinks.value.filter((v) => v.kind === "term");
+    const actual$ = sinks.term;
 
     // Assert
     const expected$ = Time.diagram("---");

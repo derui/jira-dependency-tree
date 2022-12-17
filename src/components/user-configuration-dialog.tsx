@@ -4,6 +4,9 @@ import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import isolate from "@cycle/isolate";
 import { Input, InputProps, InputSinks } from "./atoms/input";
+import { isolateSink } from "@cycle/state";
+import { Button, ButtonProps } from "./atoms/button";
+import { AsNodeStream, mergeNodes, NodesStream } from "test/helper";
 
 export type UserConfigurationState = {
   jiraToken: string;
@@ -74,24 +77,12 @@ const model = function model(
   return actions.props$
     .map((v) => {
       return xs
-        .combine(
-          nodes.email.value,
-          nodes.jiraToken.value,
-          nodes.userDomain.value,
-          nodes.email.DOM,
-          nodes.jiraToken.DOM,
-          nodes.userDomain.DOM
-        )
-        .map(([email, credential, userDomain, emailDOM, jiraTokenDOM, userDomainDOM]) => ({
-          jiraToken: credential,
-          email,
-          userDomain,
+        .combine(nodes.email.value, nodes.jiraToken.value, nodes.userDomain.value)
+        .map(([email, credential, userDomain]) => ({
+          jiraToken: credential ?? v.jiraToken,
+          email: email ?? v.email,
+          userDomain: userDomain ?? v.userDomain,
           allowSubmit: !!credential && !!userDomain && !!email,
-          nodes: {
-            email: emailDOM,
-            jiraToken: jiraTokenDOM,
-            userDomain: userDomainDOM,
-          },
         }));
     })
     .flatten()
@@ -102,34 +93,24 @@ const Styles = {
   form: classes("flex", "flex-col", "pb-0", "h-full"),
   main: classes("pb-4"),
 
-  marker: (show: boolean) => {
-    return {
-      ...classes("absolute", "top-0", "left-0", "inline-block", "invisible", "bg-primary-400", "w-3", "h-4", "rounded"),
-      ...(show ? classes("visible") : {}),
-    };
-  },
+  footer: classes("flex", "flex-auto", "flex-row", "justify-space-between", "p-3", "border-t-1", "border-t-lightgray"),
 };
 
-const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
-  return state$.map(({ allowSubmit, nodes }) => (
-    <form class={Styles.form} attrs={{ method: "dialog" }}>
+const view = function view(
+  state$: ReturnType<typeof model>,
+  nodes$: AsNodeStream<["jiraToken", "email", "userDomain", "submit", "cancel"]>,
+  gen: ReturnType<typeof generateTestId>
+) {
+  return xs.combine(state$, nodes$).map(([, nodes]) => (
+    <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog") }}>
       <div class={Styles.main}>
         {nodes.userDomain}
         {nodes.email}
         {nodes.jiraToken}
       </div>
-      <div class={{ "user-configuration__footer": true }}>
-        <input
-          class={{ "user-configuration__cancel": true }}
-          attrs={{ type: "button", value: "Cancel" }}
-          dataset={{ testid: gen("cancel") }}
-        />
-
-        <input
-          class={{ "user-configuration__submit": true }}
-          attrs={{ type: "submit", disabled: !allowSubmit, value: "Apply" }}
-          dataset={{ testid: gen("submit") }}
-        />
+      <div class={Styles.footer}>
+        {nodes.cancel}
+        {nodes.submit}
       </div>
     </form>
   ));
@@ -151,6 +132,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
       };
     }),
   });
+
   const email = isolate(
     Input,
     "email"
@@ -164,6 +146,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
       };
     }),
   });
+
   const jiraToken = isolate(
     Input,
     "jiraToken"
@@ -181,16 +164,46 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const actions = intent(sources);
   const state$ = model(actions, { userDomain, email, jiraToken });
 
+  const submit = isolate(
+    Button,
+    "submit"
+  )({
+    ...sources,
+    props: state$.map<ButtonProps>(({ allowSubmit }) => ({
+      label: "Apply",
+      schema: "primary",
+      type: "submit",
+      disabled: !allowSubmit,
+    })),
+  });
+  const cancel = isolate(
+    Button,
+    "cancel"
+  )({
+    ...sources,
+    props: xs.of<ButtonProps>({ label: "Cancel", schema: "primary" }),
+  });
+
   const submit$ = state$
     .map(({ jiraToken, email, userDomain }) =>
-      actions.submit$.take(1).map<Event>(() => ({ kind: "submit", state: { jiraToken, email, userDomain } }))
+      submit.click.take(1).map<Event>(() => ({ kind: "submit", state: { jiraToken, email, userDomain } }))
     )
     .flatten();
 
-  const cancel$ = actions.cancel$.mapTo<Event>({ kind: "cancel" });
+  const cancel$ = cancel.click.mapTo<Event>({ kind: "cancel" });
 
   return {
-    DOM: view(state$, generateTestId(sources.testid)),
+    DOM: view(
+      state$,
+      mergeNodes({
+        jiraToken: jiraToken.DOM,
+        email: email.DOM,
+        userDomain: userDomain.DOM,
+        submit: submit.DOM,
+        cancel: cancel.DOM,
+      }),
+      generateTestId(sources.testid)
+    ),
     value: xs.merge(submit$, cancel$),
   };
 };

@@ -1,6 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
-import { generateTestId, selectAsMain } from "@/components/helper";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { UserConfigurationDialog, UserConfigurationState } from "@/components/user-configuration-dialog";
 import isolate from "@cycle/isolate";
@@ -33,34 +33,73 @@ const intent = function intent(sources: UserConfigurationSources, dialogValue: S
   };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
-  const opened = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
+const model = function model(actions: ReturnType<typeof intent>, dialog: Stream<VNode>) {
+  return actions.props$
+    .map((props) => {
+      const opened = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
 
-  return xs.combine(opened, actions.props$).map(([opened, { setupFinished }]) => ({ opened, setupFinished }));
+      return xs
+        .combine(opened, dialog)
+        .map(([opened, dialog]) => ({ opened, setupFinished: props.setupFinished, nodes: { dialog } }));
+    })
+    .flatten();
 };
 
-const view = function view(
-  state$: ReturnType<typeof model>,
-  dialog: Stream<VNode>,
-  gen: ReturnType<typeof generateTestId>
-) {
-  return xs.combine(state$, dialog).map(([{ opened, setupFinished }, dialog]) => (
-    <div class={{ "user-configuration": true }}>
-      <div class={{ "user-configuration__toolbar": true }}>
-        <button class={{ "user-configuration__opener": true, "--opened": opened }} dataset={{ testid: gen("opener") }}>
-          <span
-            class={{ "user-configuration__marker": true, "--show": !setupFinished }}
-            dataset={{ testid: gen("marker") }}
-          ></span>
+const Styles = {
+  root: classes("flex", "relative"),
+  toolbar: classes("flex", "relative", "flex-auto", "flex-col", "bg-white", "p-3"),
+  opener: (opened: boolean) => {
+    return {
+      ...classes(
+        "relative",
+        "outline-none",
+        "bg-white",
+        "border-none",
+        "flex-auto",
+        "flex",
+        "p-2",
+        "transition-colors",
+        "cursor-pointer",
+        "color-black",
+        "rounded",
+        "hover:bg-secondary1-400"
+      ),
+      ...(opened ? classes("bg-secondary1-400") : {}),
+    };
+  },
+  marker: (show: boolean) => {
+    return {
+      ...classes("absolute", "top-0", "left-0", "inline-block", "invisible", "bg-primary-400", "w-3", "h-4", "rounded"),
+      ...(show ? classes("visible") : {}),
+    };
+  },
+  dialogContainer: (opened: boolean) => {
+    return {
+      ...classes(
+        "bg-white",
+        "absolute",
+        "top-full",
+        "right-0",
+        "rounded",
+        "shadow-lg",
+        "transition-width",
+        "width-0",
+        "overflow-hidden"
+      ),
+      ...(opened ? classes("width-[360px]") : {}),
+    };
+  },
+};
+
+const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {
+  return state$.map(({ opened, setupFinished, nodes: { dialog } }) => (
+    <div class={Styles.root}>
+      <div class={Styles.toolbar}>
+        <button class={Styles.opener(opened)} dataset={{ testid: gen("opener") }}>
+          <span class={Styles.marker(!setupFinished)} dataset={{ testid: gen("marker") }}></span>
         </button>
       </div>
-      <div
-        class={{
-          "user-configuration__dialog-container": true,
-          "--opened": opened,
-        }}
-        dataset={{ testid: gen("dialog-container") }}
-      >
+      <div class={Styles.dialogContainer(opened)} dataset={{ testid: gen("dialog-container") }}>
         {dialog}
       </div>
     </div>
@@ -83,10 +122,10 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
   });
 
   const actions = intent(sources, dialog.value);
-  const state$ = model(actions);
+  const state$ = model(actions, dialog.DOM);
 
   return {
-    DOM: view(state$, dialog.DOM, gen),
+    DOM: view(state$, gen),
     value: dialog.value
       .map((v) => {
         if (v.kind === "submit") {

@@ -15,13 +15,13 @@ test("allow user to submit if all value is valid", async (t) => {
     const email$ = Time.diagram("----x----|", { x: { target: { value: "email" } } });
     const submit$ = Time.diagram("-----x---|", { x: { target: {} } });
     const dom = mockDOMSource({
-      ".user-configuration__user-domain": {
+      ".__userDomain input": {
         input: domain$,
       },
-      ".user-configuration__credential": {
+      ".__jiraToken input": {
         input: cred$,
       },
-      ".user-configuration__email": {
+      ".__email input": {
         input: email$,
       },
       ".user-configuration__form": {

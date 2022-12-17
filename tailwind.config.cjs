@@ -48,6 +48,7 @@ module.exports = {
     },
     transitionProperty: {
       'outline': 'outline'
+      'width': 'width'
     },
     gridTemplateColumns: {
       'top-toolbar': '280px calc(10em + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px'

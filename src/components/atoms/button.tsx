@@ -1,5 +1,5 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { Stream } from "xstream";
+import xs, { Stream } from "xstream";
 import { classes, generateTestId, selectAsMain } from "../helper";
 import { ComponentSinkBase, ComponentSourceBase } from "../type";
 
@@ -8,6 +8,8 @@ type ColorSchema = "primary" | "secondary1";
 export interface ButtonProps {
   label: string;
   schema: ColorSchema;
+  type?: "normal" | "submit";
+  disabled?: boolean;
 }
 
 interface ButtonSources extends ComponentSourceBase {
@@ -22,17 +24,23 @@ interface ButtonSinks extends ComponentSinkBase {
 }
 
 const intent = (sources: ButtonSources) => {
-  const clicked$ = selectAsMain(sources, "button").events("click").mapTo(true);
+  const buttonClicked$ = selectAsMain(sources, "button").events("click").mapTo(true);
+  const submitClicked$ = selectAsMain(sources, 'input[type="submit"]').events("click").mapTo(true);
 
   return {
     props$: sources.props,
-    clicked$,
+    clicked$: xs.merge(buttonClicked$, submitClicked$),
   };
 };
 
 const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$.map((props) => {
-    return { label: props.label, schema: props.schema };
+    return {
+      label: props.label,
+      schema: props.schema,
+      type: props.type ?? "normal",
+      disabled: props.disabled ?? false,
+    };
   });
 };
 
@@ -72,17 +80,25 @@ const Styles = {
 };
 
 const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ label, schema }) => {
+  return state$.map(({ label, schema, type, disabled }) => {
     const style = {
       ...Styles.button,
       ...Styles.color(schema),
     };
 
-    return (
-      <button class={style} dataset={{ testid: gen("button") }}>
-        {label}
-      </button>
-    );
+    if (type === "normal") {
+      return (
+        <button class={style} attrs={{ disabled }} dataset={{ testid: gen("button") }}>
+          {label}
+        </button>
+      );
+    } else {
+      return (
+        <input class={style} attrs={{ type: "submit", disabled }} dataset={{ testid: gen("button") }}>
+          {label}
+        </input>
+      );
+    }
   });
 };
 

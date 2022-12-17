@@ -39,6 +39,9 @@ module.exports = {
       '2': '4px',
       '3': '8px',
       '4': '16px'
+      '5': '24px'
+      '6': '32px'
+      '7': '40px'
     },
     transitionProperty: {
       'outline': 'outline'

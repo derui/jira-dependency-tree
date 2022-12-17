@@ -15,7 +15,7 @@ test("small icon", async (t) => {
       DOM: dom as any,
       props: Time.diagram("x", {
         x: {
-          type: "test",
+          type: "search",
         },
       }),
     });
@@ -24,9 +24,9 @@ test("small icon", async (t) => {
     const actual$ = sinks.DOM.map((vtree) => {
       const classes = Object.keys(select("[data-testid=icon]", vtree)[0].data?.class ?? {});
       return {
-        widthIsSmall: classes.includes("w-4"),
-        heightIsSmall: classes.includes("h-4"),
-        typeIsTest: classes.some((v) => v.match(/mask:url.+test.svg/)),
+        widthIsSmall: classes.includes("w-5"),
+        heightIsSmall: classes.includes("h-5"),
+        typeIsTest: classes.some((v) => v.match(/mask:url.+search.svg/)),
       };
     });
 
@@ -57,11 +57,11 @@ test("change icon type", async (t) => {
       DOM: dom as any,
       props: Time.diagram("xs", {
         x: {
-          type: "test",
+          type: "search",
         },
 
         s: {
-          type: "foobar",
+          type: "square",
           size: "m",
         },
       }),
@@ -72,9 +72,9 @@ test("change icon type", async (t) => {
       const classes = Object.keys(select("[data-testid=icon]", vtree)[0].data?.class ?? {});
 
       return {
-        widthIsMedium: classes.includes("w-5"),
-        heightIsMedium: classes.includes("h-5"),
-        typeChanged: classes.some((v) => v.match(/mask:url.+foobar.svg/)),
+        widthIsMedium: classes.includes("w-6"),
+        heightIsMedium: classes.includes("h-6"),
+        typeChanged: classes.some((v) => v.match(/mask:url.+square.svg/)),
       };
     });
 

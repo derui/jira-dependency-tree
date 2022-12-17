@@ -99,7 +99,7 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
       ...style,
     };
 
-    return <span class={iconClass} dataset={{ testid: gen("icon") }}></span>;
+    return <span class={iconClass} dataset={{ testid: gen("icon"), type, color: color ?? "", size }}></span>;
   });
 };
 

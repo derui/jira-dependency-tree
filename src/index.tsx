@@ -139,7 +139,7 @@ const main = (sources: MainSources): MainSinks => {
     testid: "user-configuration",
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
-    DOM: sources.DOM,
+    ...sources,
     props: sources.state
       .select<MainState["data"]>("data")
       .select<MainState["data"]["project"]>("project")
@@ -148,7 +148,7 @@ const main = (sources: MainSources): MainSinks => {
     testid: "project-information",
   });
   const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
-    DOM: sources.DOM,
+    ...sources,
     testid: "sync-jira",
     props: xs
       .combine(
@@ -164,7 +164,7 @@ const main = (sources: MainSources): MainSinks => {
 
   const jiraLoaderSink = jiraLoader(sources, syncJiraSink);
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
-    DOM: sources.DOM,
+    ...sources,
     props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
     testid: "zoom-slider",
   });
@@ -173,9 +173,8 @@ const main = (sources: MainSources): MainSinks => {
     SideToolbar,
     "sideToolbar"
   )({
-    DOM: sources.DOM,
+    ...sources,
     props: xs.of<GraphLayout>(GraphLayout.Horizontal).remember(),
-    state: sources.state,
     testid: "side-toolbar",
   });
 

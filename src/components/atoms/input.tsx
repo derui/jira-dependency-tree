@@ -6,7 +6,7 @@ import { ComponentSinkBase, ComponentSourceBase } from "../type";
 export interface InputProps {
   placeholder?: string;
   value: string;
-  label: string;
+  label?: string;
 }
 
 interface InputSources extends ComponentSourceBase {
@@ -56,6 +56,7 @@ const containerClass = classes(
 );
 const labelClass = classes("flex-auto", "text-primary-500", "whitespace-nowrap");
 const inputClass = classes(
+  "flex-auto",
   "ml-4",
   "px-4",
   "py-3",
@@ -75,18 +76,28 @@ const inputClass = classes(
 
 const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ value, placeholder, label }) => {
-    return (
-      <label class={containerClass}>
-        <span class={labelClass} dataset={{ testid: gen("label") }}>
-          {label}
-        </span>
+    if (label) {
+      return (
+        <label class={containerClass}>
+          <span class={labelClass} dataset={{ testid: gen("label") }}>
+            {label}
+          </span>
+          <input
+            class={inputClass}
+            attrs={{ type: "text", placeholder: placeholder ?? "", value: value }}
+            dataset={{ testid: gen("input") }}
+          />
+        </label>
+      );
+    } else {
+      return (
         <input
           class={inputClass}
           attrs={{ type: "text", placeholder: placeholder ?? "", value: value }}
           dataset={{ testid: gen("input") }}
         />
-      </label>
-    );
+      );
+    }
   });
 };
 

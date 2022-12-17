@@ -2,7 +2,7 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
-import { generateTestId, selectAsMain } from "@/components/helper";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
 
 export interface ProjectInformationProps {
@@ -53,6 +53,53 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return xs
     .combine(actions.props$, opened$, name$, key$)
     .map(([{ project }, opened, name, key]) => ({ projectGiven: project !== undefined, opened, name, key }));
+};
+
+const Styles = {
+  root: classes(
+    "relative",
+    "bg-white",
+    "grid",
+    "grid-cols-1",
+    "grid-rows-2",
+    "h-8",
+    "rounded",
+    "items-center",
+    "shadow-md"
+  ),
+  marker: (show: boolean) => {
+    return {
+      ...classes(
+        "absolute",
+        "top-3",
+        "left-3",
+        "inline-block",
+        "invisibile",
+        "w-3",
+        "h-3",
+        "rounded",
+        "bg-primary-400"
+      ),
+      ...(show ? classes("visible") : {}),
+    };
+  },
+  name: classes(
+    "ml-4",
+    "overflow-hidden",
+    "text-ellipsis",
+    "w-60",
+    "flex-none",
+    "font-bold",
+    "cursor-pointer",
+    "color-secondary2-400",
+    "border-b-1",
+    "border-b-transparent",
+    "transition-colors",
+    "transition-border",
+    "leading-6",
+    "p-2",
+    "pr-0"
+  ),
 };
 
 const view = function view(state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) {

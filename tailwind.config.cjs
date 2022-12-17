@@ -34,18 +34,6 @@ module.exports = {
       lightgray: "rgb(0 0 0 / 10)",
       white: '#FFF'
     },
-    spacing: {
-      '1': '2px',
-      '2': '4px',
-      '3': '8px',
-      '4': '16px',
-      '5': '24px',
-      '6': '32px',
-      '7': '40px',
-    },
-    width: {
-      '192': '192px'
-    },
     transitionProperty: {
       'outline': 'outline',
       'width': 'width'

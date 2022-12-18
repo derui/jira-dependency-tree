@@ -24,8 +24,8 @@ interface ButtonSinks extends ComponentSinkBase {
 }
 
 const intent = (sources: ButtonSources) => {
-  const buttonClicked$ = selectAsMain(sources, "button").events("click").mapTo(true);
-  const submitClicked$ = selectAsMain(sources, 'input[type="submit"]').events("click").mapTo(true);
+  const buttonClicked$ = selectAsMain(sources, "button").events("click", { bubbles: false }).mapTo(true);
+  const submitClicked$ = selectAsMain(sources, 'input[type="submit"]').events("click", { bubbles: false }).mapTo(true);
 
   return {
     props$: sources.props,
@@ -53,7 +53,7 @@ const Styles = {
     "transition-colors",
     "border",
     "disabled:color-gray",
-    "disabled:bg-white",
+    "disabled:bg-lightgray",
     "disabled:border-gray"
   ),
 

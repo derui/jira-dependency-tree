@@ -144,9 +144,9 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
 const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
     ...sources,
-    props: sources.state.stream.map<UserConfigurationProps>(({ setting: environment }) => ({
-      setting: environment,
-      setupFinished: environment.isSetupFinished(),
+    props: sources.state.select<MainState["setting"]>("setting").stream.map<UserConfigurationProps>((settings) => ({
+      setting: settings,
+      setupFinished: settings.isSetupFinished(),
     })),
     testid: "user-configuration",
   });
@@ -195,6 +195,7 @@ const main = (sources: MainSources): MainSinks => {
     "projectSyncOptionEditor"
   )({
     ...sources,
+    testid: "sync-option-editor",
     props: sources.state
       .select<MainState["data"]>("data")
       .stream.map((v) => v.suggestion)

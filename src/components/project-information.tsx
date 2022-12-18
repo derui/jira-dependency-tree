@@ -119,7 +119,7 @@ const view = function view(
         <span class={Styles.name(opened, !projectGiven)} dataset={{ id: "name" }}>
           {name}
         </span>
-        <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor") }}>
+        <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor"), opened: `${opened}` }}>
           {nodes.nameInput}
           <span class={Styles.keyEditorButtonGroup}>
             <span class={Styles.keyEditorButton} dataset={{ id: "cancel" }}>

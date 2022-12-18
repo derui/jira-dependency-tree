@@ -272,6 +272,7 @@ const view = function view<T>(
 
 export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): SuggestorSinks<T> => {
   const icon = Icon({
+    ...sources,
     props: xs.of<IconProps>({
       type: "chevron-down",
       color: "gray",

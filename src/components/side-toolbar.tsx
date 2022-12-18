@@ -95,14 +95,18 @@ const view = (
             dataset={{ testid: gen("layouter"), opened: `${layouterOpened}` }}
           >
             <span
-              class={{ ...Styles.iconButton, "--selected": layout === GraphLayout.Horizontal }}
-              dataset={{ testid: gen("horizontal"), id: "horizontal" }}
+              class={{ ...Styles.iconButton }}
+              dataset={{
+                testid: gen("horizontal"),
+                id: "horizontal",
+                selected: `${layout === GraphLayout.Horizontal}`,
+              }}
             >
               {nodes.horizontalIcon}
             </span>
             <span
-              class={{ ...Styles.iconButton, "--selected": layout === GraphLayout.Vertical }}
-              dataset={{ testid: gen("vertical"), id: "vertical" }}
+              class={{ ...Styles.iconButton }}
+              dataset={{ testid: gen("vertical"), id: "vertical", selected: `${layout === GraphLayout.Vertical}` }}
             >
               {nodes.verticalIcon}
             </span>

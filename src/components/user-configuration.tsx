@@ -28,22 +28,21 @@ type UserConfigurationSinks = ComponentSinks<{
   state: Stream<Reducer<State>>;
 }>;
 
-const intent = function intent(sources: UserConfigurationSources, dialogValue: Stream<any>) {
-  const clickOpener$ = selectAsMain(sources, ".--opener").events("click", { bubbles: false }).mapTo(true);
-  const dialogApplied$ = dialogValue.mapTo(false);
+const intent = (sources: UserConfigurationSources, dialogValue: Stream<boolean>) => {
+  const clickOpener$ = selectAsMain(sources, "[data-id=opener]").events("click", { bubbles: false }).mapTo(true);
 
   return {
     clickOpener$,
-    dialogApplied$,
+    dialogApplied$: dialogValue,
     props$: sources.props,
   };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
+  const opened$ = xs.merge(actions.clickOpener$, actions.dialogApplied$).startWith(false);
+
   return actions.props$
     .map((props) => {
-      const opened$ = xs.merge(actions.clickOpener$, actions.dialogApplied$).fold((_accum, toggle) => toggle, false);
-
       return opened$.map((opened) => {
         return { opened, setupFinished: props.setupFinished };
       });
@@ -105,8 +104,11 @@ const view = function view(
   return xs.combine(state$, nodes).map(([{ opened, setupFinished }, { dialog, openerIcon }]) => (
     <div class={Styles.root}>
       <div class={Styles.toolbar}>
-        <button class={{ ...Styles.opener(), "--opener": true }} dataset={{ testid: gen("opener") }}>
-          <span class={Styles.marker(!setupFinished)} dataset={{ testid: gen("marker") }}></span>
+        <button class={{ ...Styles.opener() }} dataset={{ testid: gen("opener"), id: "opener" }}>
+          <span
+            class={Styles.marker(!setupFinished)}
+            dataset={{ testid: gen("marker"), show: `${!setupFinished}` }}
+          ></span>
           {openerIcon}
         </button>
       </div>
@@ -140,20 +142,21 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
       size: "l",
     }),
   });
+  const dialogApplied$ = dialog.value
+    .map((v) => {
+      if (v.kind === "submit") {
+        return v.state;
+      }
+      return;
+    })
+    .filter(filterUndefined);
 
-  const actions = intent(sources, dialog.value);
+  const actions = intent(sources, dialogApplied$.mapTo(false));
   const state$ = model(actions);
 
   return {
     DOM: view(state$, mergeNodes({ dialog: dialog.DOM, openerIcon: openerIcon.DOM }), gen),
-    value: dialog.value
-      .map((v) => {
-        if (v.kind === "submit") {
-          return v.state;
-        }
-        return;
-      })
-      .filter(filterUndefined),
+    value: dialogApplied$,
     state: xs.merge(dialog.state as Stream<Reducer<State>>),
   };
 };

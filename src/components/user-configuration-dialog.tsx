@@ -23,7 +23,7 @@ type UserConfigurationState = UserConfigurationValue & {
 type ConfigurationCancelEvent = { kind: "cancel" };
 type ConfigurationSubmitEvent = { kind: "submit"; state: UserConfigurationValue };
 
-type Event = ConfigurationSubmitEvent | ConfigurationCancelEvent;
+type ConfigurationDialogEvent = ConfigurationSubmitEvent | ConfigurationCancelEvent;
 
 interface UserConfigurationDialogSources extends ComponentSourceBase {
   props: Stream<Partial<UserConfigurationValue>>;
@@ -31,7 +31,7 @@ interface UserConfigurationDialogSources extends ComponentSourceBase {
 }
 
 interface UserConfigurationDialogSinks extends ComponentSinkBase {
-  value: Stream<Event>;
+  value: Stream<ConfigurationDialogEvent>;
   state: Stream<Reducer<UserConfigurationState>>;
 }
 
@@ -99,11 +99,13 @@ const view = function view(
 export const UserConfigurationDialog = function UserConfigurationDialog(
   sources: UserConfigurationDialogSources
 ): UserConfigurationDialogSinks {
+  const gen = generateTestId(sources.testid);
   const userDomain = isolate(
     Input,
     "userDomain"
   )({
     ...sources,
+    testid: gen("user-domain"),
     props: sources.props.map<InputProps>(({ userDomain }) => {
       return {
         placeholder: "e.g. your-domain",
@@ -118,6 +120,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "email"
   )({
     ...sources,
+    testid: gen("email"),
     props: sources.props.map<InputProps>(({ email }) => {
       return {
         placeholder: "e.g. your@example.com",
@@ -132,6 +135,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "jiraToken"
   )({
     ...sources,
+    testid: gen("jira-token"),
     props: sources.props.map<InputProps>(({ jiraToken }) => {
       return {
         placeholder: "required",
@@ -146,6 +150,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "cancel"
   )({
     ...sources,
+    testid: gen("cancel"),
     props: xs.of<ButtonProps>({ content: <span>Cancel</span>, schema: "gray" }),
   });
 
@@ -154,6 +159,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "submit"
   )({
     ...sources,
+    testid: gen("submit"),
     props: sources.state
       .select<UserConfigurationState["allowSubmit"]>("allowSubmit")
       .stream.map<ButtonProps>((allowSubmit) => ({
@@ -167,14 +173,19 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const submit$ = state$
-    .filter(({ allowSubmit }) => allowSubmit)
-    .map(({ jiraToken, email, userDomain }) =>
-      submit.click.take(1).map<Event>(() => ({ kind: "submit", state: { jiraToken, email, userDomain } }))
-    )
+  const submit$ = submit.click
+    .map(() => {
+      return state$
+        .filter(({ allowSubmit }) => allowSubmit)
+        .map<ConfigurationDialogEvent>(({ jiraToken, email, userDomain }) => ({
+          kind: "submit",
+          state: { jiraToken, email, userDomain },
+        }))
+        .take(1);
+    })
     .flatten();
 
-  const cancel$ = cancel.click.mapTo<Event>({ kind: "cancel" });
+  const cancel$ = cancel.click.mapTo<ConfigurationDialogEvent>({ kind: "cancel" });
 
   const initialReducer$ = xs.of<Reducer<UserConfigurationState>>(() => {
     return {
@@ -182,20 +193,6 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
       userDomain: "",
       email: "",
       allowSubmit: false,
-    };
-  });
-
-  const propsReducer$ = sources.props.map<Reducer<UserConfigurationState>>((props) => {
-    return (prevState) => {
-      if (!prevState) return;
-
-      return produce(prevState, (draft) => {
-        draft.jiraToken = props.jiraToken ?? "";
-        draft.userDomain = props.userDomain ?? "";
-        draft.email = props.email ?? "";
-        draft.allowSubmit =
-          filterEmptyString(props.jiraToken) && filterEmptyString(props.email) && filterEmptyString(props.jiraToken);
-      });
     };
   });
 
@@ -224,9 +221,9 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
         submit: submit.DOM,
         cancel: cancel.DOM,
       }),
-      generateTestId(sources.testid)
+      gen
     ),
     value: xs.merge(submit$, cancel$),
-    state: xs.merge(initialReducer$, propsReducer$, stateReducer$),
+    state: xs.merge(initialReducer$, stateReducer$),
   };
 };

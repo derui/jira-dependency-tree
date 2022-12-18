@@ -64,6 +64,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
   return actions.props$
     .map(() => {
       const currentConditionType$ = actions.state$.map((v) => v.conditionType);
+      const currentCondition$ = actions.state$.map((v) => v.currentSearchCondition);
+
       const selectorOpened$ = xs
         .merge(actions.openerClicked$.mapTo(true), actions.cancel$, actions.submit$)
         .fold((_, v) => v, false);
@@ -75,22 +77,21 @@ const model = function model(actions: ReturnType<typeof intent>) {
         return { sprint: v };
       });
       const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo<SearchCondition>({});
-
-      const currentCondition$ = xs.merge(conditionForEpic$, conditionForSprint$, conditionForDefault$).startWith({});
+      const nextCondition$ = xs.merge(conditionForEpic$, conditionForDefault$, conditionForSprint$).startWith({});
 
       return xs
-        .combine(currentConditionType$, selectorOpened$, currentCondition$)
-        .map(([currentConditionType, selectorOpened, currentCondition]) => {
-          return { currentConditionType, selectorOpened, currentCondition };
+        .combine(currentConditionType$, selectorOpened$, currentCondition$, nextCondition$)
+        .map(([currentConditionType, selectorOpened, currentCondition, nextCondition]) => {
+          return { currentConditionType, selectorOpened, currentCondition, nextCondition };
         });
     })
     .flatten();
 };
 
-const currentConditionName = (condition: SearchCondition) => {
-  if (condition.epic) {
+const currentConditionName = (condition: SearchCondition | undefined) => {
+  if (condition?.epic) {
     return condition.epic;
-  } else if (condition.sprint) {
+  } else if (condition?.sprint) {
     return condition.sprint.displayName;
   }
 
@@ -272,22 +273,20 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
     };
   });
 
-  // const valueChangeReducer$ = state$
-  //   .map((v) => v.currentCondition)
-  //   .filter(filterUndefined)
-  //   .map((v) => {
-  //     return actions.submitClicked$.mapTo(v);
-  //   })
-  //   .flatten()
-  //   .map<Reducer<ProjectSyncOptionEditorState>>((condition) => {
-  //     return (prevState?: ProjectSyncOptionEditorState) => {
-  //       if (!prevState) return undefined;
+  const valueChangeReducer$ = actions.submit$
+    .map(() => {
+      return state$.map((v) => v.nextCondition).take(1);
+    })
+    .flatten()
+    .map<Reducer<ProjectSyncOptionEditorState>>((condition) => {
+      return (prevState?: ProjectSyncOptionEditorState) => {
+        if (!prevState) return undefined;
 
-  //       return produce(prevState, (draft) => {
-  //         draft.currentSearchCondition = condition;
-  //       });
-  //     };
-  //   });
+        return produce(prevState, (draft) => {
+          draft.currentSearchCondition = condition;
+        });
+      };
+    });
 
   const termReducer$ = suggestor.term.map<Reducer<ProjectSyncOptionEditorState>>((lastTerm) => {
     return (prevState?: ProjectSyncOptionEditorState) => {
@@ -320,6 +319,6 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
       }),
       generateTestId(sources.testid)
     ),
-    state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$),
+    state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$, valueChangeReducer$),
   };
 };

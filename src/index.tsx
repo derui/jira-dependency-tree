@@ -109,7 +109,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
     .flatten();
 
   const lastTerm$ = sources.state
-    .select<MainState["projectSyncOptionEditor"]>("projectToolbar")
+    .select<MainState["projectSyncOptionEditor"]>("projectSyncOptionEditor")
     .stream.map((v) => v?.lastTerm)
     .filter(filterUndefined)
     .filter((v) => v.length > 0);

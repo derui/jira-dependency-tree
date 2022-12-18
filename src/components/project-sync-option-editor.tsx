@@ -7,32 +7,29 @@ import produce from "immer";
 import { SearchCondition } from "@/model/event";
 import { Suggestor, SuggestorProps } from "./suggestor";
 import { SuggestedItem, Suggestion } from "@/model/suggestion";
-import { filterUndefined } from "@/util/basic";
 
 type ConditionType = "default" | "sprint" | "epic";
 
-export interface ProjectToolbarState {
+export interface ProjectSyncOptionEditorState {
   conditionType: ConditionType;
   currentSearchCondition: SearchCondition | undefined;
   lastTerm: string | undefined;
 }
 
-interface ProjectToolbarSources extends ComponentSourceBase {
+interface ProjectSyncOptionEditorSources extends ComponentSourceBase {
   props: MemoryStream<Suggestion>;
-  state: StateSource<ProjectToolbarState>;
+  state: StateSource<ProjectSyncOptionEditorState>;
 }
 
-interface ProjectToolbarSinks extends ComponentSinkBase {
-  state: Stream<Reducer<ProjectToolbarState>>;
+interface ProjectSyncOptionEditorSinks extends ComponentSinkBase {
+  state: Stream<Reducer<ProjectSyncOptionEditorState>>;
 }
 
 const intent = function intent(
-  sources: ProjectToolbarSources,
+  sources: ProjectSyncOptionEditorSources,
   suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>
 ) {
-  const selectorOpenerClicked = selectAsMain(sources, ".project-toolbar__search-condition-editor").events("click");
-  const cancelClicked$ = selectAsMain(sources, ".search-condition-editor__cancel").events("click");
-  const submitClicked$ = selectAsMain(sources, ".search-condition-editor__submit").events("click");
+  const selectorOpenerClicked = selectAsMain(sources, "[data-id=opener]").events("click");
   const typeChanged$ = selectAsMain(sources, ".search-condition-editor__radio")
     .events("change")
     .map((event) => {
@@ -47,9 +44,7 @@ const intent = function intent(
     state$: sources.state.stream,
     openerClicked$: selectorOpenerClicked,
     typeChanged$,
-    cancelClicked$,
     epicChanged$,
-    submitClicked$,
     suggestedValue$: suggestorSink.value,
   };
 };
@@ -59,18 +54,11 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .map(() => {
       const currentConditionType$ = actions.state$.map((v) => v.conditionType);
       const selectorOpened$ = xs
-        .merge(
-          actions.openerClicked$.mapTo("search-condition-editor" as const),
-          actions.cancelClicked$.mapTo("cancel" as const),
-          actions.submitClicked$.mapTo("submit" as const)
-        )
+        .merge(actions.openerClicked$.mapTo("search-condition-editor" as const))
         .fold((accum, v) => {
           switch (v) {
             case "search-condition-editor":
               return !accum;
-            case "cancel":
-            case "submit":
-              return false;
           }
         }, false);
 
@@ -104,24 +92,44 @@ const currentConditionName = (condition: SearchCondition) => {
 };
 
 const Styles = {
-  root: classes("relative"),
-  toolbar: classes("inline-flex", "p-3", "bg-white", "list-none", "h-12"),
-  searchConditionEditorOpener: classes(
-    "flex",
-    "flex-auto",
-    "items-center",
-    "h-7",
-    "transition-colors",
-    "cursor-pointer",
-    "text-black",
-    "px-2",
-    "whitespace-nowrap",
-    "hover:text-secondary2-500",
-    "hover:bg-secondary2-200"
-  ),
+  root: classes("relative", "w-full", "flex", "items-center", "justify-center"),
+  opener: (opened: boolean) => {
+    return {
+      ...classes(
+        "inline-flex",
+        "px-3",
+        "py-2",
+        "border",
+        "border-gray",
+        "bg-white",
+        "rounded",
+        "transition-colors",
+        "hover:text-white",
+        "hover:bg-secondary1-200",
+        "hover:border-secondary1-500",
+        "cursor-pointer",
+        "items-center",
+        "whitespace-nowrap"
+      ),
+
+      ...(!opened ? classes("border-gray", "bg-white") : {}),
+      ...(opened ? classes("text-white", "bg-secondary1-200", "border-secondary1-500") : {}),
+    };
+  },
   searchConditionEditorContainer: (opened: boolean) => {
     return {
-      ...classes("absolute", "flex", "flex-col", "left-0", "bg-white", "rounded", "shadow-lg", "transition-width"),
+      ...classes(
+        "absolute",
+        "flex",
+        "flex-col",
+        "left-0",
+        "top-full",
+        "mt-6",
+        "bg-white",
+        "rounded",
+        "shadow-lg",
+        "transition-width"
+      ),
       ...(opened ? classes("w-96", "visible") : {}),
       ...(!opened ? classes("w-0", "invisible") : {}),
     };
@@ -131,15 +139,13 @@ const Styles = {
 const view = function view(state$: ReturnType<typeof model>, suggestor: Stream<VNode>, gen: TestIdGenerator) {
   return xs
     .combine(state$, suggestor)
-    .map(([{ currentConditionType, selectorOpened, currentCondition }, suggestor]) => {
+    .map(([{ currentConditionType, selectorOpened: editorOpened, currentCondition }, suggestor]) => {
       return (
         <div class={Styles.root}>
-          <ul class={Styles.toolbar} dataset={{ testid: gen("root") }}>
-            <li class={Styles.searchConditionEditorOpener} dataset={{ testid: gen("condition-editor") }}>
-              {currentConditionName(currentCondition)}
-            </li>
-          </ul>
-          <ul class={Styles.searchConditionEditorContainer(selectorOpened)} dataset={{ testid: gen("selector") }}>
+          <button class={Styles.opener(editorOpened)} dataset={{ testid: gen("opener"), id: "opener" }}>
+            {currentConditionName(currentCondition)}
+          </button>
+          <ul class={Styles.searchConditionEditorContainer(editorOpened)} dataset={{ testid: gen("selector") }}>
             <li class={{ "search-condition-editor__cell": true }}>
               <label
                 class={{ "search-condition-editor__label": true }}
@@ -214,7 +220,7 @@ const view = function view(state$: ReturnType<typeof model>, suggestor: Stream<V
     });
 };
 
-export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSources): ProjectToolbarSinks {
+export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources): ProjectSyncOptionEditorSinks => {
   const suggestor = Suggestor({
     ...sources,
     props: sources.props
@@ -233,7 +239,7 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
   const actions = intent(sources, suggestor);
   const state$ = model(actions);
 
-  const initialReducer$ = xs.of<Reducer<ProjectToolbarState>>(() => {
+  const initialReducer$ = xs.of<Reducer<ProjectSyncOptionEditorState>>(() => {
     return {
       conditionType: "default",
       currentSearchCondition: {},
@@ -241,8 +247,8 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
-  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectToolbarState>>((conditionType) => {
-    return (prevState?: ProjectToolbarState) => {
+  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectSyncOptionEditorState>>((conditionType) => {
+    return (prevState?: ProjectSyncOptionEditorState) => {
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
@@ -251,25 +257,25 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
-  const valueChangeReducer$ = state$
-    .map((v) => v.currentCondition)
-    .filter(filterUndefined)
-    .map((v) => {
-      return actions.submitClicked$.mapTo(v);
-    })
-    .flatten()
-    .map<Reducer<ProjectToolbarState>>((condition) => {
-      return (prevState?: ProjectToolbarState) => {
-        if (!prevState) return undefined;
+  // const valueChangeReducer$ = state$
+  //   .map((v) => v.currentCondition)
+  //   .filter(filterUndefined)
+  //   .map((v) => {
+  //     return actions.submitClicked$.mapTo(v);
+  //   })
+  //   .flatten()
+  //   .map<Reducer<ProjectSyncOptionEditorState>>((condition) => {
+  //     return (prevState?: ProjectSyncOptionEditorState) => {
+  //       if (!prevState) return undefined;
 
-        return produce(prevState, (draft) => {
-          draft.currentSearchCondition = condition;
-        });
-      };
-    });
+  //       return produce(prevState, (draft) => {
+  //         draft.currentSearchCondition = condition;
+  //       });
+  //     };
+  //   });
 
-  const termReducer$ = suggestor.term.map<Reducer<ProjectToolbarState>>((lastTerm) => {
-    return (prevState?: ProjectToolbarState) => {
+  const termReducer$ = suggestor.term.map<Reducer<ProjectSyncOptionEditorState>>((lastTerm) => {
+    return (prevState?: ProjectSyncOptionEditorState) => {
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
@@ -278,8 +284,8 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
     };
   });
 
-  const termResetReducer$ = suggestor.value.map<Reducer<ProjectToolbarState>>(() => {
-    return (prevState?: ProjectToolbarState) => {
+  const termResetReducer$ = suggestor.value.map<Reducer<ProjectSyncOptionEditorState>>(() => {
+    return (prevState?: ProjectSyncOptionEditorState) => {
       if (!prevState) return undefined;
 
       return produce(prevState, (draft) => {
@@ -290,6 +296,6 @@ export const ProjectToolbar = function ProjectToolbar(sources: ProjectToolbarSou
 
   return {
     DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
-    state: xs.merge(initialReducer$, changeReducer$, valueChangeReducer$, termReducer$, termResetReducer$),
+    state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$),
   };
 };

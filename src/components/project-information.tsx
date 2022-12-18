@@ -53,22 +53,22 @@ const Styles = {
     return {
       ...classes(
         "relative",
-        "bg-white",
         "flex",
+        "flex-auto",
         "h-12",
-        "rounded",
         "items-center",
-        "shadow-md",
-        "transition-height",
-        "pl-3",
-        "overflow-hidden"
+        "transition-all",
+        "overflow-hidden",
+        "border-b",
+        "border-b-transparent"
       ),
+      ...(!editing ? classes("hover:border-secondary1-400") : {}),
       ...(editing ? classes("h-24") : {}),
     };
   },
   marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-2", "left-2", "inline-block", "w-2", "h-2", "rounded", "bg-primary-400"),
+      ...classes("absolute", "top-0", "left-0", "inline-block", "w-2", "h-2", "rounded-full", "bg-primary-400"),
       ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };
@@ -86,7 +86,8 @@ const Styles = {
         "border-b-transparent",
         "transition-colors",
         "transition-border",
-        "leading-6"
+        "leading-6",
+        "pl-2"
       ),
       ...(!needEditing ? classes("text-secondary2-400", "hover:text-secondary2-400") : {}),
       ...(needEditing ? classes("text-gray", "hover:text-darkgray") : {}),
@@ -95,7 +96,7 @@ const Styles = {
   },
   keyEditor: (editing: boolean) => {
     return {
-      ...classes("bg-white", "flex", "flex-col", "mr-3", "my-2"),
+      ...classes("bg-white", "flex", "flex-col", "mx-3"),
       ...(!editing ? classes("hidden") : {}),
     };
   },

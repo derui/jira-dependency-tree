@@ -38,8 +38,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("flex", "justify-center", "relative", "w-12", "h-12", "rounded", "shadow-md"),
-  main: classes("p-2", "outline-none", "bg-white", "inline-block", "rounded"),
+  root: classes("flex", "justify-center", "relative", "w-12"),
+  main: classes("outline-none", "bg-white", "inline-block", "rounded", "cursor-pointer"),
   icon: (syncing: boolean) => {
     return syncing ? classes("animate-spin") : {};
   },

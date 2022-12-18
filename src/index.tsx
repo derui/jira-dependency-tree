@@ -25,9 +25,9 @@ import { LoaderState, LoaderStatus } from "./type";
 import { Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
-import { ProjectToolbar, ProjectToolbarState } from "./components/project-toolbar";
 import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
+import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
 
 type MainSources = {
   DOM: DOMSource;
@@ -54,13 +54,24 @@ type MainState = {
   projectKey: string | undefined;
   setting: Setting;
   loading: LoaderState;
-} & { sideToolbar?: SideToolbarState } & { projectToolbar?: ProjectToolbarState };
+} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: ProjectSyncOptionEditorState };
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
 const Styles = {
   root: classes("w-full", "h-full", "relative"),
-  topToolbar: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "gap-3", "top-3", "px-3", "w-full"),
+  topToolbars: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "top-3", "px-3", "w-full"),
+  projectToolbar: classes(
+    "relative",
+    "bg-white",
+    "p-3",
+    "shadow-md",
+    "gap-2",
+    "grid",
+    "grid-cols-project-toolbar",
+    "transition-height"
+  ),
+  divider: classes("w-0", "border-l", "border-lightgray"),
 };
 
 const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
@@ -76,7 +87,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
     .remember();
 
   const condition$ = sources.state
-    .select<MainState["projectToolbar"]>("projectToolbar")
+    .select<MainState["projectSyncOptionEditor"]>("projectSyncOptionEditor")
     .stream.map((v) => v?.currentSearchCondition)
     .remember();
 
@@ -98,7 +109,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
     .flatten();
 
   const lastTerm$ = sources.state
-    .select<MainState["projectToolbar"]>("projectToolbar")
+    .select<MainState["projectSyncOptionEditor"]>("projectToolbar")
     .stream.map((v) => v?.lastTerm)
     .filter(filterUndefined)
     .filter((v) => v.length > 0);
@@ -179,9 +190,9 @@ const main = (sources: MainSources): MainSinks => {
     testid: "side-toolbar",
   });
 
-  const projectToolbarSink = isolate(
-    ProjectToolbar,
-    "projectToolbar"
+  const projectSyncOpitonEditorSink = isolate(
+    ProjectSyncOptionEditor,
+    "projectSyncOptionEditor"
   )({
     ...sources,
     props: sources.state
@@ -196,16 +207,19 @@ const main = (sources: MainSources): MainSinks => {
   const zoomSlider$ = zoomSliderSink.DOM;
   const syncJira$ = syncJiraSink.DOM;
   const sideToolbar$ = sideToolbarSink.DOM;
-  const projectToolbar$ = projectToolbarSink.DOM;
+  const projectSyncOptionEditor$ = projectSyncOpitonEditorSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectToolbar$)
-    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectToolbar]) => (
+    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectSyncOptionEditor$)
+    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectSyncOptionEditor]) => (
       <div class={Styles.root}>
-        <div class={Styles.topToolbar}>
-          {projectInformation}
-          {syncJira}
-          {projectToolbar}
+        <div class={Styles.topToolbars}>
+          <div class={Styles.projectToolbar}>
+            {projectInformation}
+            <span class={Styles.divider}></span>
+            {projectSyncOptionEditor}
+            {syncJira}
+          </div>
           <div></div>
           {userConfiguration}
         </div>
@@ -337,7 +351,7 @@ const main = (sources: MainSources): MainSinks => {
       jiraLoaderReducer$,
       projectReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
-      projectToolbarSink.state as Stream<Reducer<MainState>>,
+      projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
       userConfigurationSink.state as Stream<Reducer<MainState>>,
       loadingReducer$
     ),

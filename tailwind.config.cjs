@@ -3,6 +3,7 @@ module.exports = {
   content: ['./src/**/*.tsx', './src/*.tsx'],
   theme: {
     colors: {
+      transparent: 'transparent',
       primary: {
         100:"#A4393C",
         200:"#FDACAE",
@@ -33,7 +34,7 @@ module.exports = {
       },
       darkgray: "#404040",
       gray: "#808080",
-      lightgray: "#C0C0C0",
+      lightgray: "#D0D0D0",
       'darkgray-alpha': "rgb(0 0 0 / 60%)",
       'gray-alpha': "rgb(0 0 0 / 40%)",
       'lightgray-alpha': "rgb(0 0 0 / 10%)",
@@ -46,7 +47,8 @@ module.exports = {
         'height': 'height',
       },
       gridTemplateColumns: {
-        'top-toolbar': '360px max-content min-content 1fr min-content'
+        'top-toolbar': 'min-content 1fr min-content',
+        'project-toolbar': '20rem 1px 10rem 3rem',
       },
     },
   },

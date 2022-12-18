@@ -34,10 +34,10 @@ const icons: Record<string, string> = {
 };
 
 const colors: Record<string, Record<string, boolean>> = {
-  primary: classes("before:bg-gray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
-  secondary1: classes("before:bg-gray", "before:hover:bg-secondary1-300", "before:active:bg-secondary1-500"),
-  secondary2: classes("before:bg-gray", "before:hover:bg-secondary2-300", "before:active:bg-secondary2-500"),
-  complement: classes("before:bg-gray", "before:hover:bg-complement-300", "before:active:bg-complement-500"),
+  primary: classes("before:bg-darkgray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
+  secondary1: classes("before:bg-darkgray", "before:hover:bg-secondary1-200", "before:active:bg-secondary1-500"),
+  secondary2: classes("before:bg-darkgray", "before:hover:bg-secondary2-200", "before:active:bg-secondary2-500"),
+  complement: classes("before:bg-darkgray", "before:hover:bg-complement-200", "before:active:bg-complement-500"),
   gray: classes("before:bg-gray", "before:hover:bg-darkgray", "before:active:bg-black"),
 };
 

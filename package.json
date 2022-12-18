@@ -19,7 +19,7 @@
     "copy-assets": "cp -r assets/svg/ dist/assets/",
     "test": "ava",
     "test:watch": "ava --watch",
-    "it:serve": "conc \"pnpm:ci\" \"pnpm:cypress:open\"",
+    "it:serve": "conc \"pnpm:start:css\" \"pnpm:ci\" \"pnpm:cypress:open\"",
     "it:run": "conc -k true \"pnpm:ci\" \"cypress run --browser chromium\"",
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",

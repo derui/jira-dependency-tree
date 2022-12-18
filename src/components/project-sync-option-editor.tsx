@@ -135,11 +135,10 @@ const Styles = {
         "bg-white",
         "rounded",
         "shadow-lg",
-        "transition-width",
-        "overflow-hidden"
+        "transition-width"
       ),
       ...(opened ? classes("w-96", "visible") : {}),
-      ...(!opened ? classes("w-0", "visible") : {}),
+      ...(!opened ? classes("w-0", "visible", "overflow-hidden") : {}),
     };
   },
   header: classes(

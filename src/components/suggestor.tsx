@@ -2,8 +2,9 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import xs, { Stream, MemoryStream } from "xstream";
 import debounce from "xstream/extra/debounce";
-import { classes, generateTestId, selectAsMain, TestIdGenerator } from "./helper";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
 import { filterUndefined } from "@/util/basic";
+import { Icon, IconProps } from "./atoms/icon";
 
 interface Suggestion<T> {
   id: string;
@@ -25,7 +26,7 @@ interface SuggestorSinks<T = unknown> extends ComponentSinkBase {
 }
 
 const intent = function intent<T>(sources: SuggestorSources<T>) {
-  const openerClicked$ = selectAsMain(sources, ".suggestor__opener").events("click", { bubbles: false }).mapTo(true);
+  const openerClicked$ = selectAsMain(sources, "[data-id=opener]").events("click", { bubbles: false }).mapTo(true);
   const termInput$ = selectAsMain(sources, ".suggestor-main__term-input");
   const termInputted$ = termInput$
     .events("input")
@@ -170,38 +171,9 @@ const Styles = {
     "text-base"
   ),
   term: classes("flex", "items-center", "border-b-1", "border-b-lightgray", "p-3"),
-  suggestorMain: classes(
-    "hidden",
-    "absolute",
-    "flex-col",
-    "top-full",
-    "left-0",
-    "bg-white",
-    "rounded",
-    "shadow-lg",
-    "whitespace-nowrap",
-    "text-base"
-  ),
-  suggestorMainOpened: classes("flex"),
-  suggestorOpenerIcon: classes("transition-colors", "transition-transform", "hover:bg-complement-400"),
-  suggestorOpenerIconOpened: classes("bg-complement-400", "origin-center", "rotate-180"),
-  suggestorOpener: classes(
-    "px-4",
-    "px-3",
-    "transition-colors",
-    "cursor-pointer",
-    "color-black",
-    "bg-white",
-    "overflow-hidden",
-    "text-ellipsis",
-    "text-left",
-    "border-none",
-    "rounded",
-    "hover:color-complement-400"
-  ),
   suggestorOpenerOpened: classes("color-complement-400"),
   suggestor: classes("inline-block", "relative"),
-  suggestorContainer: classes("flex", "flex-row", "content-space-between"),
+  suggestorContainer: classes("flex", "flex-row", "content-between", "items-center"),
 };
 
 const StyleMaker = {
@@ -213,26 +185,55 @@ const StyleMaker = {
   },
   suggestorMain: (opened: boolean) => {
     return {
-      ...Styles.suggestorMain,
-      ...(opened ? Styles.suggestorMainOpened : {}),
+      ...classes(
+        "absolute",
+        "flex-col",
+        "mt-1",
+        "top-full",
+        "left-0",
+        "bg-white",
+        "rounded",
+        "shadow-lg",
+        "whitespace-nowrap",
+        "text-base"
+      ),
+      ...(!opened ? classes("hidden") : {}),
+      ...(opened ? classes("flex") : {}),
     };
   },
   suggestorOpenerIcon: (opened: boolean) => {
     return {
-      ...Styles.suggestorOpenerIcon,
-      ...(opened ? Styles.suggestorOpenerIconOpened : {}),
+      ...classes("transition-colors", "transition-transform"),
+      ...(opened ? classes("origin-center", "rotate-180") : {}),
     };
   },
   suggestorOpener: (opened: boolean) => {
     return {
-      ...Styles.suggestorOpener,
+      ...classes(
+        "px-4",
+        "py-3",
+        "transition-colors",
+        "cursor-pointer",
+        "text-black",
+        "bg-white",
+        "overflow-hidden",
+        "text-ellipsis",
+        "text-left",
+        "border-none",
+        "rounded",
+        "hover:text-complement-400"
+      ),
       ...(opened ? Styles.suggestorOpenerOpened : {}),
     };
   },
 };
 
-const view = function view<T>(state$: ReturnType<typeof model<T>>, gen: TestIdGenerator) {
-  return state$.map(({ opened, suggestions, index, currentSuggestion }) => {
+const view = function view<T>(
+  state$: ReturnType<typeof model<T>>,
+  nodes$: AsNodeStream<["icon"]>,
+  gen: TestIdGenerator
+) {
+  return xs.combine(state$, nodes$).map(([{ opened, suggestions, index, currentSuggestion }, { icon }]) => {
     const suggestionNodes = suggestions.map((obj, cur) => {
       const style = StyleMaker.suggestionNode(cur === index);
 
@@ -245,16 +246,18 @@ const view = function view<T>(state$: ReturnType<typeof model<T>>, gen: TestIdGe
       );
     });
 
-    const openerStyle = StyleMaker.suggestorOpener(opened);
     const openerIconStyle = StyleMaker.suggestorOpenerIcon(opened);
 
     return (
       <div class={Styles.suggestor} dataset={{ testid: gen("suggestor-root") }}>
         <span class={Styles.suggestorContainer}>
-          <button class={openerStyle} dataset={{ testid: gen("suggestor-opener"), opened: `${opened}` }}>
+          <button
+            class={StyleMaker.suggestorOpener(opened)}
+            dataset={{ testid: gen("suggestor-opener"), id: "opener", opened: `${opened}` }}
+          >
             {currentSuggestion?.label ?? "Not selected"}
           </button>
-          <span class={openerIconStyle}></span>
+          <span class={openerIconStyle}>{icon}</span>
         </span>
         <div class={StyleMaker.suggestorMain(opened)} dataset={{ testid: gen("search-dialog"), opened: `${opened}` }}>
           <span class={Styles.term}>
@@ -268,6 +271,14 @@ const view = function view<T>(state$: ReturnType<typeof model<T>>, gen: TestIdGe
 };
 
 export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): SuggestorSinks<T> => {
+  const icon = Icon({
+    props: xs.of<IconProps>({
+      type: "chevron-down",
+      color: "gray",
+      size: "m",
+    }),
+  });
+
   const actions = intent(sources);
   const state$ = model(actions);
 
@@ -294,7 +305,7 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
     .compose(debounce(400));
 
   return {
-    DOM: view(state$, generateTestId(sources.testid)),
+    DOM: view(state$, mergeNodes({ icon: icon.DOM }), generateTestId(sources.testid)),
     value: submitEvent$,
     term: termEvent$,
   };

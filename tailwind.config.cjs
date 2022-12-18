@@ -31,13 +31,19 @@ module.exports = {
         400: "#186A14",
         500: "#054701",
       },
-      lightgray: "rgb(0 0 0 / 10)",
+      darkgray: "#404040",
+      gray: "#808080",
+      lightgray: "#C0C0C0",
+      'darkgray-alpha': "rgb(0 0 0 / 60%)",
+      'gray-alpha': "rgb(0 0 0 / 40%)",
+      'lightgray-alpha': "rgb(0 0 0 / 10%)",
       white: '#FFF'
     },
     extend: {
       transitionProperty: {
         'outline': 'outline',
-        'width': 'width'
+        'width': 'width',
+        'height': 'height',
       },
       gridTemplateColumns: {
         'top-toolbar': '280px calc(10em + var(--space-base) * 2) calc(32px + var(--space-base) * 2) 1fr 48px'

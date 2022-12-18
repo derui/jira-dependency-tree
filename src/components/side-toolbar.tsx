@@ -56,7 +56,7 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("absolute", "flex", "left-4", "top-half", "bg-white", "rounded", "list-none", "top-1/2"),
+  root: classes("absolute", "flex", "left-4", "top-half", "bg-white", "rounded", "list-none", "top-1/2", "shadow-md"),
   graphLayout: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-3", "rounded"),
   graphLayouter: (opened: boolean) => {
     return {

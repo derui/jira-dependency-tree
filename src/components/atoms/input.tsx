@@ -7,6 +7,7 @@ export interface InputProps {
   placeholder?: string;
   value: string;
   label?: string;
+  focus?: boolean;
 }
 
 interface InputSources extends ComponentSourceBase {
@@ -29,10 +30,13 @@ const intent = (sources: InputSources) => {
     .events("keypress")
     .map((v) => v.key);
 
+  const element$ = selectAsMain(sources, 'input[type="text"]').element();
+
   return {
     props$: sources.props,
     changed$,
     keypress$,
+    element$,
   };
 };
 
@@ -41,8 +45,16 @@ const model = (actions: ReturnType<typeof intent>) => {
     .map((props) => {
       const value$ = actions.changed$.startWith(props.value);
 
-      return value$.map((v) => {
-        return { value: v, placeholder: props.placeholder, label: props.label };
+      const effect$ = actions.element$
+        .map((e) => {
+          if (props.focus) {
+            (e as HTMLInputElement).focus();
+          }
+        })
+        .startWith(undefined);
+
+      return xs.combine(value$, effect$).map(([v, effect]) => {
+        return { value: v, placeholder: props.placeholder, label: props.label, effect };
       });
     })
     .flatten();
@@ -62,21 +74,20 @@ const containerClass = classes(
 );
 const labelClass = classes("flex-auto", "text-primary-500", "whitespace-nowrap");
 const inputClass = classes(
+  "w-full",
   "flex-auto",
-  "ml-4",
   "px-4",
   "py-3",
   "border",
   "border-lightgray",
   "outline-1",
-  "outline-transparent",
+  "outline-lightgray",
   "bg-lightgray",
   "rounded",
   "transition-outline",
   "transition-colors",
   "focus:bg-white",
-  "focus:outline-1",
-  "focus:outline-primray-400",
+  "focus:outline-primary-400",
   "focus:border-primary-400"
 );
 

@@ -47,7 +47,8 @@ const Styles = {
   button: classes(
     "flex-none",
     "self-end",
-    "p-3",
+    "px-3",
+    "py-2",
     "rounded",
     "transition-colors",
     "border",
@@ -87,15 +88,15 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
 
     if (type === "normal") {
       return (
-        <button class={style} attrs={{ disabled }} dataset={{ testid: gen("button") }}>
+        <button class={style} attrs={{ type: "button", disabled }} dataset={{ testid: gen("button") }}>
           {content}
         </button>
       );
     } else {
       return (
-        <input class={style} attrs={{ type: "submit", disabled }} dataset={{ testid: gen("button") }}>
+        <button class={style} attrs={{ type: "submit", disabled }} dataset={{ testid: gen("button") }}>
           {content}
-        </input>
+        </button>
       );
     }
   });

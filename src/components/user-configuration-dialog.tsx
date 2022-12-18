@@ -73,7 +73,6 @@ const model = function model(actions: ReturnType<typeof intent>) {
 const Styles = {
   form: classes("flex", "flex-col", "pb-0", "h-full"),
   main: classes("pb-4"),
-
   footer: classes("flex", "flex-auto", "flex-row", "justify-space-between", "p-3", "border-t-1", "border-t-lightgray"),
 };
 
@@ -147,7 +146,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "cancel"
   )({
     ...sources,
-    props: xs.of<ButtonProps>({ label: "Cancel", schema: "primary" }),
+    props: xs.of<ButtonProps>({ content: <span>Cancel</span>, schema: "primary" }),
   });
 
   const submit = isolate(
@@ -158,7 +157,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     props: sources.state
       .select<UserConfigurationState["allowSubmit"]>("allowSubmit")
       .stream.map<ButtonProps>((allowSubmit) => ({
-        label: "Apply",
+        content: <span>Apply</span>,
         schema: "primary",
         type: "submit",
         disabled: !allowSubmit,

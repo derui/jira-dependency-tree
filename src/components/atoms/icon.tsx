@@ -29,14 +29,16 @@ const icons: Record<string, string> = {
   settings: "before:[mask:url(/assets/svg/tablar-icons/settings.svg)]",
   "square-check": "before:[mask:url(/assets/svg/tablar-icons/square-check.svg)]",
   square: "before:[mask:url(/assets/svg/tablar-icons/square.svg)]",
+  "circle-x": "before:[mask:url(/assets/svg/tablar-icons/circle-x.svg)]",
+  "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
 };
 
 const colors: Record<string, Record<string, boolean>> = {
-  primary: classes("before:bg-lightgray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
-  secondary1: classes("before:bg-lightgray", "before:hover:bg-secondary1-300", "before:active:bg-secondary1-500"),
-  secondary2: classes("before:bg-lightgray", "before:hover:bg-secondary2-300", "before:active:bg-secondary2-500"),
-  complement: classes("before:bg-lightgray", "before:hover:bg-complement-300", "before:active:bg-complement-500"),
-  gray: classes("before:bg-lightgray", "before:hover:bg-lightgray", "before:active:bg-lightgray"),
+  primary: classes("before:bg-gray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
+  secondary1: classes("before:bg-gray", "before:hover:bg-secondary1-300", "before:active:bg-secondary1-500"),
+  secondary2: classes("before:bg-gray", "before:hover:bg-secondary2-300", "before:active:bg-secondary2-500"),
+  complement: classes("before:bg-gray", "before:hover:bg-complement-300", "before:active:bg-complement-500"),
+  gray: classes("before:bg-gray", "before:hover:bg-darkgray", "before:active:bg-black"),
 };
 
 const intent = (sources: IconSources) => {

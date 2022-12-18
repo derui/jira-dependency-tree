@@ -59,7 +59,7 @@ type MainState = {
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
 const Styles = {
-  topToolbar: classes("absolute", "width-full", "top-0", "left-0", "grid", "mt-4", "ml-4", "grid", "grid-cols-5"),
+  topToolbar: classes("absolute", "w-full", "grid", "grid-cols-top-toolbar", "grid-rows-1"),
 };
 
 const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
@@ -205,6 +205,7 @@ const main = (sources: MainSources): MainSinks => {
           {projectInformation}
           {syncJira}
           {projectToolbar}
+          <div></div>
           {userConfiguration}
         </div>
         {zoomSlider}

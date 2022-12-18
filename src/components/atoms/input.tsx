@@ -68,14 +68,13 @@ const containerClass = classes(
   "mx-3",
   "justify-between",
   "whitespace-nowrap",
-  "m-4",
-  "first:mt-0",
-  "last:mb-0"
+  "mt-4",
+  "first:mt-0"
 );
-const labelClass = classes("flex-auto", "text-primary-500", "whitespace-nowrap");
+const labelClass = classes("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap");
 const inputClass = classes(
   "w-full",
-  "flex-auto",
+  "flex-[1_1_60%]",
   "px-4",
   "py-3",
   "border",

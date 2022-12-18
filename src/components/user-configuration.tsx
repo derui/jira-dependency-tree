@@ -7,6 +7,7 @@ import isolate from "@cycle/isolate";
 import { Setting } from "@/model/setting";
 import { filterUndefined } from "@/util/basic";
 import { Reducer, StateSource } from "@cycle/state";
+import { Icon, IconProps } from "./atoms/icon";
 
 export type UserConfigurationProps = {
   setting: Setting;
@@ -51,30 +52,29 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("flex", "relative"),
-  toolbar: classes("flex", "relative", "flex-auto", "flex-col", "bg-white", "p-3"),
-  opener: (opened: boolean) => {
+  root: classes("flex", "relative", "top-4", "right-4"),
+  toolbar: classes(
+    "flex",
+    "relative",
+    "flex-auto",
+    "flex-col",
+    "bg-white",
+    "rounded",
+    "shadow-md",
+    "w-12",
+    "h-12",
+    "p-3",
+    "justify-center"
+  ),
+  opener: () => {
     return {
-      ...classes(
-        "relative",
-        "outline-none",
-        "bg-white",
-        "border-none",
-        "flex-auto",
-        "flex",
-        "p-2",
-        "transition-colors",
-        "cursor-pointer",
-        "color-black",
-        "rounded",
-        "hover:bg-secondary1-400"
-      ),
-      ...(opened ? classes("bg-secondary1-400") : {}),
+      ...classes("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7"),
     };
   },
   marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-0", "left-0", "inline-block", "invisible", "bg-primary-400", "w-3", "h-4", "rounded"),
+      ...classes("absolute", "top-0", "left-0", "inline-block", "bg-primary-400", "w-2", "h-2", "rounded-full"),
+      ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };
   },
@@ -88,24 +88,25 @@ const Styles = {
         "rounded",
         "shadow-lg",
         "transition-width",
-        "width-0",
         "overflow-hidden"
       ),
-      ...(opened ? classes("width-[360px]") : {}),
+      ...(!opened ? classes("w-0") : {}),
+      ...(opened ? classes("w-96") : {}),
     };
   },
 };
 
 const view = function view(
   state$: ReturnType<typeof model>,
-  nodes: AsNodeStream<["dialog"]>,
+  nodes: AsNodeStream<["dialog", "openerIcon"]>,
   gen: ReturnType<typeof generateTestId>
 ) {
-  return xs.combine(state$, nodes).map(([{ opened, setupFinished }, { dialog }]) => (
+  return xs.combine(state$, nodes).map(([{ opened, setupFinished }, { dialog, openerIcon }]) => (
     <div class={Styles.root}>
       <div class={Styles.toolbar}>
-        <button class={{ ...Styles.opener(opened), "--opener": true }} dataset={{ testid: gen("opener") }}>
+        <button class={{ ...Styles.opener(), "--opener": true }} dataset={{ testid: gen("opener") }}>
           <span class={Styles.marker(!setupFinished)} dataset={{ testid: gen("marker") }}></span>
+          {openerIcon}
         </button>
       </div>
       <div class={Styles.dialogContainer(opened)} dataset={{ testid: gen("dialog-container") }}>
@@ -130,11 +131,20 @@ export const UserConfiguration = function UserConfiguration(sources: UserConfigu
     testid: gen("dialog"),
   });
 
+  const openerIcon = Icon({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "settings",
+      color: "complement",
+      size: "l",
+    }),
+  });
+
   const actions = intent(sources, dialog.value);
   const state$ = model(actions);
 
   return {
-    DOM: view(state$, mergeNodes({ dialog: dialog.DOM }), gen),
+    DOM: view(state$, mergeNodes({ dialog: dialog.DOM, openerIcon: openerIcon.DOM }), gen),
     value: dialog.value
       .map((v) => {
         if (v.kind === "submit") {

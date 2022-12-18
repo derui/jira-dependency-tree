@@ -3,7 +3,7 @@ import xs, { Stream } from "xstream";
 import { classes, generateTestId, selectAsMain } from "../helper";
 import { ComponentSinkBase, ComponentSourceBase } from "../type";
 
-type ColorSchema = "primary" | "secondary1";
+type ColorSchema = "primary" | "secondary1" | "gray";
 
 export interface ButtonProps {
   content: VNode;
@@ -75,6 +75,8 @@ const Styles = {
           "hover:bg-primary-300",
           "active:bg-primary-400"
         );
+      case "gray":
+        return classes("border-gray", "bg-white", "color-black", "hover:bg-lightgray", "active:bg-gray");
     }
   },
 };

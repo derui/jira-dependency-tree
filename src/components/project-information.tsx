@@ -51,7 +51,18 @@ const model = function model(actions: ReturnType<typeof intent>) {
 const Styles = {
   root: (editing: boolean) => {
     return {
-      ...classes("relative", "bg-white", "flex", "h-12", "rounded", "items-center", "shadow-md", "transition-height"),
+      ...classes(
+        "relative",
+        "bg-white",
+        "flex",
+        "h-12",
+        "rounded",
+        "items-center",
+        "shadow-md",
+        "transition-height",
+        "top-3",
+        "left-3"
+      ),
       ...(editing ? classes("h-24") : {}),
     };
   },

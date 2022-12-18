@@ -71,9 +71,9 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  form: classes("flex", "flex-col", "pb-0", "h-full"),
-  main: classes("pb-4"),
-  footer: classes("flex", "flex-auto", "flex-row", "justify-space-between", "p-3", "border-t-1", "border-t-lightgray"),
+  form: classes("flex", "flex-col", "pb-0", "pt-4"),
+  main: classes("pb-4", "flex", "flex-col"),
+  footer: classes("flex", "flex-auto", "flex-row", "justify-between", "p-3", "border-t-1", "border-t-lightgray"),
 };
 
 const view = function view(
@@ -146,7 +146,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     "cancel"
   )({
     ...sources,
-    props: xs.of<ButtonProps>({ content: <span>Cancel</span>, schema: "primary" }),
+    props: xs.of<ButtonProps>({ content: <span>Cancel</span>, schema: "gray" }),
   });
 
   const submit = isolate(

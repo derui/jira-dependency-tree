@@ -1,14 +1,23 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinkBase, ComponentSourceBase } from "./type";
-import { classes, generateTestId, selectAsMain, TestIdGenerator } from "./helper";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
 import { SearchCondition } from "@/model/event";
 import { Suggestor, SuggestorProps } from "./suggestor";
 import { SuggestedItem, Suggestion } from "@/model/suggestion";
+import { Icon, IconProps } from "./atoms/icon";
+import { Input, InputProps } from "./atoms/input";
+import isolate from "@cycle/isolate";
 
-type ConditionType = "default" | "sprint" | "epic";
+const ConditionType = {
+  Default: "default",
+  Sprint: "sprint",
+  Epic: "epic",
+} as const;
+
+type ConditionType = typeof ConditionType[keyof typeof ConditionType];
 
 export interface ProjectSyncOptionEditorState {
   conditionType: ConditionType;
@@ -27,24 +36,26 @@ interface ProjectSyncOptionEditorSinks extends ComponentSinkBase {
 
 const intent = function intent(
   sources: ProjectSyncOptionEditorSources,
-  suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>
+  suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>,
+  epicInputSink: ReturnType<typeof Input>
 ) {
   const selectorOpenerClicked = selectAsMain(sources, "[data-id=opener]").events("click");
-  const typeChanged$ = selectAsMain(sources, ".search-condition-editor__radio")
+  const typeChanged$ = selectAsMain(sources, "select")
     .events("change")
     .map((event) => {
-      return (event.target as HTMLInputElement).value as ConditionType;
+      return (event.target as HTMLSelectElement).value as ConditionType;
     });
-  const epicChanged$ = selectAsMain(sources, ".search-condition-epic-selector__input")
-    .events("change")
-    .map((event) => (event.target as HTMLInputElement).value);
+  const cancel$ = selectAsMain(sources, "[data-id=cancel]").events("click").mapTo(false);
+  const submit$ = selectAsMain(sources, "[data-id=submit]").events("click").mapTo(false);
 
   return {
     props$: sources.props,
     state$: sources.state.stream,
     openerClicked$: selectorOpenerClicked,
     typeChanged$,
-    epicChanged$,
+    epicChanged$: epicInputSink.input,
+    cancel$,
+    submit$,
     suggestedValue$: suggestorSink.value,
   };
 };
@@ -54,13 +65,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
     .map(() => {
       const currentConditionType$ = actions.state$.map((v) => v.conditionType);
       const selectorOpened$ = xs
-        .merge(actions.openerClicked$.mapTo("search-condition-editor" as const))
-        .fold((accum, v) => {
-          switch (v) {
-            case "search-condition-editor":
-              return !accum;
-          }
-        }, false);
+        .merge(actions.openerClicked$.mapTo(true), actions.cancel$, actions.submit$)
+        .fold((_, v) => v, false);
 
       const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
         return { epic: v };
@@ -128,93 +134,69 @@ const Styles = {
         "bg-white",
         "rounded",
         "shadow-lg",
-        "transition-width"
+        "transition-width",
+        "overflow-hidden"
       ),
       ...(opened ? classes("w-96", "visible") : {}),
-      ...(!opened ? classes("w-0", "invisible") : {}),
+      ...(!opened ? classes("w-0", "visible") : {}),
+    };
+  },
+  header: classes(
+    "border-b-2",
+    "border-b-secondary1-200",
+    "text-secondary1-500",
+    "text-lg",
+    "text-bold",
+    "p-3",
+    "whitespace-nowrap"
+  ),
+  selection: classes("flex-auto", "p-2"),
+  baseForm: classes("flex", "flex-row", "p-3", "items-center"),
+  controlButton: classes("flex-none", "first:ml-0", "last:mr-0", "mx-1", "cursor-pointer"),
+  sprintSuggestor: (opened: boolean) => {
+    return {
+      ...(!opened ? classes("hidden") : {}),
+    };
+  },
+  epicInput: (opened: boolean) => {
+    return {
+      ...classes("p-2", "pt-0"),
+      ...(!opened ? classes("hidden") : {}),
     };
   },
 };
 
-const view = function view(state$: ReturnType<typeof model>, suggestor: Stream<VNode>, gen: TestIdGenerator) {
+const view = function view(
+  state$: ReturnType<typeof model>,
+  nodes$: AsNodeStream<["suggestor", "cancel", "submit", "epicInput"]>,
+  gen: TestIdGenerator
+) {
   return xs
-    .combine(state$, suggestor)
-    .map(([{ currentConditionType, selectorOpened: editorOpened, currentCondition }, suggestor]) => {
+    .combine(state$, nodes$)
+    .map(([{ currentConditionType, selectorOpened: editorOpened, currentCondition }, nodes]) => {
       return (
         <div class={Styles.root}>
           <button class={Styles.opener(editorOpened)} dataset={{ testid: gen("opener"), id: "opener" }}>
             {currentConditionName(currentCondition)}
           </button>
-          <ul class={Styles.searchConditionEditorContainer(editorOpened)} dataset={{ testid: gen("selector") }}>
-            <li class={{ "search-condition-editor__cell": true }}>
-              <label
-                class={{ "search-condition-editor__label": true }}
-                dataset={{ testid: gen("search-condition-default") }}
-              >
-                <span
-                  class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "default" }}
-                ></span>
-                <input
-                  class={{ "search-condition-editor__radio": true }}
-                  attrs={{ type: "radio", name: "type", value: "default", checked: currentConditionType === "default" }}
-                ></input>
-                Default <span class={{ "search-condition-editor__description": true }}>Current sprint</span>
-              </label>
-            </li>
-            <li class={{ "search-condition-editor__cell": true }}>
-              <label
-                class={{ "search-condition-editor__label": true }}
-                dataset={{ testid: gen("search-condition-sprint") }}
-              >
-                <span
-                  class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "sprint" }}
-                ></span>
-                <input
-                  class={{ "search-condition-editor__radio": true }}
-                  attrs={{ type: "radio", name: "type", value: "sprint", checked: currentConditionType === "sprint" }}
-                ></input>
-                Sprint
-              </label>
-              <span class={{ "search-condition-editor__input": true, "--selected": currentConditionType === "sprint" }}>
-                {suggestor}
+          <div class={Styles.searchConditionEditorContainer(editorOpened)} dataset={{ testid: gen("selector") }}>
+            <h2 class={Styles.header}>Select method to synchronize issues</h2>
+            <div class={Styles.baseForm}>
+              <select class={Styles.selection}>
+                <option attrs={{ value: ConditionType.Default }}>Use Current Sprint</option>
+                <option attrs={{ value: ConditionType.Sprint }}>Select Sprint</option>
+                <option attrs={{ value: ConditionType.Epic }}>Select Epic</option>
+              </select>
+              <span class={Styles.controlButton} dataset={{ id: "cancel" }}>
+                {nodes.cancel}
               </span>
-            </li>
-            <li class={{ "search-condition-editor__cell": true }}>
-              <label
-                class={{ "search-condition-editor__label": true }}
-                dataset={{ testid: gen("search-condition-epic") }}
-              >
-                <span
-                  class={{ "search-condition-editor__checkbox": true, "--checked": currentConditionType === "epic" }}
-                ></span>
-                <input
-                  class={{ "search-condition-editor__radio": true }}
-                  attrs={{ type: "radio", name: "type", value: "epic", checked: currentConditionType === "epic" }}
-                ></input>
-                Epic
-              </label>
-              <span class={{ "search-condition-editor__input": true, "--selected": currentConditionType === "epic" }}>
-                <span class={{ "search-condition-editor__epic-selector": true }}>
-                  <span class={{ "search-condition-epic-selector__icon": true }}></span>
-                  <input
-                    class={{ "search-condition-epic-selector__input": true }}
-                    attrs={{ type: "text", name: "epic", placeholder: "Epic" }}
-                    dataset={{ testid: gen("epic-input") }}
-                  ></input>
-                </span>
+              <span class={Styles.controlButton} dataset={{ id: "submit" }}>
+                {nodes.submit}
               </span>
-            </li>
-            <li class={{ "search-condition-editor__footer": true }}>
-              <button class={{ "search-condition-editor__cancel": true }}>Cancel</button>
-              <button
-                class={{ "search-condition-editor__submit": true }}
-                dataset={{ testid: gen("submit") }}
-                attrs={{ type: "submit" }}
-              >
-                Apply
-              </button>
-            </li>
-          </ul>
+            </div>
+            <div class={Styles.sprintSuggestor(currentConditionType === ConditionType.Sprint)}>{nodes.suggestor}</div>
+            <div class={Styles.epicInput(currentConditionType === ConditionType.Epic)}>{nodes.epicInput}</div>
+          </div>
         </div>
       );
     });
@@ -236,7 +218,40 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
     testid: "sprint-suggestor",
   });
 
-  const actions = intent(sources, suggestor);
+  const cancelIcon = Icon({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "circle-x",
+      color: "gray",
+      size: "m",
+    }),
+  });
+
+  const submitIcon = Icon({
+    ...sources,
+    props: xs.of<IconProps>({
+      type: "circle-check",
+      color: "complement",
+      size: "m",
+    }),
+  });
+
+  const epicInput = isolate(
+    Input,
+    "nameInput"
+  )({
+    ...sources,
+    props: sources.state
+      .select<ProjectSyncOptionEditorState["currentSearchCondition"]>("currentSearchCondition")
+      .stream.map<InputProps>((condition) => {
+        return {
+          value: condition?.epic ?? "",
+          placeholder: "e.g. TES-105",
+        };
+      }),
+  });
+
+  const actions = intent(sources, suggestor, epicInput);
   const state$ = model(actions);
 
   const initialReducer$ = xs.of<Reducer<ProjectSyncOptionEditorState>>(() => {
@@ -295,7 +310,16 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
   });
 
   return {
-    DOM: view(state$, suggestor.DOM, generateTestId(sources.testid)),
+    DOM: view(
+      state$,
+      mergeNodes({
+        suggestor: suggestor.DOM,
+        cancel: cancelIcon.DOM,
+        submit: submitIcon.DOM,
+        epicInput: epicInput.DOM,
+      }),
+      generateTestId(sources.testid)
+    ),
     state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$),
   };
 };

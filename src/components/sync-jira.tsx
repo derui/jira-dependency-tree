@@ -1,7 +1,7 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
 import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { LoaderState, LoaderStatus } from "@/type";
 import { Icon, IconProps } from "./atoms/icon";
 import isolate from "@cycle/isolate";
@@ -38,9 +38,8 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("flex", "justify-center"),
-  container: classes("relative"),
-  main: classes("p-2", "outline-none", "bg-none"),
+  root: classes("flex", "justify-center", "relative", "w-12", "h-12", "rounded", "shadow-md"),
+  main: classes("p-2", "outline-none", "bg-white", "inline-block", "rounded"),
   icon: (syncing: boolean) => {
     return syncing ? classes("animate-spin") : {};
   },
@@ -48,17 +47,15 @@ const Styles = {
 
 const view = function view(
   state$: ReturnType<typeof model>,
-  gen: ReturnType<typeof generateTestId>,
-  nodes$: Stream<{ icon: VNode }>
+  nodes$: AsNodeStream<["icon"]>,
+  gen: ReturnType<typeof generateTestId>
 ) {
   return xs.combine(state$, nodes$).map(([{ allowSync }, { icon }]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
-        <span class={Styles.container}>
-          <button class={Styles.main} attrs={{ disabled: !allowSync }} dataset={{ testid: gen("button") }}>
-            {icon}
-          </button>
-        </span>
+        <button class={Styles.main} attrs={{ disabled: !allowSync }} dataset={{ testid: gen("button") }}>
+          {icon}
+        </button>
       </div>
     );
   });
@@ -84,11 +81,7 @@ export const SyncJira = function SyncJira(sources: SyncJiraSources): SyncJiraSin
   const value$ = actions.clicked$.mapTo<SyncJiraEvent>("REQUEST");
 
   return {
-    DOM: view(
-      state$,
-      generateTestId(sources.testid),
-      icon.DOM.map((icon) => ({ icon }))
-    ),
+    DOM: view(state$, mergeNodes({ icon: icon.DOM }), generateTestId(sources.testid)),
     value: value$,
   };
 };

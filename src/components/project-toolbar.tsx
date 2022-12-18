@@ -1,6 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { ComponentSinkBase, ComponentSourceBase } from "./type";
-import { generateTestId, selectAsMain, TestIdGenerator } from "./helper";
+import { classes, generateTestId, selectAsMain, TestIdGenerator } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
@@ -103,24 +103,43 @@ const currentConditionName = (condition: SearchCondition) => {
   return "Current Sprint";
 };
 
+const Styles = {
+  root: classes("relative"),
+  toolbar: classes("inline-flex", "p-3", "bg-white", "list-none", "h-12"),
+  searchConditionEditorOpener: classes(
+    "flex",
+    "flex-auto",
+    "items-center",
+    "h-7",
+    "transition-colors",
+    "cursor-pointer",
+    "text-black",
+    "px-2",
+    "whitespace-nowrap",
+    "hover:text-secondary2-500",
+    "hover:bg-secondary2-200"
+  ),
+  searchConditionEditorContainer: (opened: boolean) => {
+    return {
+      ...classes("absolute", "flex", "flex-col", "left-0", "bg-white", "rounded", "shadow-lg", "transition-width"),
+      ...(opened ? classes("w-96", "visible") : {}),
+      ...(!opened ? classes("w-0", "invisible") : {}),
+    };
+  },
+};
+
 const view = function view(state$: ReturnType<typeof model>, suggestor: Stream<VNode>, gen: TestIdGenerator) {
   return xs
     .combine(state$, suggestor)
     .map(([{ currentConditionType, selectorOpened, currentCondition }, suggestor]) => {
       return (
-        <div class={{ "project-toolbar-wrapper": true }}>
-          <ul class={{ "project-toolbar": true }} dataset={{ testid: gen("root") }}>
-            <li
-              class={{ "project-toolbar__search-condition-editor": true, "--opened": selectorOpened }}
-              dataset={{ testid: gen("condition-editor") }}
-            >
+        <div class={Styles.root}>
+          <ul class={Styles.toolbar} dataset={{ testid: gen("root") }}>
+            <li class={Styles.searchConditionEditorOpener} dataset={{ testid: gen("condition-editor") }}>
               {currentConditionName(currentCondition)}
             </li>
           </ul>
-          <ul
-            class={{ "search-condition-editor__main": true, "--opened": selectorOpened }}
-            dataset={{ testid: gen("selector") }}
-          >
+          <ul class={Styles.searchConditionEditorContainer(selectorOpened)} dataset={{ testid: gen("selector") }}>
             <li class={{ "search-condition-editor__cell": true }}>
               <label
                 class={{ "search-condition-editor__label": true }}

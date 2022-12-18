@@ -46,7 +46,7 @@ module.exports = {
         'height': 'height',
       },
       gridTemplateColumns: {
-        'top-toolbar': '280px min-content min-content 1fr min-content'
+        'top-toolbar': '360px max-content min-content 1fr min-content'
       },
     },
   },

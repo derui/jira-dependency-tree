@@ -59,7 +59,8 @@ type MainState = {
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
 const Styles = {
-  topToolbar: classes("absolute", "w-full", "grid", "grid-cols-top-toolbar", "grid-rows-1"),
+  root: classes("w-full", "h-full", "relative"),
+  topToolbar: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "gap-3", "top-3", "px-3", "w-full"),
 };
 
 const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
@@ -200,7 +201,7 @@ const main = (sources: MainSources): MainSinks => {
   const vnode$ = xs
     .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectToolbar$)
     .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectToolbar]) => (
-      <div>
+      <div class={Styles.root}>
         <div class={Styles.topToolbar}>
           {projectInformation}
           {syncJira}

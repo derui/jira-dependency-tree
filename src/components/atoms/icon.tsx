@@ -24,7 +24,7 @@ const icons: Record<string, string> = {
   "layout-2": "before:[mask:url(/assets/svg/tablar-icons/layout-2.svg)]",
   "layout-distribute-horizontal": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-horizontal.svg)]",
   "layout-distribute-vertical": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-vertical.svg)]",
-  refresh: "before:[mask:url(/assets/svg/tablar-icons/refres.svg)]",
+  refresh: "before:[mask:url(/assets/svg/tablar-icons/refresh.svg)]",
   search: "before:[mask:url(/assets/svg/tablar-icons/search.svg)]",
   settings: "before:[mask:url(/assets/svg/tablar-icons/settings.svg)]",
   "square-check": "before:[mask:url(/assets/svg/tablar-icons/square-check.svg)]",
@@ -54,7 +54,7 @@ const model = (actions: ReturnType<typeof intent>) => {
 };
 
 const typeClass = (type: string) => {
-  return classes(icons[type], "before:[mask-size:cover]");
+  return classes(icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
 };
 
 const iconBaseClass = classes(

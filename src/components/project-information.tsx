@@ -60,15 +60,15 @@ const Styles = {
         "items-center",
         "shadow-md",
         "transition-height",
-        "top-3",
-        "left-3"
+        "pl-3",
+        "overflow-hidden"
       ),
       ...(editing ? classes("h-24") : {}),
     };
   },
   marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-3", "left-3", "inline-block", "w-2", "h-2", "rounded", "bg-primary-400"),
+      ...classes("absolute", "top-2", "left-2", "inline-block", "w-2", "h-2", "rounded", "bg-primary-400"),
       ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };
@@ -76,10 +76,9 @@ const Styles = {
   name: (editing: boolean, needEditing: boolean) => {
     return {
       ...classes(
-        "ml-4",
+        "w-full",
         "overflow-hidden",
         "text-ellipsis",
-        "w-60",
         "flex-none",
         "font-bold",
         "cursor-pointer",
@@ -87,9 +86,7 @@ const Styles = {
         "border-b-transparent",
         "transition-colors",
         "transition-border",
-        "leading-6",
-        "p-2",
-        "pr-0"
+        "leading-6"
       ),
       ...(!needEditing ? classes("text-secondary2-400", "hover:text-secondary2-400") : {}),
       ...(needEditing ? classes("text-gray", "hover:text-darkgray") : {}),
@@ -98,7 +95,7 @@ const Styles = {
   },
   keyEditor: (editing: boolean) => {
     return {
-      ...classes("bg-white", "flex", "flex-col", "mx-4", "my-2"),
+      ...classes("bg-white", "flex", "flex-col", "mr-3", "my-2"),
       ...(!editing ? classes("hidden") : {}),
     };
   },

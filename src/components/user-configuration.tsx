@@ -52,7 +52,7 @@ const model = function model(actions: ReturnType<typeof intent>) {
 };
 
 const Styles = {
-  root: classes("flex", "relative", "top-4", "right-4"),
+  root: classes("flex", "relative"),
   toolbar: classes(
     "flex",
     "relative",
@@ -85,6 +85,7 @@ const Styles = {
         "absolute",
         "top-full",
         "right-0",
+        "mt-2",
         "rounded",
         "shadow-lg",
         "transition-width",

@@ -78,6 +78,7 @@ const Styles = {
         "top-full",
         "right-0",
         "mt-2",
+        "right-3",
         "rounded",
         "shadow-lg",
         "transition-width",
@@ -95,13 +96,13 @@ const view = function view(
   gen: ReturnType<typeof generateTestId>
 ) {
   return xs.combine(state$, nodes$).map(([{ opened, openAt }, nodes]) => {
-    const right = openAt ? `${openAt.right}px` : "";
-    const top = openAt ? `${openAt.top}px` : "";
+    const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
+    console.log(top);
 
     return (
       <div
         class={Styles.dialogContainer(opened)}
-        style={{ right, top }}
+        style={{ top }}
         dataset={{ testid: gen("dialog-container"), id: "root", opened: `${opened}` }}
       >
         <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>

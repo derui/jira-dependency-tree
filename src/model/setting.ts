@@ -1,6 +1,6 @@
-import { Size } from "@/type";
 import produce from "immer";
 import { Credential } from "./event";
+import { Size } from "@/type";
 
 export type SettingArgument = {
   // Size of issue in environment

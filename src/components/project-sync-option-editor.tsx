@@ -1,15 +1,15 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ComponentSinkBase, ComponentSourceBase } from "./type";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
-import { SearchCondition } from "@/model/event";
+import isolate from "@cycle/isolate";
+import { ComponentSinkBase, ComponentSourceBase } from "./type";
+import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
 import { Suggestor, SuggestorProps } from "./suggestor";
-import { SuggestedItem, Suggestion } from "@/model/suggestion";
 import { Icon, IconProps } from "./atoms/icon";
 import { Input, InputProps } from "./atoms/input";
-import isolate from "@cycle/isolate";
+import { SearchCondition } from "@/model/event";
+import { SuggestedItem, Suggestion } from "@/model/suggestion";
 
 const ConditionType = {
   Default: "default",

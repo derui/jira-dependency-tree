@@ -1,8 +1,8 @@
+import { BaseType } from "d3";
+import { makeTextMeasure } from "./text-measure";
 import { Project } from "@/model/project";
 import { StatusCategory } from "@/type";
 import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "@/issue-graph/type";
-import { makeTextMeasure } from "./text-measure";
-import { BaseType } from "d3";
 
 const IssueSizes = {
   paddingX: 8,

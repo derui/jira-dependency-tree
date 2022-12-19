@@ -1,7 +1,7 @@
 import { Driver } from "@cycle/run";
 import xs, { Listener, MemoryStream, Stream } from "xstream";
-import { Position } from "@/type";
 import { fromEvent } from "@cycle/dom/lib/cjs/fromEvent";
+import { Position } from "@/type";
 
 export interface PanZoomSource {
   // reset pan and zoom

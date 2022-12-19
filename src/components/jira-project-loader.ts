@@ -1,8 +1,8 @@
+import { RequestOptions } from "http";
+import { HTTPSource, Response } from "@cycle/http";
+import xs, { Stream } from "xstream";
 import { Events } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
-import { HTTPSource, Response } from "@cycle/http";
-import { RequestOptions } from "http";
-import xs, { Stream } from "xstream";
 import { selectResponse } from "@/components/helper";
 
 export type JiraProjectLoaderSources = {

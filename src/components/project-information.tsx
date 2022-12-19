@@ -1,12 +1,12 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
+import isolate from "@cycle/isolate";
+import { Input, InputProps, InputSinks } from "./atoms/input";
+import { Icon, IconProps } from "./atoms/icon";
 import { ComponentSinks, ComponentSources } from "@/components/type";
 import { Project } from "@/model/project";
 import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
-import isolate from "@cycle/isolate";
-import { Input, InputProps, InputSinks } from "./atoms/input";
-import { Icon, IconProps } from "./atoms/icon";
 
 export interface ProjectInformationProps {
   project?: Project;

@@ -1,7 +1,7 @@
-import { Events } from "@/model/event";
-import { Issue } from "@/model/issue";
 import { HTTPSource, RequestOptions, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
+import { Events } from "@/model/event";
+import { Issue } from "@/model/issue";
 import { selectResponse } from "@/components/helper";
 
 export type JiraIssueLoaderSources = {

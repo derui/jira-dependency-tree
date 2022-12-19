@@ -1,13 +1,13 @@
 import { jsx } from "snabbdom"; // eslint-disable-line
 import xs, { Stream } from "xstream";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import isolate from "@cycle/isolate";
+import { Reducer, StateSource } from "@cycle/state";
+import produce from "immer";
 import { Input, InputProps } from "./atoms/input";
 import { Button, ButtonProps } from "./atoms/button";
 import { AsNodeStream, mergeNodes } from "./helper";
-import { Reducer, StateSource } from "@cycle/state";
-import produce from "immer";
+import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
 import { filterEmptyString } from "@/util/basic";
 
 export type UserConfigurationValue = {
@@ -74,6 +74,23 @@ const Styles = {
   form: classes("flex", "flex-col", "pb-0", "pt-4"),
   main: classes("pb-4", "flex", "flex-col"),
   footer: classes("flex", "flex-auto", "flex-row", "justify-between", "p-3", "border-t-1", "border-t-lightgray"),
+  dialogContainer: (opened: boolean) => {
+    return {
+      ...classes(
+        "bg-white",
+        "absolute",
+        "top-full",
+        "right-0",
+        "mt-2",
+        "rounded",
+        "shadow-lg",
+        "transition-width",
+        "overflow-hidden"
+      ),
+      ...(!opened ? classes("w-0") : {}),
+      ...(opened ? classes("w-96") : {}),
+    };
+  },
 };
 
 const view = function view(
@@ -82,17 +99,19 @@ const view = function view(
   gen: ReturnType<typeof generateTestId>
 ) {
   return xs.combine(state$, nodes$).map(([, nodes]) => (
-    <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>
-      <div class={Styles.main}>
-        {nodes.userDomain}
-        {nodes.email}
-        {nodes.jiraToken}
-      </div>
-      <div class={Styles.footer}>
-        {nodes.cancel}
-        {nodes.submit}
-      </div>
-    </form>
+    <div class={Styles.dialogContainer(opened)} dataset={{ testid: gen("dialog-container") }}>
+      <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>
+        <div class={Styles.main}>
+          {nodes.userDomain}
+          {nodes.email}
+          {nodes.jiraToken}
+        </div>
+        <div class={Styles.footer}>
+          {nodes.cancel}
+          {nodes.submit}
+        </div>
+      </form>
+    </div>
   ));
 };
 

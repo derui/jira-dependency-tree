@@ -1,6 +1,6 @@
+import { BaseType, Selection, SimulationNodeDatum } from "d3";
 import { Issue } from "@/model/issue";
 import { Size } from "@/type";
-import { BaseType, Selection, SimulationNodeDatum } from "d3";
 
 // The type of common node object in issue graph
 export type D3Node<T extends BaseType = BaseType, V = undefined> = Selection<T, V, null, undefined>;

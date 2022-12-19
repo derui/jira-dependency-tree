@@ -1,12 +1,12 @@
 import { Driver } from "@cycle/run";
 import xs, { Stream } from "xstream";
+import { Selection } from "d3";
+import { PanZoomState } from "./pan-zoom";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Size } from "@/type";
-import { Selection } from "d3";
 import { filterNull, Rect } from "@/util/basic";
-import { PanZoomState } from "./pan-zoom";
 import { GraphLayout } from "@/issue-graph/type";
 
 export interface IssueGraphSink {

@@ -1,6 +1,6 @@
+import * as d3 from "d3";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
-import * as d3 from "d3";
 import { makeForceGraph } from "@/issue-graph/force-graph";
 import { Configuration } from "@/issue-graph/type";
 

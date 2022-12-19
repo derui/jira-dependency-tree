@@ -1,7 +1,7 @@
-import { Events, GetSuggestionRequest } from "@/model/event";
-import { HTTPSource, Response } from "@cycle/http";
 import { RequestOptions } from "http";
+import { HTTPSource, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
+import { Events, GetSuggestionRequest } from "@/model/event";
 import { selectResponse } from "@/components/helper";
 import { suggestionFactory, Suggestion } from "@/model/suggestion";
 

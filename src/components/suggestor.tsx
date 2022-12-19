@@ -1,10 +1,10 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import xs, { Stream, MemoryStream } from "xstream";
 import debounce from "xstream/extra/debounce";
 import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
-import { filterUndefined } from "@/util/basic";
 import { Icon, IconProps } from "./atoms/icon";
+import { filterUndefined } from "@/util/basic";
+import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 
 interface Suggestion<T> {
   id: string;

@@ -1,5 +1,5 @@
-import { constraint, difference } from "@/util/basic";
 import deepEqual from "fast-deep-equal";
+import { constraint, difference } from "@/util/basic";
 
 type Edge = [string, string];
 type Vertex = string;

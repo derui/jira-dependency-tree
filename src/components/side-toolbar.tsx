@@ -1,12 +1,12 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { ComponentSinks, ComponentSources } from "@/components/type";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
-import { GraphLayout } from "@/issue-graph/type";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Icon, IconProps } from "./atoms/icon";
 import { AsNodeStream, mergeNodes } from "./helper";
+import { GraphLayout } from "@/issue-graph/type";
+import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { ComponentSinks, ComponentSources } from "@/components/type";
 
 export interface SideToolbarState {
   graphLayout: GraphLayout;

@@ -1,7 +1,3 @@
-import { Events } from "@/model/event";
-import { Issue } from "@/model/issue";
-import { Project } from "@/model/project";
-import { Suggestion } from "@/model/suggestion";
 import { HTTPSource, RequestInput } from "@cycle/http";
 import isolate from "@cycle/isolate";
 import { Reducer } from "@cycle/state";
@@ -9,6 +5,10 @@ import xs, { Stream } from "xstream";
 import { JiraIssueLoader } from "./jira-issue-loader";
 import { JiraProjectLoader } from "./jira-project-loader";
 import { JiraSuggestionLoader } from "./jira-suggestions-loader";
+import { Suggestion } from "@/model/suggestion";
+import { Project } from "@/model/project";
+import { Issue } from "@/model/issue";
+import { Events } from "@/model/event";
 
 type State = {
   issues: Issue[];

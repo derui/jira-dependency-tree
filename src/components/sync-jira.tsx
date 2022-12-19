@@ -1,10 +1,10 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { MemoryStream, Stream } from "xstream";
+import isolate from "@cycle/isolate";
+import { Icon, IconProps } from "./atoms/icon";
 import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { LoaderState, LoaderStatus } from "@/type";
-import { Icon, IconProps } from "./atoms/icon";
-import isolate from "@cycle/isolate";
 
 export interface SyncJiraProps {
   status: LoaderState;

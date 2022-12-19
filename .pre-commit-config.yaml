@@ -13,7 +13,7 @@ repos:
       entry: npx eslint
       language: system
       files: "\\.tsx?$"
-      args: ["--fix", "--ext", ".ts,.tsx"]
+      args: ["--fix"]
     - id: rustfmt
       name: rustfmt
       entry: rustfmt

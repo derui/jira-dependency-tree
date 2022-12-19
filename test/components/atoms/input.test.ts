@@ -1,10 +1,10 @@
-import { Input } from "@/components/atoms/input";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
 import test from "ava";
 import xs from "xstream";
+import { Input } from "@/components/atoms/input";
 
 test("initial display", async (t) => {
   await componentTest((done) => {

@@ -1,6 +1,6 @@
+import test from "ava";
 import { projectFactory } from "@/model/project";
 import { StatusCategory } from "@/type";
-import test from "ava";
 
 const issueTypes = [
   {

@@ -1,5 +1,5 @@
-import { settingFactory } from "@/model/setting";
 import test from "ava";
+import { settingFactory } from "@/model/setting";
 
 test("empty setting", (t) => {
   // arrange

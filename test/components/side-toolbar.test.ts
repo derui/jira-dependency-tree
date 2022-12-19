@@ -1,11 +1,11 @@
-import { SideToolbar } from "@/components/side-toolbar";
-import { GraphLayout } from "@/issue-graph/type";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { withState } from "@cycle/state";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
 import test from "ava";
+import { GraphLayout } from "@/issue-graph/type";
+import { SideToolbar } from "@/components/side-toolbar";
 
 test("initial state is given prop", async (t) => {
   await componentTest((done) => {

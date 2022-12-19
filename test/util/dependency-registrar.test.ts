@@ -1,5 +1,5 @@
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
 import test from "ava";
+import { createDependencyRegistrar } from "@/util/dependency-registrar";
 
 test("can registrar any type and get any type with key", (t) => {
   type dep = {

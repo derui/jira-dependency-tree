@@ -1,31 +1,30 @@
-import { UserConfiguration, UserConfigurationProps } from "@/components/user-configuration";
-import { settingFactory } from "@/model/setting";
-import { mockDOMSource } from "@cycle/dom";
+import { DOMSource, mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
-import { withState } from "@cycle/state";
+import { UserConfiguration, UserConfigurationProps } from "@/components/user-configuration";
+import { Rect } from "@/util/basic";
 
-test("do not open dialog initially", async (t) => {
+test("marker shows when setup finished", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
     const dom = mockDOMSource({});
 
     // Act
-    const sinks = withState(UserConfiguration)({
-      DOM: dom as any,
-      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
+    const sinks = UserConfiguration({
+      DOM: dom as unknown as DOMSource,
+      props: xs.of<UserConfigurationProps>({ setupFinished: false }),
       testid: undefined,
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
-      return select("[data-testid=opener]", vtree)[0].data?.class;
+      return select("[data-testid=marker]", vtree)[0].data?.dataset?.show;
     });
     const expected$ = Time.diagram("(a|)", {
-      a: { "user-configuration__opener": true, "--opened": false },
+      a: "true",
     });
 
     // Assert
@@ -36,41 +35,33 @@ test("do not open dialog initially", async (t) => {
   t.pass();
 });
 
-test("open dialog when opener clicked", async (t) => {
+test("hide marker if setup finished", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
-    const click$ = Time.diagram("--x------|", { x: { target: {} } });
-    const dom = mockDOMSource({
-      ".user-configuration__opener": {
-        click: click$,
-      },
-    });
+    const dom = mockDOMSource({});
 
     // Act
-    const sinks = withState(UserConfiguration)({
-      DOM: dom as any,
-      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: true }),
+    const sinks = UserConfiguration({
+      DOM: dom as unknown as DOMSource,
+      props: Time.diagram("x--a", {
+        x: { setupFinished: false },
+        a: { setupFinished: true },
+      }),
       testid: undefined,
     });
 
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        opener: select("[data-testid=opener]", vtree)[0].data?.class,
-        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class,
-        marker: select("[data-testid=marker]", vtree)[0].data?.class?.["--show"],
+        marker: select("[data-testid=marker]", vtree)[0].data?.dataset?.show,
       };
     });
-    const expected$ = Time.diagram("a-b------|", {
+    const expected$ = Time.diagram("a--b", {
       a: {
-        opener: { "user-configuration__opener": true, "--opened": false },
-        dialog: { "user-configuration__dialog-container": true, "--opened": false },
-        marker: false,
+        marker: "true",
       },
       b: {
-        opener: { "user-configuration__opener": true, "--opened": true },
-        dialog: { "user-configuration__dialog-container": true, "--opened": true },
-        marker: false,
+        marker: "false",
       },
     });
 
@@ -82,47 +73,38 @@ test("open dialog when opener clicked", async (t) => {
   t.pass();
 });
 
-test("close dialog automatically when it applied", async (t) => {
+test("event occurred when clicked", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
-    const click$ = Time.diagram("-x-------|", { x: { target: {} } });
-    const credential$ = Time.diagram("--x------|", { x: { target: { value: "a" } } });
-    const userDomain$ = Time.diagram("--x------|", { x: { target: { value: "b" } } });
-    const form$ = Time.diagram("---x-----|");
+    const click$ = Time.diagram("-x-", { x: { target: {} } });
     const dom = mockDOMSource({
-      ".___userConfigurationDialog": {
-        ".user-configuration__credential": {
-          input: credential$,
-        },
-        ".user-configuration__user-domain": {
-          input: userDomain$,
-        },
-        ".user-configuration__form": {
-          submit: form$,
-        },
-      },
-      ".user-configuration__opener": {
+      '[data-id="opener"]': {
         click: click$,
+      },
+      '[data-id="root"]': {
+        elements: xs
+          .of([
+            {
+              getBoundingClientRect() {
+                return new Rect({ top: 1, bottom: 2, left: 0, right: 1 });
+              },
+            },
+          ])
+          .remember(),
       },
     });
 
     // Act
-    const sinks = withState(UserConfiguration)({
-      DOM: dom as any,
-      props: xs.of<UserConfigurationProps>({ setting: settingFactory({}), setupFinished: false }),
+    const sinks = UserConfiguration({
+      DOM: dom as unknown as DOMSource,
+      props: Time.diagram("x", { x: { setupFinished: false } }),
       testid: undefined,
     });
 
-    const actual$ = sinks.DOM.drop(1).map((vtree) => {
-      return {
-        opener: select("[data-testid=opener]", vtree)[0].data?.class?.["--opened"],
-        dialog: select("[data-testid=dialog-container]", vtree)[0].data?.class?.["--opened"],
-      };
-    });
-    const expected$ = Time.diagram("-a(aa)b-----|", {
-      a: { opener: true, dialog: true },
-      b: { opener: false, dialog: false },
+    const actual$ = sinks.click;
+    const expected$ = Time.diagram("-x-", {
+      x: new Rect({ top: 1, bottom: 2, left: 0, right: 1 }),
     });
 
     // Assert

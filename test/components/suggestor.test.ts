@@ -1,10 +1,10 @@
-import { Suggestor, SuggestorProps } from "@/components/suggestor";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
 import test from "ava";
 import xs from "xstream";
+import { Suggestor, SuggestorProps } from "@/components/suggestor";
 
 test("open main when button clicked", async (t) => {
   await componentTest((done) => {

@@ -1,9 +1,9 @@
-import { ZoomSlider } from "@/components/zoom-slider";
 import { mockDOMSource, VNode } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import test from "ava";
 import { componentTest } from "test/helper";
+import { ZoomSlider } from "@/components/zoom-slider";
 
 test("display current zoom value", async (t) => {
   await componentTest((done) => {

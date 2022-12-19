@@ -1,6 +1,6 @@
+import test from "ava";
 import { makeViewBox } from "@/drivers/issue-graph";
 import { Rect } from "@/util/basic";
-import test from "ava";
 
 const rect = function rect(width: number, height: number) {
   return new Rect({ left: 0, top: 0, right: width, bottom: height });

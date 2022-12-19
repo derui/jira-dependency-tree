@@ -1,11 +1,11 @@
-import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
-import { projectFactory } from "@/model/project";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
+import { projectFactory } from "@/model/project";
+import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
 
 test("initial display when project is not configured", async (t) => {
   await componentTest((done) => {

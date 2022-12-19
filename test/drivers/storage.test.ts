@@ -1,7 +1,7 @@
-import { makeStorageDriver, StorageIntf, StorageSink } from "@/drivers/storage";
 import test from "ava";
 import xs from "xstream";
 import sinon from "sinon";
+import { makeStorageDriver, StorageIntf, StorageSink } from "@/drivers/storage";
 
 let mock: StorageIntf;
 

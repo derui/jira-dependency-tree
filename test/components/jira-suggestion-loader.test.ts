@@ -1,9 +1,9 @@
-import { JiraSuggestionLoader } from "@/components/jira-suggestions-loader";
-import { suggestionFactory } from "@/model/suggestion";
 import { mockTimeSource } from "@cycle/time";
 import test from "ava";
 import { componentTest } from "test/helper";
 import xs from "xstream";
+import { suggestionFactory } from "@/model/suggestion";
+import { JiraSuggestionLoader } from "@/components/jira-suggestions-loader";
 
 test("load project", async (t) => {
   await componentTest((done) => {

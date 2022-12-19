@@ -1,5 +1,5 @@
-import { ComponentSources } from "@/components/type";
 import { MemoryStream } from "xstream";
+import { ComponentSources } from "@/components/type";
 
 // short cut function to select element
 export const elements = function elements<T>(source: ComponentSources<T>, selector: string): MemoryStream<Element[]> {

@@ -1,8 +1,8 @@
-import { JiraIssueLoader } from "@/components/jira-issue-loader";
 import { mockTimeSource } from "@cycle/time";
 import test from "ava";
 import { componentTest } from "test/helper";
 import xs from "xstream";
+import { JiraIssueLoader } from "@/components/jira-issue-loader";
 
 test("load issues", async (t) => {
   await componentTest((done) => {

@@ -21,8 +21,8 @@ type UserConfigurationSinks = ComponentSinks<{
 }>;
 
 const intent = (sources: UserConfigurationSources) => {
-  const root$ = selectAsMain(sources, "[data-id=root]").element();
-  const clickOpener$ = selectAsMain(sources, "[data-id=opener]").events("click", { bubbles: false });
+  const root$ = selectAsMain(sources, '[data-id="root"]').element();
+  const clickOpener$ = selectAsMain(sources, '[data-id="opener"]').events("click", { bubbles: false });
 
   return {
     clickOpener$,
@@ -72,7 +72,7 @@ const view = function view(
   gen: ReturnType<typeof generateTestId>
 ) {
   return xs.combine(state$, nodes).map(([{ setupFinished }, { openerIcon }]) => (
-    <div class={Styles.root}>
+    <div class={Styles.root} dataset={{ id: "root" }}>
       <div class={Styles.toolbar}>
         <button class={{ ...Styles.opener() }} dataset={{ testid: gen("opener"), id: "opener" }}>
           <span

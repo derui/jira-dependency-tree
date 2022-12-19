@@ -1,9 +1,9 @@
-import { JiraProjectLoader } from "@/components/jira-project-loader";
-import { projectFactory } from "@/model/project";
 import { mockTimeSource } from "@cycle/time";
 import { componentTest } from "test/helper";
 import test from "ava";
 import xs from "xstream";
+import { projectFactory } from "@/model/project";
+import { JiraProjectLoader } from "@/components/jira-project-loader";
 
 test("load project", async (t) => {
   await componentTest((done) => {

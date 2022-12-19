@@ -1,5 +1,5 @@
-import { suggestionFactory } from "@/model/suggestion";
 import test from "ava";
+import { suggestionFactory } from "@/model/suggestion";
 
 test("empty sprints", (t) => {
   // arrange

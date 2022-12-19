@@ -2,8 +2,8 @@ module.exports = {
   plugins: ["@typescript-eslint", "import"],
   parser: '@typescript-eslint/parser',
   extends:  [
-    "plugin:import/errors",
-    "plugin:import/warnings",
+    "plugin:import/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
   env: {
     es6: true,
@@ -15,9 +15,10 @@ module.exports = {
     ecmaFeatures:  {
       jsx: true,  // Allows for the parsing of JSX
     },
-    // project: "./tsconfig.json",
+    project: "./tsconfig.json",
   },
   rules: {
+    "import/order": "error",
     "func-style": ["error", "expression"],
     "import/no-unresolved": "off",
     "@typescript-eslint/no-unused-vars": "warn",

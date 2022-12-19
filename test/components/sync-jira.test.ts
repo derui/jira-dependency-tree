@@ -1,10 +1,10 @@
-import { SyncJira, SyncJiraProps } from "@/components/sync-jira";
 import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
+import { SyncJira, SyncJiraProps } from "@/components/sync-jira";
 
 test("initial display when component can not sync", async (t) => {
   await componentTest((done) => {

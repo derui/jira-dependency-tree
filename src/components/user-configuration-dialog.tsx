@@ -52,7 +52,7 @@ const intent = (sources: UserConfigurationDialogSources) => {
   };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$
     .map((props) => {
       return xs.combine(actions.state.select<boolean>("opened").stream).map(([opened]) => {
@@ -90,11 +90,11 @@ const Styles = {
   },
 };
 
-const view = function view(
+const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["jiraToken", "email", "userDomain", "submit", "cancel"]>,
   gen: ReturnType<typeof generateTestId>
-) {
+) => {
   return xs.combine(state$, nodes$).map(([{ opened, openAt }, nodes]) => {
     const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
     console.log(top);
@@ -211,9 +211,7 @@ const reduceState = (
   return xs.merge(initialReducer$, propsReducer$, stateReducer$, openedReducer$);
 };
 
-export const UserConfigurationDialog = function UserConfigurationDialog(
-  sources: UserConfigurationDialogSources
-): UserConfigurationDialogSinks {
+export const UserConfigurationDialog = (sources: UserConfigurationDialogSources): UserConfigurationDialogSinks => {
   const gen = generateTestId(sources.testid);
   const userDomain = isolate(
     Input,

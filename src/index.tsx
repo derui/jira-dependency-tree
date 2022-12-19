@@ -15,7 +15,7 @@ import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
 import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
-import { filterNull, filterUndefined } from "./util/basic";
+import { filterNull, filterUndefined, Rect } from "./util/basic";
 import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
@@ -28,6 +28,7 @@ import { GraphLayout } from "./issue-graph/type";
 import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
 import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
+import { Props, UserConfigurationDialog } from "./components/user-configuration-dialog";
 
 type MainSources = {
   DOM: DOMSource;
@@ -150,6 +151,24 @@ const main = (sources: MainSources): MainSinks => {
     })),
     testid: "user-configuration",
   });
+
+  const dialogStream$ = userConfigurationSink.click.map<Rect | undefined>((v) => v).startWith(undefined);
+
+  const userConfigurationDialogSink = isolate(
+    UserConfigurationDialog,
+    "userConfigurationDialog"
+  )({
+    ...sources,
+    props: xs
+      .combine(sources.state.select<MainState["setting"]>("setting").stream, dialogStream$)
+      .map<Props>(([setting, openAt]) => ({
+        jiraToken: setting.credentials.jiraToken,
+        email: setting.credentials.email,
+        userDomain: setting.userDomain,
+        openAt,
+      })),
+    testid: "user-configuration",
+  });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     ...sources,
     props: sources.state
@@ -211,23 +230,42 @@ const main = (sources: MainSources): MainSinks => {
   const projectSyncOptionEditor$ = projectSyncOpitonEditorSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectSyncOptionEditor$)
-    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectSyncOptionEditor]) => (
-      <div class={Styles.root}>
-        <div class={Styles.topToolbars}>
-          <div class={Styles.projectToolbar}>
-            {projectInformation}
-            <span class={Styles.divider}></span>
-            {projectSyncOptionEditor}
-            {syncJira}
+    .combine(
+      userConfiguration$,
+      projectInformation$,
+      zoomSlider$,
+      syncJira$,
+      sideToolbar$,
+      projectSyncOptionEditor$,
+      userConfigurationDialogSink.DOM
+    )
+    .map(
+      ([
+        userConfiguration,
+        projectInformation,
+        zoomSlider,
+        syncJira,
+        sideToolbar,
+        projectSyncOptionEditor,
+        userConfigurationDialog,
+      ]) => (
+        <div class={Styles.root}>
+          <div class={Styles.topToolbars}>
+            <div class={Styles.projectToolbar}>
+              {projectInformation}
+              <span class={Styles.divider}></span>
+              {projectSyncOptionEditor}
+              {syncJira}
+            </div>
+            <div></div>
+            {userConfiguration}
           </div>
-          <div></div>
-          {userConfiguration}
+          {zoomSlider}
+          {sideToolbar}
+          {userConfigurationDialog}
         </div>
-        {zoomSlider}
-        {sideToolbar}
-      </div>
-    ));
+      )
+    );
 
   const issueGraph$ = xs
     .combine(
@@ -282,7 +320,7 @@ const main = (sources: MainSources): MainSinks => {
       }
   );
 
-  const environmentReducer$ = userConfigurationSink.value.map(
+  const environmentReducer$ = userConfigurationDialogSink.value.map(
     (v) =>
       function (prevState?: MainState) {
         if (!prevState) return undefined;
@@ -353,7 +391,7 @@ const main = (sources: MainSources): MainSinks => {
       projectReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
       projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
-      userConfigurationSink.state as Stream<Reducer<MainState>>,
+      userConfigurationDialogSink.state as Stream<Reducer<MainState>>,
       loadingReducer$
     ),
     issueGraph: issueGraph$,

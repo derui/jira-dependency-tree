@@ -3,12 +3,12 @@ import xs, { Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Reducer, StateSource } from "@cycle/state";
 import produce from "immer";
-import { Input, InputProps } from "./atoms/input";
+import { Input, InputProps, InputSinks } from "./atoms/input";
 import { Button, ButtonProps } from "./atoms/button";
 import { AsNodeStream, mergeNodes } from "./helper";
 import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
 import { classes, generateTestId, selectAsMain } from "@/components/helper";
-import { filterEmptyString } from "@/util/basic";
+import { filterEmptyString, filterUndefined, Rect } from "@/util/basic";
 
 export type UserConfigurationValue = {
   jiraToken: string;
@@ -18,10 +18,13 @@ export type UserConfigurationValue = {
 
 type UserConfigurationState = UserConfigurationValue & {
   allowSubmit: boolean;
+  opened: boolean;
 };
 
+export type Props = Partial<UserConfigurationValue> & { openAt?: Rect };
+
 interface UserConfigurationDialogSources extends ComponentSourceBase {
-  props: Stream<Partial<UserConfigurationValue> & { opened: boolean }>;
+  props: Stream<Props>;
   state: StateSource<UserConfigurationState>;
 }
 
@@ -45,20 +48,17 @@ const intent = (sources: UserConfigurationDialogSources) => {
   return {
     submit$,
     props$: sources.props,
-    state$: sources.state.stream,
+    state: sources.state,
   };
 };
 
 const model = function model(actions: ReturnType<typeof intent>) {
   return actions.props$
     .map((props) => {
-      return actions.state$.map((state) => {
+      return xs.combine(actions.state.select<boolean>("opened").stream).map(([opened]) => {
         return {
-          jiraToken: state.jiraToken ?? props.email ?? "",
-          email: state.email ?? props.email ?? "",
-          userDomain: state.userDomain ?? props.userDomain ?? "",
-          allowSubmit: state.allowSubmit,
-          opened: props.opened,
+          opened: opened,
+          openAt: props.openAt,
         };
       });
     })
@@ -94,21 +94,30 @@ const view = function view(
   nodes$: AsNodeStream<["jiraToken", "email", "userDomain", "submit", "cancel"]>,
   gen: ReturnType<typeof generateTestId>
 ) {
-  return xs.combine(state$, nodes$).map(([{ opened }, nodes]) => (
-    <div class={Styles.dialogContainer(opened)} dataset={{ testid: gen("dialog-container") }}>
-      <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>
-        <div class={Styles.main}>
-          {nodes.userDomain}
-          {nodes.email}
-          {nodes.jiraToken}
-        </div>
-        <div class={Styles.footer}>
-          {nodes.cancel}
-          {nodes.submit}
-        </div>
-      </form>
-    </div>
-  ));
+  return xs.combine(state$, nodes$).map(([{ opened, openAt }, nodes]) => {
+    const right = openAt ? `${openAt.right}px` : "";
+    const top = openAt ? `${openAt.top}px` : "";
+
+    return (
+      <div
+        class={Styles.dialogContainer(opened)}
+        style={{ right, top }}
+        dataset={{ testid: gen("dialog-container"), id: "root", opened: `${opened}` }}
+      >
+        <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>
+          <div class={Styles.main}>
+            {nodes.userDomain}
+            {nodes.email}
+            {nodes.jiraToken}
+          </div>
+          <div class={Styles.footer}>
+            {nodes.cancel}
+            {nodes.submit}
+          </div>
+        </form>
+      </div>
+    );
+  });
 };
 
 const canSubmit: (args: { jiraToken: string; email: string; userDomain: string }) => boolean = ({
@@ -117,6 +126,88 @@ const canSubmit: (args: { jiraToken: string; email: string; userDomain: string }
   userDomain,
 }) => {
   return filterEmptyString(jiraToken) && filterEmptyString(email) && filterEmptyString(userDomain);
+};
+
+const reduceState = (
+  submit$: Stream<{ jiraToken: string; email: string; userDomain: string }>,
+  cancel$: Stream<boolean>,
+  sources: UserConfigurationDialogSources,
+  email: InputSinks,
+  userDomain: InputSinks,
+  jiraToken: InputSinks
+) => {
+  const initialReducer$ = xs.of<Reducer<UserConfigurationState>>(() => {
+    return {
+      jiraToken: "",
+      userDomain: "",
+      email: "",
+      allowSubmit: false,
+      opened: false,
+    };
+  });
+
+  const openedReducer$ = xs
+    .merge(
+      submit$.mapTo(false),
+      cancel$.mapTo(false),
+      sources.props
+        .map((v) => v.openAt)
+        .filter(filterUndefined)
+        .mapTo(true)
+    )
+    .map<Reducer<UserConfigurationState>>((opened) => {
+      return (prevState) => {
+        if (!prevState) return;
+
+        return produce(prevState, (draft) => {
+          draft.opened = opened;
+        });
+      };
+    });
+
+  const propsReducer$ = sources.props
+    .filter((props) => {
+      return (
+        !filterEmptyString(props.email) && !filterEmptyString(props.jiraToken) && !filterEmptyString(props.userDomain)
+      );
+    })
+    .map<Reducer<UserConfigurationState>>((props) => {
+      return (prevState) => {
+        if (!prevState) return;
+
+        return produce(prevState, (draft) => {
+          draft.jiraToken = props.jiraToken ?? "";
+          draft.userDomain = props.userDomain ?? "";
+          draft.email = props.email ?? "";
+          draft.allowSubmit = canSubmit({
+            jiraToken: draft.jiraToken,
+            userDomain: draft.userDomain,
+            email: draft.email,
+          });
+        });
+      };
+    });
+
+  const stateReducer$ = xs
+    .combine(email.input, userDomain.input, jiraToken.input)
+    .map<Reducer<UserConfigurationState>>(([email, userDomain, jiraToken]) => {
+      return (prevState) => {
+        if (!prevState) return;
+
+        return produce(prevState, (draft) => {
+          draft.jiraToken = jiraToken;
+          draft.userDomain = userDomain;
+          draft.email = email;
+          draft.allowSubmit = canSubmit({
+            jiraToken: draft.jiraToken,
+            userDomain: draft.userDomain,
+            email: draft.email,
+          });
+        });
+      };
+    });
+
+  return xs.merge(initialReducer$, propsReducer$, stateReducer$, openedReducer$);
 };
 
 export const UserConfigurationDialog = function UserConfigurationDialog(
@@ -196,9 +287,9 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
   const actions = intent(sources);
   const state$ = model(actions);
 
-  const submit$ = submit.click
+  const submit$ = actions.submit$
     .map(() => {
-      return state$
+      return sources.state.stream
         .filter(({ allowSubmit }) => allowSubmit)
         .map(({ jiraToken, email, userDomain }) => ({
           jiraToken,
@@ -210,47 +301,7 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     .flatten();
 
   const cancel$ = cancel.click.mapTo(true);
-
-  const initialReducer$ = xs.of<Reducer<UserConfigurationState>>(() => {
-    return {
-      jiraToken: "",
-      userDomain: "",
-      email: "",
-      allowSubmit: false,
-    };
-  });
-
-  const propsReducer$ = sources.props.map<Reducer<UserConfigurationState>>((props) => {
-    return (prevState) => {
-      if (!prevState) return;
-
-      return produce(prevState, (draft) => {
-        draft.jiraToken = props.jiraToken ?? "";
-        draft.userDomain = props.userDomain ?? "";
-        draft.email = props.email ?? "";
-        draft.allowSubmit = canSubmit({ jiraToken: draft.jiraToken, userDomain: draft.userDomain, email: draft.email });
-      });
-    };
-  });
-
-  const stateReducer$ = xs
-    .combine(email.input, userDomain.input, jiraToken.input)
-    .map<Reducer<UserConfigurationState>>(([email, userDomain, jiraToken]) => {
-      return (prevState) => {
-        if (!prevState) return;
-
-        return produce(prevState, (draft) => {
-          draft.jiraToken = jiraToken;
-          draft.userDomain = userDomain;
-          draft.email = email;
-          draft.allowSubmit = canSubmit({
-            jiraToken: draft.jiraToken,
-            userDomain: draft.userDomain,
-            email: draft.email,
-          });
-        });
-      };
-    });
+  const reducer = reduceState(submit$, cancel$, sources, email, userDomain, jiraToken);
 
   return {
     DOM: view(
@@ -266,6 +317,6 @@ export const UserConfigurationDialog = function UserConfigurationDialog(
     ),
     value: submit$,
     cancel: cancel$,
-    state: xs.merge(initialReducer$, propsReducer$, stateReducer$),
+    state: reducer,
   };
 };

@@ -66,11 +66,11 @@ const Styles = {
   },
 };
 
-const view = function view(
+const view = (
   state$: ReturnType<typeof model>,
   nodes: AsNodeStream<["openerIcon"]>,
   gen: ReturnType<typeof generateTestId>
-) {
+) => {
   return xs.combine(state$, nodes).map(([{ setupFinished }, { openerIcon }]) => (
     <div class={Styles.root}>
       <div class={Styles.toolbar} dataset={{ id: "root" }}>
@@ -86,7 +86,7 @@ const view = function view(
   ));
 };
 
-export const UserConfiguration = function UserConfiguration(sources: UserConfigurationSources): UserConfigurationSinks {
+export const UserConfiguration = (sources: UserConfigurationSources): UserConfigurationSinks => {
   const gen = generateTestId(sources.testid);
   const openerIcon = Icon({
     ...sources,

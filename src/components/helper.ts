@@ -1,3 +1,4 @@
+import assert from "node:assert";
 import { MainDOMSource } from "@cycle/dom";
 import { HTTPSource, Response } from "@cycle/http";
 import { VNode } from "snabbdom";
@@ -35,6 +36,7 @@ export const classes = (...classes: string[]) => {
   }, {} as Record<string, boolean>);
 };
 
+// support for node merger
 export type AsNodeStream<T extends string[]> = Stream<Record<T[number], VNode>>;
 type NodesStream<T extends Record<string, unknown>> = Stream<Record<keyof T, VNode>>;
 
@@ -50,3 +52,27 @@ export const mergeNodes: <T extends Record<string, Stream<VNode>>>(nodes: T) => 
     }, {} as { [k in keyof typeof nodes]: VNode });
   });
 };
+
+// cyclejs's driver support
+const Drivers = {
+  DOM: "DOM",
+  HTTP: "HTTP",
+} as const;
+
+type Drivers = typeof Drivers[keyof typeof Drivers];
+type DriverTypes = {
+  DOM: MainDOMSource;
+  HTTP: HTTPSource;
+};
+
+// helper function to get driver from any source.
+const driverOf = <T extends Drivers>(sources: Record<string, unknown>, target: T): DriverTypes[T] => {
+  const driver = sources[target] as DriverTypes[T] | undefined;
+
+  assert(driver !== undefined);
+
+  return driver;
+};
+
+export const domDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "DOM");
+export const httpDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "HTTP");

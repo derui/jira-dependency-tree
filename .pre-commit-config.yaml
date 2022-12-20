@@ -13,7 +13,7 @@ repos:
       entry: npx eslint
       language: system
       files: "\\.tsx?$"
-      args: ["--fix"]
+      args: ["--fix", "--cache", "--cache-location", "node_modules/.cache/eslint"]
     - id: rustfmt
       name: rustfmt
       entry: rustfmt

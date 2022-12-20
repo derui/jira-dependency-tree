@@ -29,6 +29,7 @@ import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
 import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
 import { Props, UserConfigurationDialog } from "./components/user-configuration-dialog";
+import { makePortalDriver, PortalSource } from "./drivers/portal";
 
 type MainSources = {
   DOM: DOMSource;
@@ -36,6 +37,7 @@ type MainSources = {
   panZoom: PanZoomSource;
   HTTP: HTTPSource;
   STORAGE: StorageSource;
+  Portal: PortalSource;
 };
 
 type MainSinks = {
@@ -44,6 +46,7 @@ type MainSinks = {
   issueGraph: Stream<IssueGraphSink>;
   HTTP: Stream<RequestInput>;
   STORAGE: Stream<StorageSink>;
+  Portal: Stream<VNode>;
 };
 
 type MainState = {
@@ -412,4 +415,5 @@ run(withState(main), {
   panZoom: makePanZoomDriver("#root"),
   HTTP: makeHTTPDriver(),
   STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
+  Portal: makePortalDriver("#portal-root"),
 });

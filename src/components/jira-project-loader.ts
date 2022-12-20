@@ -1,23 +1,21 @@
-import { RequestOptions } from "http";
-import { HTTPSource, Response } from "@cycle/http";
+import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
+import { ComponentSink, ComponentSource } from "./helper";
 import { Events } from "@/model/event";
 import { Project, projectFactory } from "@/model/project";
-import { selectResponse } from "@/components/helper";
+import { httpSourceOf, selectResponse } from "@/components/helper";
 
-export type JiraProjectLoaderSources = {
-  HTTP: HTTPSource;
+export interface JiraProjectLoaderSources extends ComponentSource {
   events: Stream<Events>;
-};
+}
 
-export type JiraProjectLoaderSinks = {
-  HTTP: Stream<RequestOptions>;
+export interface JiraProjectLoaderSinks extends ComponentSink<"HTTP"> {
   project: Stream<Project>;
-};
+}
 
-export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProjectLoaderSources): JiraProjectLoaderSinks {
+export const JiraProjectLoader = (sources: JiraProjectLoaderSources): JiraProjectLoaderSinks => {
   const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest");
-  const request$ = events$.map<RequestOptions>((e) => {
+  const request$ = events$.map<RequestInput>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/load-project`,
       method: "POST",
@@ -36,7 +34,7 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
     };
   });
 
-  const project$ = selectResponse(sources.HTTP)
+  const project$ = selectResponse(httpSourceOf(sources))
     .map((r) => r.replaceError(() => xs.of({ status: 500 } as Response)))
     .flatten()
     .filter((response) => response.status === 200)
@@ -52,7 +50,7 @@ export const JiraProjectLoader = function JiraProjectLoader(sources: JiraProject
   };
 };
 
-const mapResponse = function mapResponse(body: { [k: string]: any }): Project {
+const mapResponse = (body: { [k: string]: any }): Project => {
   return projectFactory({
     id: body.id,
     key: body.key,

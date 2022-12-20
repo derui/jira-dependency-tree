@@ -1,18 +1,17 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { MemoryStream } from "xstream";
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { ComponentSink, ComponentSource, classes, domSourceOf, generateTestId } from "@/components/helper";
 
 export interface ZoomSliderProps {
   zoom: number;
 }
 
-interface ZoomSliderSources extends ComponentSourceBase {
+interface ZoomSliderSources extends ComponentSource {
   props: MemoryStream<ZoomSliderProps>;
 }
 
 const intent = (sources: ZoomSliderSources) => {
-  const clicked$ = selectAsMain(sources, ".zoom-slider").events("click").mapTo(true);
+  const clicked$ = domSourceOf(sources).select(".zoom-slider").events("click").mapTo(true);
 
   return { props$: sources.props, clicked$ };
 };
@@ -36,7 +35,7 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
   });
 };
 
-export const ZoomSlider = (sources: ZoomSliderSources): ComponentSinkBase => {
+export const ZoomSlider = (sources: ZoomSliderSources): ComponentSink<"DOM"> => {
   const actions = intent(sources);
   const state$ = model(actions);
 

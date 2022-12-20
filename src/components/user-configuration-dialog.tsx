@@ -5,9 +5,8 @@ import { Reducer, StateSource } from "@cycle/state";
 import produce from "immer";
 import { Input, InputProps, InputSinks } from "./atoms/input";
 import { Button, ButtonProps } from "./atoms/button";
-import { AsNodeStream, mergeNodes } from "./helper";
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
+import { AsNodeStream, mergeNodes, portalSourceOf } from "./helper";
+import { ComponentSink, ComponentSource, classes, generateTestId } from "@/components/helper";
 import { filterEmptyString, filterUndefined, Rect } from "@/util/basic";
 
 export type UserConfigurationValue = {
@@ -23,12 +22,12 @@ type UserConfigurationState = UserConfigurationValue & {
 
 export type Props = Partial<UserConfigurationValue> & { openAt?: Rect };
 
-interface UserConfigurationDialogSources extends ComponentSourceBase {
+interface UserConfigurationDialogSources extends ComponentSource {
   props: Stream<Props>;
   state: StateSource<UserConfigurationState>;
 }
 
-interface UserConfigurationDialogSinks extends ComponentSinkBase {
+interface UserConfigurationDialogSinks extends ComponentSink<"Portal"> {
   /**
    * streaming values when value submitted
    */
@@ -41,7 +40,8 @@ interface UserConfigurationDialogSinks extends ComponentSinkBase {
 }
 
 const intent = (sources: UserConfigurationDialogSources) => {
-  const submit$ = selectAsMain(sources, '[data-id="form"]')
+  const submit$ = portalSourceOf(sources)
+    .DOM.select('[data-id="form"]')
     .events("submit", { preventDefault: true, bubbles: false })
     .mapTo(true);
 
@@ -303,7 +303,7 @@ export const UserConfigurationDialog = (sources: UserConfigurationDialogSources)
   const reducer = reduceState(submit$, cancel$, sources, email, userDomain, jiraToken);
 
   return {
-    DOM: view(
+    Portal: view(
       state$,
       mergeNodes({
         jiraToken: jiraToken.DOM,

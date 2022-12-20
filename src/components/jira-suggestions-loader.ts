@@ -1,25 +1,22 @@
-import { RequestOptions } from "http";
-import { HTTPSource, Response } from "@cycle/http";
+import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
 import { Events, GetSuggestionRequest } from "@/model/event";
-import { selectResponse } from "@/components/helper";
+import { httpSourceOf, selectResponse, ComponentSink, ComponentSource } from "@/components/helper";
 import { suggestionFactory, Suggestion } from "@/model/suggestion";
 
-export type JiraSuggestionLoaderSources = {
-  HTTP: HTTPSource;
+export interface JiraSuggestionLoaderSources extends ComponentSource {
   events: Stream<Events>;
-};
+}
 
-export type JiraSuggestionLoaderSinks = {
-  HTTP: Stream<RequestOptions>;
+export interface JiraSuggestionLoaderSinks extends ComponentSink<"HTTP"> {
   suggestion: Stream<Suggestion>;
-};
+}
 
 export const JiraSuggestionLoader = function JiraSuggestionLoader(
   sources: JiraSuggestionLoaderSources
 ): JiraSuggestionLoaderSinks {
   const events$ = sources.events.filter((v) => v.kind === "GetSuggestionRequest" && v.term.length > 0);
-  const request$ = events$.map<RequestOptions>((e) => {
+  const request$ = events$.map<RequestInput>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/get-suggestions`,
       method: "POST",
@@ -39,7 +36,7 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
     };
   });
 
-  const suggestion$ = selectResponse(sources.HTTP)
+  const suggestion$ = selectResponse(httpSourceOf(sources))
     .map((r) => r.replaceError(() => xs.of({ status: 500 } as Response)))
     .flatten()
     .filter((response) => response.status === 200)

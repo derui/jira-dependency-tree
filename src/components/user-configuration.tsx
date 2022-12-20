@@ -1,28 +1,35 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
 import { Icon, IconProps } from "./atoms/icon";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
-import { ComponentSinks, ComponentSources } from "@/components/type";
+import {
+  AsNodeStream,
+  classes,
+  domSourceOf,
+  generateTestId,
+  mergeNodes,
+  ComponentSink,
+  ComponentSource,
+} from "@/components/helper";
 import { Rect } from "@/util/basic";
 
 export type UserConfigurationProps = {
   setupFinished: boolean;
 };
 
-type UserConfigurationSources = ComponentSources<{
+interface UserConfigurationSources extends ComponentSource {
   props: Stream<UserConfigurationProps>;
-}>;
+}
 
-type UserConfigurationSinks = ComponentSinks<{
+interface UserConfigurationSinks extends ComponentSink<"DOM"> {
   /**
    * streaming Rect of element when it was clicked
    */
   click: Stream<Rect>;
-}>;
+}
 
 const intent = (sources: UserConfigurationSources) => {
-  const root$ = selectAsMain(sources, '[data-id="root"]').element();
-  const clickOpener$ = selectAsMain(sources, '[data-id="opener"]').events("click", { bubbles: false });
+  const root$ = domSourceOf(sources).select('[data-id="root"]').element();
+  const clickOpener$ = domSourceOf(sources).select('[data-id="opener"]').events("click", { bubbles: false });
 
   return {
     clickOpener$,

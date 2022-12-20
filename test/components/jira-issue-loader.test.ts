@@ -2,6 +2,7 @@ import { mockTimeSource } from "@cycle/time";
 import test from "ava";
 import { componentTest } from "test/helper";
 import xs from "xstream";
+import { HTTPSource } from "@cycle/http";
 import { JiraIssueLoader } from "@/components/jira-issue-loader";
 
 test("load issues", async (t) => {
@@ -111,11 +112,11 @@ test("merge subtask's outward", async (t) => {
         select() {
           return Time.diagram("x|", { x: response$ });
         },
-      } as any,
+      } as unknown as HTTPSource,
       events: xs.of(),
     });
 
-    const actual$ = sinks.issues.map((v) => v.filter((i) => i.key === "bar").at(0)!);
+    const actual$ = sinks.issues.map((v) => v.filter((i) => i.key === "bar").at(0));
     const expected$ = Time.diagram("-b|", {
       b: {
         key: "bar",

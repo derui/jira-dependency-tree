@@ -1,7 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Stream } from "xstream";
-import { classes, generateTestId, selectAsMain } from "../helper";
-import { ComponentSinkBase, ComponentSourceBase } from "../type";
+import { classes, generateTestId, ComponentSink, ComponentSource } from "../helper";
 
 type IconSize = "s" | "m" | "l";
 
@@ -14,7 +13,7 @@ export interface IconProps {
   style?: Record<string, boolean>;
 }
 
-interface IconSources extends ComponentSourceBase {
+interface IconSources extends ComponentSource {
   props: Stream<IconProps>;
 }
 
@@ -108,7 +107,7 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
 /**
  * do not have any behavior in this component. You do not use this component with `isolate`, then you found problem can not get any bubbling event.
  */
-export const Icon = (sources: IconSources): ComponentSinkBase => {
+export const Icon = (sources: IconSources): ComponentSink<"DOM"> => {
   const gen = generateTestId(sources.testid);
   const actions = intent(sources);
   const state$ = model(actions);

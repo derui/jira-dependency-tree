@@ -1,7 +1,6 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
-import { classes, generateTestId, selectAsMain } from "../helper";
-import { ComponentSinkBase, ComponentSourceBase } from "../type";
+import { classes, domSourceOf, generateTestId, ComponentSink, ComponentSource } from "../helper";
 
 type ColorSchema = "primary" | "secondary1" | "gray";
 
@@ -12,11 +11,11 @@ export interface ButtonProps {
   disabled?: boolean;
 }
 
-interface ButtonSources extends ComponentSourceBase {
+interface ButtonSources extends ComponentSource {
   props: Stream<ButtonProps>;
 }
 
-interface ButtonSinks extends ComponentSinkBase {
+interface ButtonSinks extends ComponentSink<"DOM"> {
   /**
    * flow click event. values are always `true`
    */
@@ -24,8 +23,11 @@ interface ButtonSinks extends ComponentSinkBase {
 }
 
 const intent = (sources: ButtonSources) => {
-  const buttonClicked$ = selectAsMain(sources, "button").events("click", { bubbles: false }).mapTo(true);
-  const submitClicked$ = selectAsMain(sources, 'input[type="submit"]').events("click", { bubbles: false }).mapTo(true);
+  const buttonClicked$ = domSourceOf(sources).select("button").events("click", { bubbles: false }).mapTo(true);
+  const submitClicked$ = domSourceOf(sources)
+    .select('input[type="submit"]')
+    .events("click", { bubbles: false })
+    .mapTo(true);
 
   return {
     props$: sources.props,

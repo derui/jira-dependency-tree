@@ -1,10 +1,18 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream, MemoryStream } from "xstream";
 import debounce from "xstream/extra/debounce";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
+import {
+  AsNodeStream,
+  classes,
+  ComponentSource,
+  domSourceOf,
+  generateTestId,
+  mergeNodes,
+  TestIdGenerator,
+} from "./helper";
 import { Icon, IconProps } from "./atoms/icon";
 import { filterUndefined } from "@/util/basic";
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
+import { ComponentSink } from "@/components/helper";
 
 interface Suggestion<T> {
   id: string;
@@ -16,18 +24,21 @@ export interface SuggestorProps<T> {
   suggestions: Suggestion<T>[];
 }
 
-interface SuggestorSources<T = unknown> extends ComponentSourceBase {
+interface SuggestorSources<T = unknown> extends ComponentSource {
   props: MemoryStream<SuggestorProps<T>>;
 }
 
-interface SuggestorSinks<T = unknown> extends ComponentSinkBase {
+interface SuggestorSinks<T = unknown> extends ComponentSink<"DOM"> {
   value: Stream<T>;
   term: Stream<string>;
 }
 
-const intent = function intent<T>(sources: SuggestorSources<T>) {
-  const openerClicked$ = selectAsMain(sources, "[data-id=opener]").events("click", { bubbles: false }).mapTo(true);
-  const termInput$ = selectAsMain(sources, ".suggestor-main__term-input");
+const intent = <T,>(sources: SuggestorSources<T>) => {
+  const openerClicked$ = domSourceOf(sources)
+    .select("[data-id=opener]")
+    .events("click", { bubbles: false })
+    .mapTo(true);
+  const termInput$ = domSourceOf(sources).select(".suggestor-main__term-input");
   const termInputted$ = termInput$
     .events("input")
     .map((e) => {
@@ -55,7 +66,8 @@ const intent = function intent<T>(sources: SuggestorSources<T>) {
     .filter(filterUndefined);
   const enterPressed$ = termInput$.events("keypress").filter((e) => e.key === "Enter");
 
-  const suggestionIdClicked$ = selectAsMain(sources, ".suggestor-suggestions__suggestion")
+  const suggestionIdClicked$ = domSourceOf(sources)
+    .select(".suggestor-suggestions__suggestion")
     .events("click", { bubbles: false })
     .map((e) => (e.currentTarget as Element).attributes.getNamedItem("data-id")?.value)
     .filter(filterUndefined);
@@ -71,10 +83,7 @@ const intent = function intent<T>(sources: SuggestorSources<T>) {
   };
 };
 
-const effects = function effects<T>(
-  opened$: MemoryStream<boolean>,
-  actions: ReturnType<typeof intent<T>>
-): Stream<void> {
+const effects = <T,>(opened$: MemoryStream<boolean>, actions: ReturnType<typeof intent<T>>): Stream<void> => {
   return opened$
     .filter((v) => v)
     .map(() => {
@@ -88,7 +97,7 @@ const effects = function effects<T>(
     .startWith(undefined);
 };
 
-const model = function model<T>(actions: ReturnType<typeof intent<T>>) {
+const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
   return actions.props$
     .map((props) => {
       const opened$ = xs
@@ -228,11 +237,7 @@ const StyleMaker = {
   },
 };
 
-const view = function view<T>(
-  state$: ReturnType<typeof model<T>>,
-  nodes$: AsNodeStream<["icon"]>,
-  gen: TestIdGenerator
-) {
+const view = <T,>(state$: ReturnType<typeof model<T>>, nodes$: AsNodeStream<["icon"]>, gen: TestIdGenerator) => {
   return xs.combine(state$, nodes$).map(([{ opened, suggestions, index, currentSuggestion }, { icon }]) => {
     const suggestionNodes = suggestions.map((obj, cur) => {
       const style = StyleMaker.suggestionNode(cur === index);

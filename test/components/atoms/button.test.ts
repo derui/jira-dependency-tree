@@ -1,4 +1,4 @@
-import { mockDOMSource, span, VNode } from "@cycle/dom";
+import { mockDOMSource, span } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
@@ -12,7 +12,7 @@ test("normal button", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = Button({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: {
           content: span("test"),

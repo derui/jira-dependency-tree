@@ -1,39 +1,39 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
-import isolate from "@cycle/isolate";
 import { Icon, IconProps } from "./atoms/icon";
-import { AsNodeStream, mergeNodes } from "./helper";
+import { AsNodeStream, ComponentSource, domSourceOf, mergeNodes } from "./helper";
 import { GraphLayout } from "@/issue-graph/type";
-import { classes, generateTestId, selectAsMain } from "@/components/helper";
-import { ComponentSinks, ComponentSources } from "@/components/type";
+import { classes, generateTestId, ComponentSink } from "@/components/helper";
 
 export interface SideToolbarState {
   graphLayout: GraphLayout;
 }
 
-type SideToolbarSources = ComponentSources<{
+interface SideToolbarSources extends ComponentSource {
   props: MemoryStream<GraphLayout>;
   state: StateSource<SideToolbarState>;
-}>;
+}
 
-type SideToolbarSinks = ComponentSinks<{
+interface SideToolbarSinks extends ComponentSink<"DOM"> {
   state: Stream<Reducer<SideToolbarState>>;
-}>;
+}
 
-const intent = function intent(sources: SideToolbarSources) {
-  const layouterClicked$ = selectAsMain(sources, '[data-id="opener"]').events("click");
-  const verticalClicked$ = selectAsMain(sources, '[data-id="vertical"]')
+const intent = (sources: SideToolbarSources) => {
+  const layouterClicked$ = domSourceOf(sources).select('[data-id="opener"]').events("click");
+  const verticalClicked$ = domSourceOf(sources)
+    .select('[data-id="vertical"]')
     .events("click", undefined, false)
     .mapTo(GraphLayout.Vertical);
-  const horizontalClicked$ = selectAsMain(sources, '[data-id="horizontal"]')
+  const horizontalClicked$ = domSourceOf(sources)
+    .select('[data-id="horizontal"]')
     .events("click", undefined, false)
     .mapTo(GraphLayout.Horizontal);
 
   return { state$: sources.state.stream, layouterClicked$, verticalClicked$, horizontalClicked$ };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   const layout$ = xs.merge(actions.state$.map((v) => v.graphLayout));
   const layouterOpened$ = xs
     .merge(

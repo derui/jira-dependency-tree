@@ -1,4 +1,4 @@
-import { mockDOMSource, VNode } from "@cycle/dom";
+import { mockDOMSource } from "@cycle/dom";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
 import { componentTest } from "test/helper";
@@ -12,7 +12,7 @@ test("small icon", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = Icon({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: {
           type: "search",
@@ -54,7 +54,7 @@ test("change icon type", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = Icon({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("xs", {
         x: {
           type: "search",
@@ -107,7 +107,7 @@ test("can add some styles", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = Icon({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: {
           type: "test",

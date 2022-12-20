@@ -1,22 +1,21 @@
-import { HTTPSource, RequestOptions, Response } from "@cycle/http";
+import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
+import { ComponentSink, ComponentSource } from "./helper";
 import { Events } from "@/model/event";
 import { Issue } from "@/model/issue";
-import { selectResponse } from "@/components/helper";
+import { httpSourceOf, selectResponse } from "@/components/helper";
 
-export type JiraIssueLoaderSources = {
-  HTTP: HTTPSource;
+export interface JiraIssueLoaderSources extends ComponentSource {
   events: Stream<Events>;
-};
+}
 
-export type JiraIssueLoaderSinks = {
-  HTTP: Stream<RequestOptions>;
+export interface JiraIssueLoaderSinks extends ComponentSink<"HTTP"> {
   issues: Stream<Issue[]>;
-};
+}
 
-export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoaderSources): JiraIssueLoaderSinks {
+export const JiraIssueLoader = (sources: JiraIssueLoaderSources): JiraIssueLoaderSinks => {
   const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "SyncIssuesRequest");
-  const request$ = events$.map<RequestOptions>((e) => {
+  const request$ = events$.map<RequestInput>((e) => {
     return {
       url: `${e.env.apiBaseUrl}/load-issues`,
       method: "POST",
@@ -36,7 +35,7 @@ export const JiraIssueLoader = function JiraIssueLoader(sources: JiraIssueLoader
     };
   });
 
-  const issues$ = selectResponse(sources.HTTP)
+  const issues$ = selectResponse(httpSourceOf(sources))
     .map((r) => r.replaceError(() => xs.of({ status: 500 } as Response)))
     .flatten()
     .filter((response) => response.status === 200)

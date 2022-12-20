@@ -2,8 +2,15 @@ import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint
 import xs, { MemoryStream, Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Icon, IconProps } from "./atoms/icon";
-import { ComponentSinkBase, ComponentSourceBase } from "@/components/type";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
+import {
+  ComponentSink,
+  ComponentSource,
+  AsNodeStream,
+  classes,
+  domSourceOf,
+  generateTestId,
+  mergeNodes,
+} from "@/components/helper";
 import { LoaderState, LoaderStatus } from "@/type";
 
 export interface SyncJiraProps {
@@ -15,20 +22,20 @@ export type SyncJiraState = LoaderState;
 
 export type SyncJiraEvent = "REQUEST";
 
-export interface SyncJiraSources extends ComponentSourceBase {
+export interface SyncJiraSources extends ComponentSource {
   props: MemoryStream<SyncJiraProps>;
 }
 
-export interface SyncJiraSinks extends ComponentSinkBase {
+export interface SyncJiraSinks extends ComponentSink<"DOM"> {
   value: Stream<SyncJiraEvent>;
 }
 
-const intent = function intent(sources: SyncJiraSources) {
-  const clicked$ = selectAsMain(sources, "button").events("click").mapTo(true);
+const intent = (sources: SyncJiraSources) => {
+  const clicked$ = domSourceOf(sources).select("button").events("click").mapTo(true);
   return { props$: sources.props, clicked$ };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$.map(({ status, setupFinished }) => {
     return {
       allowSync: status === LoaderStatus.COMPLETED && setupFinished,
@@ -45,11 +52,11 @@ const Styles = {
   },
 };
 
-const view = function view(
+const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["icon"]>,
   gen: ReturnType<typeof generateTestId>
-) {
+) => {
   return xs.combine(state$, nodes$).map(([{ allowSync }, { icon }]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
@@ -61,7 +68,7 @@ const view = function view(
   });
 };
 
-export const SyncJira = function SyncJira(sources: SyncJiraSources): SyncJiraSinks {
+export const SyncJira = (sources: SyncJiraSources): SyncJiraSinks => {
   const actions = intent(sources);
   const state$ = model(actions);
 

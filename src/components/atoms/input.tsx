@@ -1,7 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
-import { classes, generateTestId, selectAsMain } from "../helper";
-import { ComponentSinkBase, ComponentSourceBase } from "../type";
+import { classes, domSourceOf, generateTestId, ComponentSink, ComponentSource } from "../helper";
 
 export interface InputProps {
   placeholder?: string;
@@ -10,27 +9,29 @@ export interface InputProps {
   focus?: boolean;
 }
 
-interface InputSources extends ComponentSourceBase {
+interface InputSources extends ComponentSource {
   props: Stream<InputProps>;
 }
 
-export interface InputSinks extends ComponentSinkBase {
+export interface InputSinks extends ComponentSink<"DOM"> {
   input: Stream<string>;
   keypress: Stream<string>;
 }
 
 const intent = (sources: InputSources) => {
-  const changed$ = selectAsMain(sources, 'input[type="text"]')
+  const changed$ = domSourceOf(sources)
+    .select('input[type="text"]')
     .events("input")
     .map((v) => {
       return (v.target as HTMLInputElement).value;
     });
 
-  const keypress$ = selectAsMain(sources, 'input[type="text"]')
+  const keypress$ = domSourceOf(sources)
+    .select('input[type="text"]')
     .events("keypress")
     .map((v) => v.key);
 
-  const element$ = selectAsMain(sources, 'input[type="text"]').element();
+  const element$ = domSourceOf(sources).select('input[type="text"]').element();
 
   return {
     props$: sources.props,

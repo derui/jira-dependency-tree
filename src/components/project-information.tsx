@@ -3,34 +3,41 @@ import xs, { MemoryStream, Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Input, InputProps, InputSinks } from "./atoms/input";
 import { Icon, IconProps } from "./atoms/icon";
-import { ComponentSinks, ComponentSources } from "@/components/type";
+import {
+  ComponentSink,
+  ComponentSource,
+  AsNodeStream,
+  classes,
+  domSourceOf,
+  generateTestId,
+  mergeNodes,
+} from "@/components/helper";
 import { Project } from "@/model/project";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain } from "@/components/helper";
 import { filterUndefined } from "@/util/basic";
 
 export interface ProjectInformationProps {
   project?: Project;
 }
 
-type ProjectInformationSources = ComponentSources<{
+interface ProjectInformationSources extends ComponentSource {
   props: MemoryStream<ProjectInformationProps>;
-}>;
+}
 
-type ProjectInformationSinks = ComponentSinks<{
+interface ProjectInformationSinks extends ComponentSink<"DOM"> {
   value: Stream<string>;
-}>;
+}
 
-const intent = function intent(sources: ProjectInformationSources, nameInput: InputSinks) {
-  const nameClicked$ = selectAsMain(sources, '[data-id="name"]').events("click").mapTo(true);
+const intent = (sources: ProjectInformationSources, nameInput: InputSinks) => {
+  const nameClicked$ = domSourceOf(sources).select('[data-id="name"]').events("click").mapTo(true);
   const nameChanged$ = nameInput.input;
   const submit$ = nameInput.keypress.filter((v) => v === "Enter").mapTo(false);
-  const submitClicked$ = selectAsMain(sources, '[data-id="submit"]').events("click").mapTo(false);
-  const cancel$ = selectAsMain(sources, '[data-id="cancel"]').events("click").mapTo(false);
+  const submitClicked$ = domSourceOf(sources).select('[data-id="submit"]').events("click").mapTo(false);
+  const cancel$ = domSourceOf(sources).select('[data-id="cancel"]').events("click").mapTo(false);
 
   return { props$: sources.props, nameClicked$, nameChanged$, submit$: xs.merge(submit$, submitClicked$), cancel$ };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$
     .map((v) => {
       const opened$ = xs.merge(actions.nameClicked$, actions.submit$, actions.cancel$).fold((_, value) => value, false);
@@ -104,11 +111,11 @@ const Styles = {
   keyEditorButton: classes("first:ml-0", "last:mr-0", "mx-2", "cursor-pointer"),
 };
 
-const view = function view(
+const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["nameInput", "cancel", "submit"]>,
   gen: ReturnType<typeof generateTestId>
-) {
+) => {
   return xs.combine(state$, nodes$).map(([{ projectGiven, opened, name }, nodes]) => {
     return (
       <div class={Styles.root(opened)} dataset={{ testid: gen("main") }}>
@@ -135,9 +142,7 @@ const view = function view(
   });
 };
 
-export const ProjectInformation = function ProjectInformation(
-  sources: ProjectInformationSources
-): ProjectInformationSinks {
+export const ProjectInformation = (sources: ProjectInformationSources): ProjectInformationSinks => {
   const nameInput = isolate(
     Input,
     "nameInput"

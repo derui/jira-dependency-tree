@@ -1,10 +1,10 @@
-import { HTTPSource, RequestInput } from "@cycle/http";
 import isolate from "@cycle/isolate";
 import { Reducer } from "@cycle/state";
 import xs, { Stream } from "xstream";
 import { JiraIssueLoader } from "./jira-issue-loader";
 import { JiraProjectLoader } from "./jira-project-loader";
 import { JiraSuggestionLoader } from "./jira-suggestions-loader";
+import { ComponentSink, ComponentSource } from "./helper";
 import { Suggestion } from "@/model/suggestion";
 import { Project } from "@/model/project";
 import { Issue } from "@/model/issue";
@@ -16,27 +16,25 @@ type State = {
   suggestion?: Suggestion;
 };
 
-export type JiraLoaderSources = {
-  HTTP: HTTPSource;
+export interface JiraLoaderSources extends ComponentSource {
   events: Stream<Events>;
-};
+}
 
-export type JiraLoaderSinks = {
+export interface JiraLoaderSinks extends ComponentSink<"HTTP"> {
   state: Stream<Reducer<State>>;
-  HTTP: Stream<RequestInput>;
-};
+}
 
-export const JiraLoader = function JiraLoader(sources: JiraLoaderSources): JiraLoaderSinks {
+export const JiraLoader = (sources: JiraLoaderSources): JiraLoaderSinks => {
   const issueLoaderSinks = isolate(JiraIssueLoader, { HTTP: "issues" })({
-    HTTP: sources.HTTP,
+    ...sources,
     events: sources.events.filter((v) => v.kind !== "GetSuggestionRequest"),
   });
   const projectLoaderSinks = isolate(JiraProjectLoader, { HTTP: "project" })({
-    HTTP: sources.HTTP,
+    ...sources,
     events: sources.events.filter((v) => v.kind === "GetWholeDataRequest"),
   });
   const suggestionLoaderSinks = isolate(JiraSuggestionLoader, { HTTP: "suggestion" })({
-    HTTP: sources.HTTP,
+    ...sources,
     events: sources.events.filter((v) => v.kind === "GetSuggestionRequest" || v.kind === "GetWholeDataRequest"),
   });
 

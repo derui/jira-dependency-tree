@@ -1,15 +1,9 @@
 import assert from "node:assert";
 import { MainDOMSource } from "@cycle/dom";
-import { HTTPSource, Response } from "@cycle/http";
+import { HTTPSource, RequestInput, Response } from "@cycle/http";
 import { VNode } from "snabbdom";
 import xs, { Stream } from "xstream";
-import { ComponentSources } from "./type";
 import { PortalSource } from "@/drivers/portal";
-
-// helper function to select source as MainDOMSource forcely
-export const selectAsMain = function selectAsMain<T>(sources: ComponentSources<T>, selector: string): MainDOMSource {
-  return sources.DOM.select(selector) as MainDOMSource;
-};
 
 // helper function to fix type definition of cycle/http
 export const selectResponse = function selectResponse(http: HTTPSource, category?: string): Stream<Stream<Response>> {
@@ -55,22 +49,42 @@ export const mergeNodes: <T extends Record<string, Stream<VNode>>>(nodes: T) => 
 };
 
 // cyclejs's driver support
-type Drivers = "DOM" | "HTTP" | "Portal";
-type DriverTypes = {
+export type SupportedDrivers = "DOM" | "HTTP" | "Portal";
+type SupportedSourceTypes = {
   DOM: MainDOMSource;
   HTTP: HTTPSource;
   Portal: PortalSource;
 };
 
+export type ComponentSinkTypes = {
+  DOM: { DOM: Stream<VNode> };
+  HTTP: { HTTP: Stream<RequestInput> };
+  Portal: { Portal: Stream<VNode> };
+};
+
 // helper function to get driver from any source.
-const driverOf = <T extends Drivers>(sources: Record<string, unknown>, target: T): DriverTypes[T] => {
-  const driver = sources[target] as DriverTypes[T] | undefined;
+const driverSourceOf = <T extends SupportedDrivers>(
+  sources: Record<string, unknown>,
+  target: T
+): SupportedSourceTypes[T] => {
+  const driver = sources[target] as SupportedSourceTypes[T] | undefined;
 
   assert(driver !== undefined);
 
   return driver;
 };
 
-export const domDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "DOM");
-export const httpDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "HTTP");
-export const portalDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "Portal");
+export const domSourceOf = (sources: object) => driverSourceOf(sources as Record<string, unknown>, "DOM");
+export const httpSourceOf = (sources: object) => driverSourceOf(sources as Record<string, unknown>, "HTTP");
+export const portalSourceOf = (sources: object) => driverSourceOf(sources as Record<string, unknown>, "Portal");
+
+// A simple wrapper type for source
+// interface can be applied all driver's sources, but you should use xxxSourceOf helper function to get driver's source.
+type UnknownDrivers = Partial<{ [k in keyof SupportedSourceTypes]: unknown }>;
+
+export interface ComponentSource extends UnknownDrivers {
+  testid?: string | undefined;
+}
+
+// A simple wrapper type for sink
+export type ComponentSink<B extends SupportedDrivers> = ComponentSinkTypes[B];

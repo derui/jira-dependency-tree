@@ -3,8 +3,16 @@ import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import produce from "immer";
 import isolate from "@cycle/isolate";
-import { ComponentSinkBase, ComponentSourceBase } from "./type";
-import { AsNodeStream, classes, generateTestId, mergeNodes, selectAsMain, TestIdGenerator } from "./helper";
+import {
+  ComponentSource,
+  AsNodeStream,
+  classes,
+  generateTestId,
+  mergeNodes,
+  TestIdGenerator,
+  ComponentSink,
+  domSourceOf,
+} from "./helper";
 import { Suggestor, SuggestorProps } from "./suggestor";
 import { Icon, IconProps } from "./atoms/icon";
 import { Input, InputProps } from "./atoms/input";
@@ -25,28 +33,29 @@ export interface ProjectSyncOptionEditorState {
   lastTerm: string | undefined;
 }
 
-interface ProjectSyncOptionEditorSources extends ComponentSourceBase {
+interface ProjectSyncOptionEditorSources extends ComponentSource {
   props: MemoryStream<Suggestion>;
   state: StateSource<ProjectSyncOptionEditorState>;
 }
 
-interface ProjectSyncOptionEditorSinks extends ComponentSinkBase {
+interface ProjectSyncOptionEditorSinks extends ComponentSink<"DOM"> {
   state: Stream<Reducer<ProjectSyncOptionEditorState>>;
 }
 
-const intent = function intent(
+const intent = (
   sources: ProjectSyncOptionEditorSources,
   suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>,
   epicInputSink: ReturnType<typeof Input>
-) {
-  const selectorOpenerClicked = selectAsMain(sources, "[data-id=opener]").events("click");
-  const typeChanged$ = selectAsMain(sources, "select")
+) => {
+  const selectorOpenerClicked = domSourceOf(sources).select("[data-id=opener]").events("click");
+  const typeChanged$ = domSourceOf(sources)
+    .select("select")
     .events("change")
     .map((event) => {
       return (event.target as HTMLSelectElement).value as ConditionType;
     });
-  const cancel$ = selectAsMain(sources, "[data-id=cancel]").events("click").mapTo(false);
-  const submit$ = selectAsMain(sources, "[data-id=submit]").events("click").mapTo(false);
+  const cancel$ = domSourceOf(sources).select("[data-id=cancel]").events("click").mapTo(false);
+  const submit$ = domSourceOf(sources).select("[data-id=submit]").events("click").mapTo(false);
 
   return {
     props$: sources.props,
@@ -60,7 +69,7 @@ const intent = function intent(
   };
 };
 
-const model = function model(actions: ReturnType<typeof intent>) {
+const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$
     .map(() => {
       const currentConditionType$ = actions.state$.map((v) => v.conditionType);
@@ -166,11 +175,11 @@ const Styles = {
   },
 };
 
-const view = function view(
+const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["suggestor", "cancel", "submit", "epicInput"]>,
   gen: TestIdGenerator
-) {
+) => {
   return xs
     .combine(state$, nodes$)
     .map(([{ currentConditionType, selectorOpened: editorOpened, currentCondition }, nodes]) => {

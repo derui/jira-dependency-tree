@@ -1,2 +1,4 @@
 **/*.js
 /src/ts/setupTests.ts
+
+node_modules/

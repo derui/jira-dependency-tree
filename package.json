@@ -14,7 +14,7 @@
     "build:css": "postcss -o dist/assets/css/app.css assets/css/root.css",
     "build": "pnpm run build:bundle && pnpm run build:css && pnpm run copy-assets",
     "lint:css": "stylelint --config stylelint.config.cjs 'assets/css/**/*.css'",
-    "lint:ts": "eslint --fix src/ test/",
+    "lint:ts": "eslint --cache --cache-location=node_modules/.cache/eslint src/ test/",
     "lint": "conc \"pnpm:lint:*\"",
     "copy-assets": "cp -r assets/svg/ dist/assets/",
     "test": "ava",

@@ -4,6 +4,7 @@ import { HTTPSource, Response } from "@cycle/http";
 import { VNode } from "snabbdom";
 import xs, { Stream } from "xstream";
 import { ComponentSources } from "./type";
+import { PortalSource } from "@/drivers/portal";
 
 // helper function to select source as MainDOMSource forcely
 export const selectAsMain = function selectAsMain<T>(sources: ComponentSources<T>, selector: string): MainDOMSource {
@@ -54,15 +55,11 @@ export const mergeNodes: <T extends Record<string, Stream<VNode>>>(nodes: T) => 
 };
 
 // cyclejs's driver support
-const Drivers = {
-  DOM: "DOM",
-  HTTP: "HTTP",
-} as const;
-
-type Drivers = typeof Drivers[keyof typeof Drivers];
+type Drivers = "DOM" | "HTTP" | "Portal";
 type DriverTypes = {
   DOM: MainDOMSource;
   HTTP: HTTPSource;
+  Portal: PortalSource;
 };
 
 // helper function to get driver from any source.
@@ -76,3 +73,4 @@ const driverOf = <T extends Drivers>(sources: Record<string, unknown>, target: T
 
 export const domDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "DOM");
 export const httpDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "HTTP");
+export const portalDriverOf = (sources: ComponentSources<unknown>) => driverOf(sources, "Portal");

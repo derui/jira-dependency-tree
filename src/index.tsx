@@ -233,42 +233,23 @@ const main = (sources: MainSources): MainSinks => {
   const projectSyncOptionEditor$ = projectSyncOpitonEditorSink.DOM;
 
   const vnode$ = xs
-    .combine(
-      userConfiguration$,
-      projectInformation$,
-      zoomSlider$,
-      syncJira$,
-      sideToolbar$,
-      projectSyncOptionEditor$,
-      userConfigurationDialogSink.DOM
-    )
-    .map(
-      ([
-        userConfiguration,
-        projectInformation,
-        zoomSlider,
-        syncJira,
-        sideToolbar,
-        projectSyncOptionEditor,
-        userConfigurationDialog,
-      ]) => (
-        <div class={Styles.root}>
-          <div class={Styles.topToolbars}>
-            <div class={Styles.projectToolbar}>
-              {projectInformation}
-              <span class={Styles.divider}></span>
-              {projectSyncOptionEditor}
-              {syncJira}
-            </div>
-            <div></div>
-            {userConfiguration}
+    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectSyncOptionEditor$)
+    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectSyncOptionEditor]) => (
+      <div class={Styles.root}>
+        <div class={Styles.topToolbars}>
+          <div class={Styles.projectToolbar}>
+            {projectInformation}
+            <span class={Styles.divider}></span>
+            {projectSyncOptionEditor}
+            {syncJira}
           </div>
-          {zoomSlider}
-          {sideToolbar}
-          {userConfigurationDialog}
+          <div></div>
+          {userConfiguration}
         </div>
-      )
-    );
+        {zoomSlider}
+        {sideToolbar}
+      </div>
+    ));
 
   const issueGraph$ = xs
     .combine(
@@ -400,6 +381,7 @@ const main = (sources: MainSources): MainSinks => {
     issueGraph: issueGraph$,
     HTTP: HTTP,
     STORAGE: storage$,
+    Portal: xs.merge(userConfigurationDialogSink.Portal),
   };
 };
 

@@ -1,4 +1,4 @@
-import { mockDOMSource, VNode } from "@cycle/dom";
+import { mockDOMSource } from "@cycle/dom";
 import { withState } from "@cycle/state";
 import { mockTimeSource } from "@cycle/time";
 import { select } from "snabbdom-selector";
@@ -14,7 +14,9 @@ test("initial state is given prop", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = withState(SideToolbar)({
-      DOM: dom as any,
+      HTTP: undefined,
+      Portal: undefined,
+      DOM: dom as unknown,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
       testid: undefined,
     });
@@ -54,7 +56,9 @@ test("open layouter when it clicked", async (t) => {
     });
 
     const sinks = withState(SideToolbar)({
-      DOM: dom as any,
+      HTTP: undefined,
+      Portal: undefined,
+      DOM: dom as unknown,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
       testid: undefined,
     });
@@ -95,7 +99,9 @@ test("change layout when specific layout is clicked", async (t) => {
     });
 
     const sinks = withState(SideToolbar)({
-      DOM: dom as any,
+      HTTP: undefined,
+      Portal: undefined,
+      DOM: dom as unknown,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
       testid: undefined,
     });
@@ -143,7 +149,9 @@ test("should close layouter if value changed", async (t) => {
     });
 
     const sinks = withState(SideToolbar)({
-      DOM: dom as any,
+      HTTP: undefined,
+      Portal: undefined,
+      DOM: dom as unknown,
       props: Time.diagram("-x", { x: GraphLayout.Horizontal }),
       testid: undefined,
     });

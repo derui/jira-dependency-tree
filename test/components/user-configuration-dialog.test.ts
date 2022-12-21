@@ -16,12 +16,14 @@ test("do not open default", async (t) => {
 
     // Act
     const sinks = withState(UserConfigurationDialog)({
+      HTTP: undefined,
+      Portal: undefined,
       DOM: dom as unknown as DOMSource,
       props: xs.of<Props>({}),
       testid: undefined,
     });
 
-    const actual$ = sinks.DOM.map((vtree) => {
+    const actual$ = sinks.Portal.map((vtree) => {
       return select("[data-testid=dialog-container]", vtree)[0].data?.dataset?.opened;
     });
     const expected$ = Time.diagram("a", {
@@ -52,12 +54,14 @@ test("opened and set position", async (t) => {
 
     // Act
     const sinks = withState(UserConfigurationDialog)({
+      HTTP: undefined,
+      Portal: undefined,
       DOM: dom as unknown as DOMSource,
       props: Time.diagram("ax", { a: {}, x: { openAt: new Rect({ left: 0, right: 10, top: 50, bottom: 70 }) } }),
       testid: undefined,
     });
 
-    const actual$ = sinks.DOM.take(1).map((vtree) => {
+    const actual$ = sinks.Portal.take(1).map((vtree) => {
       return {
         opened: select("[data-testid=dialog-container]", vtree)[0].data?.dataset?.opened,
         right: select("[data-testid=dialog-container]", vtree)[0].data?.style?.right,

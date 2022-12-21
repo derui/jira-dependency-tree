@@ -15,7 +15,7 @@ test("initial display when project is not configured", async (t) => {
 
     // Act
     const sinks = ProjectInformation({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", { x: {} }),
     });
 
@@ -48,7 +48,7 @@ test("show project name", async (t) => {
 
     // Act
     const sinks = ProjectInformation({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: {
           project: projectFactory({
@@ -88,7 +88,7 @@ test("do not show marker if setup finished", async (t) => {
 
     // Act
     const sinks = ProjectInformation({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: xs
         .of<ProjectInformationProps>({
           project: projectFactory({

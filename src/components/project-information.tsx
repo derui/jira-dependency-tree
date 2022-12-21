@@ -123,7 +123,7 @@ const view = (
           class={Styles.marker(!projectGiven && !opened)}
           dataset={{ testid: gen("marker"), show: `${!projectGiven}` }}
         ></span>
-        <span class={Styles.name(opened, !projectGiven)} dataset={{ id: "name" }}>
+        <span class={Styles.name(opened, !projectGiven)} dataset={{ testid: gen("name"), id: "name" }}>
           {name}
         </span>
         <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor"), opened: `${opened}` }}>

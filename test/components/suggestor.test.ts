@@ -17,7 +17,7 @@ test("open main when button clicked", async (t) => {
     });
 
     const sinks = Suggestor({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("a", { a: { suggestions: [{ id: "id", label: "label", value: 1 }] } }),
     });
 
@@ -55,7 +55,7 @@ test("display suggestions", async (t) => {
     const dom = mockDOMSource({});
 
     const sinks = Suggestor({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: {
           suggestions: [
@@ -101,7 +101,7 @@ test("do not send term when suggestions is not empty", async (t) => {
     });
 
     const sinks = Suggestor({
-      DOM: dom as any,
+      DOM: dom as unknown,
       props: Time.diagram("x", {
         x: { suggestions: [{ id: "id", label: "label", value: "value" }] },
       }).remember(),

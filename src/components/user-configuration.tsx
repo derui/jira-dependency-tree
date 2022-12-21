@@ -1,4 +1,4 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
 import { Icon, IconProps } from "./atoms/icon";
 import {
@@ -108,7 +108,7 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
   const state$ = model(actions);
 
   return {
-    DOM: view(state$, mergeNodes({ openerIcon: openerIcon.DOM }), gen),
+    DOM: view(state$, mergeNodes({ openerIcon }), gen),
     click: actions.clickOpener$
       .map(() => {
         return actions.root$.map((e) => {

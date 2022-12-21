@@ -274,7 +274,7 @@ const main = (sources: MainSources): MainSinks => {
       return produce(prevState, (draft) => {
         draft.setting = settingFactory(v);
         if (v.graphLayout) {
-          draft.sideToolbar = { graphLayout: v.graphLayout };
+          draft.sideToolbar = { graphLayout: v.graphLayout, opened: false };
         }
       });
     };
@@ -286,9 +286,6 @@ const main = (sources: MainSources): MainSinks => {
       setting: settingFactory({}),
       jiraSync: LoaderStatus.COMPLETED,
       projectKey: undefined,
-      sideToolbar: {
-        graphLayout: GraphLayout.Horizontal,
-      },
       loading: "COMPLETED",
     };
   });

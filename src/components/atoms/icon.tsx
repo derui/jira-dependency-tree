@@ -7,7 +7,7 @@ type IconSize = "s" | "m" | "l";
 type Color = "primary" | "secondary1" | "gray" | "secondary2" | "complement";
 
 export interface IconProps {
-  size?: IconSize | undefined;
+  size?: IconSize;
   type: string;
   color?: Color;
   style?: Record<string, boolean>;
@@ -40,18 +40,6 @@ const colors: Record<string, Record<string, boolean>> = {
   gray: classes("before:bg-gray", "before:hover:bg-darkgray", "before:active:bg-black"),
 };
 
-const intent = (sources: IconSources) => {
-  return {
-    props$: sources.props,
-  };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  return actions.props$.map((props) => {
-    return { size: props.size ?? "s", type: props.type, style: props.style ?? {}, color: props.color };
-  });
-};
-
 const typeClass = (type: string) => {
   return classes(icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
 };
@@ -82,15 +70,15 @@ const sizeClass = (size: IconSize) => {
   }
 };
 
-const colorClass = (color?: Color) => {
-  return colors[color ?? "primary"];
+const colorClass = (color: Color) => {
+  return colors[color];
 };
 
 const smallIconClass = classes("w-5", "h-5");
 const mediumIconClass = classes("w-6", "h-6");
 const largeIconClass = classes("w-7", "h-7");
 
-const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
+const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ size, type, style, color }) => {
     const iconClass = {
       ...iconBaseClass,
@@ -109,8 +97,9 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
  */
 export const Icon = (sources: IconSources): ComponentSink<"DOM"> => {
   const gen = generateTestId(sources.testid);
-  const actions = intent(sources);
-  const state$ = model(actions);
+  const state$ = sources.props.map((props) => {
+    return { size: props.size ?? "s", type: props.type, style: props.style ?? {}, color: props.color ?? "primary" };
+  });
 
   return {
     DOM: view(state$, gen),

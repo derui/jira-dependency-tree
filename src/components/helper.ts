@@ -37,9 +37,11 @@ export const classes = (...classes: string[]) => {
 export type AsNodeStream<T extends string[]> = Stream<Record<T[number], VNode>>;
 type NodesStream<T extends Record<string, unknown>> = Stream<Record<keyof T, VNode>>;
 
-export const mergeNodes: <T extends Record<string, Stream<VNode>>>(nodes: T) => NodesStream<T> = (nodes) => {
+export const mergeNodes: <V extends ComponentSinkTypes["DOM"], T extends Record<string, V>>(
+  nodes: T
+) => NodesStream<T> = (nodes) => {
   const entries = Object.entries(nodes).map(([key, value]) => {
-    return value.map<[keyof typeof nodes, VNode]>((node) => [key, node]);
+    return value.DOM.map<[keyof typeof nodes, VNode]>((node) => [key, node]);
   });
 
   return xs.combine(...entries).map((_nodes) => {

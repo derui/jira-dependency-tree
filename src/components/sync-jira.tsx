@@ -88,7 +88,7 @@ export const SyncJira = (sources: SyncJiraSources): SyncJiraSinks => {
   const value$ = actions.clicked$.mapTo<SyncJiraEvent>("REQUEST");
 
   return {
-    DOM: view(state$, mergeNodes({ icon: icon.DOM }), generateTestId(sources.testid)),
+    DOM: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
     value: value$,
   };
 };

@@ -311,7 +311,7 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
     .compose(debounce(400));
 
   return {
-    DOM: view(state$, mergeNodes({ icon: icon.DOM }), generateTestId(sources.testid)),
+    DOM: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
     value: submitEvent$,
     term: termEvent$,
   };

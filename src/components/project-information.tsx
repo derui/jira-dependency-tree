@@ -183,7 +183,7 @@ export const ProjectInformation = (sources: ProjectInformationSources): ProjectI
   return {
     DOM: view(
       state$,
-      mergeNodes({ nameInput: nameInput.DOM, cancel: cancelIcon.DOM, submit: submitIcon.DOM }),
+      mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }),
       generateTestId(sources.testid)
     ),
     value: submittedName$,

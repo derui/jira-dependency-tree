@@ -152,9 +152,9 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
     DOM: view(
       sources.state.stream,
       mergeNodes({
-        graphLayoutIcon: graphLayoutIcon.DOM,
-        verticalIcon: verticalIcon.DOM,
-        horizontalIcon: horizontalIcon.DOM,
+        graphLayoutIcon,
+        verticalIcon,
+        horizontalIcon,
       }),
       generateTestId(sources.testid)
     ),

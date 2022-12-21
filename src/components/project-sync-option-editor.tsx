@@ -320,10 +320,10 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
     DOM: view(
       state$,
       mergeNodes({
-        suggestor: suggestor.DOM,
-        cancel: cancelIcon.DOM,
-        submit: submitIcon.DOM,
-        epicInput: epicInput.DOM,
+        suggestor,
+        cancel: cancelIcon,
+        submit: submitIcon,
+        epicInput,
       }),
       generateTestId(sources.testid)
     ),

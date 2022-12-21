@@ -306,11 +306,11 @@ export const UserConfigurationDialog = (sources: UserConfigurationDialogSources)
     Portal: view(
       state$,
       mergeNodes({
-        jiraToken: jiraToken.DOM,
-        email: email.DOM,
-        userDomain: userDomain.DOM,
-        submit: submit.DOM,
-        cancel: cancel.DOM,
+        jiraToken,
+        email,
+        userDomain,
+        submit,
+        cancel,
       }),
       gen
     ),

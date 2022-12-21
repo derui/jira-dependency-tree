@@ -30,19 +30,8 @@ const intent = (sources: ButtonSources) => {
     .mapTo(true);
 
   return {
-    props$: sources.props,
     clicked$: xs.merge(buttonClicked$, submitClicked$),
   };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  return actions.props$.map((props) => {
-    return {
-      ...props,
-      type: props.type ?? "normal",
-      disabled: props.disabled ?? false,
-    };
-  });
 };
 
 const Styles = {
@@ -83,7 +72,7 @@ const Styles = {
   },
 };
 
-const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
+const view = (state$: Stream<Required<ButtonProps>>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ content, schema, type, disabled }) => {
     const style = {
       ...Styles.button,
@@ -109,7 +98,13 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
 export const Button = (sources: ButtonSources): ButtonSinks => {
   const gen = generateTestId(sources.testid);
   const actions = intent(sources);
-  const state$ = model(actions);
+  const state$ = sources.props.map((props) => {
+    return {
+      ...props,
+      type: props.type ?? "normal",
+      disabled: props.disabled ?? false,
+    };
+  });
 
   return {
     DOM: view(state$, gen),

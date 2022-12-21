@@ -1,8 +1,10 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import xs, { MemoryStream, Stream } from "xstream";
+import xs, { Stream } from "xstream";
 import isolate from "@cycle/isolate";
+import { Reducer, StateSource } from "@cycle/state";
 import { Input, InputProps, InputSinks } from "./atoms/input";
 import { Icon, IconProps } from "./atoms/icon";
+import { JiraProjectLoader } from "./jira-project-loader";
 import {
   ComponentSink,
   ComponentSource,
@@ -11,48 +13,38 @@ import {
   domSourceOf,
   generateTestId,
   mergeNodes,
+  simpleReduce,
 } from "@/components/helper";
 import { Project } from "@/model/project";
-import { filterUndefined } from "@/util/basic";
+import { ApiCredential, Events } from "@/model/event";
 
-export interface ProjectInformationProps {
+export interface State {
   project?: Project;
+  name: string;
+  opened: boolean;
 }
 
-interface ProjectInformationSources extends ComponentSource {
-  props: MemoryStream<ProjectInformationProps>;
+export interface Props {
+  credential: Stream<ApiCredential>;
 }
 
-interface ProjectInformationSinks extends ComponentSink<"DOM"> {
-  value: Stream<string>;
+interface Sources extends ComponentSource {
+  props: Props;
+  state: StateSource<State>;
 }
 
-const intent = (sources: ProjectInformationSources, nameInput: InputSinks) => {
+interface Sinks extends ComponentSink<"DOM">, ComponentSink<"HTTP"> {
+  state: Stream<Reducer<State>>;
+}
+
+const intent = (sources: Sources, nameInput: InputSinks) => {
   const nameClicked$ = domSourceOf(sources).select('[data-id="name"]').events("click").mapTo(true);
   const nameChanged$ = nameInput.input;
   const submit$ = nameInput.keypress.filter((v) => v === "Enter").mapTo(false);
   const submitClicked$ = domSourceOf(sources).select('[data-id="submit"]').events("click").mapTo(false);
   const cancel$ = domSourceOf(sources).select('[data-id="cancel"]').events("click").mapTo(false);
 
-  return { props$: sources.props, nameClicked$, nameChanged$, submit$: xs.merge(submit$, submitClicked$), cancel$ };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  return actions.props$
-    .map((v) => {
-      const opened$ = xs.merge(actions.nameClicked$, actions.submit$, actions.cancel$).fold((_, value) => value, false);
-
-      const name$ = xs
-        .of(v.project)
-        .filter(filterUndefined)
-        .map((v) => v.name)
-        .startWith("Click here");
-
-      return xs
-        .combine(opened$, name$)
-        .map(([opened, name]) => ({ projectGiven: v.project !== undefined, opened, name }));
-    })
-    .flatten();
+  return { nameClicked$, nameChanged$, submit$: xs.merge(submit$, submitClicked$), cancel$ };
 };
 
 const Styles = {
@@ -112,21 +104,21 @@ const Styles = {
 };
 
 const view = (
-  state$: ReturnType<typeof model>,
+  state$: Stream<State>,
   nodes$: AsNodeStream<["nameInput", "cancel", "submit"]>,
   gen: ReturnType<typeof generateTestId>
 ) => {
-  return xs.combine(state$, nodes$).map(([{ projectGiven, opened, name }, nodes]) => {
+  return xs.combine(state$, nodes$).map(([{ project, opened, name }, nodes]) => {
     return (
       <div class={Styles.root(opened)} dataset={{ testid: gen("main") }}>
         <span
-          class={Styles.marker(!projectGiven && !opened)}
-          dataset={{ testid: gen("marker"), show: `${!projectGiven}` }}
+          class={{ ...Styles.marker(!project && !opened), "--show": !project }}
+          dataset={{ testid: gen("marker") }}
         ></span>
-        <span class={Styles.name(opened, !projectGiven)} dataset={{ testid: gen("name"), id: "name" }}>
+        <span class={Styles.name(opened, !project)} dataset={{ testid: gen("name"), id: "name" }}>
           {name}
         </span>
-        <div class={Styles.keyEditor(opened)} dataset={{ testid: gen("nameEditor"), opened: `${opened}` }}>
+        <div class={{ ...Styles.keyEditor(opened), "--opened": opened }} dataset={{ testid: gen("nameEditor") }}>
           {nodes.nameInput}
           <span class={Styles.keyEditorButtonGroup}>
             <span class={Styles.keyEditorButton} dataset={{ id: "cancel" }}>
@@ -142,16 +134,16 @@ const view = (
   });
 };
 
-export const ProjectInformation = (sources: ProjectInformationSources): ProjectInformationSinks => {
+export const ProjectInformation = (sources: Sources): Sinks => {
   const nameInput = isolate(
     Input,
     "nameInput"
   )({
     ...sources,
-    props: sources.props.map<InputProps>((props) => {
+    props: sources.state.stream.map<InputProps>((state) => {
       return {
         focus: true,
-        value: props.project?.key ?? "",
+        value: state.project?.key ?? "",
         placeholder: "Project Key",
       };
     }),
@@ -176,16 +168,55 @@ export const ProjectInformation = (sources: ProjectInformationSources): ProjectI
   });
 
   const actions = intent(sources, nameInput);
-  const state$ = model(actions);
 
-  const submittedName$ = actions.nameChanged$.map((name) => actions.submit$.take(1).mapTo(name)).flatten();
+  const event$ = xs
+    .combine(sources.props.credential, actions.nameChanged$)
+    .map(([credential, projectKey]) => {
+      return actions.submit$.take(1).mapTo<Events>({
+        kind: "GetWholeDataRequest",
+        env: credential,
+        credential,
+        projectKey,
+      });
+    })
+    .flatten();
+
+  const loader = isolate(
+    JiraProjectLoader,
+    "jiraProjectLoader"
+  )({
+    ...sources,
+    events: event$,
+  });
+
+  const initialReducer$ = xs.of<Reducer<State>>(() => {
+    return {
+      name: "Click here",
+      opened: false,
+    };
+  });
+
+  const projectReducer$ = loader.project.map(
+    simpleReduce<State, Project>((draft, project) => {
+      draft.project = project;
+      draft.name = project.name;
+      draft.opened = false;
+    })
+  );
+
+  const openedReducer$ = xs.merge(actions.nameClicked$, actions.submit$, actions.cancel$).map(
+    simpleReduce<State, boolean>((draft, opened) => {
+      draft.opened = opened;
+    })
+  );
 
   return {
     DOM: view(
-      state$,
+      sources.state.stream,
       mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }),
       generateTestId(sources.testid)
     ),
-    value: submittedName$,
+    HTTP: loader.HTTP,
+    state: xs.merge(initialReducer$, projectReducer$, openedReducer$),
   };
 };

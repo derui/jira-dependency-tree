@@ -5,7 +5,7 @@ import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
 import { projectFactory } from "@/model/project";
-import { ProjectInformation, ProjectInformationProps } from "@/components/project-information";
+import { ProjectInformation, Props } from "@/components/project-information";
 
 test("initial display when project is not configured", async (t) => {
   await componentTest((done) => {
@@ -90,7 +90,7 @@ test("do not show marker if setup finished", async (t) => {
     const sinks = ProjectInformation({
       DOM: dom as unknown,
       props: xs
-        .of<ProjectInformationProps>({
+        .of<Props>({
           project: projectFactory({
             id: "id",
             key: "key",

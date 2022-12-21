@@ -14,7 +14,7 @@ import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
-import { ProjectInformation, ProjectInformationProps } from "./components/project-information";
+import { ProjectInformation } from "./components/project-information";
 import { filterNull, filterUndefined, Rect } from "./util/basic";
 import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { env } from "./env";
@@ -22,13 +22,13 @@ import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
 import { SyncJira, SyncJiraProps, SyncJiraSinks, SyncJiraSources } from "./components/sync-jira";
 import { LoaderState, LoaderStatus } from "./type";
-import { Events } from "./model/event";
+import { ApiCredential, Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
 import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
 import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
-import { Props, UserConfigurationDialog } from "./components/user-configuration-dialog";
+import { Props as UserConfigurationDialogProps, UserConfigurationDialog } from "./components/user-configuration-dialog";
 import { makePortalDriver, PortalSource } from "./drivers/portal";
 
 type MainSources = {
@@ -57,6 +57,7 @@ type MainState = {
   };
   projectKey: string | undefined;
   setting: Setting;
+  apiCredential?: ApiCredential;
   loading: LoaderState;
 } & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: ProjectSyncOptionEditorState };
 
@@ -164,7 +165,7 @@ const main = (sources: MainSources): MainSinks => {
     ...sources,
     props: xs
       .combine(sources.state.select<MainState["setting"]>("setting").stream, dialogStream$)
-      .map<Props>(([setting, openAt]) => ({
+      .map<UserConfigurationDialogProps>(([setting, openAt]) => ({
         jiraToken: setting.credentials.jiraToken,
         email: setting.credentials.email,
         userDomain: setting.userDomain,
@@ -174,11 +175,9 @@ const main = (sources: MainSources): MainSinks => {
   });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     ...sources,
-    props: sources.state
-      .select<MainState["data"]>("data")
-      .select<MainState["data"]["project"]>("project")
-      .stream.startWith(undefined)
-      .map<ProjectInformationProps>((data) => ({ project: data })),
+    props: {
+      credential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
+    },
     testid: "project-information",
   });
   const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
@@ -290,17 +289,6 @@ const main = (sources: MainSources): MainSinks => {
     };
   });
 
-  const projectReducer$ = projectInformationSink.value.map(
-    (v) =>
-      function (prevState?: MainState) {
-        if (!prevState) return undefined;
-
-        return produce(prevState, (draft) => {
-          draft.projectKey = v;
-        });
-      }
-  );
-
   const environmentReducer$ = userConfigurationDialogSink.value.map(
     (v) =>
       function (prevState?: MainState) {
@@ -369,14 +357,13 @@ const main = (sources: MainSources): MainSinks => {
       storageReducer$,
       environmentReducer$,
       jiraLoaderReducer$,
-      projectReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
       projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
       userConfigurationDialogSink.state as Stream<Reducer<MainState>>,
       loadingReducer$
     ),
     issueGraph: issueGraph$,
-    HTTP: HTTP,
+    HTTP: xs.merge(HTTP, projectInformationSink.HTTP),
     STORAGE: storage$,
     Portal: xs.merge(userConfigurationDialogSink.Portal),
   };

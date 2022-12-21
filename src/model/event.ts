@@ -1,24 +1,24 @@
 import { Env } from "./env";
 
-export type Credential = {
+export type ApiCredential = {
   userDomain: string;
   token: string;
   email: string;
-};
+} & Env;
 
 export type Events = GetWholeDataRequest | SyncIssuesRequest | GetSuggestionRequest;
 
 export interface GetWholeDataRequest {
   kind: "GetWholeDataRequest";
   env: Env;
-  credential: Credential;
+  credential: ApiCredential;
   projectKey: string;
 }
 
 export interface SyncIssuesRequest {
   kind: "SyncIssuesRequest";
   env: Env;
-  credential: Credential;
+  credential: ApiCredential;
   projectKey: string;
   condition?: SearchCondition;
 }
@@ -26,7 +26,7 @@ export interface SyncIssuesRequest {
 export interface GetSuggestionRequest {
   kind: "GetSuggestionRequest";
   env: Env;
-  credential: Credential;
+  credential: ApiCredential;
   projectKey: string;
   term: string;
 }

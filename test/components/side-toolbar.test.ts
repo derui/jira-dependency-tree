@@ -24,7 +24,7 @@ test("initial state is given prop", async (t) => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened,
+        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.class?.["--opened"],
         horizontalSelected: select("[data-testid=horizontal]", vtree)[0].data?.class?.["--selected"],
       };
     });
@@ -32,7 +32,7 @@ test("initial state is given prop", async (t) => {
     // Assert
     const expected$ = Time.diagram("-a-", {
       a: {
-        graphLayoutOpened: "false",
+        graphLayoutOpened: false,
         horizontalSelected: true,
       },
     });
@@ -50,7 +50,7 @@ test("open layouter when it clicked", async (t) => {
     const Time = mockTimeSource();
     const click$ = Time.diagram("--a|", { a: { target: {} } });
     const dom = mockDOMSource({
-      ".side-toolbar__graph-layout": {
+      '[data-id="opener"]': {
         click: click$,
       },
     });
@@ -66,17 +66,17 @@ test("open layouter when it clicked", async (t) => {
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
       return {
-        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened,
+        graphLayoutOpened: select("[data-testid=layouter]", vtree)[0].data?.class?.["--opened"],
       };
     });
 
     // Assert
     const expected$ = Time.diagram("-ab", {
       a: {
-        graphLayoutOpened: "false",
+        graphLayoutOpened: false,
       },
       b: {
-        graphLayoutOpened: "true",
+        graphLayoutOpened: true,
       },
     });
 
@@ -92,9 +92,13 @@ test("change layout when specific layout is clicked", async (t) => {
     // Arrange
     const Time = mockTimeSource();
     const click$ = Time.diagram("--a|", { a: { target: {} } });
+    const layouterClick$ = Time.diagram("---a|", { a: { target: {} } });
     const dom = mockDOMSource({
-      ".graph-layouter__vertical": {
+      '[data-id="opener"]': {
         click: click$,
+      },
+      '[data-id="vertical"]': {
+        click: layouterClick$,
       },
     });
 
@@ -115,7 +119,7 @@ test("change layout when specific layout is clicked", async (t) => {
     });
 
     // Assert
-    const expected$ = Time.diagram("-a(ab)", {
+    const expected$ = Time.diagram("-aab", {
       a: {
         vertical: false,
         horizontal: true,
@@ -137,14 +141,14 @@ test("should close layouter if value changed", async (t) => {
   await componentTest((done) => {
     // Arrange
     const Time = mockTimeSource();
-    const clickVertical$ = Time.diagram("---a|", { a: { target: {} } });
-    const clickLayouter$ = Time.diagram("--a-|", { a: { target: {} } });
+    const clickVertical$ = Time.diagram("---a", { a: { target: {} } });
+    const clickLayouter$ = Time.diagram("--a-", { a: { target: {} } });
     const dom = mockDOMSource({
-      ".graph-layouter__vertical": {
-        click: clickVertical$,
-      },
-      ".side-toolbar__graph-layout": {
+      '[data-id="opener"]': {
         click: clickLayouter$,
+      },
+      '[data-id="vertical"]': {
+        click: clickVertical$,
       },
     });
 
@@ -158,13 +162,13 @@ test("should close layouter if value changed", async (t) => {
 
     // Act
     const actual$ = sinks.DOM.map((vtree) => {
-      return select("[data-testid=layouter]", vtree)[0].data?.dataset?.opened;
+      return select("[data-testid=layouter]", vtree)[0].data?.class?.["--opened"];
     });
 
     // Assert
-    const expected$ = Time.diagram("-ab(aa)", {
-      a: "false",
-      b: "true",
+    const expected$ = Time.diagram("-aba", {
+      a: false,
+      b: true,
     });
 
     Time.assertEqual(actual$, expected$);

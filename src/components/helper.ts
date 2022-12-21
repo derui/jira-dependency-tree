@@ -3,6 +3,8 @@ import { MainDOMSource } from "@cycle/dom";
 import { HTTPSource, RequestInput, Response } from "@cycle/http";
 import { VNode } from "snabbdom";
 import xs, { Stream } from "xstream";
+import { Reducer } from "@cycle/state";
+import produce, { Draft } from "immer";
 import { PortalSource } from "@/drivers/portal";
 
 // helper function to fix type definition of cycle/http
@@ -88,3 +90,16 @@ export interface ComponentSource extends UnknownDrivers {
 
 // A simple wrapper type for sink
 export type ComponentSink<B extends SupportedDrivers> = ComponentSinkTypes[B];
+
+// reducer support
+export const simpleReduce = <U, T>(_produce: (draft: U, value: T) => void): ((value: T) => Reducer<U>) => {
+  return (value: T) => {
+    return (prevState) => {
+      if (!prevState) return prevState;
+
+      return produce(prevState, (draft) => {
+        _produce(draft as U, value);
+      });
+    };
+  };
+};

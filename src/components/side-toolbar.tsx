@@ -2,12 +2,13 @@ import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unu
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { MemoryStream, Stream } from "xstream";
 import { Icon, IconProps } from "./atoms/icon";
-import { AsNodeStream, ComponentSource, domSourceOf, mergeNodes } from "./helper";
+import { AsNodeStream, ComponentSource, domSourceOf, mergeNodes, simpleReduce } from "./helper";
 import { GraphLayout } from "@/issue-graph/type";
 import { classes, generateTestId, ComponentSink } from "@/components/helper";
 
 export interface SideToolbarState {
   graphLayout: GraphLayout;
+  opened: boolean;
 }
 
 interface SideToolbarSources extends ComponentSource {
@@ -30,29 +31,7 @@ const intent = (sources: SideToolbarSources) => {
     .events("click", undefined, false)
     .mapTo(GraphLayout.Horizontal);
 
-  return { state$: sources.state.stream, layouterClicked$, verticalClicked$, horizontalClicked$ };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  const layout$ = xs.merge(actions.state$.map((v) => v.graphLayout));
-  const layouterOpened$ = xs
-    .merge(
-      actions.layouterClicked$.mapTo("layouter" as const),
-      actions.verticalClicked$.mapTo("layout" as const),
-      actions.horizontalClicked$.mapTo("layout" as const)
-    )
-    .fold((accum, v) => {
-      switch (v) {
-        case "layouter":
-          return !accum;
-        case "layout":
-          return false;
-      }
-    }, false);
-
-  return xs.combine(layout$, layouterOpened$).map(([layout, layouterOpened]) => {
-    return { layout, layouterOpened };
-  });
+  return { layouterClicked$, verticalClicked$, horizontalClicked$ };
 };
 
 const Styles = {
@@ -81,32 +60,25 @@ const Styles = {
 };
 
 const view = (
-  state$: ReturnType<typeof model>,
+  state$: Stream<SideToolbarState>,
   nodes$: AsNodeStream<["graphLayoutIcon", "verticalIcon", "horizontalIcon"]>,
   gen: ReturnType<typeof generateTestId>
 ) => {
-  return xs.combine(state$, nodes$).map(([{ layout, layouterOpened }, nodes]) => {
+  return xs.combine(state$, nodes$).map(([{ graphLayout, opened }, nodes]) => {
     return (
       <ul class={Styles.root}>
         <li class={Styles.graphLayout} dataset={{ testid: gen("graph-layout"), id: "opener" }}>
           {nodes.graphLayoutIcon}
-          <div
-            class={Styles.graphLayouter(layouterOpened)}
-            dataset={{ testid: gen("layouter"), opened: `${layouterOpened}` }}
-          >
+          <div class={{ ...Styles.graphLayouter(opened), "--opened": opened }} dataset={{ testid: gen("layouter") }}>
             <span
-              class={{ ...Styles.iconButton }}
-              dataset={{
-                testid: gen("horizontal"),
-                id: "horizontal",
-                selected: `${layout === GraphLayout.Horizontal}`,
-              }}
+              class={{ ...Styles.iconButton, "--selected": graphLayout === GraphLayout.Horizontal }}
+              dataset={{ testid: gen("horizontal"), id: "horizontal" }}
             >
               {nodes.horizontalIcon}
             </span>
             <span
-              class={{ ...Styles.iconButton }}
-              dataset={{ testid: gen("vertical"), id: "vertical", selected: `${layout === GraphLayout.Vertical}` }}
+              class={{ ...Styles.iconButton, "--selected": graphLayout === GraphLayout.Vertical }}
+              dataset={{ testid: gen("vertical"), id: "vertical" }}
             >
               {nodes.verticalIcon}
             </span>
@@ -146,23 +118,39 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
   });
 
   const actions = intent(sources);
-  const state$ = model(actions);
 
-  const initialReducer$ = sources.props.map<Reducer<SideToolbarState>>((graphLayout) => {
+  const initialReducer$ = sources.props.map((graphLayout) => {
     return () => {
       return {
         graphLayout,
+        opened: false,
       };
     };
   });
-  const changedLayout$ = xs.merge(actions.verticalClicked$, actions.horizontalClicked$);
-  const reducer$ = changedLayout$.map<Reducer<SideToolbarState>>((v) => () => {
-    return { graphLayout: v };
-  });
+
+  const layouterReducer$ = xs
+    .merge(
+      actions.layouterClicked$.mapTo(["layouter"] as const),
+      actions.verticalClicked$.map((v) => ["layout", v] as const),
+      actions.horizontalClicked$.map((v) => ["layout", v] as const)
+    )
+    .map(
+      simpleReduce((draft: SideToolbarState, [value, layout]) => {
+        switch (value) {
+          case "layouter":
+            draft.opened = !draft.opened;
+            break;
+          case "layout":
+            draft.opened = false;
+            draft.graphLayout = layout;
+            break;
+        }
+      })
+    );
 
   return {
     DOM: view(
-      state$,
+      sources.state.stream,
       mergeNodes({
         graphLayoutIcon: graphLayoutIcon.DOM,
         verticalIcon: verticalIcon.DOM,
@@ -170,6 +158,6 @@ export const SideToolbar = function SideToolbar(sources: SideToolbarSources): Si
       }),
       generateTestId(sources.testid)
     ),
-    state: xs.merge(initialReducer$, reducer$),
+    state: xs.merge(initialReducer$, layouterReducer$),
   };
 };

@@ -44,8 +44,6 @@ const intent = (sources: InputSources) => {
 const model = (actions: ReturnType<typeof intent>) => {
   return actions.props$
     .map((props) => {
-      const value$ = actions.changed$.startWith(props.value);
-
       const effect$ = actions.element$
         .map((e) => {
           if (props.focus) {
@@ -54,53 +52,55 @@ const model = (actions: ReturnType<typeof intent>) => {
         })
         .startWith(undefined);
 
-      return xs.combine(value$, effect$).map(([v, effect]) => {
-        return { value: v, placeholder: props.placeholder, label: props.label, effect };
+      return xs.combine(effect$).map(([effect]) => {
+        return { value: props.value, placeholder: props.placeholder, label: props.label, effect };
       });
     })
     .flatten();
 };
 
-const containerClass = classes(
-  "flex",
-  "flex-auto",
-  "items-center",
-  "flex-row",
-  "mx-3",
-  "justify-between",
-  "whitespace-nowrap",
-  "mt-4",
-  "first:mt-0"
-);
-const labelClass = classes("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap");
-const inputClass = classes(
-  "w-full",
-  "flex-[1_1_60%]",
-  "px-4",
-  "py-3",
-  "border",
-  "border-lightgray",
-  "outline-1",
-  "outline-lightgray",
-  "bg-lightgray",
-  "rounded",
-  "transition-outline",
-  "transition-colors",
-  "focus:bg-white",
-  "focus:outline-primary-400",
-  "focus:border-primary-400"
-);
+const Styles = {
+  container: classes(
+    "flex",
+    "flex-auto",
+    "items-center",
+    "flex-row",
+    "mx-3",
+    "justify-between",
+    "whitespace-nowrap",
+    "mt-4",
+    "first:mt-0"
+  ),
+  label: classes("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap"),
+  input: classes(
+    "w-full",
+    "flex-[1_1_60%]",
+    "px-4",
+    "py-3",
+    "border",
+    "border-lightgray",
+    "outline-1",
+    "outline-lightgray",
+    "bg-lightgray",
+    "rounded",
+    "transition-outline",
+    "transition-colors",
+    "focus:bg-white",
+    "focus:outline-primary-400",
+    "focus:border-primary-400"
+  ),
+};
 
 const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ value, placeholder, label }) => {
     if (label) {
       return (
-        <label class={containerClass}>
-          <span class={labelClass} dataset={{ testid: gen("label") }}>
+        <label class={Styles.container}>
+          <span class={Styles.label} dataset={{ testid: gen("label") }}>
             {label}
           </span>
           <input
-            class={inputClass}
+            class={Styles.input}
             attrs={{ type: "text", placeholder: placeholder ?? "", value: value }}
             dataset={{ testid: gen("input") }}
           />
@@ -109,7 +109,7 @@ const view = (state$: ReturnType<typeof model>, gen: ReturnType<typeof generateT
     } else {
       return (
         <input
-          class={inputClass}
+          class={Styles.input}
           attrs={{ type: "text", placeholder: placeholder ?? "", value: value }}
           dataset={{ testid: gen("input") }}
         />

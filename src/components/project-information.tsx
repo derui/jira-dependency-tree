@@ -140,12 +140,10 @@ export const ProjectInformation = (sources: Sources): Sinks => {
     "nameInput"
   )({
     ...sources,
-    props: sources.state.stream.map<InputProps>((state) => {
-      return {
-        focus: true,
-        value: state.project?.key ?? "",
-        placeholder: "Project Key",
-      };
+    props: xs.of<InputProps>({
+      focus: true,
+      value: "",
+      placeholder: "Project Key",
     }),
   });
 
@@ -216,7 +214,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
       mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }),
       generateTestId(sources.testid)
     ),
-    HTTP: loader.HTTP,
+    HTTP: xs.merge(loader.HTTP),
     state: xs.merge(initialReducer$, projectReducer$, openedReducer$),
   };
 };

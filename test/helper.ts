@@ -1,6 +1,11 @@
 import { MemoryStream } from "xstream";
 import { ComponentSource, domSourceOf } from "@/components/helper";
 
+/**
+ * support constant to imitate ComponentSource type applied `withState`.
+ */
+export const emptySource: Required<ComponentSource> = {} as unknown as Required<ComponentSource>;
+
 // short cut function to select element
 export const elements = (source: ComponentSource, selector: string): MemoryStream<Element[]> => {
   return domSourceOf(source).select(selector).elements() as MemoryStream<Element[]>;

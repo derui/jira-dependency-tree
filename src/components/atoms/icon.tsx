@@ -40,55 +40,53 @@ const colors: Record<string, Record<string, boolean>> = {
   gray: classes("before:bg-gray", "before:hover:bg-darkgray", "before:active:bg-black"),
 };
 
-const typeClass = (type: string) => {
-  return classes(icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
+const Styles = {
+  type: (type: string) => {
+    return classes(icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
+  },
+
+  iconBase: classes(
+    "transition-colors",
+    "bg-none",
+    "flex",
+    "items-center",
+    "justify-center",
+    "rounded",
+    "before:content-['']",
+    "before:inline-block",
+    "before:flex-none",
+    "before:w-full",
+    "before:h-full",
+    "before:transition-colors"
+  ),
+
+  size: (size: IconSize) => {
+    switch (size) {
+      case "l":
+        return classes("w-7", "h-7");
+      case "m":
+        return classes("w-6", "h-6");
+      case "s":
+        return classes("w-5", "h-5");
+    }
+  },
+
+  color: (color: Color) => {
+    return colors[color];
+  },
 };
-
-const iconBaseClass = classes(
-  "transition-colors",
-  "bg-none",
-  "flex",
-  "items-center",
-  "justify-center",
-  "rounded",
-  "before:content-['']",
-  "before:inline-block",
-  "before:flex-none",
-  "before:w-full",
-  "before:h-full",
-  "before:transition-colors"
-);
-
-const sizeClass = (size: IconSize) => {
-  switch (size) {
-    case "l":
-      return largeIconClass;
-    case "m":
-      return mediumIconClass;
-    case "s":
-      return smallIconClass;
-  }
-};
-
-const colorClass = (color: Color) => {
-  return colors[color];
-};
-
-const smallIconClass = classes("w-5", "h-5");
-const mediumIconClass = classes("w-6", "h-6");
-const largeIconClass = classes("w-7", "h-7");
 
 const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof generateTestId>) => {
   return state$.map(({ size, type, style, color }) => {
     const iconClass = {
-      ...iconBaseClass,
-      ...sizeClass(size),
-      ...typeClass(type),
-      ...colorClass(color),
+      ...Styles.iconBase,
+      ...Styles.size(size),
+      ...Styles.type(type),
+      ...Styles.color(color),
       ...style,
     };
 
-    return <span class={iconClass} dataset={{ testid: gen("icon"), type, color: color ?? "", size }}></span>;
+    return <span class={iconClass} dataset={{ testid: gen("icon"), type, color, size }}></span>;
   });
 };
 

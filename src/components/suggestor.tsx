@@ -28,7 +28,7 @@ interface SuggestorSources<T = unknown> extends ComponentSource {
   props: MemoryStream<SuggestorProps<T>>;
 }
 
-interface SuggestorSinks<T = unknown> extends ComponentSink<"DOM"> {
+interface SuggestorSinks<T = unknown> extends ComponentSink<"Portal"> {
   value: Stream<T>;
   term: Stream<string>;
 }
@@ -311,7 +311,7 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
     .compose(debounce(400));
 
   return {
-    DOM: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
+    Portal: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
     value: submitEvent$,
     term: termEvent$,
   };

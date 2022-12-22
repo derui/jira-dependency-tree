@@ -89,7 +89,7 @@ const view = (
   });
 };
 
-export const SideToolbar = function SideToolbar(sources: SideToolbarSources): SideToolbarSinks {
+export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
   const graphLayoutIcon = Icon({
     ...sources,
     props: xs.of<IconProps>({

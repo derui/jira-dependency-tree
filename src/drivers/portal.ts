@@ -17,7 +17,7 @@ class PortalSourceImpl implements PortalSource {
   constructor(private _rootDOM: MainDOMSource, private _rootSelector: string, private scopes: string[]) {
     this._portalId = scopes.join("-");
 
-    this.DOM = this._rootDOM.select(`div[data-portal-id="${this._portalId}"]`);
+    this.DOM = this._rootDOM.isolateSource(this._rootDOM, this._portalId);
   }
 
   isolateSource(_: PortalSource, scope: string): PortalSource {

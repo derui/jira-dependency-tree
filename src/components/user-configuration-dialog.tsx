@@ -1,4 +1,4 @@
-import { jsx } from "snabbdom"; // eslint-disable-line
+import { jsx, Fragment } from "snabbdom"; // eslint-disable-line
 import xs, { Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import { Reducer, StateSource } from "@cycle/state";
@@ -134,14 +134,11 @@ const reduceState = (
     };
   });
 
-  const openedReducer$ = xs
-    .merge(submit$.mapTo(false), cancel$.mapTo(false))
-    .debug()
-    .map(
-      simpleReduce<State, boolean>((draft, opened) => {
-        draft.opened = opened;
-      })
-    );
+  const openedReducer$ = xs.merge(submit$.mapTo(false), cancel$.mapTo(false)).map(
+    simpleReduce<State, boolean>((draft, opened) => {
+      draft.opened = opened;
+    })
+  );
 
   const openAtReducer$ = sources.props.openAt.map(
     simpleReduce<State, Rect>((draft, openAt) => {
@@ -177,7 +174,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
     Input,
     "userDomain"
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     testid: gen("user-domain"),
     props: sources.props.initialValue.take(1).map<InputProps>(({ userDomain }) => {
       return {
@@ -192,7 +189,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
     Input,
     "email"
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     testid: gen("email"),
     props: sources.props.initialValue.take(1).map<InputProps>(({ email }) => {
       return {
@@ -207,7 +204,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
     Input,
     "jiraToken"
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     testid: gen("jira-token"),
     props: sources.props.initialValue.take(1).map<InputProps>(({ jiraToken }) => {
       return {
@@ -222,16 +219,16 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
     Button,
     "cancel"
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     testid: gen("cancel"),
-    props: xs.of<ButtonProps>({ content: <span>Cancel</span>, schema: "gray" }),
+    props: xs.of<ButtonProps>({ content: <>Cancel</>, schema: "gray" }),
   });
 
   const submit = isolate(
     Button,
     "submit"
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     testid: gen("submit"),
     props: sources.state.select<State["allowSubmit"]>("allowSubmit").stream.map<ButtonProps>((allowSubmit) => ({
       content: <span>Apply</span>,

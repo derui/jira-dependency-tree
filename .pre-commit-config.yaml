@@ -4,9 +4,15 @@ repos:
   hooks:
     - id: prettier
       name: prettier
-      entry: npx prettier --cache --write
+      entry: npx prettier --cache --write --list-different --ignore-unknown
       language: system
-      files: "\\.(tsx?|css)$"
+      files: "\\.css$"
+      verbose: true
+    - id: formatter
+      name: formatter
+      entry: npx rome format
+      language: system
+      files: "\\.tsx?$"
       verbose: true
     - id: eslint
       name: eslint

@@ -7,8 +7,8 @@ import { httpSourceOf, selectResponse } from "@/components/helper";
 
 export interface Sources extends ComponentSource {
   props: {
-    request: Stream<{credential: ApiCredential; condition: SearchCondition}>;
-  }
+    request: Stream<{ credential: ApiCredential; condition: SearchCondition }>;
+  };
 }
 
 export interface Sinks extends ComponentSink<"HTTP"> {
@@ -33,7 +33,7 @@ export const JiraIssueLoader = (sources: Sources): Sinks => {
         project: e.condition.projectKey,
         condition: {
           sprint: e.condition.sprint?.value,
-          ecpi: e.condition.epic
+          epic: e.condition.epic,
         },
       },
     };

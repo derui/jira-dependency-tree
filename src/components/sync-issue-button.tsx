@@ -19,10 +19,10 @@ import { Issue } from "@/model/issue";
 
 export interface Props {
   credential: Stream<ApiCredential>;
-   condition: Stream<SearchCondition>;
+  condition: Stream<SearchCondition>;
 }
 
-type SyncState = 'loading' | 'completed' | 'notPrepared';
+type SyncState = "loading" | "completed" | "notPrepared";
 
 export interface State {
   syncState: SyncState;
@@ -30,14 +30,14 @@ export interface State {
   condition?: SearchCondition;
 }
 
- interface Sources extends ComponentSource {
+interface Sources extends ComponentSource {
   props: Props;
-   state: StateSource<State>;
+  state: StateSource<State>;
 }
 
-interface Sinks extends ComponentSink<"DOM">, ComponentSink<'HTTP'> {
+interface Sinks extends ComponentSink<"DOM">, ComponentSink<"HTTP"> {
   value: Stream<Issue[]>;
-   state: Stream<Reducer<State>>;
+  state: Stream<Reducer<State>>;
 }
 
 const intent = (sources: Sources) => {
@@ -53,15 +53,11 @@ const Styles = {
   },
 };
 
-const view = (
-  state$: Stream<State>,
-  nodes$: AsNodeStream<["icon"]>,
-  gen: ReturnType<typeof generateTestId>,
-) => {
+const view = (state$: Stream<State>, nodes$: AsNodeStream<["icon"]>, gen: ReturnType<typeof generateTestId>) => {
   return xs.combine(state$, nodes$).map(([{ syncState: syncState }, { icon }]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
-        <button class={Styles.main} attrs={{ disabled: syncState !== 'completed' }} dataset={{ testid: gen("button") }}>
+        <button class={Styles.main} attrs={{ disabled: syncState !== "completed" }} dataset={{ testid: gen("button") }}>
           {icon}
         </button>
       </div>
@@ -79,53 +75,64 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
       return {
         type: "refresh",
         size: "l",
-        style: Styles.icon(syncState === 'loading'),
+        style: Styles.icon(syncState === "loading"),
         color: "complement",
       };
     }),
   });
 
-  const loader = isolate(JiraIssueLoader, 'jiraIssueLoader')({
+  const loader = isolate(
+    JiraIssueLoader,
+    "jiraIssueLoader",
+  )({
     ...sources,
     props: {
-      request: sources.state.stream.map(({syncState, apiCredential, condition}) => {
-      if (!apiCredential || !condition || syncState !== 'loading') {
-        return xs.never();
-      }
+      request: sources.state.stream
+        .map(({ syncState, apiCredential, condition }) => {
+          if (!apiCredential || !condition || syncState !== "loading") {
+            return xs.never();
+          }
 
-      return xs.of({
-        credential: apiCredential,
-        condition
-      });
-    }).flatten()
-    }
+          return xs.of({
+            credential: apiCredential,
+            condition,
+          });
+        })
+        .flatten(),
+    },
   });
 
   const initialReducer$ = xs.of<Reducer<State>>(() => {
     return {
-      syncState: 'notPrepared',
-    }
+      syncState: "notPrepared",
+    };
   });
 
-  const clickReducer$ = actions.clicked$.map(simpleReduce<State, unknown>((draft) => {
-    if (draft.apiCredential && draft.condition) {
-      draft.syncState = 'loading';
-    }
-  }));
+  const clickReducer$ = actions.clicked$.map(
+    simpleReduce<State, unknown>((draft) => {
+      if (draft.apiCredential && draft.condition) {
+        draft.syncState = "loading";
+      }
+    }),
+  );
 
-  const propsReducer$ = xs.combine(sources.props.condition, sources.props.credential).map(simpleReduce<State, [SearchCondition, ApiCredential]>((draft, [condition, apiCredential]) => {
-    draft.condition = condition;
-    draft.apiCredential = apiCredential;
-  }));
+  const propsReducer$ = xs.combine(sources.props.condition, sources.props.credential).map(
+    simpleReduce<State, [SearchCondition, ApiCredential]>((draft, [condition, apiCredential]) => {
+      draft.condition = condition;
+      draft.apiCredential = apiCredential;
+    }),
+  );
 
-  const valueReducer$ = loader.issues.map(simpleReduce<State, unknown>((draft) => {
-    draft.syncState = 'completed';
-  }));
+  const valueReducer$ = loader.issues.map(
+    simpleReduce<State, unknown>((draft) => {
+      draft.syncState = "completed";
+    }),
+  );
 
   return {
     DOM: view(sources.state.stream, mergeNodes({ icon }), generateTestId(sources.testid)),
     HTTP: xs.merge(loader.HTTP),
     value: loader.issues,
-    state: xs.merge(initialReducer$, clickReducer$, propsReducer$, valueReducer$)
+    state: xs.merge(initialReducer$, clickReducer$, propsReducer$, valueReducer$),
   };
 };

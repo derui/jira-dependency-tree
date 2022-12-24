@@ -121,16 +121,18 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
         .startWith({}),
       openAt: actions.clickOpener$
         .map(() => {
-          return actions.root$.map((e) => {
-            const rect = e.getBoundingClientRect();
+          return actions.root$
+            .map((e) => {
+              const rect = e.getBoundingClientRect();
 
-            return new Rect({
-              top: rect.top,
-              left: rect.left,
-              right: rect.right,
-              bottom: rect.bottom,
-            });
-          });
+              return new Rect({
+                top: rect.top,
+                left: rect.left,
+                right: rect.right,
+                bottom: rect.bottom,
+              });
+            })
+            .take(1);
         })
         .flatten(),
     },

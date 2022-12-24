@@ -43,13 +43,10 @@ const intent = (sources: Sources) => {
   const submit$ = portalSourceOf(sources)
     .DOM.select("form")
     .events("submit", { preventDefault: true, bubbles: false })
-    .mapTo(true)
-    .debug();
+    .mapTo(true);
 
   return {
     submit$,
-    props$: sources.props,
-    state: sources.state,
   };
 };
 

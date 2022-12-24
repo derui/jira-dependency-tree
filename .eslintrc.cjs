@@ -15,7 +15,10 @@ module.exports = {
     ecmaFeatures:  {
       jsx: true,  // Allows for the parsing of JSX
     },
-    project: "./tsconfig.json",
+    project: [
+      "./tsconfig.json",
+      "./cypress/tsconfig.json"
+    ],
   },
   rules: {
     "import/order": "error",

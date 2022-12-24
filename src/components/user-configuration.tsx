@@ -83,8 +83,8 @@ const view = (
       <div class={Styles.toolbar} dataset={{ id: "root" }}>
         <button class={{ ...Styles.opener() }} dataset={{ testid: gen("opener"), id: "opener" }}>
           <span
-            class={Styles.marker(!setupFinished)}
-            dataset={{ testid: gen("marker"), show: `${!setupFinished}` }}
+            class={{ ...Styles.marker(!setupFinished), "--show": !setupFinished }}
+            dataset={{ testid: gen("marker") }}
           ></span>
           {openerIcon}
         </button>

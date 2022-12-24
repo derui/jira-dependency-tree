@@ -34,8 +34,10 @@ test("load issues", async (t) => {
         select() {
           return Time.diagram("x|", { x: response$ });
         },
-      } as any,
-      events: xs.of(),
+      } as unknown,
+      props: {
+        request: xs.of(),
+      },
     });
 
     const actual$ = sinks.issues;
@@ -113,7 +115,9 @@ test("merge subtask's outward", async (t) => {
           return Time.diagram("x|", { x: response$ });
         },
       } as unknown as HTTPSource,
-      events: xs.of(),
+      props: {
+        request: xs.of(),
+      },
     });
 
     const actual$ = sinks.issues.map((v) => v.filter((i) => i.key === "bar").at(0));
@@ -176,10 +180,12 @@ test("add parent if subtask's outwards is empty", async (t) => {
           return Time.diagram("x|", { x: response$ });
         },
       } as any,
-      events: xs.of(),
+      props: {
+        request: xs.of(),
+      },
     });
 
-    const actual$ = sinks.issues.map((v) => v.filter((i) => i.key === "bar").at(0)!);
+    const actual$ = sinks.issues.map((v) => v.filter((i) => i.key === "bar").at(0));
     const expected$ = Time.diagram("-b|", {
       b: {
         key: "bar",

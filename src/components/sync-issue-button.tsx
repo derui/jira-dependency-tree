@@ -57,7 +57,11 @@ const view = (state$: Stream<State>, nodes$: AsNodeStream<["icon"]>, gen: Return
   return xs.combine(state$, nodes$).map(([{ syncState: syncState }, { icon }]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
-        <button class={Styles.main} attrs={{ disabled: syncState !== "completed" }} dataset={{ testid: gen("button") }}>
+        <button
+          class={{ ...Styles.main, "--loading": syncState === "loading" }}
+          attrs={{ disabled: syncState !== "completed" }}
+          dataset={{ testid: gen("button") }}
+        >
           {icon}
         </button>
       </div>
@@ -120,6 +124,10 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
     simpleReduce<State, [SearchCondition, ApiCredential]>((draft, [condition, apiCredential]) => {
       draft.condition = condition;
       draft.apiCredential = apiCredential;
+
+      if (draft.syncState === "notPrepared") {
+        draft.syncState = "loading";
+      }
     }),
   );
 

@@ -2,7 +2,7 @@ import { Driver } from "@cycle/run";
 import { Stream } from "xstream";
 import { VNode } from "snabbdom";
 import { IsolateableSource } from "@cycle/isolate";
-import { MainDOMSource, makeDOMDriver } from "@cycle/dom";
+import { div, MainDOMSource, makeDOMDriver } from "@cycle/dom";
 
 export interface PortalSource extends IsolateableSource {
   DOM: MainDOMSource;
@@ -12,24 +12,24 @@ export interface PortalSource extends IsolateableSource {
 
 class PortalSourceImpl implements PortalSource {
   public DOM: MainDOMSource;
-  private _element: HTMLDivElement;
   private _portalId: string;
 
   constructor(private _rootDOM: MainDOMSource, private _rootSelector: string, private scopes: string[]) {
     this._portalId = scopes.join("-");
-    this._element = document.createElement("div");
-    this._element.dataset[`portalId`] = this._portalId;
-    document.querySelector(this._rootSelector)?.appendChild(this._element);
 
-    this.DOM = this._rootDOM.select(`${this._rootSelector} div[data-portal-id="${this._portalId}"]`);
+    this.DOM = this._rootDOM.select(`div[data-portal-id="${this._portalId}"]`);
   }
 
   isolateSource(_: PortalSource, scope: string): PortalSource {
     return new PortalSourceImpl(this._rootDOM, this._rootSelector, [...this.scopes, scope]);
   }
 
-  isolateSink(sink: Stream<VNode>): Stream<VNode> {
-    return sink;
+  isolateSink(sink: Stream<VNode>, scope: string): Stream<VNode> {
+    return sink.map((vnode) => {
+      if (vnode.data?.dataset?.portalId) return vnode;
+
+      return div(".portal", { dataset: { portalId: [this._portalId, scope].join("-") } }, [vnode]);
+    });
   }
 }
 

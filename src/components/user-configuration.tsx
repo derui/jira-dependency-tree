@@ -1,6 +1,9 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import xs, { Stream } from "xstream";
+import isolate from "@cycle/isolate";
+import { Reducer, StateSource } from "@cycle/state";
 import { Icon, IconProps } from "./atoms/icon";
+import { UserConfigurationDialog, UserConfigurationValue } from "./user-configuration-dialog";
 import {
   AsNodeStream,
   classes,
@@ -9,22 +12,28 @@ import {
   mergeNodes,
   ComponentSink,
   ComponentSource,
+  simpleReduce,
 } from "@/components/helper";
 import { Rect } from "@/util/basic";
+import { Setting, settingFactory } from "@/model/setting";
+
+export interface State {
+  settings?: Setting;
+  setupFinished: boolean;
+}
 
 export type UserConfigurationProps = {
-  setupFinished: boolean;
+  initialSetting: Stream<Setting>;
 };
 
 interface UserConfigurationSources extends ComponentSource {
-  props: Stream<UserConfigurationProps>;
+  props: UserConfigurationProps;
+  state: StateSource<State>;
 }
 
-interface UserConfigurationSinks extends ComponentSink<"DOM"> {
-  /**
-   * streaming Rect of element when it was clicked
-   */
-  click: Stream<Rect>;
+interface UserConfigurationSinks extends ComponentSink<"DOM">, ComponentSink<"Portal"> {
+  value: Stream<Setting>;
+  state: Stream<Reducer<State>>;
 }
 
 const intent = (sources: UserConfigurationSources) => {
@@ -34,14 +43,7 @@ const intent = (sources: UserConfigurationSources) => {
   return {
     clickOpener$,
     root$,
-    props$: sources.props,
   };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  return actions.props$.map((props) => {
-    return { setupFinished: props.setupFinished };
-  });
 };
 
 const Styles = {
@@ -73,11 +75,7 @@ const Styles = {
   },
 };
 
-const view = (
-  state$: ReturnType<typeof model>,
-  nodes: AsNodeStream<["openerIcon"]>,
-  gen: ReturnType<typeof generateTestId>
-) => {
+const view = (state$: Stream<State>, nodes: AsNodeStream<["openerIcon"]>, gen: ReturnType<typeof generateTestId>) => {
   return xs.combine(state$, nodes).map(([{ setupFinished }, { openerIcon }]) => (
     <div class={Styles.root}>
       <div class={Styles.toolbar} dataset={{ id: "root" }}>
@@ -105,23 +103,60 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
   });
 
   const actions = intent(sources);
-  const state$ = model(actions);
+
+  const dialog = isolate(
+    UserConfigurationDialog,
+    "userConfigurationDialog"
+  )({
+    ...sources,
+    props: {
+      initialValue: sources.props.initialSetting
+        .map<Partial<UserConfigurationValue>>((settings) => {
+          return {
+            jiraToken: settings.toArgument().credentials?.jiraToken,
+            email: settings.toArgument().credentials?.email,
+            userDomain: settings.toArgument().userDomain,
+          };
+        })
+        .startWith({}),
+      openAt: actions.clickOpener$
+        .map(() => {
+          return actions.root$.map((e) => {
+            const rect = e.getBoundingClientRect();
+
+            return new Rect({
+              top: rect.top,
+              left: rect.left,
+              right: rect.right,
+              bottom: rect.bottom,
+            });
+          });
+        })
+        .flatten(),
+    },
+  });
+
+  const initialReducer$ = xs.of<Reducer<State>>(() => {
+    return { setupFinished: false };
+  });
+
+  const propReducer$ = sources.props.initialSetting.take(1).map(
+    simpleReduce<State, Setting>((draft, settings) => {
+      draft.settings = settings;
+      draft.setupFinished = true;
+    })
+  );
+
+  const valueReducer$ = dialog.value.map(
+    simpleReduce<State, UserConfigurationValue>((draft, value) => {
+      draft.settings = settingFactory({ ...value });
+      draft.setupFinished = true;
+    })
+  );
 
   return {
-    DOM: view(state$, mergeNodes({ openerIcon }), gen),
-    click: actions.clickOpener$
-      .map(() => {
-        return actions.root$.map((e) => {
-          const rect = e.getBoundingClientRect();
-
-          return new Rect({
-            top: rect.top,
-            left: rect.left,
-            right: rect.right,
-            bottom: rect.bottom,
-          });
-        });
-      })
-      .flatten(),
+    DOM: view(sources.state.stream, mergeNodes({ openerIcon }), gen),
+    Portal: xs.merge(dialog.Portal),
+    state: xs.merge(initialReducer$, propReducer$, valueReducer$, dialog.state as Stream<Reducer<State>>),
   };
 };

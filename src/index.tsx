@@ -27,6 +27,7 @@ import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
 import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
 import { makePortalDriver, PortalSource } from "./drivers/portal";
+import { env } from "./env";
 
 type MainSources = {
   DOM: DOMSource;
@@ -274,6 +275,11 @@ const main = (sources: MainSources): MainSinks => {
 
         return produce(prevState, (draft) => {
           draft.setting = v;
+          const apiCredential = v.asApiCredential(env);
+
+          if (apiCredential) {
+            draft.apiCredential = apiCredential;
+          }
         });
       }
   );

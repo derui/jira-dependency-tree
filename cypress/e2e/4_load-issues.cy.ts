@@ -12,34 +12,36 @@ describe("load issues", () => {
   });
 
   it("open editor and input project key", () => {
-    // open editor
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/name-input").type("KEY");
-    cy.testid("project-information/submit").click();
+    // Input credentials
     cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
+    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
+    cy.testid("user-configuration/submit/button").click();
 
-    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
-    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
-    cy.testid("user-configuration/dialog/submit").click();
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/input").type("KEY");
+    cy.testid("project-information/submit/icon").click();
 
     // load project.
     cy.testid("project-information/name").should("contain", "Testing Project");
     cy.testid("project-information/marker").should("not.have.class", "--show");
-    cy.testid("sync-jira/button").should("not.have.attr", "disabled");
+    cy.testid("sync/icon").should("not.have.attr", "disabled");
   });
 
   it("open condition editor and suggestion", () => {
-    // open editor
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/name-input").type("KEY");
-    cy.testid("project-information/submit").click();
+    // Input credentials
     cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
+    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
+    cy.testid("user-configuration/submit/button").click();
 
-    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
-    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
-    cy.testid("user-configuration/dialog/submit").click();
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/input").type("KEY");
+    cy.testid("project-information/submit/icon").click();
 
     // open suggestor
     cy.testid("condition-editor").click();
@@ -59,16 +61,17 @@ describe("load issues", () => {
   });
 
   it("change condition if suggestion item is selected", () => {
-    // open editor
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/name-input").type("KEY");
-    cy.testid("project-information/submit").click();
+    // Input credentials
     cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
+    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
+    cy.testid("user-configuration/submit/button").click();
 
-    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
-    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
-    cy.testid("user-configuration/dialog/submit").click();
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/input").type("KEY");
+    cy.testid("project-information/submit/icon").click();
 
     // open suggestor
     cy.testid("condition-editor").click();
@@ -90,16 +93,17 @@ describe("load issues", () => {
   });
 
   it("change condition if epic edited", () => {
-    // open editor
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/name-input").type("KEY");
-    cy.testid("project-information/submit").click();
+    // Input credentials
     cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
+    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
+    cy.testid("user-configuration/submit/button").click();
 
-    cy.testid("user-configuration/dialog/user-domain").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/dialog/email").type("email").should("have.value", "email");
-    cy.testid("user-configuration/dialog/jira-token").type("token").should("have.value", "token");
-    cy.testid("user-configuration/dialog/submit").click();
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/input").type("KEY");
+    cy.testid("project-information/submit/icon").click();
 
     // enter epic
     cy.testid("condition-editor").click();

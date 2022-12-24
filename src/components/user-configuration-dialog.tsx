@@ -229,7 +229,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
     DOM: portalSourceOf(sources).DOM,
     testid: gen("submit"),
     props: sources.state.select<State["allowSubmit"]>("allowSubmit").stream.map<ButtonProps>((allowSubmit) => ({
-      content: <span>Apply</span>,
+      content: <>Apply</>,
       schema: "primary",
       type: "submit",
       disabled: !allowSubmit,

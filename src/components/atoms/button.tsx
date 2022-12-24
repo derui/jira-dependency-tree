@@ -1,5 +1,5 @@
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import xs, { Stream } from "xstream";
+import { Stream } from "xstream";
 import { classes, domSourceOf, generateTestId, ComponentSink, ComponentSource } from "../helper";
 
 type ColorSchema = "primary" | "secondary1" | "gray";

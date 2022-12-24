@@ -135,6 +135,8 @@ const view = (
 };
 
 export const ProjectInformation = (sources: Sources): Sinks => {
+  const gen = generateTestId(sources.testid);
+
   const nameInput = isolate(
     Input,
     "nameInput"
@@ -154,6 +156,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
       color: "gray",
       size: "m",
     }),
+    testid: gen("cancel"),
   });
 
   const submitIcon = Icon({
@@ -163,6 +166,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
       color: "complement",
       size: "m",
     }),
+    testid: gen("submit"),
   });
 
   const actions = intent(sources, nameInput);
@@ -208,11 +212,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
   );
 
   return {
-    DOM: view(
-      sources.state.stream,
-      mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }),
-      generateTestId(sources.testid)
-    ),
+    DOM: view(sources.state.stream, mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }), gen),
     HTTP: xs.merge(loader.HTTP),
     state: xs.merge(initialReducer$, projectReducer$, openedReducer$),
   };

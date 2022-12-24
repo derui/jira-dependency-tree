@@ -1,4 +1,6 @@
 import produce from "immer";
+import { Env } from "./env";
+import { ApiCredential } from "./event";
 import { Size } from "@/type";
 
 export type SettingArgument = {
@@ -28,6 +30,7 @@ export type Setting = {
   applyUserDomain(userDomain: string): Setting;
 
   toArgument(): SettingArgument;
+  asApiCredential(env: Env): ApiCredential | undefined;
 };
 
 export const settingFactory = function settingFactory(argument: SettingArgument): Setting {
@@ -58,6 +61,14 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
       return produce(this, (draft) => {
         draft.userDomain = userDomain;
       });
+    },
+    asApiCredential(env): ApiCredential | undefined {
+      const token = this.credentials?.jiraToken;
+      const email = this.credentials?.email;
+      const userDomain = this.userDomain;
+
+      if (!token || !email || !userDomain) return;
+      return { ...env, token, userDomain, email };
     },
   };
 };

@@ -4,16 +4,16 @@ repos:
   hooks:
     - id: prettier
       name: prettier
-      entry: npx prettier
+      entry: npx prettier --cache --write
       language: system
       files: "\\.(tsx?|css)$"
-      args: ["-w", "--cache"]
+      verbose: true
     - id: eslint
       name: eslint
-      entry: npx eslint
+      entry: npx eslint --cache --cache-location node_modules/.cache/eslint
       language: system
       files: "\\.tsx?$"
-      args: ["--fix", "--cache", "--cache-location", "node_modules/.cache/eslint"]
+      verbose: true
     - id: rustfmt
       name: rustfmt
       entry: rustfmt

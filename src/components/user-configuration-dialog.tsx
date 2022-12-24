@@ -97,7 +97,6 @@ const view = (
 ) => {
   return xs.combine(state$, nodes$).map(([{ opened, openAt }, nodes]) => {
     const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
-    console.log(top);
 
     return (
       <div

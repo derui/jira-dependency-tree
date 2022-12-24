@@ -18,11 +18,11 @@ export const JiraSuggestionLoader = function JiraSuggestionLoader(
   const events$ = sources.events.filter((v) => v.kind === "GetSuggestionRequest" && v.term.length > 0);
   const request$ = events$.map<RequestInput>((e) => {
     return {
-      url: `${e.env.apiBaseUrl}/get-suggestions`,
+      url: `${e.credential.apiBaseUrl}/get-suggestions`,
       method: "POST",
       type: "application/json",
       headers: {
-        "x-api-key": e.env.apiKey,
+        "x-api-key": e.credential.apiKey,
       },
       send: {
         authorization: {

@@ -1,10 +1,9 @@
-import assert from "node:assert";
 import { MainDOMSource } from "@cycle/dom";
 import { HTTPSource, RequestInput, Response } from "@cycle/http";
 import { VNode } from "snabbdom";
 import xs, { Stream } from "xstream";
 import { Reducer } from "@cycle/state";
-import produce, { Draft } from "immer";
+import produce from "immer";
 import { PortalSource } from "@/drivers/portal";
 
 // helper function to fix type definition of cycle/http
@@ -73,7 +72,9 @@ const driverSourceOf = <T extends SupportedDrivers>(
 ): SupportedSourceTypes[T] => {
   const driver = sources[target] as SupportedSourceTypes[T] | undefined;
 
-  assert(driver !== undefined);
+  if (driver === undefined) {
+    throw new Error("Invalid driver");
+  }
 
   return driver;
 };

@@ -38,7 +38,7 @@ interface ProjectSyncOptionEditorSources extends ComponentSource {
   state: StateSource<ProjectSyncOptionEditorState>;
 }
 
-interface ProjectSyncOptionEditorSinks extends ComponentSink<"DOM"> {
+interface ProjectSyncOptionEditorSinks extends ComponentSink<"DOM">, ComponentSink<"Portal"> {
   state: Stream<Reducer<ProjectSyncOptionEditorState>>;
 }
 
@@ -177,7 +177,7 @@ const Styles = {
 
 const view = (
   state$: ReturnType<typeof model>,
-  nodes$: AsNodeStream<["suggestor", "cancel", "submit", "epicInput"]>,
+  nodes$: AsNodeStream<["cancel", "submit", "epicInput"]>,
   gen: TestIdGenerator
 ) => {
   return xs
@@ -203,7 +203,7 @@ const view = (
                 {nodes.submit}
               </span>
             </div>
-            <div class={Styles.sprintSuggestor(currentConditionType === ConditionType.Sprint)}>{nodes.suggestor}</div>
+            <div class={Styles.sprintSuggestor(currentConditionType === ConditionType.Sprint)}></div>
             <div class={Styles.epicInput(currentConditionType === ConditionType.Epic)}>{nodes.epicInput}</div>
           </div>
         </div>
@@ -320,13 +320,13 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
     DOM: view(
       state$,
       mergeNodes({
-        suggestor,
         cancel: cancelIcon,
         submit: submitIcon,
         epicInput,
       }),
       generateTestId(sources.testid)
     ),
+    Portal: xs.merge(suggestor.Portal),
     state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$, valueChangeReducer$),
   };
 };

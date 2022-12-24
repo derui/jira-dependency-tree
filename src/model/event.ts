@@ -10,14 +10,12 @@ export type Events = GetWholeDataRequest | SyncIssuesRequest | GetSuggestionRequ
 
 export interface GetWholeDataRequest {
   kind: "GetWholeDataRequest";
-  env: Env;
   credential: ApiCredential;
   projectKey: string;
 }
 
 export interface SyncIssuesRequest {
   kind: "SyncIssuesRequest";
-  env: Env;
   credential: ApiCredential;
   projectKey: string;
   condition?: SearchCondition;
@@ -25,7 +23,6 @@ export interface SyncIssuesRequest {
 
 export interface GetSuggestionRequest {
   kind: "GetSuggestionRequest";
-  env: Env;
   credential: ApiCredential;
   projectKey: string;
   term: string;

@@ -1,5 +1,4 @@
 import produce from "immer";
-import { JiraCredential } from "./event";
 import { Size } from "@/type";
 
 export type SettingArgument = {
@@ -28,7 +27,6 @@ export type Setting = {
   applyCredentials(jiraToken: string, email: string): Setting;
   applyUserDomain(userDomain: string): Setting;
 
-  toCredential(): JiraCredential | undefined;
   toArgument(): SettingArgument;
 };
 
@@ -60,16 +58,6 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
       return produce(this, (draft) => {
         draft.userDomain = userDomain;
       });
-    },
-    toCredential(): JiraCredential | undefined {
-      const { email, jiraToken } = this.credentials;
-      const userDomain = this.userDomain;
-
-      if (!userDomain || !email || !jiraToken) {
-        return;
-      }
-
-      return { token: jiraToken, email, userDomain };
     },
   };
 };

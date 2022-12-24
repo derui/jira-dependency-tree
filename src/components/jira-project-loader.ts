@@ -17,11 +17,11 @@ export const JiraProjectLoader = (sources: JiraProjectLoaderSources): JiraProjec
   const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest");
   const request$ = events$.map<RequestInput>((e) => {
     return {
-      url: `${e.env.apiBaseUrl}/load-project`,
+      url: `${e.credential.apiBaseUrl}/load-project`,
       method: "POST",
       type: "application/json",
       headers: {
-        "x-api-key": e.env.apiKey,
+        "x-api-key": e.credential.apiKey,
       },
       send: {
         authorization: {

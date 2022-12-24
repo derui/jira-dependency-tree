@@ -8,16 +8,14 @@ import isolate, { Component } from "@cycle/isolate";
 import produce from "immer";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
 import equal from "fast-deep-equal/es6";
-import { Project } from "./model/project";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
-import { ProjectInformation } from "./components/project-information";
+import { ProjectInformation, State as ProjectInformationState } from "./components/project-information";
 import { filterNull, filterUndefined, Rect } from "./util/basic";
 import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
-import { env } from "./env";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
 import { SyncJira, SyncJiraProps, SyncJiraSinks, SyncJiraSources } from "./components/sync-jira";
@@ -52,14 +50,15 @@ type MainSinks = {
 type MainState = {
   data: {
     issues: Issue[];
-    project?: Project;
     suggestion?: Suggestion;
   };
   projectKey: string | undefined;
   setting: Setting;
   apiCredential?: ApiCredential;
   loading: LoaderState;
-} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: ProjectSyncOptionEditorState };
+} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: ProjectSyncOptionEditorState } & {
+  projectInformation?: ProjectInformationState;
+};
 
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
@@ -81,14 +80,14 @@ const Styles = {
 
 const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
   const credential$ = sources.state
-    .select<MainState["setting"]>("setting")
-    .stream.map((v) => v.toCredential())
-    .filter(filterUndefined)
+    .select<MainState["apiCredential"]>("apiCredential")
+    .stream.filter(filterUndefined)
     .remember();
 
   const project$ = sources.state
-    .select<MainState["projectKey"]>("projectKey")
-    .stream.filter(filterUndefined)
+    .select<MainState["projectInformation"]>("projectInformation")
+    .stream.map((v) => v?.project)
+    .filter(filterUndefined)
     .remember();
 
   const condition$ = sources.state
@@ -100,12 +99,11 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
     .map(() =>
       xs
         .combine(project$, credential$, condition$)
-        .map<Events>(([projectKey, credential, condition]) => {
+        .map<Events>(([project, credential, condition]) => {
           return {
             kind: "SyncIssuesRequest",
-            env: env,
             credential,
-            projectKey: projectKey,
+            projectKey: project.key,
             condition,
           };
         })
@@ -119,26 +117,22 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
     .filter(filterUndefined)
     .filter((v) => v.length > 0);
 
-  const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([projectKey, credential]) => {
+  const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([project, credential]) => {
     return {
       kind: "GetWholeDataRequest",
-      env: env,
       credential,
-      projectKey: projectKey,
+      projectKey: project?.key,
     };
   });
 
-  const suggestionEvent$ = xs
-    .combine(project$, credential$, lastTerm$)
-    .map<Events>(([projectKey, credential, term]) => {
-      return {
-        kind: "GetSuggestionRequest",
-        env: env,
-        credential,
-        projectKey: projectKey,
-        term,
-      };
-    });
+  const suggestionEvent$ = xs.combine(project$, credential$, lastTerm$).map<Events>(([project, credential, term]) => {
+    return {
+      kind: "GetSuggestionRequest",
+      credential,
+      projectKey: project.key,
+      term,
+    };
+  });
 
   return isolate(JiraLoader, { HTTP: "jiraLoader" })({
     HTTP: sources.HTTP,
@@ -253,7 +247,7 @@ const main = (sources: MainSources): MainSinks => {
   const issueGraph$ = xs
     .combine(
       sources.state.stream.map(({ data }) => data.issues),
-      sources.state.stream.map(({ data }) => data.project).filter(filterUndefined),
+      sources.state.stream.map(({ projectInformation }) => projectInformation?.project).filter(filterUndefined),
       sources.state.stream.map(({ sideToolbar }) => sideToolbar?.graphLayout).filter(filterUndefined),
       sources.panZoom.state
     )
@@ -308,7 +302,6 @@ const main = (sources: MainSources): MainSinks => {
 
       return produce(prevState, (draft) => {
         draft.data.issues = data?.issues ?? draft.data.issues;
-        draft.data.project = data?.project ?? draft.data.project;
         draft.data.suggestion = data?.suggestion ?? draft.data.suggestion;
       });
     };

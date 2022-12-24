@@ -18,7 +18,7 @@ class PortalSourceImpl implements PortalSource {
   constructor(private _rootDOM: MainDOMSource, private _rootSelector: string, private scopes: string[]) {
     this._portalId = scopes.join("-");
     this._element = document.createElement("div");
-    this._element.dataset[`portal-id`] = this._portalId;
+    this._element.dataset[`portalId`] = this._portalId;
     document.querySelector(this._rootSelector)?.appendChild(this._element);
 
     this.DOM = this._rootDOM.select(`${this._rootSelector} div[data-portal-id="${this._portalId}"]`);
@@ -37,6 +37,6 @@ export const makePortalDriver = (selector: string): Driver<Stream<VNode>, Portal
   const dom = makeDOMDriver(selector);
 
   return (sink) => {
-    return new PortalSourceImpl(dom(sink), selector, []);
+    return new PortalSourceImpl(dom(sink), selector, ["root"]);
   };
 };

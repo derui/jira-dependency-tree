@@ -17,11 +17,11 @@ export const JiraIssueLoader = (sources: JiraIssueLoaderSources): JiraIssueLoade
   const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "SyncIssuesRequest");
   const request$ = events$.map<RequestInput>((e) => {
     return {
-      url: `${e.env.apiBaseUrl}/load-issues`,
+      url: `${e.credential.apiBaseUrl}/load-issues`,
       method: "POST",
       type: "application/json",
       headers: {
-        "x-api-key": e.env.apiKey,
+        "x-api-key": e.credential.apiKey,
       },
       send: {
         authorization: {

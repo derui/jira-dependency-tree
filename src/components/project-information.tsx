@@ -172,7 +172,6 @@ export const ProjectInformation = (sources: Sources): Sinks => {
     .map(([credential, projectKey]) => {
       return actions.submit$.take(1).mapTo<Events>({
         kind: "GetWholeDataRequest",
-        env: credential,
         credential,
         projectKey,
       });

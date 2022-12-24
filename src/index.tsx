@@ -18,7 +18,7 @@ import { filterNull, filterUndefined } from "./util/basic";
 import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
-import { SyncJira, SyncJiraProps, SyncJiraSinks, SyncJiraSources } from "./components/sync-jira";
+import { SyncIssueButton, Props, Sinks, Sources } from "./components/sync-jira";
 import { LoaderState, LoaderStatus } from "./type";
 import { ApiCredential, Events } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
@@ -78,7 +78,7 @@ const Styles = {
   divider: classes("w-0", "border-l", "border-lightgray"),
 };
 
-const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoaderSinks => {
+const jiraLoader = (sources: MainSources, syncJiraSync: Sinks): JiraLoaderSinks => {
   const credential$ = sources.state
     .select<MainState["apiCredential"]>("apiCredential")
     .stream.filter(filterUndefined)
@@ -159,7 +159,7 @@ const main = (sources: MainSources): MainSinks => {
     },
     testid: "project-information",
   });
-  const syncJiraSink = (isolate(SyncJira, { DOM: "syncJira" }) as Component<SyncJiraSources, SyncJiraSinks>)({
+  const syncJiraSink = (isolate(SyncIssueButton, { DOM: "syncJira" }) as Component<Sources, Sinks>)({
     ...sources,
     testid: "sync-jira",
     props: xs
@@ -171,7 +171,7 @@ const main = (sources: MainSources): MainSinks => {
           .startWith(false),
         sources.state.select<MainState["loading"]>("loading").stream,
       )
-      .map<SyncJiraProps>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
+      .map<Props>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
   });
 
   const jiraLoaderSink = jiraLoader(sources, syncJiraSink);

@@ -29,6 +29,7 @@ export interface GetSuggestionRequest {
 }
 
 export interface SearchCondition {
+  projectKey: string;
   sprint?: {
     value: string;
     displayName: string;

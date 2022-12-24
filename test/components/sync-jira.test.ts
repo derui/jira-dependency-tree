@@ -4,7 +4,7 @@ import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
-import { SyncJira, SyncJiraProps } from "@/components/sync-jira";
+import { SyncIssueButton, Props } from "@/components/sync-jira";
 
 test("initial display when component can not sync", async (t) => {
   await componentTest((done) => {
@@ -13,7 +13,7 @@ test("initial display when component can not sync", async (t) => {
     const dom = mockDOMSource({});
 
     // Act
-    const sinks = SyncJira({
+    const sinks = SyncIssueButton({
       DOM: dom as any,
       props: Time.diagram("x", { x: { status: "LOADING", setupFinished: false } }),
     });
@@ -46,7 +46,7 @@ test("initial display when component can sync", async (t) => {
     const dom = mockDOMSource({});
 
     // Act
-    const sinks = SyncJira({
+    const sinks = SyncIssueButton({
       DOM: dom as any,
       props: Time.diagram("x", { x: { status: "COMPLETED", setupFinished: true } }),
     });
@@ -84,9 +84,9 @@ test("get event when clicked", async (t) => {
     });
 
     // Act
-    const sinks = SyncJira({
+    const sinks = SyncIssueButton({
       DOM: dom as any,
-      props: xs.of<SyncJiraProps>({ status: "COMPLETED", setupFinished: true }),
+      props: xs.of<Props>({ status: "COMPLETED", setupFinished: true }),
     });
 
     const actual$ = sinks.value;

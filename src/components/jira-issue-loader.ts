@@ -1,12 +1,16 @@
 import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
 import { ComponentSink, ComponentSource } from "./helper";
-import { Events } from "@/model/event";
+import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { httpSourceOf, selectResponse } from "@/components/helper";
 
+
+
 export interface JiraIssueLoaderSources extends ComponentSource {
-  events: Stream<Events>;
+  props: {
+    request: Stream<{credential: ApiCredential; condition: SearchCondition}>;
+  }
 }
 
 export interface JiraIssueLoaderSinks extends ComponentSink<"HTTP"> {
@@ -14,8 +18,7 @@ export interface JiraIssueLoaderSinks extends ComponentSink<"HTTP"> {
 }
 
 export const JiraIssueLoader = (sources: JiraIssueLoaderSources): JiraIssueLoaderSinks => {
-  const events$ = sources.events.filter((v) => v.kind === "GetWholeDataRequest" || v.kind === "SyncIssuesRequest");
-  const request$ = events$.map<RequestInput>((e) => {
+  const request$ = sources.props.request.map<RequestInput>((e) => {
     return {
       url: `${e.credential.apiBaseUrl}/load-issues`,
       method: "POST",
@@ -29,8 +32,11 @@ export const JiraIssueLoader = (sources: JiraIssueLoaderSources): JiraIssueLoade
           email: e.credential.email,
           user_domain: e.credential.userDomain,
         },
-        project: e.projectKey,
-        condition: eventToCondition(e),
+        project: e.condition.projectKey,
+        condition: {
+          sprint: e.condition.sprint?.value,
+          ecpi: e.condition.epic
+        },
       },
     };
   });
@@ -92,17 +98,4 @@ const mergeTasks = function mergeTasks(issues: Issue[], subtasks: { parent: stri
   }
 
   return Array.from(map.values());
-};
-
-const eventToCondition = function eventToCondition(e: Events): { sprint?: string; epic?: string } | undefined {
-  switch (e.kind) {
-    case "SyncIssuesRequest": {
-      return {
-        sprint: e.condition?.sprint?.value,
-        epic: e.condition?.epic,
-      };
-    }
-    default:
-      return;
-  }
 };

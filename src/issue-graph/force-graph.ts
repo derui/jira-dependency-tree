@@ -94,7 +94,7 @@ export const makeForceGraph = (
   container: D3Node<any>,
   issues: Issue[],
   project: Project,
-  configuration: Configuration
+  configuration: Configuration,
 ): void => {
   const issueGraph = makeIssueGraph(issues);
   const leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
@@ -149,11 +149,11 @@ export const makeForceGraph = (
       .on("tick", ticked)
       .force(
         "fx",
-        d3.forceX<LayoutedLeveledIssue>().x((d) => d.baseX)
+        d3.forceX<LayoutedLeveledIssue>().x((d) => d.baseX),
       )
       .force(
         "fy",
-        d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY)
+        d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
       );
     // define initial position
     simulation.nodes().forEach((d) => {

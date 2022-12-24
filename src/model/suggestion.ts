@@ -11,7 +11,7 @@ export interface Suggestion<T = SuggestedItem> {
 
 // create suggestion
 export const suggestionFactory = function createSuggestion(
-  args: Partial<Suggestion<Omit<SuggestedItem, "id">>>
+  args: Partial<Suggestion<Omit<SuggestedItem, "id">>>,
 ): Suggestion {
   const sprints = (args.sprints ?? []).map((sprint, index) => {
     return {

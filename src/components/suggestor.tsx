@@ -135,7 +135,7 @@ const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
           opened$,
           filteredSuggestions$,
           xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
-          effects(opened$, actions)
+          effects(opened$, actions),
         )
         .map(([opened, suggestions, index, effect]) => {
           return {
@@ -162,7 +162,7 @@ const Styles = {
     "border-l-2",
     "border-l-transparent",
     "cursor-pointer",
-    "hover:bg-secondary1-200"
+    "hover:bg-secondary1-200",
   ),
   suggestionNodeSelected: classes("border-l-secondary1-300"),
   suggestorLabel: classes("flex", "flex-auto", "p-3", "mb-2", "cursor-pointer", "items-center"),
@@ -177,7 +177,7 @@ const Styles = {
     "text-ellipsis",
     "outline-none",
     "border-none",
-    "text-base"
+    "text-base",
   ),
   term: classes("flex", "items-center", "border-b-1", "border-b-lightgray", "p-3"),
   suggestorOpenerOpened: classes("color-complement-400"),
@@ -204,7 +204,7 @@ const StyleMaker = {
         "rounded",
         "shadow-lg",
         "whitespace-nowrap",
-        "text-base"
+        "text-base",
       ),
       ...(!opened ? classes("hidden") : {}),
       ...(opened ? classes("flex") : {}),
@@ -230,7 +230,7 @@ const StyleMaker = {
         "text-left",
         "border-none",
         "rounded",
-        "hover:text-complement-400"
+        "hover:text-complement-400",
       ),
       ...(opened ? Styles.suggestorOpenerOpened : {}),
     };
@@ -305,7 +305,7 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
       state$
         .filter((v) => v.suggestions.length === 0)
         .mapTo(term)
-        .take(1)
+        .take(1),
     )
     .flatten()
     .compose(debounce(400));

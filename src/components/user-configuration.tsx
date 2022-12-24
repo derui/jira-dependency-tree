@@ -59,7 +59,7 @@ const Styles = {
     "w-12",
     "h-12",
     "p-3",
-    "justify-center"
+    "justify-center",
   ),
   opener: () => {
     return {
@@ -106,7 +106,7 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
 
   const dialog = isolate(
     UserConfigurationDialog,
-    "userConfigurationDialog"
+    "userConfigurationDialog",
   )({
     ...sources,
     props: {
@@ -146,14 +146,14 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
     simpleReduce<State, Setting>((draft, setting) => {
       draft.setting = setting;
       draft.setupFinished = setting.isSetupFinished();
-    })
+    }),
   );
 
   const valueReducer$ = dialog.value.map(
     simpleReduce<State, UserConfigurationValue>((draft, value) => {
       draft.setting = draft.setting.applyCredentials(value.jiraToken, value.email).applyUserDomain(value.userDomain);
       draft.setupFinished = true;
-    })
+    }),
   );
 
   return {

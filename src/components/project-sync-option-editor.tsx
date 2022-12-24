@@ -45,7 +45,7 @@ interface ProjectSyncOptionEditorSinks extends ComponentSink<"DOM">, ComponentSi
 const intent = (
   sources: ProjectSyncOptionEditorSources,
   suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>,
-  epicInputSink: ReturnType<typeof Input>
+  epicInputSink: ReturnType<typeof Input>,
 ) => {
   const selectorOpenerClicked = domSourceOf(sources).select("[data-id=opener]").events("click");
   const typeChanged$ = domSourceOf(sources)
@@ -125,7 +125,7 @@ const Styles = {
         "hover:border-secondary1-500",
         "cursor-pointer",
         "items-center",
-        "whitespace-nowrap"
+        "whitespace-nowrap",
       ),
 
       ...(!opened ? classes("border-gray", "bg-white") : {}),
@@ -144,7 +144,7 @@ const Styles = {
         "bg-white",
         "rounded",
         "shadow-lg",
-        "transition-width"
+        "transition-width",
       ),
       ...(opened ? classes("w-96", "visible") : {}),
       ...(!opened ? classes("w-0", "visible", "overflow-hidden") : {}),
@@ -157,7 +157,7 @@ const Styles = {
     "text-lg",
     "text-bold",
     "p-3",
-    "whitespace-nowrap"
+    "whitespace-nowrap",
   ),
   selection: classes("flex-auto", "p-2"),
   baseForm: classes("flex", "flex-row", "p-3", "items-center"),
@@ -178,7 +178,7 @@ const Styles = {
 const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["cancel", "submit", "epicInput"]>,
-  gen: TestIdGenerator
+  gen: TestIdGenerator,
 ) => {
   return xs
     .combine(state$, nodes$)
@@ -247,7 +247,7 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
 
   const epicInput = isolate(
     Input,
-    "nameInput"
+    "nameInput",
   )({
     ...sources,
     props: sources.state
@@ -324,7 +324,7 @@ export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources)
         submit: submitIcon,
         epicInput,
       }),
-      generateTestId(sources.testid)
+      generateTestId(sources.testid),
     ),
     Portal: xs.merge(suggestor.Portal),
     state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$, valueChangeReducer$),

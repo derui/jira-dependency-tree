@@ -13,7 +13,7 @@ export interface JiraSuggestionLoaderSinks extends ComponentSink<"HTTP"> {
 }
 
 export const JiraSuggestionLoader = function JiraSuggestionLoader(
-  sources: JiraSuggestionLoaderSources
+  sources: JiraSuggestionLoaderSources,
 ): JiraSuggestionLoaderSinks {
   const events$ = sources.events.filter((v) => v.kind === "GetSuggestionRequest" && v.term.length > 0);
   const request$ = events$.map<RequestInput>((e) => {

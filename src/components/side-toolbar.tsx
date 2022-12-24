@@ -50,7 +50,7 @@ const Styles = {
         "transition-left",
         "shadow-lg",
         "transition-opacity",
-        "opacity-0"
+        "opacity-0",
       ),
       ...(opened ? classes("opacity-100", "visible") : {}),
       ...(!opened ? classes("invisible") : {}),
@@ -62,7 +62,7 @@ const Styles = {
 const view = (
   state$: Stream<SideToolbarState>,
   nodes$: AsNodeStream<["graphLayoutIcon", "verticalIcon", "horizontalIcon"]>,
-  gen: ReturnType<typeof generateTestId>
+  gen: ReturnType<typeof generateTestId>,
 ) => {
   return xs.combine(state$, nodes$).map(([{ graphLayout, opened }, nodes]) => {
     return (
@@ -132,7 +132,7 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
     .merge(
       actions.layouterClicked$.mapTo(["layouter"] as const),
       actions.verticalClicked$.map((v) => ["layout", v] as const),
-      actions.horizontalClicked$.map((v) => ["layout", v] as const)
+      actions.horizontalClicked$.map((v) => ["layout", v] as const),
     )
     .map(
       simpleReduce((draft: SideToolbarState, [value, layout]) => {
@@ -145,7 +145,7 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
             draft.graphLayout = layout;
             break;
         }
-      })
+      }),
     );
 
   return {
@@ -156,7 +156,7 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
         verticalIcon,
         horizontalIcon,
       }),
-      generateTestId(sources.testid)
+      generateTestId(sources.testid),
     ),
     state: xs.merge(initialReducer$, layouterReducer$),
   };

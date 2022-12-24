@@ -57,7 +57,7 @@ const Styles = {
     "before:flex-none",
     "before:w-full",
     "before:h-full",
-    "before:transition-colors"
+    "before:transition-colors",
   ),
 
   size: (size: IconSize) => {

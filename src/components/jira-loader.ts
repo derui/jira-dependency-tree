@@ -41,7 +41,7 @@ export const JiraLoader = (sources: JiraLoaderSources): JiraLoaderSinks => {
         if (!prevState) return prevState;
 
         return { ...prevState, issues };
-      }
+      },
   );
   const suggestionsReducer$: Stream<Reducer<State>> = suggestionLoaderSinks.suggestion.map(
     (suggestion): Reducer<State> =>
@@ -49,7 +49,7 @@ export const JiraLoader = (sources: JiraLoaderSources): JiraLoaderSinks => {
         if (!prevState) return prevState;
 
         return { ...prevState, suggestion };
-      }
+      },
   );
 
   return {

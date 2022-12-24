@@ -69,7 +69,7 @@ const Styles = {
     "justify-between",
     "whitespace-nowrap",
     "mt-4",
-    "first:mt-0"
+    "first:mt-0",
   ),
   label: classes("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap"),
   input: classes(
@@ -87,7 +87,7 @@ const Styles = {
     "transition-colors",
     "focus:bg-white",
     "focus:outline-primary-400",
-    "focus:border-primary-400"
+    "focus:border-primary-400",
   ),
 };
 

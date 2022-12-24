@@ -7,7 +7,7 @@ import { Configuration } from "@/issue-graph/type";
 export const makeIssueGraphRoot = function makeIssueGraphRoot(
   issues: Issue[],
   project: Project,
-  configuration: Configuration
+  configuration: Configuration,
 ) {
   const { width, height } = configuration.canvasSize;
   const svg = d3

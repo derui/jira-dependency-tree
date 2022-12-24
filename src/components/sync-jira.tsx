@@ -55,7 +55,7 @@ const Styles = {
 const view = (
   state$: ReturnType<typeof model>,
   nodes$: AsNodeStream<["icon"]>,
-  gen: ReturnType<typeof generateTestId>
+  gen: ReturnType<typeof generateTestId>,
 ) => {
   return xs.combine(state$, nodes$).map(([{ allowSync }, { icon }]) => {
     return (

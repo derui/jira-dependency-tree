@@ -119,7 +119,7 @@ export const buildIssueGraph = (
   container: D3Node<any>,
   data: LayoutedLeveledIssue[],
   project: Project,
-  configuration: Configuration
+  configuration: Configuration,
 ): [IssueNode, Restarter<LayoutedLeveledIssue[]>] => {
   let issueNode = container
     .append("svg:g")

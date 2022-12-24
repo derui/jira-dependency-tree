@@ -17,7 +17,7 @@ export type PanZoomState = {
 const makeDragListener = function makeDragListener(
   mousemove$: Stream<Event>,
   mouseup$: Stream<Event>,
-  next: (pos: Position) => void
+  next: (pos: Position) => void,
 ): Partial<Listener<Event>> {
   return {
     next: (e) => {

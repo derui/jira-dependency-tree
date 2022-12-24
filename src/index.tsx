@@ -73,7 +73,7 @@ const Styles = {
     "gap-2",
     "grid",
     "grid-cols-project-toolbar",
-    "transition-height"
+    "transition-height",
   ),
   divider: classes("w-0", "border-l", "border-lightgray"),
 };
@@ -107,7 +107,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
             condition,
           };
         })
-        .take(1)
+        .take(1),
     )
     .flatten();
 
@@ -143,7 +143,7 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
 const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(
     UserConfiguration,
-    "userConfiguration"
+    "userConfiguration",
   )({
     ...sources,
     props: {
@@ -169,7 +169,7 @@ const main = (sources: MainSources): MainSinks => {
           .select<MainState["projectKey"]>("projectKey")
           .stream.map((v) => !!v)
           .startWith(false),
-        sources.state.select<MainState["loading"]>("loading").stream
+        sources.state.select<MainState["loading"]>("loading").stream,
       )
       .map<SyncJiraProps>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
   });
@@ -183,7 +183,7 @@ const main = (sources: MainSources): MainSinks => {
 
   const sideToolbarSink = isolate(
     SideToolbar,
-    "sideToolbar"
+    "sideToolbar",
   )({
     ...sources,
     props: xs.of<GraphLayout>(GraphLayout.Horizontal).remember(),
@@ -192,7 +192,7 @@ const main = (sources: MainSources): MainSinks => {
 
   const projectSyncOpitonEditorSink = isolate(
     ProjectSyncOptionEditor,
-    "projectSyncOptionEditor"
+    "projectSyncOptionEditor",
   )({
     ...sources,
     testid: "sync-option-editor",
@@ -234,7 +234,7 @@ const main = (sources: MainSources): MainSinks => {
       sources.state.stream.map(({ data }) => data.issues),
       sources.state.stream.map(({ projectInformation }) => projectInformation?.project).filter(filterUndefined),
       sources.state.stream.map(({ sideToolbar }) => sideToolbar?.graphLayout).filter(filterUndefined),
-      sources.panZoom.state
+      sources.panZoom.state,
     )
     .map(([issues, project, graphLayout, panZoomState]) => {
       return {
@@ -281,7 +281,7 @@ const main = (sources: MainSources): MainSinks => {
             draft.apiCredential = apiCredential;
           }
         });
-      }
+      },
   );
 
   const jiraLoaderReducer$ = jiraLoaderSink.state.map<Reducer<MainState>>((v) => {
@@ -300,7 +300,7 @@ const main = (sources: MainSources): MainSinks => {
   const storage$ = xs
     .combine(
       sources.state.select<MainState["setting"]>("setting").stream,
-      sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream.filter(filterUndefined)
+      sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream.filter(filterUndefined),
     )
     .fold<Storage | null>((accum, [v, toolBar]) => {
       if (!accum) {
@@ -344,7 +344,7 @@ const main = (sources: MainSources): MainSinks => {
       projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
       userConfigurationSink.state as Stream<Reducer<MainState>>,
       projectInformationSink.state as Stream<Reducer<MainState>>,
-      loadingReducer$
+      loadingReducer$,
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(HTTP, projectInformationSink.HTTP),

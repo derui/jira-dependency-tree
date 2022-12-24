@@ -18,7 +18,7 @@ export interface StorageIntf {
 
 export const makeStorageDriver = function makeStorageDriver(
   rootKey: string,
-  storage: StorageIntf
+  storage: StorageIntf,
 ): Driver<Stream<StorageSink>, StorageSource> {
   return function StorageDriver(sink$) {
     let originalHashMap: HashMap = {};

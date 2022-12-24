@@ -73,7 +73,7 @@ const findRoots = function findRoots(mat: AdjacentMatrix) {
   const adjacents = new Set(
     Object.values(mat).reduce<Vertex[]>((accum, vertices) => {
       return accum.concat(Array.from(vertices));
-    }, [])
+    }, []),
   );
 
   const vertices = new Set(Object.keys(mat));
@@ -127,7 +127,7 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
     addVertices(vertices) {
       const newVertices = addVertices(
         this.vertices,
-        vertices.filter((v) => v.trim().length > 0)
+        vertices.filter((v) => v.trim().length > 0),
       );
 
       return makeGraph(this.edges, newVertices);

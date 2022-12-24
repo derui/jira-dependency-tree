@@ -37,7 +37,7 @@ export type AsNodeStream<T extends string[]> = Stream<Record<T[number], VNode>>;
 type NodesStream<T extends Record<string, unknown>> = Stream<Record<keyof T, VNode>>;
 
 export const mergeNodes: <V extends ComponentSinkTypes["DOM"], T extends Record<string, V>>(
-  nodes: T
+  nodes: T,
 ) => NodesStream<T> = (nodes) => {
   const entries = Object.entries(nodes).map(([key, value]) => {
     return value.DOM.map<[keyof typeof nodes, VNode]>((node) => [key, node]);
@@ -68,7 +68,7 @@ export type ComponentSinkTypes = {
 // helper function to get driver from any source.
 const driverSourceOf = <T extends SupportedDrivers>(
   sources: Record<string, unknown>,
-  target: T
+  target: T,
 ): SupportedSourceTypes[T] => {
   const driver = sources[target] as SupportedSourceTypes[T] | undefined;
 

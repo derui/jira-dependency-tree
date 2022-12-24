@@ -41,7 +41,7 @@ const Styles = {
     "border",
     "disabled:color-gray",
     "disabled:bg-lightgray",
-    "disabled:border-gray"
+    "disabled:border-gray",
   ),
 
   color: (schema: ColorSchema) => {
@@ -52,7 +52,7 @@ const Styles = {
           "bg-secondary1-200",
           "color-white",
           "hover:bg-secondary1-300",
-          "active:bg-secondary1-400"
+          "active:bg-secondary1-400",
         );
       case "primary":
         return classes(
@@ -60,7 +60,7 @@ const Styles = {
           "bg-primary-200",
           "color-white",
           "hover:bg-primary-300",
-          "active:bg-primary-400"
+          "active:bg-primary-400",
         );
       case "gray":
         return classes("border-gray", "bg-white", "color-black", "hover:bg-lightgray", "active:bg-gray");

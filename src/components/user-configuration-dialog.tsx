@@ -66,7 +66,7 @@ const Styles = {
         "rounded",
         "shadow-lg",
         "transition-width",
-        "overflow-hidden"
+        "overflow-hidden",
       ),
       ...(!opened ? classes("w-0") : {}),
       ...(opened ? classes("w-96") : {}),
@@ -77,7 +77,7 @@ const Styles = {
 const view = (
   state$: Stream<State>,
   nodes$: AsNodeStream<["jiraToken", "email", "userDomain", "submit", "cancel"]>,
-  gen: ReturnType<typeof generateTestId>
+  gen: ReturnType<typeof generateTestId>,
 ) => {
   return xs.combine(state$, nodes$).map(([{ opened, openAt }, nodes]) => {
     const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
@@ -118,7 +118,7 @@ const reduceState = (
   sources: Sources,
   email: InputSinks,
   userDomain: InputSinks,
-  jiraToken: InputSinks
+  jiraToken: InputSinks,
 ) => {
   const initialReducer$ = xs.of<Reducer<State>>(() => {
     return {
@@ -135,14 +135,14 @@ const reduceState = (
   const openedReducer$ = xs.merge(submit$.mapTo(false), cancel$.mapTo(false)).map(
     simpleReduce<State, boolean>((draft, opened) => {
       draft.opened = opened;
-    })
+    }),
   );
 
   const openAtReducer$ = sources.props.openAt.map(
     simpleReduce<State, Rect>((draft, openAt) => {
       draft.openAt = openAt;
       draft.opened = true;
-    })
+    }),
   );
 
   const propsReducer$ = sources.props.initialValue.take(1).map(
@@ -151,7 +151,7 @@ const reduceState = (
       draft.value.userDomain = props.userDomain ?? "";
       draft.value.email = props.email ?? "";
       draft.allowSubmit = canSubmit({ ...draft.value });
-    })
+    }),
   );
 
   const stateReducer$ = xs.combine(email.input, userDomain.input, jiraToken.input).map(
@@ -160,7 +160,7 @@ const reduceState = (
       draft.value.userDomain = userDomain;
       draft.value.email = email;
       draft.allowSubmit = canSubmit({ ...draft.value });
-    })
+    }),
   );
 
   return xs.merge(initialReducer$, propsReducer$, stateReducer$, openAtReducer$, openedReducer$);
@@ -170,7 +170,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   const gen = generateTestId(sources.testid);
   const userDomain = isolate(
     Input,
-    "userDomain"
+    "userDomain",
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("user-domain"),
@@ -185,7 +185,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const email = isolate(
     Input,
-    "email"
+    "email",
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("email"),
@@ -200,7 +200,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const jiraToken = isolate(
     Input,
-    "jiraToken"
+    "jiraToken",
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("jira-token"),
@@ -215,7 +215,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const cancel = isolate(
     Button,
-    "cancel"
+    "cancel",
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("cancel"),
@@ -224,7 +224,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const submit = isolate(
     Button,
-    "submit"
+    "submit",
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("submit"),
@@ -258,7 +258,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
         submit,
         cancel,
       }),
-      gen
+      gen,
     ),
     value: submit$,
     state: reducer,

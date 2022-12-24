@@ -59,7 +59,7 @@ const Styles = {
         "transition-all",
         "overflow-hidden",
         "border-b",
-        "border-b-transparent"
+        "border-b-transparent",
       ),
       ...(!editing ? classes("hover:border-secondary1-400") : {}),
       ...(editing ? classes("h-24") : {}),
@@ -86,7 +86,7 @@ const Styles = {
         "transition-colors",
         "transition-border",
         "leading-6",
-        "pl-2"
+        "pl-2",
       ),
       ...(!needEditing ? classes("text-secondary2-400", "hover:text-secondary2-400") : {}),
       ...(needEditing ? classes("text-gray", "hover:text-darkgray") : {}),
@@ -106,7 +106,7 @@ const Styles = {
 const view = (
   state$: Stream<State>,
   nodes$: AsNodeStream<["nameInput", "cancel", "submit"]>,
-  gen: ReturnType<typeof generateTestId>
+  gen: ReturnType<typeof generateTestId>,
 ) => {
   return xs.combine(state$, nodes$).map(([{ project, opened, name }, nodes]) => {
     return (
@@ -139,7 +139,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
 
   const nameInput = isolate(
     Input,
-    "nameInput"
+    "nameInput",
   )({
     ...sources,
     props: xs.of<InputProps>({
@@ -184,7 +184,7 @@ export const ProjectInformation = (sources: Sources): Sinks => {
 
   const loader = isolate(
     JiraProjectLoader,
-    "jiraProjectLoader"
+    "jiraProjectLoader",
   )({
     ...sources,
     events: event$,
@@ -202,13 +202,13 @@ export const ProjectInformation = (sources: Sources): Sinks => {
       draft.project = project;
       draft.name = project.name;
       draft.opened = false;
-    })
+    }),
   );
 
   const openedReducer$ = xs.merge(actions.nameClicked$, actions.submit$, actions.cancel$).map(
     simpleReduce<State, boolean>((draft, opened) => {
       draft.opened = opened;
-    })
+    }),
   );
 
   return {

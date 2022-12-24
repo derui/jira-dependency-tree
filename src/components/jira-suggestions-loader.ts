@@ -1,40 +1,44 @@
 import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
-import { Events, GetSuggestionRequest } from "@/model/event";
+import { ApiCredential } from "@/model/event";
 import { httpSourceOf, selectResponse, ComponentSink, ComponentSource } from "@/components/helper";
 import { suggestionFactory, Suggestion } from "@/model/suggestion";
 
-export interface JiraSuggestionLoaderSources extends ComponentSource {
-  events: Stream<Events>;
+interface Props {
+  apiCredential: Stream<ApiCredential>;
+  request: Stream<{ projectKey: string; term: string }>;
 }
 
-export interface JiraSuggestionLoaderSinks extends ComponentSink<"HTTP"> {
+interface Sources extends ComponentSource {
+  props: Props;
+}
+
+interface Sinks extends ComponentSink<"HTTP"> {
   suggestion: Stream<Suggestion>;
 }
 
-export const JiraSuggestionLoader = function JiraSuggestionLoader(
-  sources: JiraSuggestionLoaderSources,
-): JiraSuggestionLoaderSinks {
-  const events$ = sources.events.filter((v) => v.kind === "GetSuggestionRequest" && v.term.length > 0);
-  const request$ = events$.map<RequestInput>((e) => {
-    return {
-      url: `${e.credential.apiBaseUrl}/get-suggestions`,
-      method: "POST",
-      type: "application/json",
-      headers: {
-        "x-api-key": e.credential.apiKey,
-      },
-      send: {
-        authorization: {
-          jira_token: e.credential.token,
-          email: e.credential.email,
-          user_domain: e.credential.userDomain,
+export const JiraSuggestionLoader = (sources: Sources): Sinks => {
+  const request$ = xs
+    .combine(sources.props.apiCredential, sources.props.request)
+    .map<RequestInput>(([credential, { projectKey, term }]) => {
+      return {
+        url: `${credential.apiBaseUrl}/get-suggestions`,
+        method: "POST",
+        type: "application/json",
+        headers: {
+          "x-api-key": credential.apiKey,
         },
-        project: e.projectKey,
-        input_value: (e as GetSuggestionRequest).term,
-      },
-    };
-  });
+        send: {
+          authorization: {
+            jira_token: credential.token,
+            email: credential.email,
+            user_domain: credential.userDomain,
+          },
+          project: projectKey,
+          input_value: term,
+        },
+      };
+    });
 
   const suggestion$ = selectResponse(httpSourceOf(sources))
     .map((r) => r.replaceError(() => xs.of({ status: 500 } as Response)))

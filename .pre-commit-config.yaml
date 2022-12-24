@@ -10,7 +10,7 @@ repos:
       verbose: true
     - id: formatter
       name: formatter
-      entry: npx rome format
+      entry: npx rome format --write
       language: system
       files: "\\.tsx?$"
       verbose: true

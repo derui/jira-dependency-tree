@@ -24,13 +24,9 @@ interface ButtonSinks extends ComponentSink<"DOM"> {
 
 const intent = (sources: ButtonSources) => {
   const buttonClicked$ = domSourceOf(sources).select("button").events("click", { bubbles: false }).mapTo(true);
-  const submitClicked$ = domSourceOf(sources)
-    .select('input[type="submit"]')
-    .events("click", { bubbles: false })
-    .mapTo(true);
 
   return {
-    clicked$: xs.merge(buttonClicked$, submitClicked$),
+    clicked$: buttonClicked$,
   };
 };
 

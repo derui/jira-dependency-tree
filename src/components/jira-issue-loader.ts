@@ -5,19 +5,17 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { httpSourceOf, selectResponse } from "@/components/helper";
 
-
-
-export interface JiraIssueLoaderSources extends ComponentSource {
+export interface Sources extends ComponentSource {
   props: {
     request: Stream<{credential: ApiCredential; condition: SearchCondition}>;
   }
 }
 
-export interface JiraIssueLoaderSinks extends ComponentSink<"HTTP"> {
+export interface Sinks extends ComponentSink<"HTTP"> {
   issues: Stream<Issue[]>;
 }
 
-export const JiraIssueLoader = (sources: JiraIssueLoaderSources): JiraIssueLoaderSinks => {
+export const JiraIssueLoader = (sources: Sources): Sinks => {
   const request$ = sources.props.request.map<RequestInput>((e) => {
     return {
       url: `${e.credential.apiBaseUrl}/load-issues`,

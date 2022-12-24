@@ -17,7 +17,7 @@ import {
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 
- interface Props {
+export interface Props {
   credential: Stream<ApiCredential>;
    condition: Stream<SearchCondition>;
 }

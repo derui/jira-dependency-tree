@@ -4,7 +4,7 @@ import { select } from "snabbdom-selector";
 import test from "ava";
 import xs from "xstream";
 import { componentTest } from "test/helper";
-import { SyncIssueButton, Props } from "@/components/sync-jira";
+import { SyncIssueButton, Props } from "@/components/sync-issue-button";
 
 test("initial display when component can not sync", async (t) => {
   await componentTest((done) => {

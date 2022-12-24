@@ -41,9 +41,10 @@ interface Sinks extends ComponentSink<"Portal"> {
 
 const intent = (sources: Sources) => {
   const submit$ = portalSourceOf(sources)
-    .DOM.select('[data-id="form"]')
+    .DOM.select("form")
     .events("submit", { preventDefault: true, bubbles: false })
-    .mapTo(true);
+    .mapTo(true)
+    .debug();
 
   return {
     submit$,
@@ -242,9 +243,8 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const submit$ = sources.state.stream
     .filter(({ allowSubmit }) => allowSubmit)
-    .map(({ value }) => value)
-    .map((value) => {
-      return actions.submit$.take(1).mapTo(value);
+    .map(({ value }) => {
+      return xs.merge(actions.submit$, submit.click).take(1).mapTo(value);
     })
     .flatten();
 

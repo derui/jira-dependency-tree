@@ -86,9 +86,9 @@ const view = (
 
     return (
       <div
-        class={Styles.dialogContainer(opened)}
+        class={{ ...Styles.dialogContainer(opened), "--opened": opened }}
         style={{ top }}
-        dataset={{ testid: gen("dialog-container"), id: "root", opened: `${opened}` }}
+        dataset={{ testid: gen("dialog-container"), id: "root" }}
       >
         <form class={Styles.form} attrs={{ method: "dialog" }} dataset={{ testid: gen("dialog"), id: "form" }}>
           <div class={Styles.main}>
@@ -134,11 +134,14 @@ const reduceState = (
     };
   });
 
-  const openedReducer$ = xs.merge(submit$.mapTo(false), cancel$.mapTo(false)).map(
-    simpleReduce<State, boolean>((draft, opened) => {
-      draft.opened = opened;
-    })
-  );
+  const openedReducer$ = xs
+    .merge(submit$.mapTo(false), cancel$.mapTo(false))
+    .debug()
+    .map(
+      simpleReduce<State, boolean>((draft, opened) => {
+        draft.opened = opened;
+      })
+    );
 
   const openAtReducer$ = sources.props.openAt.map(
     simpleReduce<State, Rect>((draft, openAt) => {
@@ -240,16 +243,15 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
 
   const actions = intent(sources);
 
-  const submit$ = actions.submit$
-    .map(() => {
-      return sources.state.stream
-        .filter(({ allowSubmit }) => allowSubmit)
-        .map(({ value }) => value)
-        .take(1);
+  const submit$ = sources.state.stream
+    .filter(({ allowSubmit }) => allowSubmit)
+    .map(({ value }) => value)
+    .map((value) => {
+      return actions.submit$.take(1).mapTo(value);
     })
     .flatten();
 
-  const cancel$ = cancel.click.mapTo(true);
+  const cancel$ = cancel.click;
   const reducer = reduceState(submit$, cancel$, sources, email, userDomain, jiraToken);
 
   return {

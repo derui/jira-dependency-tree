@@ -12,9 +12,9 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { Issue } from "./model/issue";
 import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
-import { UserConfiguration, UserConfigurationProps } from "./components/user-configuration";
+import { UserConfiguration } from "./components/user-configuration";
 import { ProjectInformation, State as ProjectInformationState } from "./components/project-information";
-import { filterNull, filterUndefined, Rect } from "./util/basic";
+import { filterNull, filterUndefined } from "./util/basic";
 import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
@@ -26,7 +26,6 @@ import { GraphLayout } from "./issue-graph/type";
 import { Suggestion, suggestionFactory } from "./model/suggestion";
 import { classes } from "./components/helper";
 import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
-import { Props as UserConfigurationDialogProps, UserConfigurationDialog } from "./components/user-configuration-dialog";
 import { makePortalDriver, PortalSource } from "./drivers/portal";
 
 type MainSources = {
@@ -143,30 +142,12 @@ const jiraLoader = (sources: MainSources, syncJiraSync: SyncJiraSinks): JiraLoad
 const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(UserConfiguration, { DOM: "userConfiguration" })({
     ...sources,
-    props: sources.state.select<MainState["setting"]>("setting").stream.map<UserConfigurationProps>((settings) => ({
-      setting: settings,
-      setupFinished: settings.isSetupFinished(),
-    })),
+    props: {
+      initialSetting: sources.state.select<MainState["setting"]>("setting").stream.map((setting) => setting),
+    },
     testid: "user-configuration",
   });
 
-  const dialogStream$ = userConfigurationSink.click.map<Rect | undefined>((v) => v).startWith(undefined);
-
-  const userConfigurationDialogSink = isolate(
-    UserConfigurationDialog,
-    "userConfigurationDialog"
-  )({
-    ...sources,
-    props: xs
-      .combine(sources.state.select<MainState["setting"]>("setting").stream, dialogStream$)
-      .map<UserConfigurationDialogProps>(([setting, openAt]) => ({
-        jiraToken: setting.credentials.jiraToken,
-        email: setting.credentials.email,
-        userDomain: setting.userDomain,
-        openAt,
-      })),
-    testid: "user-configuration",
-  });
   const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
     ...sources,
     props: {
@@ -283,13 +264,13 @@ const main = (sources: MainSources): MainSinks => {
     };
   });
 
-  const environmentReducer$ = userConfigurationDialogSink.value.map(
+  const environmentReducer$ = userConfigurationSink.value.map(
     (v) =>
       function (prevState?: MainState) {
         if (!prevState) return undefined;
 
         return produce(prevState, (draft) => {
-          draft.setting = draft.setting.applyCredentials(v.jiraToken, v.email).applyUserDomain(v.userDomain);
+          draft.setting = v;
         });
       }
   );
@@ -352,14 +333,14 @@ const main = (sources: MainSources): MainSinks => {
       jiraLoaderReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
       projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
-      userConfigurationDialogSink.state as Stream<Reducer<MainState>>,
+      userConfigurationSink.state as Stream<Reducer<MainState>>,
       projectInformationSink.state as Stream<Reducer<MainState>>,
       loadingReducer$
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(HTTP, projectInformationSink.HTTP),
     STORAGE: storage$,
-    Portal: xs.merge(userConfigurationDialogSink.Portal),
+    Portal: xs.merge(userConfigurationSink.Portal, projectSyncOpitonEditorSink.Portal),
   };
 };
 

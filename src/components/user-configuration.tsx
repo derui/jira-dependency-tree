@@ -18,7 +18,7 @@ import { Rect } from "@/util/basic";
 import { Setting, settingFactory } from "@/model/setting";
 
 export interface State {
-  settings?: Setting;
+  setting: Setting;
   setupFinished: boolean;
 }
 
@@ -137,19 +137,19 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
   });
 
   const initialReducer$ = xs.of<Reducer<State>>(() => {
-    return { setupFinished: false };
+    return { setupFinished: false, setting: settingFactory({}) };
   });
 
   const propReducer$ = sources.props.initialSetting.take(1).map(
-    simpleReduce<State, Setting>((draft, settings) => {
-      draft.settings = settings;
-      draft.setupFinished = true;
+    simpleReduce<State, Setting>((draft, setting) => {
+      draft.setting = setting;
+      draft.setupFinished = setting.isSetupFinished();
     })
   );
 
   const valueReducer$ = dialog.value.map(
     simpleReduce<State, UserConfigurationValue>((draft, value) => {
-      draft.settings = settingFactory({ ...value });
+      draft.setting = draft.setting.applyCredentials(value.jiraToken, value.email).applyUserDomain(value.userDomain);
       draft.setupFinished = true;
     })
   );
@@ -157,6 +157,7 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
   return {
     DOM: view(sources.state.stream, mergeNodes({ openerIcon }), gen),
     Portal: xs.merge(dialog.Portal),
+    value: sources.state.stream.filter(({ setupFinished }) => setupFinished).map((v) => v.setting),
     state: xs.merge(initialReducer$, propReducer$, valueReducer$, dialog.state as Stream<Reducer<State>>),
   };
 };

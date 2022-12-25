@@ -16,12 +16,9 @@ export interface PortalSource extends IsolateableSource {
 
 class PortalSourceImpl implements PortalSource {
   public DOM: MainDOMSource;
-  private _portalId: string;
 
   constructor(private _rootDOM: MainDOMSource, private _rootSelector: string, private scopes: string[]) {
-    this._portalId = scopes.join("-");
-
-    this.DOM = this._rootDOM.isolateSource(this._rootDOM, this._portalId);
+    this.DOM = this._rootDOM;
   }
 
   isolateSource(_: PortalSource, scope: string): PortalSource {

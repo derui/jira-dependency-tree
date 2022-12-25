@@ -11,8 +11,8 @@ import {
   mergeNodes,
   TestIdGenerator,
   ComponentSink,
-  domSourceOf,
   simpleReduce,
+  portalSourceOf,
 } from "./helper";
 import { SuggestionItem, Suggestor, SuggestorProps } from "./suggestor";
 import { Icon, IconProps } from "./atoms/icon";
@@ -39,6 +39,7 @@ export interface State {
   projectKey?: string;
   suggestions: SuggestionItem<SuggestedItem>[];
   openAt?: Rect;
+  opened: boolean;
 }
 
 interface Props {
@@ -59,14 +60,14 @@ interface Sinks extends ComponentSink<"Portal">, ComponentSink<"HTTP"> {
 }
 
 const intent = (sources: Sources) => {
-  const typeChanged$ = domSourceOf(sources)
-    .select("select")
-    .events("input", { bubbles: false })
+  const typeChanged$ = portalSourceOf(sources)
+    .DOM.select("select")
+    .events("input")
     .map((event) => {
       return (event.target as HTMLSelectElement).value as ConditionType;
     });
-  const cancel$ = domSourceOf(sources).select("[data-id=cancel]").events("click", { bubbles: false }).mapTo(false);
-  const submit$ = domSourceOf(sources).select("[data-id=submit]").events("click", { bubbles: false }).mapTo(false);
+  const cancel$ = portalSourceOf(sources).DOM.select("[data-id=cancel]").events("click").mapTo(false);
+  const submit$ = portalSourceOf(sources).DOM.select("[data-id=submit]").events("click").mapTo(false);
 
   return {
     typeChanged$,
@@ -89,6 +90,7 @@ const Styles = {
         "rounded",
         "shadow-lg",
         "transition-width",
+        "overflow-hidden",
       ),
       ...(opened ? classes("w-96", "visible") : {}),
       ...(!opened ? classes("w-0", "visible", "overflow-hidden") : {}),
@@ -124,13 +126,13 @@ const view = (
   nodes$: AsNodeStream<["cancel", "submit", "epicInput", "suggestor"]>,
   gen: TestIdGenerator,
 ) => {
-  return xs.combine(state$, nodes$).map(([{ conditionType, openAt }, nodes]) => {
+  return xs.combine(state$, nodes$).map(([{ opened, conditionType, openAt }, nodes]) => {
     const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
     const left = openAt ? `${openAt.left}px` : "";
 
     return (
       <div
-        class={Styles.searchConditionEditorContainer(!!openAt)}
+        class={Styles.searchConditionEditorContainer(opened)}
         style={{ top, left }}
         dataset={{ testid: gen("selector") }}
       >
@@ -168,9 +170,10 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
             return xs.never();
           }
 
-          return xs.of({ projectKey, term: lastTerm });
+          return xs.of({ projectKey, term: lastTerm, apiCredential });
         })
-        .flatten(),
+        .flatten()
+        .take(1),
     },
   });
 
@@ -179,6 +182,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
     "suggestor",
   )({
     ...sources,
+    DOM: portalSourceOf(sources).DOM,
     props: sources.state
       .select<State["suggestions"]>("suggestions")
       .stream.map<SuggestorProps<SuggestedItem>>((suggestions) => {
@@ -190,7 +194,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
   });
 
   const cancelIcon = Icon({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     props: xs.of<IconProps>({
       type: "circle-x",
       color: "gray",
@@ -199,7 +203,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
   });
 
   const submitIcon = Icon({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     props: xs.of<IconProps>({
       type: "circle-check",
       color: "complement",
@@ -211,7 +215,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
     Input,
     "nameInput",
   )({
-    ...sources,
+    DOM: portalSourceOf(sources).DOM,
     props: xs.of<InputProps>({
       value: "",
       placeholder: "e.g. TES-105",
@@ -226,6 +230,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
       currentSearchCondition: undefined,
       lastTerm: undefined,
       suggestions: [],
+      opened: false,
     };
   });
 
@@ -244,12 +249,13 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
   const openAtReducer$ = sources.props.openAt.map(
     simpleReduce<State, Rect>((draft, openAt) => {
       draft.openAt = openAt;
+      draft.opened = true;
     }),
   );
 
   const openerReducer$ = xs.merge(actions.cancel$, actions.submit$).map(
     simpleReduce<State, unknown>((draft) => {
-      draft.openAt = undefined;
+      draft.opened = false;
     }),
   );
 

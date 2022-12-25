@@ -8,6 +8,7 @@ import {
   domSourceOf,
   generateTestId,
   mergeNodes,
+  portalSourceOf,
   TestIdGenerator,
 } from "./helper";
 import { Icon, IconProps } from "./atoms/icon";
@@ -39,7 +40,7 @@ const intent = <T,>(sources: SuggestorSources<T>) => {
     .select("[data-id=opener]")
     .events("click", { bubbles: false })
     .mapTo(true);
-  const termInput$ = domSourceOf(sources).select(".suggestor-main__term-input");
+  const termInput$ = portalSourceOf(sources).DOM.select('[data-id="term"]');
   const termInputted$ = termInput$
     .events("input")
     .map((e) => {
@@ -67,8 +68,8 @@ const intent = <T,>(sources: SuggestorSources<T>) => {
     .filter(filterUndefined);
   const enterPressed$ = termInput$.events("keypress").filter((e) => e.key === "Enter");
 
-  const suggestionIdClicked$ = domSourceOf(sources)
-    .select(".suggestor-suggestions__suggestion")
+  const suggestionIdClicked$ = portalSourceOf(sources)
+    .DOM.select(".--suggestion")
     .events("click", { bubbles: false })
     .map((e) => (e.currentTarget as Element).attributes.getNamedItem("data-id")?.value)
     .filter(filterUndefined);
@@ -100,18 +101,18 @@ const effects = <T,>(opened$: MemoryStream<boolean>, actions: ReturnType<typeof 
 };
 
 const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
+  const opened$ = xs
+    .merge(actions.openerClicked$, actions.suggestionIdClicked$.mapTo(false), actions.enterPressed$.mapTo(false))
+    .fold((accum, open) => {
+      if (!open) {
+        return false;
+      }
+      return !accum;
+    }, false);
+
   return actions.props$
     .map((props) => {
-      const opened$ = xs
-        .merge(actions.openerClicked$, actions.suggestionIdClicked$.mapTo(false), actions.enterPressed$.mapTo(false))
-        .fold((accum, open) => {
-          if (!open) {
-            return false;
-          }
-          return !accum;
-        }, false);
-
-      const allSuggestions = props.suggestions.sort(({ id: a }, { id: b }) => a.localeCompare(b));
+      const allSuggestions = props.suggestions;
       const filteredSuggestions$ = actions.termInputted$
         .map((term) => allSuggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
         .startWith(allSuggestions);
@@ -177,7 +178,7 @@ const Styles = {
     "hover:bg-secondary1-200",
   ),
   suggestionNodeSelected: classes("border-l-secondary1-300"),
-  suggestorLabel: classes("flex", "flex-auto", "p-3", "mb-2", "cursor-pointer", "items-center"),
+  suggestorLabel: classes("flex", "flex-auto", "cursor-pointer", "items-center"),
   suggestions: classes("flex", "flex-col", "list-none"),
   termInput: classes(
     "flex",
@@ -217,6 +218,8 @@ const StyleMaker = {
         "shadow-lg",
         "whitespace-nowrap",
         "text-base",
+        "w-96",
+        "z-50",
       ),
       ...(!opened ? classes("hidden") : {}),
       ...(opened ? classes("flex") : {}),
@@ -275,7 +278,7 @@ const candidates = <T,>(state$: ReturnType<typeof model<T>>, gen: TestIdGenerato
       const style = StyleMaker.suggestionNode(cur === index);
 
       return (
-        <li class={style} dataset={{ id: obj.id, testid: gen("suggestions") }}>
+        <li class={{ ...style, "--suggestion": true }} dataset={{ id: obj.id, testid: gen("suggestions") }}>
           <span class={Styles.suggestorLabel} dataset={{ testid: "suggestion" }}>
             {obj.label}
           </span>
@@ -283,15 +286,20 @@ const candidates = <T,>(state$: ReturnType<typeof model<T>>, gen: TestIdGenerato
       );
     });
     const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
+    const left = openAt ? `${openAt.left}px` : "";
 
     return (
       <div
-        class={StyleMaker.suggestorMain(opened)}
-        style={{ top }}
-        dataset={{ testid: gen("search-dialog"), opened: `${opened}` }}
+        class={{ ...StyleMaker.suggestorMain(opened), "--opened": opened }}
+        style={{ top, left }}
+        dataset={{ testid: gen("search-dialog") }}
       >
         <span class={Styles.term}>
-          <input class={Styles.termInput} attrs={{ placeholder: "term", "data-testid": gen("term"), value: "" }} />
+          <input
+            class={Styles.termInput}
+            attrs={{ placeholder: "term", value: "" }}
+            dataset={{ testid: gen("term"), id: "term" }}
+          />
         </span>
         <ul class={Styles.suggestions}>{suggestionNodes}</ul>
       </div>

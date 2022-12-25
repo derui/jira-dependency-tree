@@ -133,7 +133,10 @@ const main = (sources: MainSources): MainSinks => {
     testid: "sync-option-editor",
     props: {
       apiCredential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
-      projectKey: sources.state.select<MainState["projectKey"]>("projectKey").stream.filter(filterUndefined),
+      projectKey: sources.state
+        .select<MainState["projectInformation"]>("projectInformation")
+        .stream.map((project) => project?.project?.key)
+        .filter(filterUndefined),
     },
   });
 

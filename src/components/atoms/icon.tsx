@@ -11,6 +11,7 @@ export interface IconProps {
   type: string;
   color?: Color;
   style?: Record<string, boolean>;
+  disabled?: boolean;
 }
 
 interface IconSources extends ComponentSource {
@@ -71,22 +72,28 @@ const Styles = {
     }
   },
 
-  color: (color: Color) => {
-    return colors[color];
+  color: (color: Color, disabled: boolean) => {
+    return disabled ? classes("before:bg-lightgray") : colors[color];
   },
 };
 
 const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ size, type, style, color }) => {
+  return state$.map(({ size, type, style, color, disabled }) => {
     const iconClass = {
       ...Styles.iconBase,
       ...Styles.size(size),
       ...Styles.type(type),
-      ...Styles.color(color),
+      ...Styles.color(color, disabled),
       ...style,
     };
 
-    return <span class={iconClass} dataset={{ testid: gen("icon"), type, color, size }}></span>;
+    return (
+      <span
+        class={iconClass}
+        attrs={{ disabled: disabled }}
+        dataset={{ testid: gen("icon"), type, color, size }}
+      ></span>
+    );
   });
 };
 
@@ -96,7 +103,13 @@ const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof genera
 export const Icon = (sources: IconSources): ComponentSink<"DOM"> => {
   const gen = generateTestId(sources.testid);
   const state$ = sources.props.map((props) => {
-    return { size: props.size ?? "s", type: props.type, style: props.style ?? {}, color: props.color ?? "primary" };
+    return {
+      size: props.size ?? "s",
+      type: props.type,
+      style: props.style ?? {},
+      color: props.color ?? "primary",
+      disabled: props.disabled ?? false,
+    };
   });
 
   return {

@@ -35,7 +35,18 @@ const intent = (sources: SideToolbarSources) => {
 };
 
 const Styles = {
-  root: classes("absolute", "flex", "left-4", "top-half", "bg-white", "rounded", "list-none", "top-1/2", "shadow-md"),
+  root: classes(
+    "absolute",
+    "flex",
+    "left-4",
+    "top-half",
+    "bg-white",
+    "rounded",
+    "list-none",
+    "top-1/2",
+    "shadow-md",
+    "z-10",
+  ),
   graphLayout: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-3", "rounded"),
   graphLayouter: (opened: boolean) => {
     return {

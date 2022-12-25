@@ -115,6 +115,12 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
     };
   });
 
+  const defaultConditionReducer$ = sources.props.projectKey.map(
+    simpleReduce<State, string>((draft, key) => {
+      draft.currentSearchCondition = { projectKey: key };
+    }),
+  );
+
   const openerReducer$ = actions.openerClicked$.map(
     simpleReduce<State, MouseEvent>((draft, opened) => {
       draft.editorOpened = true;
@@ -146,6 +152,7 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
       openerReducer$,
       valueReducer$,
       cancelReducer$,
+      defaultConditionReducer$,
       dialog.state as Stream<Reducer<State>>,
     ),
     value: sources.state

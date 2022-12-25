@@ -21,7 +21,7 @@ const model = (actions: ReturnType<typeof intent>) => {
 };
 
 const Styles = {
-  root: classes("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white"),
+  root: classes("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white", "z-10"),
   currentZoom: classes("inline-block", "text-center"),
 };
 

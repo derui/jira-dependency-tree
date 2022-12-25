@@ -1,3 +1,5 @@
+import { post } from "support/mocks";
+
 describe("project-information", () => {
   it("do not affect name if cancel clicked", () => {
     cy.visit("/");
@@ -15,5 +17,32 @@ describe("project-information", () => {
     cy.testid("project-information/nameEditor").should("not.have.class", "--opened");
     cy.testid("project-information/name").should("contain.text", "Click here");
     cy.testid("project-information/marker").should("have.class", "--show");
+  });
+
+  it("open editor and input project key", () => {
+    cy.visit("/");
+
+    cy.mockAPI({
+      "http://localhost:3000/load-issues": post("basic/issues"),
+      "http://localhost:3000/load-project": post("basic/project"),
+      "http://localhost:3000/get-suggestions": post("basic/suggestions"),
+    });
+
+    // Input credentials
+    cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
+    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
+    cy.testid("user-configuration/submit/button").click();
+
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/input").type("KEY");
+    cy.testid("project-information/submit/icon").click();
+
+    // load project and issues
+    cy.testid("project-information/name").should("contain", "Testing Project");
+    cy.testid("project-information/marker").should("not.have.class", "--show");
+    cy.testid("sync-issue-button/root").should("not.have.attr", "disabled");
   });
 });

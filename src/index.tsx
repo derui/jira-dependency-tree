@@ -59,7 +59,7 @@ type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
 const Styles = {
   root: classes("w-full", "h-full", "absolute"),
-  topToolbars: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "top-3", "px-3", "w-full"),
+  topToolbars: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "top-3", "px-3", "w-full", "z-10"),
   projectToolbar: classes(
     "relative",
     "bg-white",

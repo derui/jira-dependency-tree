@@ -47,7 +47,11 @@ const intent = (sources: Sources) => {
 
 const Styles = {
   root: classes("flex", "justify-center", "relative", "w-12"),
-  main: classes("outline-none", "bg-white", "inline-block", "rounded", "cursor-pointer"),
+  main: () => {
+    return {
+      ...classes("outline-none", "bg-white", "inline-block", "rounded", "cursor-pointer"),
+    };
+  },
   icon: (syncing: boolean) => {
     return syncing ? classes("animate-spin") : {};
   },
@@ -55,11 +59,13 @@ const Styles = {
 
 const view = (state$: Stream<State>, nodes$: AsNodeStream<["icon"]>, gen: ReturnType<typeof generateTestId>) => {
   return xs.combine(state$, nodes$).map(([{ syncState: syncState }, { icon }]) => {
+    const disabled = syncState !== "completed";
+
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
         <button
-          class={{ ...Styles.main, "--loading": syncState === "loading" }}
-          attrs={{ disabled: syncState !== "completed" }}
+          class={{ ...Styles.main(), "--loading": syncState === "loading" }}
+          attrs={{ disabled: disabled }}
           dataset={{ testid: gen("button") }}
         >
           {icon}
@@ -75,12 +81,13 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
   const icon = Icon({
     ...sources,
     testid: "sync",
-    props: sources.state.stream.map<IconProps>(({ syncState }) => {
+    props: sources.state.select<State["syncState"]>("syncState").stream.map<IconProps>((syncState) => {
       return {
         type: "refresh",
         size: "l",
         style: Styles.icon(syncState === "loading"),
         color: "complement",
+        disabled: syncState !== "completed",
       };
     }),
   });
@@ -124,13 +131,21 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
       }
     }),
   );
+  const apiCredentialReducer$ = sources.props.credential.map(
+    simpleReduce<State, ApiCredential>((draft, credential) => {
+      draft.apiCredential = credential;
 
-  const propsReducer$ = xs.combine(sources.props.condition, sources.props.credential).map(
-    simpleReduce<State, [SearchCondition, ApiCredential]>((draft, [condition, apiCredential]) => {
+      if (draft.syncState === "notPrepared" && draft.condition) {
+        draft.syncState = "loading";
+      }
+    }),
+  );
+
+  const conditionReducer$ = sources.props.condition.map(
+    simpleReduce<State, SearchCondition>((draft, condition) => {
       draft.condition = condition;
-      draft.apiCredential = apiCredential;
 
-      if (draft.syncState === "notPrepared") {
+      if (draft.syncState === "notPrepared" && draft.apiCredential) {
         draft.syncState = "loading";
       }
     }),
@@ -146,6 +161,6 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
     DOM: view(sources.state.stream, mergeNodes({ icon }), generateTestId(sources.testid)),
     HTTP: xs.merge(loader.HTTP),
     value: loader.issues,
-    state: xs.merge(initialReducer$, clickReducer$, propsReducer$, valueReducer$),
+    state: xs.merge(initialReducer$, clickReducer$, apiCredentialReducer$, conditionReducer$, valueReducer$),
   };
 };

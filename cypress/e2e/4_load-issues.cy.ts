@@ -11,25 +11,6 @@ describe("load issues", () => {
     });
   });
 
-  it("open editor and input project key", () => {
-    // Input credentials
-    cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/jira-token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/submit/button").click();
-
-    // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
-
-    // load project.
-    cy.testid("project-information/name").should("contain", "Testing Project");
-    cy.testid("project-information/marker").should("not.have.class", "--show");
-    cy.testid("sync/icon").should("not.have.attr", "disabled");
-  });
-
   it("open condition editor and suggestion", () => {
     // Input credentials
     cy.testid("user-configuration/opener").click();

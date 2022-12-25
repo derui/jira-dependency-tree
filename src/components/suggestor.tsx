@@ -110,58 +110,59 @@ const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
       return !accum;
     }, false);
 
-  return actions.props$
-    .map((props) => {
-      const allSuggestions = props.suggestions;
-      const filteredSuggestions$ = actions.termInputted$
-        .map((term) => allSuggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)))
-        .startWith(allSuggestions);
-      const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
-
-      const clickedSuggestionIndex$ = actions.suggestionIdClicked$
-        .map((id) => filteredSuggestions$.map((suggestions) => suggestions.findIndex((v) => v.id === id)))
-        .flatten();
-
-      const selectedSuggestionIndex$ = xs
-        .combine(actions.changeSuggestionSelection$, suggestionsLength$)
-        .fold((index, [move, length]) => {
-          switch (move) {
-            case "up":
-              return Math.max(0, index - 1);
-            case "down":
-              return Math.min(length - 1, index + 1);
-          }
-        }, 0);
-
-      const openAt$ = actions.openerElement$
-        .map<Rect | undefined>((v) => {
-          const rect = v.getBoundingClientRect();
-
-          return Rect.fromDOMRect(rect);
-        })
-        .startWith(undefined);
-
-      return xs
-        .combine(
-          opened$,
-          filteredSuggestions$,
-          xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
-          openAt$,
-          effects(opened$, actions),
-        )
-        .map(([opened, suggestions, index, openAt, effect]) => {
-          return {
-            opened,
-            suggestions,
-            index,
-            openAt,
-            effect,
-            currentSuggestion: index !== -1 ? suggestions[index] : undefined,
-          };
-        })
-        .remember();
-    })
+  const allSuggestions$ = actions.props$.map((v) => v.suggestions);
+  const filteredSuggestions$ = actions.termInputted$
+    .map((term) =>
+      allSuggestions$.map((suggestions) =>
+        suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)),
+      ),
+    )
+    .startWith(allSuggestions$)
     .flatten();
+  const suggestionsLength$ = filteredSuggestions$.map((v) => v.length);
+
+  const clickedSuggestionIndex$ = actions.suggestionIdClicked$
+    .map((id) => filteredSuggestions$.map((suggestions) => suggestions.findIndex((v) => v.id === id)))
+    .flatten();
+
+  const selectedSuggestionIndex$ = xs
+    .combine(actions.changeSuggestionSelection$, suggestionsLength$)
+    .fold((index, [move, length]) => {
+      switch (move) {
+        case "up":
+          return Math.max(0, index - 1);
+        case "down":
+          return Math.min(length - 1, index + 1);
+      }
+    }, 0);
+
+  const openAt$ = actions.openerElement$
+    .map<Rect | undefined>((v) => {
+      const rect = v.getBoundingClientRect();
+
+      return Rect.fromDOMRect(rect);
+    })
+    .startWith(undefined);
+
+  return xs
+    .combine(
+      opened$,
+      filteredSuggestions$,
+      xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
+      openAt$,
+      effects(opened$, actions),
+    )
+    .map(([opened, suggestions, index, openAt, effect]) => {
+      return {
+        opened,
+        suggestions,
+        index,
+        openAt,
+        effect,
+        currentSuggestion: index !== -1 ? suggestions[index] : undefined,
+      };
+    })
+    .remember();
 };
 
 /**
@@ -278,10 +279,8 @@ const candidates = <T,>(state$: ReturnType<typeof model<T>>, gen: TestIdGenerato
       const style = StyleMaker.suggestionNode(cur === index);
 
       return (
-        <li class={{ ...style, "--suggestion": true }} dataset={{ id: obj.id, testid: gen("suggestions") }}>
-          <span class={Styles.suggestorLabel} dataset={{ testid: "suggestion" }}>
-            {obj.label}
-          </span>
+        <li class={{ ...style, "--suggestion": true }} dataset={{ id: obj.id, testid: gen("suggestion") }}>
+          <span class={Styles.suggestorLabel}>{obj.label}</span>
         </li>
       );
     });

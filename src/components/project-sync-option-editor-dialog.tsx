@@ -143,10 +143,10 @@ const view = (
             <option attrs={{ value: ConditionType.Sprint }}>Select Sprint</option>
             <option attrs={{ value: ConditionType.Epic }}>Select Epic</option>
           </select>
-          <span class={Styles.controlButton} dataset={{ id: "cancel" }}>
+          <span class={Styles.controlButton} dataset={{ id: "cancel", testid: gen("cancel") }}>
             {nodes.cancel}
           </span>
-          <span class={Styles.controlButton} dataset={{ id: "submit" }}>
+          <span class={Styles.controlButton} dataset={{ id: "submit", testid: gen("submit") }}>
             {nodes.submit}
           </span>
         </div>
@@ -158,22 +158,27 @@ const view = (
 };
 
 export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
+  const gen = generateTestId(sources.testid);
   const loader = isolate(
     JiraSuggestionLoader,
     "jiraSuggestionLoader",
   )({
     ...sources,
     props: {
-      request: sources.state.stream
-        .map(({ apiCredential, projectKey, lastTerm }) => {
+      request: xs
+        .combine(
+          sources.state.select("apiCredential").stream,
+          sources.state.select("projectKey").stream,
+          sources.state.select("lastTerm").stream,
+        )
+        .map(([apiCredential, projectKey, lastTerm]) => {
           if (!projectKey || !lastTerm || !apiCredential) {
             return xs.never();
           }
 
           return xs.of({ projectKey, term: lastTerm, apiCredential });
         })
-        .flatten()
-        .take(1),
+        .flatten(),
     },
   });
 
@@ -220,6 +225,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
       value: "",
       placeholder: "e.g. TES-105",
     }),
+    testid: gen("epic-input"),
   });
 
   const actions = intent(sources);
@@ -327,7 +333,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
       epicInput,
       suggestor,
     }),
-    generateTestId(sources.testid),
+    gen,
   );
 
   return {

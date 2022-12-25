@@ -91,8 +91,13 @@ export const SyncIssueButton = (sources: Sources): Sinks => {
   )({
     ...sources,
     props: {
-      request: sources.state.stream
-        .map(({ syncState, apiCredential, condition }) => {
+      request: xs
+        .combine(
+          sources.state.select("syncState").stream,
+          sources.state.select("apiCredential").stream,
+          sources.state.select("condition").stream,
+        )
+        .map(([syncState, apiCredential, condition]) => {
           if (!apiCredential || !condition || syncState !== "loading") {
             return xs.never();
           }

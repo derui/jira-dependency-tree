@@ -58,7 +58,7 @@ type MainState = {
 type Storage = SettingArgument & { graphLayout?: GraphLayout };
 
 const Styles = {
-  root: classes("w-full", "h-full", "relative"),
+  root: classes("w-full", "h-full", "absolute"),
   topToolbars: classes("absolute", "grid", "grid-cols-top-toolbar", "grid-rows-1", "top-3", "px-3", "w-full"),
   projectToolbar: classes(
     "relative",
@@ -104,9 +104,9 @@ const main = (sources: MainSources): MainSinks => {
     props: {
       credential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
       condition: sources.state
-        .select<MainState["data"]>("data")
-        .select<MainState["data"]["searchCondition"]>("searchCondition")
-        .stream.filter(filterUndefined),
+        .select<MainState["projectSyncOptionEditor"]>("projectSyncOptionEditor")
+        .stream.map((v) => v?.currentSearchCondition)
+        .filter(filterUndefined),
     },
   });
 
@@ -177,9 +177,15 @@ const main = (sources: MainSources): MainSinks => {
 
   const issueGraph$ = xs
     .combine(
-      sources.state.stream.map(({ data }) => data.issues),
-      sources.state.stream.map(({ projectInformation }) => projectInformation?.project).filter(filterUndefined),
-      sources.state.stream.map(({ sideToolbar }) => sideToolbar?.graphLayout).filter(filterUndefined),
+      sources.state.select<MainState["data"]>("data").stream.map((data) => data.issues),
+      sources.state
+        .select<MainState["projectInformation"]>("projectInformation")
+        .stream.map((projectInformation) => projectInformation?.project)
+        .filter(filterUndefined),
+      sources.state
+        .select<MainState["sideToolbar"]>("sideToolbar")
+        .stream.map((sideToolbar) => sideToolbar?.graphLayout)
+        .filter(filterUndefined),
       sources.panZoom.state,
     )
     .map(([issues, project, graphLayout, panZoomState]) => {

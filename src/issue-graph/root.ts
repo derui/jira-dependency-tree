@@ -15,7 +15,7 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
     .attr("viewBox", [0, 0, width, height])
     .attr("width", "100%")
     .attr("height", "100%")
-    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    .attr("style", "z-index: -1; max-width: 100%; height: auto; height: intrinsic")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10);
 

@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --color-light-gray: #d0d0d0;
+  }
+}
+
 html,
 body,
 #root {
@@ -15,4 +21,11 @@ body,
 #root {
   overflow: hidden;
   background-color: rgba(0 0 0 / 10%);
+}
+
+/* SVG's special class */
+.graph-issue {
+  font-size: var(--base-font-size);
+  font-family: "Noto Sans JP";
+  dominant-baseline: text-before-edge;
 }

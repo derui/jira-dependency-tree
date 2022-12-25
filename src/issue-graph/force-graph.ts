@@ -168,8 +168,8 @@ export const makeForceGraph = (
 
     // update existing links
     links
-      .classed("--selected", (d) => !!d.relatedFocusingIssue)
-      .classed("--unfocused", (d) => !d.relatedFocusingIssue && focusingANode)
+      .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
+      .classed("stroke-lightgray", (d) => !d.relatedFocusingIssue && focusingANode)
       .attr("marker-end", (d) => {
         if (d.relatedFocusingIssue) {
           return "url(#selected-arrowhead)";
@@ -186,11 +186,10 @@ export const makeForceGraph = (
     links = links
       .enter()
       .append("path")
-      .attr("class", "issue-link")
-      .attr("stroke", "#000")
+      .attr("class", "fill-none stroke-darkgray")
       .attr("stroke-weight", 1)
-      .classed("--selected", (d) => !!d.relatedFocusingIssue)
-      .classed("--unfocused", (d) => !d.relatedFocusingIssue && focusingANode)
+      .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
+      .classed("stroke-lightgray", (d) => !d.relatedFocusingIssue && focusingANode)
       .attr("marker-end", (d) => {
         if (d.relatedFocusingIssue) {
           return "url(#selected-arrowhead)";

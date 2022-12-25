@@ -18,10 +18,16 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   node
     .append("rect")
     .attr("class", (d) => {
-      const classes = ["issue-node-outer"];
+      const classes = [
+        "stroke-darkgray",
+        "fill-white",
+        "transition-stroke",
+        "hover:stroke-secondry-500",
+        "hover:stroke-2",
+      ];
 
       if (!d.issue) {
-        classes.push("--not-found");
+        classes.push("stroke-primary-400");
       }
 
       return classes.join(" ");
@@ -44,10 +50,10 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   node
     .append("svg:image")
     .attr("class", (d) => {
-      const classes = ["issue-self-link"];
+      const classes = ["cursor-pointer"];
 
       if (!d.issue) {
-        classes.push("--disabled");
+        classes.push("hidden");
       }
 
       return classes.join(" ");
@@ -134,7 +140,8 @@ export const buildIssueGraph = (
       issueNode
         .data(data)
         .classed("graph-issue", () => true)
-        .classed("--unfocused", (d) => d.focusing === "unfocused");
+        .classed("transition-opacity", () => true)
+        .classed("opacity-30", (d) => d.focusing === "unfocused");
 
       buildIssueNode(issueNode, project, configuration);
     },

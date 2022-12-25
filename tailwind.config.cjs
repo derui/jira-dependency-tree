@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.tsx', './src/*.tsx'],
+  content: ['./src/**/*.tsx', './src/*.tsx', './src/**/*.ts'],
   theme: {
     colors: {
       transparent: 'transparent',
@@ -45,6 +45,7 @@ module.exports = {
         'outline': 'outline',
         'width': 'width',
         'height': 'height',
+        'stroke': 'stroke, stroke-width',
       },
       gridTemplateColumns: {
         'top-toolbar': 'min-content 1fr min-content',

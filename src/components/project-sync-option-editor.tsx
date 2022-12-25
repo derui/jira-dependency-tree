@@ -125,7 +125,15 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
   const valueReducer$ = dialog.value.map(
     simpleReduce<State, SearchCondition>((draft, condition) => {
       draft.editorOpened = false;
+      draft.openAt = undefined;
       draft.currentSearchCondition = condition;
+    }),
+  );
+
+  const cancelReducer$ = dialog.cancel.map(
+    simpleReduce<State, unknown>((draft) => {
+      draft.editorOpened = false;
+      draft.openAt = undefined;
     }),
   );
 
@@ -133,7 +141,13 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
     DOM: view(sources.state.stream, generateTestId(sources.testid)),
     HTTP: xs.merge(dialog.HTTP),
     Portal: dialog.Portal,
-    state: xs.merge(initialReducer$, openerReducer$, valueReducer$, dialog.state as Stream<Reducer<State>>),
+    state: xs.merge(
+      initialReducer$,
+      openerReducer$,
+      valueReducer$,
+      cancelReducer$,
+      dialog.state as Stream<Reducer<State>>,
+    ),
     value: sources.state
       .select<SearchCondition | undefined>("currentSearchCondition")
       .stream.filter(filterUndefined)

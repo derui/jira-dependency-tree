@@ -62,7 +62,7 @@ type SupportedSourceTypes = {
 export type ComponentSinkTypes = {
   DOM: { DOM: Stream<VNode> };
   HTTP: { HTTP: Stream<RequestInput> };
-  Portal: { Portal: PortalSink };
+  Portal: { Portal: Stream<PortalSink> };
 };
 
 // helper function to get driver from any source.

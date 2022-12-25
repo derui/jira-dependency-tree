@@ -158,7 +158,7 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
 
   return {
     DOM: view(sources.state.stream, mergeNodes({ openerIcon }), gen),
-    Portal: xs.merge(dialog.Portal),
+    Portal: dialog.Portal,
     value: sources.state.stream.filter(({ setupFinished }) => setupFinished).map((v) => v.setting),
     state: xs.merge(initialReducer$, propReducer$, valueReducer$, dialog.state as Stream<Reducer<State>>),
   };

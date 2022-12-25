@@ -7,6 +7,7 @@ import { Button, ButtonProps } from "./atoms/button";
 import { AsNodeStream, mergeNodes, portalSourceOf, simpleReduce } from "./helper";
 import { ComponentSink, ComponentSource, classes, generateTestId } from "@/components/helper";
 import { filterEmptyString, Rect } from "@/util/basic";
+import { PortalSink } from "@/drivers/portal";
 
 export type UserConfigurationValue = {
   jiraToken: string;
@@ -249,19 +250,19 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   const reducer = reduceState(submit$, cancel$, sources, email, userDomain, jiraToken);
 
   return {
-    Portal: {
-      root: view(
-        sources.state.stream,
-        mergeNodes({
-          jiraToken,
-          email,
-          userDomain,
-          submit,
-          cancel,
-        }),
-        gen,
-      ),
-    },
+    Portal: view(
+      sources.state.stream,
+      mergeNodes({
+        jiraToken,
+        email,
+        userDomain,
+        submit,
+        cancel,
+      }),
+      gen,
+    ).map<PortalSink>((vnode) => {
+      return { root: vnode };
+    }),
     value: submit$,
     state: reducer,
   };

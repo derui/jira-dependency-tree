@@ -13,6 +13,7 @@ import {
 import { Icon, IconProps } from "./atoms/icon";
 import { filterUndefined, Rect } from "@/util/basic";
 import { ComponentSink } from "@/components/helper";
+import { PortalSink } from "@/drivers/portal";
 
 export interface SuggestionItem<T> {
   id: string;
@@ -335,9 +336,9 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
 
   return {
     DOM: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
-    Portal: {
-      candidates: candidates(state$, generateTestId(sources.testid)),
-    },
+    Portal: candidates(state$, generateTestId(sources.testid)).map<PortalSink>((vnode) => {
+      return { candidates: vnode };
+    }),
     value: submitEvent$,
     term: termEvent$,
   };

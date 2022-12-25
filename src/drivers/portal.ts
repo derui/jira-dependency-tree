@@ -4,10 +4,14 @@ import { VNode } from "snabbdom";
 import { IsolateableSource } from "@cycle/isolate";
 import { div, MainDOMSource, makeDOMDriver } from "@cycle/dom";
 
+export interface PortalSink {
+  [k: string]: VNode;
+}
+
 export interface PortalSource extends IsolateableSource {
   DOM: MainDOMSource;
   isolateSource(source: PortalSource, scope: string): PortalSource;
-  isolateSink(sink: Stream<VNode>, scope: string): Stream<VNode>;
+  isolateSink(sink: Stream<PortalSink>, scope: string): Stream<PortalSink>;
 }
 
 class PortalSourceImpl implements PortalSource {
@@ -24,19 +28,29 @@ class PortalSourceImpl implements PortalSource {
     return new PortalSourceImpl(this._rootDOM, this._rootSelector, [...this.scopes, scope]);
   }
 
-  isolateSink(sink: Stream<VNode>, scope: string): Stream<VNode> {
-    return sink.map((vnode) => {
-      if (vnode.data?.dataset?.portalId) return vnode;
+  isolateSink(sink: Stream<PortalSink>, scope: string): Stream<PortalSink> {
+    return sink.map((portals) => {
+      return Object.entries(portals).reduce<PortalSink>((accum, [key, value]) => {
+        accum[`${scope}-${key}`] = value;
 
-      return div(".portal", { dataset: { portalId: [this._portalId, scope].join("-") } }, [vnode]);
+        return accum;
+      }, {});
     });
   }
 }
 
-export const makePortalDriver = (selector: string): Driver<Stream<VNode>, PortalSource> => {
+export const makePortalDriver = (selector: string): Driver<Stream<PortalSink>, PortalSource> => {
   const dom = makeDOMDriver(selector);
 
   return (sink) => {
-    return new PortalSourceImpl(dom(sink), selector, ["root"]);
+    const vnode = sink.map((portals) => {
+      const portalNodes = Object.entries(portals).map(([key, portal]) => {
+        return div(`.portal-${key}`, [portal]);
+      });
+
+      return div(portalNodes);
+    });
+
+    return new PortalSourceImpl(dom(vnode), selector, ["root"]);
   };
 };

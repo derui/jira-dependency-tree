@@ -21,6 +21,7 @@ import { JiraSuggestionLoader } from "./jira-suggestions-loader";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { SuggestedItem, Suggestion } from "@/model/suggestion";
 import { filterUndefined, Rect } from "@/util/basic";
+import { PortalSink } from "@/drivers/portal";
 
 const ConditionType = {
   Default: "default",
@@ -54,17 +55,18 @@ interface Sources extends ComponentSource {
 interface Sinks extends ComponentSink<"Portal">, ComponentSink<"HTTP"> {
   state: Stream<Reducer<State>>;
   value: Stream<SearchCondition>;
+  cancel: Stream<unknown>;
 }
 
 const intent = (sources: Sources) => {
   const typeChanged$ = domSourceOf(sources)
     .select("select")
-    .events("change")
+    .events("input", { bubbles: false })
     .map((event) => {
       return (event.target as HTMLSelectElement).value as ConditionType;
     });
-  const cancel$ = domSourceOf(sources).select("[data-id=cancel]").events("click").mapTo(false);
-  const submit$ = domSourceOf(sources).select("[data-id=submit]").events("click").mapTo(false);
+  const cancel$ = domSourceOf(sources).select("[data-id=cancel]").events("click", { bubbles: false }).mapTo(false);
+  const submit$ = domSourceOf(sources).select("[data-id=submit]").events("click", { bubbles: false }).mapTo(false);
 
   return {
     typeChanged$,
@@ -172,7 +174,10 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
     },
   });
 
-  const suggestor = Suggestor({
+  const suggestor = isolate(
+    Suggestor,
+    "suggestor",
+  )({
     ...sources,
     props: sources.state
       .select<State["suggestions"]>("suggestions")
@@ -220,7 +225,6 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
       conditionType: "default",
       currentSearchCondition: undefined,
       lastTerm: undefined,
-      editorOpened: false,
       suggestions: [],
     };
   });
@@ -309,21 +313,25 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
     }),
   );
 
+  const view$ = view(
+    sources.state.stream,
+    mergeNodes({
+      cancel: cancelIcon,
+      submit: submitIcon,
+      epicInput,
+      suggestor,
+    }),
+    generateTestId(sources.testid),
+  );
+
   return {
     HTTP: xs.merge(loader.HTTP),
-    Portal: {
-      ...suggestor.Portal,
-      root: view(
-        sources.state.stream,
-        mergeNodes({
-          cancel: cancelIcon,
-          submit: submitIcon,
-          epicInput,
-          suggestor,
-        }),
-        generateTestId(sources.testid),
-      ),
-    },
+    Portal: xs.combine(suggestor.Portal, view$).map<PortalSink>(([suggestor, root]) => {
+      return {
+        ...suggestor,
+        roo: root,
+      };
+    }),
     state: xs.merge(
       initialReducer$,
       openerReducer$,
@@ -336,6 +344,7 @@ export const ProjectSyncOptionEditorDialog = (sources: Sources): Sinks => {
       projectKeyReducer$,
       suggestionReducer$,
     ),
+    cancel: actions.cancel$.map<unknown>((v) => v),
     value: sources.state
       .select<State["currentSearchCondition"]>("currentSearchCondition")
       .stream.filter(filterUndefined)

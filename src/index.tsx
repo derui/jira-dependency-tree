@@ -1,6 +1,6 @@
 import run from "@cycle/run";
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { div, DOMSource, makeDOMDriver } from "@cycle/dom";
+import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
 import xs, { Stream } from "xstream";
 import isolate from "@cycle/isolate";
@@ -40,7 +40,7 @@ type MainSinks = {
   issueGraph: Stream<IssueGraphSink>;
   HTTP: Stream<RequestInput>;
   STORAGE: Stream<StorageSink>;
-  Portal: PortalSink;
+  Portal: Stream<PortalSink>;
 };
 
 type MainState = {
@@ -263,10 +263,14 @@ const main = (sources: MainSources): MainSinks => {
     issueGraph: issueGraph$,
     HTTP: xs.merge(syncIssueButtonSink.HTTP, projectInformationSink.HTTP, projectSyncOpitonEditorSink.HTTP),
     STORAGE: storage$,
-    Portal: {
-      ...userConfigurationSink.Portal,
-      ...projectSyncOpitonEditorSink.Portal,
-    },
+    Portal: xs
+      .combine(userConfigurationSink.Portal, projectSyncOpitonEditorSink.Portal)
+      .map(([userConfiguration, projectSyncOptionEditor]) => {
+        return {
+          ...userConfiguration,
+          ...projectSyncOptionEditor,
+        };
+      }),
   };
 };
 

@@ -19,7 +19,7 @@ describe("user-configuration", () => {
     cy.testid("user-configuration/marker").should("not.have.class", "--showed");
 
     // still sync jira button is disabled
-    cy.testid("sync-jira/button").should("have.attr", "disabled");
+    cy.testid("sync-issue-button/button").should("have.attr", "disabled");
   });
 
   it("restore state when reopened", () => {

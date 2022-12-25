@@ -1,10 +1,9 @@
 import run from "@cycle/run";
 import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { DOMSource, makeDOMDriver } from "@cycle/dom";
+import { div, DOMSource, makeDOMDriver } from "@cycle/dom";
 import { Reducer, StateSource, withState } from "@cycle/state";
 import xs, { Stream } from "xstream";
-import flatten from "xstream/extra/flattenConcurrently";
-import isolate, { Component } from "@cycle/isolate";
+import isolate from "@cycle/isolate";
 import produce from "immer";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
 import equal from "fast-deep-equal/es6";
@@ -15,18 +14,15 @@ import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import { UserConfiguration } from "./components/user-configuration";
 import { ProjectInformation, State as ProjectInformationState } from "./components/project-information";
 import { filterNull, filterUndefined } from "./util/basic";
-import { JiraLoader, JiraLoaderSinks } from "./components/jira-loader";
 import { ZoomSlider } from "./components/zoom-slider";
 import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
-import { SyncIssueButton, Props, Sinks, Sources } from "./components/sync-jira";
-import { LoaderState, LoaderStatus } from "./type";
-import { ApiCredential, Events } from "./model/event";
+import { SyncIssueButton } from "./components/sync-issue-button";
+import { ApiCredential, SearchCondition } from "./model/event";
 import { SideToolbar, SideToolbarState } from "./components/side-toolbar";
 import { GraphLayout } from "./issue-graph/type";
-import { Suggestion, suggestionFactory } from "./model/suggestion";
-import { classes } from "./components/helper";
-import { ProjectSyncOptionEditor, ProjectSyncOptionEditorState } from "./components/project-sync-option-editor";
-import { makePortalDriver, PortalSource } from "./drivers/portal";
+import { classes, simpleReduce } from "./components/helper";
+import { ProjectSyncOptionEditor, State } from "./components/project-sync-option-editor";
+import { makePortalDriver, PortalSink, PortalSource } from "./drivers/portal";
 import { env } from "./env";
 
 type MainSources = {
@@ -44,19 +40,18 @@ type MainSinks = {
   issueGraph: Stream<IssueGraphSink>;
   HTTP: Stream<RequestInput>;
   STORAGE: Stream<StorageSink>;
-  Portal: Stream<VNode>;
+  Portal: PortalSink;
 };
 
 type MainState = {
   data: {
     issues: Issue[];
-    suggestion?: Suggestion;
+    searchCondition?: SearchCondition;
   };
   projectKey: string | undefined;
   setting: Setting;
   apiCredential?: ApiCredential;
-  loading: LoaderState;
-} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: ProjectSyncOptionEditorState } & {
+} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: State } & {
   projectInformation?: ProjectInformationState;
 };
 
@@ -78,68 +73,6 @@ const Styles = {
   divider: classes("w-0", "border-l", "border-lightgray"),
 };
 
-const jiraLoader = (sources: MainSources, syncJiraSync: Sinks): JiraLoaderSinks => {
-  const credential$ = sources.state
-    .select<MainState["apiCredential"]>("apiCredential")
-    .stream.filter(filterUndefined)
-    .remember();
-
-  const project$ = sources.state
-    .select<MainState["projectInformation"]>("projectInformation")
-    .stream.map((v) => v?.project)
-    .filter(filterUndefined)
-    .remember();
-
-  const condition$ = sources.state
-    .select<MainState["projectSyncOptionEditor"]>("projectSyncOptionEditor")
-    .stream.map((v) => v?.currentSearchCondition)
-    .remember();
-
-  const sync$ = syncJiraSync.value
-    .map(() =>
-      xs
-        .combine(project$, credential$, condition$)
-        .map<Events>(([project, credential, condition]) => {
-          return {
-            kind: "SyncIssuesRequest",
-            credential,
-            projectKey: project.key,
-            condition,
-          };
-        })
-        .take(1),
-    )
-    .flatten();
-
-  const lastTerm$ = sources.state
-    .select<MainState["projectSyncOptionEditor"]>("projectSyncOptionEditor")
-    .stream.map((v) => v?.lastTerm)
-    .filter(filterUndefined)
-    .filter((v) => v.length > 0);
-
-  const requestChangeEvent$ = xs.combine(project$, credential$).map<Events>(([project, credential]) => {
-    return {
-      kind: "GetWholeDataRequest",
-      credential,
-      projectKey: project?.key,
-    };
-  });
-
-  const suggestionEvent$ = xs.combine(project$, credential$, lastTerm$).map<Events>(([project, credential, term]) => {
-    return {
-      kind: "GetSuggestionRequest",
-      credential,
-      projectKey: project.key,
-      term,
-    };
-  });
-
-  return isolate(JiraLoader, { HTTP: "jiraLoader" })({
-    HTTP: sources.HTTP,
-    events: xs.merge(sync$, requestChangeEvent$, suggestionEvent$),
-  });
-};
-
 const main = (sources: MainSources): MainSinks => {
   const userConfigurationSink = isolate(
     UserConfiguration,
@@ -152,29 +85,31 @@ const main = (sources: MainSources): MainSinks => {
     testid: "user-configuration",
   });
 
-  const projectInformationSink = isolate(ProjectInformation, { DOM: "projectInformation" })({
+  const projectInformationSink = isolate(
+    ProjectInformation,
+    "projectInformation",
+  )({
     ...sources,
     props: {
       credential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
     },
     testid: "project-information",
   });
-  const syncJiraSink = (isolate(SyncIssueButton, { DOM: "syncJira" }) as Component<Sources, Sinks>)({
+  const syncIssueButtonSink = isolate(
+    SyncIssueButton,
+    "syncIssueButton",
+  )({
     ...sources,
-    testid: "sync-jira",
-    props: xs
-      .combine(
-        sources.state.select<MainState["setting"]>("setting").stream.map((v) => v.isSetupFinished()),
-        sources.state
-          .select<MainState["projectKey"]>("projectKey")
-          .stream.map((v) => !!v)
-          .startWith(false),
-        sources.state.select<MainState["loading"]>("loading").stream,
-      )
-      .map<Props>(([setupFinished, project, status]) => ({ setupFinished: setupFinished && project, status })),
+    testid: "sync-issue-button",
+    props: {
+      credential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
+      condition: sources.state
+        .select<MainState["data"]>("data")
+        .select<MainState["data"]["searchCondition"]>("searchCondition")
+        .stream.filter(filterUndefined),
+    },
   });
 
-  const jiraLoaderSink = jiraLoader(sources, syncJiraSink);
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
     ...sources,
     props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
@@ -196,38 +131,46 @@ const main = (sources: MainSources): MainSinks => {
   )({
     ...sources,
     testid: "sync-option-editor",
-    props: sources.state
-      .select<MainState["data"]>("data")
-      .stream.map((v) => v.suggestion)
-      .filter(filterUndefined)
-      .startWith(suggestionFactory({})),
+    props: {
+      apiCredential: sources.state.select<MainState["apiCredential"]>("apiCredential").stream.filter(filterUndefined),
+      projectKey: sources.state.select<MainState["projectKey"]>("projectKey").stream.filter(filterUndefined),
+    },
   });
 
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
   const zoomSlider$ = zoomSliderSink.DOM;
-  const syncJira$ = syncJiraSink.DOM;
+  const syncIssueButton$ = syncIssueButtonSink.DOM;
   const sideToolbar$ = sideToolbarSink.DOM;
   const projectSyncOptionEditor$ = projectSyncOpitonEditorSink.DOM;
 
   const vnode$ = xs
-    .combine(userConfiguration$, projectInformation$, zoomSlider$, syncJira$, sideToolbar$, projectSyncOptionEditor$)
-    .map(([userConfiguration, projectInformation, zoomSlider, syncJira, sideToolbar, projectSyncOptionEditor]) => (
-      <div class={Styles.root}>
-        <div class={Styles.topToolbars}>
-          <div class={Styles.projectToolbar}>
-            {projectInformation}
-            <span class={Styles.divider}></span>
-            {projectSyncOptionEditor}
-            {syncJira}
+    .combine(
+      userConfiguration$,
+      projectInformation$,
+      zoomSlider$,
+      syncIssueButton$,
+      sideToolbar$,
+      projectSyncOptionEditor$,
+    )
+    .map(
+      ([userConfiguration, projectInformation, zoomSlider, syncIssueButton, sideToolbar, projectSyncOptionEditor]) => (
+        <div class={Styles.root}>
+          <div class={Styles.topToolbars}>
+            <div class={Styles.projectToolbar}>
+              {projectInformation}
+              <span class={Styles.divider}></span>
+              {projectSyncOptionEditor}
+              {syncIssueButton}
+            </div>
+            <div></div>
+            {userConfiguration}
           </div>
-          <div></div>
-          {userConfiguration}
+          {zoomSlider}
+          {sideToolbar}
         </div>
-        {zoomSlider}
-        {sideToolbar}
-      </div>
-    ));
+      ),
+    );
 
   const issueGraph$ = xs
     .combine(
@@ -262,13 +205,11 @@ const main = (sources: MainSources): MainSinks => {
     return {
       data: { issues: [] },
       setting: settingFactory({}),
-      jiraSync: LoaderStatus.COMPLETED,
       projectKey: undefined,
-      loading: "COMPLETED",
     };
   });
 
-  const environmentReducer$ = userConfigurationSink.value.map(
+  const credentialReducer$ = userConfigurationSink.value.map(
     (v) =>
       function (prevState?: MainState) {
         if (!prevState) return undefined;
@@ -284,18 +225,11 @@ const main = (sources: MainSources): MainSinks => {
       },
   );
 
-  const jiraLoaderReducer$ = jiraLoaderSink.state.map<Reducer<MainState>>((v) => {
-    return function (prevState?: MainState) {
-      if (!prevState) return undefined;
-      const data = v(prevState.data);
-      if (!data) return prevState;
-
-      return produce(prevState, (draft) => {
-        draft.data.issues = data?.issues ?? draft.data.issues;
-        draft.data.suggestion = data?.suggestion ?? draft.data.suggestion;
-      });
-    };
-  });
+  const issueReducer$ = syncIssueButtonSink.value.map(
+    simpleReduce<MainState, Issue[]>((draft, issues) => {
+      draft.data.issues = issues;
+    }),
+  );
 
   const storage$ = xs
     .combine(
@@ -313,43 +247,26 @@ const main = (sources: MainSources): MainSinks => {
     .filter(filterNull)
     .map<StorageSink>((v) => v);
 
-  const HTTP = xs.merge(jiraLoaderSink.HTTP);
-
-  const loadingReducer$ = xs
-    .merge(HTTP.mapTo(true), flatten(sources.HTTP.select() as unknown as Stream<Stream<unknown>>).mapTo(false))
-    .fold((accum, ret) => {
-      return Math.max(ret ? accum + 1 : accum - 1, 0);
-    }, 0)
-    .map((v) => (v === 0 ? "COMPLETED" : "LOADING"))
-    .map((loading: LoaderState) => {
-      return function (prevState?: MainState) {
-        if (!prevState) {
-          return undefined;
-        }
-
-        return produce(prevState, (draft) => {
-          draft.loading = loading;
-        });
-      };
-    });
-
   return {
     DOM: vnode$,
     state: xs.merge(
       initialReducer$,
       storageReducer$,
-      environmentReducer$,
-      jiraLoaderReducer$,
+      credentialReducer$,
+      issueReducer$,
       sideToolbarSink.state as Stream<Reducer<MainState>>,
       projectSyncOpitonEditorSink.state as Stream<Reducer<MainState>>,
       userConfigurationSink.state as Stream<Reducer<MainState>>,
       projectInformationSink.state as Stream<Reducer<MainState>>,
-      loadingReducer$,
+      syncIssueButtonSink.state as Stream<Reducer<MainState>>,
     ),
     issueGraph: issueGraph$,
-    HTTP: xs.merge(HTTP, projectInformationSink.HTTP),
+    HTTP: xs.merge(syncIssueButtonSink.HTTP, projectInformationSink.HTTP, projectSyncOpitonEditorSink.HTTP),
     STORAGE: storage$,
-    Portal: xs.merge(userConfigurationSink.Portal, projectSyncOpitonEditorSink.Portal),
+    Portal: {
+      ...userConfigurationSink.Portal,
+      ...projectSyncOpitonEditorSink.Portal,
+    },
   };
 };
 

@@ -4,7 +4,7 @@ import { VNode } from "snabbdom";
 import xs, { Stream } from "xstream";
 import { Reducer } from "@cycle/state";
 import produce from "immer";
-import { PortalSource } from "@/drivers/portal";
+import { PortalSink, PortalSource } from "@/drivers/portal";
 
 // helper function to fix type definition of cycle/http
 export const selectResponse = function selectResponse(http: HTTPSource, category?: string): Stream<Stream<Response>> {
@@ -62,7 +62,7 @@ type SupportedSourceTypes = {
 export type ComponentSinkTypes = {
   DOM: { DOM: Stream<VNode> };
   HTTP: { HTTP: Stream<RequestInput> };
-  Portal: { Portal: Stream<VNode> };
+  Portal: { Portal: PortalSink };
 };
 
 // helper function to get driver from any source.

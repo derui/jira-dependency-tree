@@ -35,7 +35,7 @@ interface Sources extends ComponentSource {
   state: StateSource<State>;
 }
 
-interface Sinks extends ComponentSink<"DOM">, ComponentSink<"HTTP"> {
+export interface Sinks extends ComponentSink<"DOM">, ComponentSink<"HTTP"> {
   value: Stream<Issue[]>;
   state: Stream<Reducer<State>>;
 }

@@ -11,24 +11,24 @@ import {
   TestIdGenerator,
 } from "./helper";
 import { Icon, IconProps } from "./atoms/icon";
-import { filterUndefined } from "@/util/basic";
+import { filterUndefined, Rect } from "@/util/basic";
 import { ComponentSink } from "@/components/helper";
 
-interface Suggestion<T> {
+export interface SuggestionItem<T> {
   id: string;
   label: string;
   value: T;
 }
 
 export interface SuggestorProps<T> {
-  suggestions: Suggestion<T>[];
+  suggestions: SuggestionItem<T>[];
 }
 
 interface SuggestorSources<T = unknown> extends ComponentSource {
   props: MemoryStream<SuggestorProps<T>>;
 }
 
-interface SuggestorSinks<T = unknown> extends ComponentSink<"Portal"> {
+interface SuggestorSinks<T = unknown> extends ComponentSink<"Portal">, ComponentSink<"DOM"> {
   value: Stream<T>;
   term: Stream<string>;
 }
@@ -79,6 +79,7 @@ const intent = <T,>(sources: SuggestorSources<T>) => {
     changeSuggestionSelection$,
     suggestionIdClicked$,
     enterPressed$,
+    openerElement$: domSourceOf(sources).select("[data-id=opener]").element(),
     termInputElement$: termInput$.element(),
   };
 };
@@ -130,18 +131,28 @@ const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
           }
         }, 0);
 
+      const openAt$ = actions.openerElement$
+        .map<Rect | undefined>((v) => {
+          const rect = v.getBoundingClientRect();
+
+          return Rect.fromDOMRect(rect);
+        })
+        .startWith(undefined);
+
       return xs
         .combine(
           opened$,
           filteredSuggestions$,
           xs.merge(selectedSuggestionIndex$, clickedSuggestionIndex$),
+          openAt$,
           effects(opened$, actions),
         )
-        .map(([opened, suggestions, index, effect]) => {
+        .map(([opened, suggestions, index, openAt, effect]) => {
           return {
             opened,
             suggestions,
             index,
+            openAt,
             effect,
             currentSuggestion: index !== -1 ? suggestions[index] : undefined,
           };
@@ -238,19 +249,7 @@ const StyleMaker = {
 };
 
 const view = <T,>(state$: ReturnType<typeof model<T>>, nodes$: AsNodeStream<["icon"]>, gen: TestIdGenerator) => {
-  return xs.combine(state$, nodes$).map(([{ opened, suggestions, index, currentSuggestion }, { icon }]) => {
-    const suggestionNodes = suggestions.map((obj, cur) => {
-      const style = StyleMaker.suggestionNode(cur === index);
-
-      return (
-        <li class={style} dataset={{ id: obj.id, testid: gen("suggestions") }}>
-          <span class={Styles.suggestorLabel} dataset={{ testid: "suggestion" }}>
-            {obj.label}
-          </span>
-        </li>
-      );
-    });
-
+  return xs.combine(state$, nodes$).map(([{ opened, currentSuggestion }, { icon }]) => {
     const openerIconStyle = StyleMaker.suggestorOpenerIcon(opened);
 
     return (
@@ -264,12 +263,36 @@ const view = <T,>(state$: ReturnType<typeof model<T>>, nodes$: AsNodeStream<["ic
           </button>
           <span class={openerIconStyle}>{icon}</span>
         </span>
-        <div class={StyleMaker.suggestorMain(opened)} dataset={{ testid: gen("search-dialog"), opened: `${opened}` }}>
-          <span class={Styles.term}>
-            <input class={Styles.termInput} attrs={{ placeholder: "term", "data-testid": gen("term"), value: "" }} />
+      </div>
+    );
+  });
+};
+
+const candidates = <T,>(state$: ReturnType<typeof model<T>>, gen: TestIdGenerator) => {
+  return state$.map(({ opened, suggestions, index, openAt }) => {
+    const suggestionNodes = suggestions.map((obj, cur) => {
+      const style = StyleMaker.suggestionNode(cur === index);
+
+      return (
+        <li class={style} dataset={{ id: obj.id, testid: gen("suggestions") }}>
+          <span class={Styles.suggestorLabel} dataset={{ testid: "suggestion" }}>
+            {obj.label}
           </span>
-          <ul class={Styles.suggestions}>{suggestionNodes}</ul>
-        </div>
+        </li>
+      );
+    });
+    const top = openAt ? `calc(${openAt.top + openAt.height}px)` : "";
+
+    return (
+      <div
+        class={StyleMaker.suggestorMain(opened)}
+        style={{ top }}
+        dataset={{ testid: gen("search-dialog"), opened: `${opened}` }}
+      >
+        <span class={Styles.term}>
+          <input class={Styles.termInput} attrs={{ placeholder: "term", "data-testid": gen("term"), value: "" }} />
+        </span>
+        <ul class={Styles.suggestions}>{suggestionNodes}</ul>
       </div>
     );
   });
@@ -311,7 +334,10 @@ export const Suggestor = <T = unknown,>(sources: SuggestorSources<T>): Suggestor
     .compose(debounce(400));
 
   return {
-    Portal: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
+    DOM: view(state$, mergeNodes({ icon }), generateTestId(sources.testid)),
+    Portal: {
+      candidates: candidates(state$, generateTestId(sources.testid)),
+    },
     value: submitEvent$,
     term: termEvent$,
   };

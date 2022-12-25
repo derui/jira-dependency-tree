@@ -33,7 +33,7 @@ export const filterNull = function filterNull<T>(value: T | null): value is T {
 };
 
 // A simple type guard to remove blank string
-export const filterEmptyString = function filterEmptyString(value: string | undefined): boolean {
+export const filterEmptyString = function filterEmptyString(value: string | undefined): value is string {
   if (value === undefined) return false;
 
   return value.trim().length > 0;
@@ -52,6 +52,9 @@ export class Rect {
     this.bottom = args.bottom;
   }
 
+  /**
+   * A shortcut function to create `Rect` from `DOMRect`
+   */
   static fromDOMRect(rect: DOMRect) {
     return new Rect({
       top: rect.top,

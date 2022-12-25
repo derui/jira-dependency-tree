@@ -249,17 +249,19 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   const reducer = reduceState(submit$, cancel$, sources, email, userDomain, jiraToken);
 
   return {
-    Portal: view(
-      sources.state.stream,
-      mergeNodes({
-        jiraToken,
-        email,
-        userDomain,
-        submit,
-        cancel,
-      }),
-      gen,
-    ),
+    Portal: {
+      root: view(
+        sources.state.stream,
+        mergeNodes({
+          jiraToken,
+          email,
+          userDomain,
+          submit,
+          cancel,
+        }),
+        gen,
+      ),
+    },
     value: submit$,
     state: reducer,
   };

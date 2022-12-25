@@ -28,8 +28,11 @@ test("load project", async (t) => {
         select() {
           return Time.diagram("x|", { x: response$ });
         },
-      } as any,
-      events: xs.of(),
+      } as unknown,
+      props: {
+        apiCredential: xs.of(),
+        request: xs.of(),
+      },
     });
 
     const actual$ = sinks.suggestion.map((v) => {

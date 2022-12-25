@@ -1,100 +1,47 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { Reducer, StateSource } from "@cycle/state";
-import xs, { MemoryStream, Stream } from "xstream";
-import produce from "immer";
+import xs, { Stream } from "xstream";
 import isolate from "@cycle/isolate";
 import {
   ComponentSource,
-  AsNodeStream,
   classes,
   generateTestId,
-  mergeNodes,
   TestIdGenerator,
   ComponentSink,
   domSourceOf,
+  simpleReduce,
 } from "./helper";
-import { Suggestor, SuggestorProps } from "./suggestor";
-import { Icon, IconProps } from "./atoms/icon";
-import { Input, InputProps } from "./atoms/input";
-import { SearchCondition } from "@/model/event";
-import { SuggestedItem, Suggestion } from "@/model/suggestion";
+import { ProjectSyncOptionEditorDialog } from "./project-sync-option-editor-dialog";
+import { ApiCredential, SearchCondition } from "@/model/event";
+import { filterUndefined, Rect } from "@/util/basic";
 
-const ConditionType = {
-  Default: "default",
-  Sprint: "sprint",
-  Epic: "epic",
-} as const;
-
-type ConditionType = typeof ConditionType[keyof typeof ConditionType];
-
-export interface ProjectSyncOptionEditorState {
-  conditionType: ConditionType;
+export interface State {
   currentSearchCondition: SearchCondition | undefined;
-  lastTerm: string | undefined;
+  editorOpened: boolean;
+  openAt?: Rect;
 }
 
-interface ProjectSyncOptionEditorSources extends ComponentSource {
-  props: MemoryStream<Suggestion>;
-  state: StateSource<ProjectSyncOptionEditorState>;
+interface Props {
+  apiCredential: Stream<ApiCredential>;
+  projectKey: Stream<string>;
 }
 
-interface ProjectSyncOptionEditorSinks extends ComponentSink<"DOM">, ComponentSink<"Portal"> {
-  state: Stream<Reducer<ProjectSyncOptionEditorState>>;
+interface Sources extends ComponentSource {
+  props: Props;
+  state: StateSource<State>;
 }
 
-const intent = (
-  sources: ProjectSyncOptionEditorSources,
-  suggestorSink: ReturnType<typeof Suggestor<SuggestedItem>>,
-  epicInputSink: ReturnType<typeof Input>,
-) => {
-  const selectorOpenerClicked = domSourceOf(sources).select("[data-id=opener]").events("click");
-  const typeChanged$ = domSourceOf(sources)
-    .select("select")
-    .events("change")
-    .map((event) => {
-      return (event.target as HTMLSelectElement).value as ConditionType;
-    });
-  const cancel$ = domSourceOf(sources).select("[data-id=cancel]").events("click").mapTo(false);
-  const submit$ = domSourceOf(sources).select("[data-id=submit]").events("click").mapTo(false);
+interface Sinks extends ComponentSink<"DOM">, ComponentSink<"Portal">, ComponentSink<"HTTP"> {
+  state: Stream<Reducer<State>>;
+  value: Stream<SearchCondition>;
+}
+
+const intent = (sources: Sources) => {
+  const selectorOpenerClicked = domSourceOf(sources).select("[data-id=opener]").events("click", { bubbles: false });
 
   return {
-    props$: sources.props,
-    state$: sources.state.stream,
     openerClicked$: selectorOpenerClicked,
-    typeChanged$,
-    epicChanged$: epicInputSink.input,
-    cancel$,
-    submit$,
-    suggestedValue$: suggestorSink.value,
   };
-};
-
-const model = (actions: ReturnType<typeof intent>) => {
-  return actions.props$
-    .map(() => {
-      const currentConditionType$ = actions.state$.map((v) => v.conditionType);
-      const currentCondition$ = actions.state$.map((v) => v.currentSearchCondition);
-
-      const selectorOpened$ = xs
-        .merge(actions.openerClicked$.mapTo(true), actions.cancel$, actions.submit$)
-        .fold((_, v) => v, false);
-
-      const conditionForEpic$ = actions.epicChanged$.map<SearchCondition>((v) => {
-        return { epic: v };
-      });
-      const conditionForSprint$ = actions.suggestedValue$.map<SearchCondition>((v) => {
-        return { sprint: v };
-      });
-      const conditionForDefault$ = actions.typeChanged$.filter((v) => v === "default").mapTo<SearchCondition>({});
-      const nextCondition$ = xs.merge(conditionForEpic$, conditionForDefault$, conditionForSprint$).startWith({});
-
-      return xs
-        .combine(currentConditionType$, selectorOpened$, currentCondition$, nextCondition$)
-        .map(([currentConditionType, selectorOpened, currentCondition, nextCondition]) => {
-          return { currentConditionType, selectorOpened, currentCondition, nextCondition };
-        });
-    })
-    .flatten();
 };
 
 const currentConditionName = (condition: SearchCondition | undefined) => {
@@ -132,201 +79,67 @@ const Styles = {
       ...(opened ? classes("text-white", "bg-secondary1-200", "border-secondary1-500") : {}),
     };
   },
-  searchConditionEditorContainer: (opened: boolean) => {
-    return {
-      ...classes(
-        "absolute",
-        "flex",
-        "flex-col",
-        "left-0",
-        "top-full",
-        "mt-6",
-        "bg-white",
-        "rounded",
-        "shadow-lg",
-        "transition-width",
-      ),
-      ...(opened ? classes("w-96", "visible") : {}),
-      ...(!opened ? classes("w-0", "visible", "overflow-hidden") : {}),
-    };
-  },
-  header: classes(
-    "border-b-2",
-    "border-b-secondary1-200",
-    "text-secondary1-500",
-    "text-lg",
-    "text-bold",
-    "p-3",
-    "whitespace-nowrap",
-  ),
-  selection: classes("flex-auto", "p-2"),
-  baseForm: classes("flex", "flex-row", "p-3", "items-center"),
-  controlButton: classes("flex-none", "first:ml-0", "last:mr-0", "mx-1", "cursor-pointer"),
-  sprintSuggestor: (opened: boolean) => {
-    return {
-      ...(!opened ? classes("hidden") : {}),
-    };
-  },
-  epicInput: (opened: boolean) => {
-    return {
-      ...classes("p-2", "pt-0"),
-      ...(!opened ? classes("hidden") : {}),
-    };
-  },
 };
 
-const view = (
-  state$: ReturnType<typeof model>,
-  nodes$: AsNodeStream<["cancel", "submit", "epicInput"]>,
-  gen: TestIdGenerator,
-) => {
-  return xs
-    .combine(state$, nodes$)
-    .map(([{ currentConditionType, selectorOpened: editorOpened, currentCondition }, nodes]) => {
-      return (
-        <div class={Styles.root}>
-          <button class={Styles.opener(editorOpened)} dataset={{ testid: gen("opener"), id: "opener" }}>
-            {currentConditionName(currentCondition)}
-          </button>
-          <div class={Styles.searchConditionEditorContainer(editorOpened)} dataset={{ testid: gen("selector") }}>
-            <h2 class={Styles.header}>Select method to synchronize issues</h2>
-            <div class={Styles.baseForm}>
-              <select class={Styles.selection}>
-                <option attrs={{ value: ConditionType.Default }}>Use Current Sprint</option>
-                <option attrs={{ value: ConditionType.Sprint }}>Select Sprint</option>
-                <option attrs={{ value: ConditionType.Epic }}>Select Epic</option>
-              </select>
-              <span class={Styles.controlButton} dataset={{ id: "cancel" }}>
-                {nodes.cancel}
-              </span>
-              <span class={Styles.controlButton} dataset={{ id: "submit" }}>
-                {nodes.submit}
-              </span>
-            </div>
-            <div class={Styles.sprintSuggestor(currentConditionType === ConditionType.Sprint)}></div>
-            <div class={Styles.epicInput(currentConditionType === ConditionType.Epic)}>{nodes.epicInput}</div>
-          </div>
-        </div>
-      );
-    });
+const view = (state$: Stream<State>, gen: TestIdGenerator) => {
+  return state$.map(({ editorOpened, currentSearchCondition }) => {
+    return (
+      <div class={Styles.root}>
+        <button class={Styles.opener(editorOpened)} dataset={{ testid: gen("opener"), id: "opener" }}>
+          {currentConditionName(currentSearchCondition)}
+        </button>
+      </div>
+    );
+  });
 };
 
-export const ProjectSyncOptionEditor = (sources: ProjectSyncOptionEditorSources): ProjectSyncOptionEditorSinks => {
-  const suggestor = Suggestor({
-    ...sources,
-    props: sources.props
-      .map<SuggestorProps<SuggestedItem>>((v) => {
-        const suggestions = v.sprints.map((item) => ({ id: item.id, label: item.displayName, value: item }));
-
-        return {
-          loading: false,
-          suggestions,
-        };
-      })
-      .remember(),
-    testid: "sprint-suggestor",
-  });
-
-  const cancelIcon = Icon({
-    ...sources,
-    props: xs.of<IconProps>({
-      type: "circle-x",
-      color: "gray",
-      size: "m",
-    }),
-  });
-
-  const submitIcon = Icon({
-    ...sources,
-    props: xs.of<IconProps>({
-      type: "circle-check",
-      color: "complement",
-      size: "m",
-    }),
-  });
-
-  const epicInput = isolate(
-    Input,
-    "nameInput",
+export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
+  const dialog = isolate(
+    ProjectSyncOptionEditorDialog,
+    "projectSyncOptionEditorDialog",
   )({
     ...sources,
-    props: sources.state
-      .select<ProjectSyncOptionEditorState["currentSearchCondition"]>("currentSearchCondition")
-      .stream.map<InputProps>((condition) => {
-        return {
-          value: condition?.epic ?? "",
-          placeholder: "e.g. TES-105",
-        };
-      }),
+    props: {
+      apiCredential: sources.props.apiCredential,
+      projectKey: sources.props.projectKey,
+      openAt: sources.state.select<State["openAt"]>("openAt").stream.filter(filterUndefined),
+    },
   });
 
-  const actions = intent(sources, suggestor, epicInput);
-  const state$ = model(actions);
+  const actions = intent(sources);
 
-  const initialReducer$ = xs.of<Reducer<ProjectSyncOptionEditorState>>(() => {
+  const initialReducer$ = xs.of<Reducer<State>>(() => {
     return {
-      conditionType: "default",
-      currentSearchCondition: {},
-      lastTerm: undefined,
+      currentSearchCondition: undefined,
+      editorOpened: false,
     };
   });
 
-  const changeReducer$ = actions.typeChanged$.map<Reducer<ProjectSyncOptionEditorState>>((conditionType) => {
-    return (prevState?: ProjectSyncOptionEditorState) => {
-      if (!prevState) return undefined;
+  const openerReducer$ = actions.openerClicked$.map(
+    simpleReduce<State, MouseEvent>((draft, opened) => {
+      draft.editorOpened = true;
+      draft.openAt = Rect.fromDOMRect((opened.target as HTMLButtonElement).getBoundingClientRect());
+    }),
+  );
 
-      return produce(prevState, (draft) => {
-        draft.conditionType = conditionType;
-      });
-    };
-  });
-
-  const valueChangeReducer$ = actions.submit$
-    .map(() => {
-      return state$.map((v) => v.nextCondition).take(1);
-    })
-    .flatten()
-    .map<Reducer<ProjectSyncOptionEditorState>>((condition) => {
-      return (prevState?: ProjectSyncOptionEditorState) => {
-        if (!prevState) return undefined;
-
-        return produce(prevState, (draft) => {
-          draft.currentSearchCondition = condition;
-        });
-      };
-    });
-
-  const termReducer$ = suggestor.term.map<Reducer<ProjectSyncOptionEditorState>>((lastTerm) => {
-    return (prevState?: ProjectSyncOptionEditorState) => {
-      if (!prevState) return undefined;
-
-      return produce(prevState, (draft) => {
-        draft.lastTerm = lastTerm;
-      });
-    };
-  });
-
-  const termResetReducer$ = suggestor.value.map<Reducer<ProjectSyncOptionEditorState>>(() => {
-    return (prevState?: ProjectSyncOptionEditorState) => {
-      if (!prevState) return undefined;
-
-      return produce(prevState, (draft) => {
-        draft.lastTerm = undefined;
-      });
-    };
-  });
+  const valueReducer$ = dialog.value.map(
+    simpleReduce<State, SearchCondition>((draft, condition) => {
+      draft.editorOpened = false;
+      draft.currentSearchCondition = condition;
+    }),
+  );
 
   return {
-    DOM: view(
-      state$,
-      mergeNodes({
-        cancel: cancelIcon,
-        submit: submitIcon,
-        epicInput,
-      }),
-      generateTestId(sources.testid),
-    ),
-    Portal: xs.merge(suggestor.Portal),
-    state: xs.merge(initialReducer$, changeReducer$, termReducer$, termResetReducer$, valueChangeReducer$),
+    DOM: view(sources.state.stream, generateTestId(sources.testid)),
+    HTTP: xs.merge(dialog.HTTP),
+    Portal: dialog.Portal,
+    state: xs.merge(initialReducer$, openerReducer$, valueReducer$, dialog.state as Stream<Reducer<State>>),
+    value: sources.state
+      .select<SearchCondition | undefined>("currentSearchCondition")
+      .stream.filter(filterUndefined)
+      .map((v) => {
+        return xs.of(v);
+      })
+      .flatten(),
   };
 };

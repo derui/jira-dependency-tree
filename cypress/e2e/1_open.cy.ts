@@ -2,7 +2,7 @@ describe("open", () => {
   it("open and initial display", () => {
     cy.visit("/");
 
-    cy.testid("sync-jira/button").should("have.attr", "disabled");
+    cy.testid("sync-issue-button/button").should("have.attr", "disabled");
     cy.testid("user-configuration/opener").should("not.have.class", "opened");
     cy.testid("user-configuration/marker").should("have.class", "--show");
     cy.testid("project-information/marker").should("have.class", "--show");

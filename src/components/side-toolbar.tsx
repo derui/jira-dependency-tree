@@ -103,10 +103,13 @@ const view = (
 export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
   const graphLayoutIcon = Icon({
     ...sources,
-    props: xs.of<IconProps>({
-      type: "layout-2",
-      size: "m",
-      color: "secondary1",
+    props: sources.state.select<boolean>("opened").stream.map<IconProps>((opened) => {
+      return {
+        type: "layout-2",
+        size: "m",
+        color: "secondary1",
+        active: opened,
+      };
     }),
   });
 

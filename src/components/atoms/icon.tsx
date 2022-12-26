@@ -12,6 +12,7 @@ export interface IconProps {
   color?: Color;
   style?: Record<string, boolean>;
   disabled?: boolean;
+  active?: boolean;
 }
 
 interface IconSources extends ComponentSource {
@@ -33,12 +34,45 @@ const icons: Record<string, string> = {
   "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
 };
 
-const colors: Record<string, Record<string, boolean>> = {
-  primary: classes("before:bg-darkgray", "before:hover:bg-primary-300", "before:active:bg-primary-500"),
-  secondary1: classes("before:bg-darkgray", "before:hover:bg-secondary1-200", "before:active:bg-secondary1-500"),
-  secondary2: classes("before:bg-darkgray", "before:hover:bg-secondary2-200", "before:active:bg-secondary2-500"),
-  complement: classes("before:bg-darkgray", "before:hover:bg-complement-200", "before:active:bg-complement-500"),
-  gray: classes("before:bg-gray", "before:hover:bg-darkgray", "before:active:bg-black"),
+const Colors = {
+  primary(active: boolean) {
+    return {
+      ...classes("before:bg-darkgray"),
+      ...(active
+        ? classes("before:bg-primary-300")
+        : classes("before:hover:bg-primary-300", "before:active:bg-primary-500")),
+    };
+  },
+  secondary1(active: boolean) {
+    return {
+      ...classes("before:bg-darkgray"),
+      ...(active
+        ? classes("before:bg-secondary1-200")
+        : classes("before:hover:bg-secondary1-200", "before:active:bg-secondary1-500")),
+    };
+  },
+  secondary2(active: boolean) {
+    return {
+      ...classes("before:bg-darkgray"),
+      ...(active
+        ? classes("before:bg-secondary2-200")
+        : classes("before:hover:bg-secondary2-200", "before:active:bg-secondary2-500")),
+    };
+  },
+  complement(active: boolean) {
+    return {
+      ...classes("before:bg-darkgray"),
+      ...(active
+        ? classes("before:bg-complement-200")
+        : classes("before:hover:bg-complement-200", "before:active:bg-complement-500")),
+    };
+  },
+  gray(active: boolean) {
+    return {
+      ...classes("before:bg-gray"),
+      ...(active ? classes("bg-darkgray") : classes("before:hover:bg-darkgray", "before:active:bg-black")),
+    };
+  },
 };
 
 const Styles = {
@@ -72,18 +106,18 @@ const Styles = {
     }
   },
 
-  color: (color: Color, disabled: boolean) => {
-    return disabled ? classes("before:bg-lightgray") : colors[color];
+  color: (color: Color, disabled: boolean, active: boolean) => {
+    return disabled ? classes("before:bg-lightgray") : Colors[color](active);
   },
 };
 
 const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ size, type, style, color, disabled }) => {
+  return state$.map(({ size, type, style, color, disabled, active }) => {
     const iconClass = {
       ...Styles.iconBase,
       ...Styles.size(size),
       ...Styles.type(type),
-      ...Styles.color(color, disabled),
+      ...Styles.color(color, disabled, active),
       ...style,
     };
 
@@ -109,6 +143,7 @@ export const Icon = (sources: IconSources): ComponentSink<"DOM"> => {
       style: props.style ?? {},
       color: props.color ?? "primary",
       disabled: props.disabled ?? false,
+      active: props.active ?? false,
     };
   });
 

@@ -23,6 +23,7 @@ describe("load issues", () => {
     });
 
     // check restored value
+    cy.testid("user-configuration/marker").should("not.have.class", "--show");
     cy.testid("user-configuration/opener").click();
     cy.testid("user-configuration/user-domain/input").should("have.value", "domain");
     cy.testid("user-configuration/email/input").should("have.value", "email");

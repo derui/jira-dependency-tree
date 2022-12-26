@@ -2,6 +2,7 @@ import produce from "immer";
 import { Env } from "./env";
 import { ApiCredential } from "./event";
 import { Size } from "@/type";
+import { filterEmptyString } from "@/util/basic";
 
 export type SettingArgument = {
   // Size of issue in environment
@@ -40,7 +41,11 @@ export const settingFactory = function settingFactory(argument: SettingArgument)
     userDomain: argument.userDomain,
 
     isSetupFinished() {
-      return !!this.credentials.jiraToken && !!this.credentials.email && !!this.userDomain;
+      return (
+        filterEmptyString(this.credentials.jiraToken) &&
+        filterEmptyString(this.credentials.email) &&
+        filterEmptyString(this.userDomain)
+      );
     },
 
     toArgument() {

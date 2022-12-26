@@ -148,7 +148,7 @@ export const UserConfiguration = (sources: UserConfigurationSources): UserConfig
     return { setupFinished: false, setting: settingFactory({}) };
   });
 
-  const propReducer$ = sources.props.initialSetting.take(1).map(
+  const propReducer$ = sources.props.initialSetting.map(
     simpleReduce<State, Setting>((draft, setting) => {
       draft.setting = setting;
       draft.setupFinished = setting.isSetupFinished();

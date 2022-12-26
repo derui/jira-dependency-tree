@@ -30,7 +30,6 @@ test("load project", async (t) => {
         },
       } as unknown,
       props: {
-        apiCredential: xs.of(),
         request: xs.of(),
       },
     });

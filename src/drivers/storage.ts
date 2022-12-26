@@ -16,11 +16,11 @@ export interface StorageIntf {
   getItem(key: string): string | null;
 }
 
-export const makeStorageDriver = function makeStorageDriver(
+export const makeStorageDriver = (
   rootKey: string,
   storage: StorageIntf,
-): Driver<Stream<StorageSink>, StorageSource> {
-  return function StorageDriver(sink$) {
+): Driver<Stream<StorageSink>, StorageSource> => {
+  return (sink$) => {
     let originalHashMap: HashMap = {};
     const root = storage.getItem(rootKey);
     if (root) {

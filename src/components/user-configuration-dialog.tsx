@@ -146,7 +146,7 @@ const reduceState = (
     }),
   );
 
-  const propsReducer$ = sources.props.initialValue.take(1).map(
+  const propsReducer$ = sources.props.initialValue.map(
     simpleReduce<State, Partial<UserConfigurationValue>>((draft, props) => {
       draft.value.jiraToken = props.jiraToken ?? "";
       draft.value.userDomain = props.userDomain ?? "";
@@ -175,7 +175,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("user-domain"),
-    props: sources.props.initialValue.take(1).map<InputProps>(({ userDomain }) => {
+    props: sources.props.initialValue.map<InputProps>(({ userDomain }) => {
       return {
         placeholder: "e.g. your-domain",
         value: userDomain ?? "",
@@ -190,7 +190,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("email"),
-    props: sources.props.initialValue.take(1).map<InputProps>(({ email }) => {
+    props: sources.props.initialValue.map<InputProps>(({ email }) => {
       return {
         placeholder: "e.g. your@example.com",
         value: email ?? "",
@@ -205,7 +205,7 @@ export const UserConfigurationDialog = (sources: Sources): Sinks => {
   )({
     DOM: portalSourceOf(sources).DOM,
     testid: gen("jira-token"),
-    props: sources.props.initialValue.take(1).map<InputProps>(({ jiraToken }) => {
+    props: sources.props.initialValue.map<InputProps>(({ jiraToken }) => {
       return {
         placeholder: "required",
         value: jiraToken ?? "",

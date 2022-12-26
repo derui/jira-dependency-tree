@@ -67,7 +67,7 @@ const Styles = {
   },
   marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-0", "left-0", "inline-block", "w-2", "h-2", "rounded-full", "bg-primary-400"),
+      ...classes("absolute", "top-2", "left-0", "inline-block", "w-2", "h-2", "rounded-full", "bg-primary-400"),
       ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };

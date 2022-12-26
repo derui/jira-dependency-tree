@@ -49,13 +49,15 @@ type MainState = {
     searchCondition?: SearchCondition;
   };
   projectKey: string | undefined;
-  setting: Setting;
+  setting?: Setting;
   apiCredential?: ApiCredential;
 } & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: State } & {
   projectInformation?: ProjectInformationState;
 };
 
-type Storage = SettingArgument & { graphLayout?: GraphLayout };
+type Storage = {
+  settings: SettingArgument & { graphLayout?: GraphLayout };
+};
 
 const Styles = {
   root: classes("w-full", "h-full", "absolute"),
@@ -63,14 +65,14 @@ const Styles = {
   projectToolbar: classes(
     "relative",
     "bg-white",
-    "p-3",
+    "px-3",
     "shadow-md",
     "gap-2",
     "grid",
     "grid-cols-project-toolbar",
     "transition-height",
   ),
-  divider: classes("w-0", "border-l", "border-lightgray"),
+  divider: classes("w-0", "border-l", "border-lightgray", "m-2"),
 };
 
 const main = (sources: MainSources): MainSinks => {
@@ -80,7 +82,7 @@ const main = (sources: MainSources): MainSinks => {
   )({
     ...sources,
     props: {
-      initialSetting: sources.state.select<MainState["setting"]>("setting").stream.map((setting) => setting),
+      initialSetting: sources.state.select<MainState["setting"]>("setting").stream.filter(filterUndefined),
     },
     testid: "user-configuration",
   });
@@ -197,7 +199,7 @@ const main = (sources: MainSources): MainSinks => {
       };
     });
 
-  const storageReducer$ = sources.STORAGE.select<Storage>("settings").map((v) => {
+  const storageReducer$ = sources.STORAGE.select<Storage["settings"]>("settings").map((v) => {
     return function (prevState?: MainState) {
       if (!prevState) return undefined;
 
@@ -242,15 +244,15 @@ const main = (sources: MainSources): MainSinks => {
 
   const storage$ = xs
     .combine(
-      sources.state.select<MainState["setting"]>("setting").stream,
+      sources.state.select<MainState["setting"]>("setting").stream.filter(filterUndefined),
       sources.state.select<MainState["sideToolbar"]>("sideToolbar").stream.filter(filterUndefined),
     )
     .fold<Storage | null>((accum, [v, toolBar]) => {
       if (!accum) {
-        return { ...v.toArgument(), graphLayout: toolBar.graphLayout };
+        return { settings: { ...v.toArgument(), graphLayout: toolBar.graphLayout } };
       }
 
-      const newArg = { ...v.toArgument(), GraphLayout: toolBar.graphLayout };
+      const newArg = { settings: { ...v.toArgument(), graphLayout: toolBar.graphLayout } };
       return equal(newArg, accum) ? accum : newArg;
     }, null)
     .filter(filterNull)

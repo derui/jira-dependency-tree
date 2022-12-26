@@ -59,6 +59,7 @@ const Styles = {
     "w-12",
     "h-12",
     "p-3",
+    "items-center",
     "justify-center",
   ),
   opener: () => {
@@ -66,13 +67,15 @@ const Styles = {
       ...classes("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7"),
     };
   },
-  marker: (setupped: boolean) => {
+  marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-0", "left-0", "inline-block", "bg-primary-400", "w-2", "h-2", "rounded-full"),
-      ...(!setupped ? classes("invisible") : {}),
-      ...(setupped ? classes("visible") : {}),
+      ...classes("flex", "w-2", "h-2", "-left-1", "-top-1", "absolute"),
+      ...(!show ? classes("invisible") : {}),
+      ...(show ? classes("visible") : {}),
     };
   },
+  markerPing: classes("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
+  markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
 };
 
 const view = (state$: Stream<State>, nodes: AsNodeStream<["openerIcon"]>, gen: ReturnType<typeof generateTestId>) => {
@@ -83,7 +86,10 @@ const view = (state$: Stream<State>, nodes: AsNodeStream<["openerIcon"]>, gen: R
           <span
             class={{ ...Styles.marker(!setupFinished), "--show": !setupFinished }}
             dataset={{ testid: gen("marker") }}
-          ></span>
+          >
+            <span class={Styles.markerPing}></span>
+            <span class={Styles.markerInner}></span>
+          </span>
           {openerIcon}
         </button>
       </div>

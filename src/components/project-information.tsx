@@ -57,7 +57,6 @@ const Styles = {
         "h-12",
         "items-center",
         "transition-all",
-        "overflow-hidden",
         "border-b",
         "border-b-transparent",
       ),
@@ -67,11 +66,13 @@ const Styles = {
   },
   marker: (show: boolean) => {
     return {
-      ...classes("absolute", "top-2", "left-0", "inline-block", "w-2", "h-2", "rounded-full", "bg-primary-400"),
+      ...classes("flex", "w-2", "h-2", "left-0", "top-2", "absolute"),
       ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };
   },
+  markerPing: classes("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
+  markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
   name: (editing: boolean, needEditing: boolean) => {
     return {
       ...classes(
@@ -111,10 +112,10 @@ const view = (
   return xs.combine(state$, nodes$).map(([{ project, opened, name }, nodes]) => {
     return (
       <div class={Styles.root(opened)} dataset={{ testid: gen("main") }}>
-        <span
-          class={{ ...Styles.marker(!project && !opened), "--show": !project }}
-          dataset={{ testid: gen("marker") }}
-        ></span>
+        <span class={{ ...Styles.marker(!project && !opened), "--show": !project }} dataset={{ testid: gen("marker") }}>
+          <span class={Styles.markerPing}></span>
+          <span class={Styles.markerInner}></span>
+        </span>
         <span class={Styles.name(opened, !project)} dataset={{ testid: gen("name"), id: "name" }}>
           {name}
         </span>

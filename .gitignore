@@ -9,4 +9,4 @@ src/env.prod.ts
 /playwright-report/
 /playwright/.cache/
 
-/.dir-locals.el
+.dir-locals.el

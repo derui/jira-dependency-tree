@@ -73,6 +73,7 @@ const Styles = {
         "cursor-pointer",
         "items-center",
         "whitespace-nowrap",
+        "text-sm",
       ),
 
       ...(!opened ? classes("border-gray", "bg-white") : {}),

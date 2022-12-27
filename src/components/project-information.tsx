@@ -22,6 +22,7 @@ export interface State {
   project?: Project;
   name: string;
   opened: boolean;
+  loading: boolean;
 }
 
 export interface Props {
@@ -73,7 +74,7 @@ const Styles = {
   },
   markerPing: classes("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
   markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
-  name: (editing: boolean, needEditing: boolean) => {
+  name: (editing: boolean, needEditing: boolean, loading: boolean) => {
     return {
       ...classes(
         "w-full",
@@ -91,9 +92,18 @@ const Styles = {
       ),
       ...(!needEditing ? classes("text-secondary2-400", "hover:text-secondary2-400") : {}),
       ...(needEditing ? classes("text-gray", "hover:text-darkgray") : {}),
-      ...(editing ? classes("hidden") : {}),
+      ...(editing || loading ? classes("hidden") : {}),
     };
   },
+  // skeleton styles
+  skeletonRoot: (loading: boolean) => {
+    return {
+      ...classes("animate-pulse", "flex", "h-12", "w-full", "items-center"),
+      ...(loading ? {} : classes("hidden")),
+    };
+  },
+  skeleton: classes("bg-lightgray", "rounded", "h-8", "py-2", "px-2", "w-full"),
+  // editor styles
   keyEditor: (editing: boolean) => {
     return {
       ...classes("bg-white", "flex", "flex-col", "mx-3"),
@@ -109,15 +119,21 @@ const view = (
   nodes$: AsNodeStream<["nameInput", "cancel", "submit"]>,
   gen: ReturnType<typeof generateTestId>,
 ) => {
-  return xs.combine(state$, nodes$).map(([{ project, opened, name }, nodes]) => {
+  return xs.combine(state$, nodes$).map(([{ project, opened, name, loading }, nodes]) => {
     return (
       <div class={Styles.root(opened)} dataset={{ testid: gen("main") }}>
-        <span class={{ ...Styles.marker(!project && !opened), "--show": !project }} dataset={{ testid: gen("marker") }}>
+        <span
+          class={{ ...Styles.marker(!project && !opened && !loading), "--show": !project }}
+          dataset={{ testid: gen("marker") }}
+        >
           <span class={Styles.markerPing}></span>
           <span class={Styles.markerInner}></span>
         </span>
-        <span class={Styles.name(opened, !project)} dataset={{ testid: gen("name"), id: "name" }}>
+        <span class={Styles.name(opened, !project, loading)} dataset={{ testid: gen("name"), id: "name" }}>
           {name}
+        </span>
+        <span class={{ ...Styles.skeletonRoot(loading), "--show": loading }} dataset={{ testid: gen("skeleton") }}>
+          <span class={Styles.skeleton}></span>
         </span>
         <div class={{ ...Styles.keyEditor(opened), "--opened": opened }} dataset={{ testid: gen("nameEditor") }}>
           {nodes.nameInput}
@@ -195,14 +211,22 @@ export const ProjectInformation = (sources: Sources): Sinks => {
     return {
       name: "Click here",
       opened: false,
+      loading: false,
     };
   });
+
+  const loadingReducer$ = xs.merge(loader.HTTP.mapTo(true), loader.project.mapTo(false)).map(
+    simpleReduce<State, boolean>((draft, loading) => {
+      draft.loading = loading;
+    }),
+  );
 
   const projectReducer$ = loader.project.map(
     simpleReduce<State, Project>((draft, project) => {
       draft.project = project;
       draft.name = project.name;
       draft.opened = false;
+      draft.loading = false;
     }),
   );
 
@@ -215,6 +239,6 @@ export const ProjectInformation = (sources: Sources): Sinks => {
   return {
     DOM: view(sources.state.stream, mergeNodes({ nameInput, cancel: cancelIcon, submit: submitIcon }), gen),
     HTTP: xs.merge(loader.HTTP),
-    state: xs.merge(initialReducer$, projectReducer$, openedReducer$),
+    state: xs.merge(initialReducer$, projectReducer$, openedReducer$, loadingReducer$),
   };
 };

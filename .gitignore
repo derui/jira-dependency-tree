@@ -8,3 +8,5 @@ src/env.prod.ts
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+/.dir-locals.el

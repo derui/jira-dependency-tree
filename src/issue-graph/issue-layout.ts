@@ -3,11 +3,11 @@ import { Position, Size } from "@/type";
 import { LayoutedLeveledVertex } from "@/issue-graph/type";
 
 // get subgraphs from a graph that contains whole issues
-const getSubgraphs = function getSubgraphs(graph: Graph): Graph[] {
+const getSubgraphs = (graph: Graph): Graph[] => {
   const roots = graph.levelAt(0);
 
   return roots.reduce<Graph[]>((graphs, root) => {
-    const subgraph = graph.subgraphOf(root);
+    const [subgraph] = graph.subgraphOf(root);
 
     if (!graphs.some((g) => g.intersect(subgraph))) {
       graphs.push(subgraph);
@@ -27,27 +27,27 @@ export type LayoutedGraph = {
   vertices: LayoutedLeveledVertex[];
 };
 
-const calculateWidth = function calculateWidth(level: number, nodeSize: Size): number {
+const calculateWidth = (level: number, nodeSize: Size): number => {
   const betweenX = nodeSize.width * 0.75;
   return level * nodeSize.width + betweenX * Math.max(0, level - 1);
 };
 
-const calculateHeight = function calculateHeight(level: number, nodeSize: Size): number {
+const calculateHeight = (level: number, nodeSize: Size): number => {
   const betweenY = nodeSize.height * 0.5;
   return level * nodeSize.height + betweenY * Math.max(0, level - 1);
 };
 
-const calculateX = function calculateX(level: number, nodeSize: Size): number {
+const calculateX = (level: number, nodeSize: Size): number => {
   const betweenX = nodeSize.width * 0.75;
   return level * nodeSize.width + betweenX * level;
 };
 
-const calculateY = function calculateY(level: number, nodeSize: Size): number {
+const calculateY = (level: number, nodeSize: Size): number => {
   const betweenY = nodeSize.height * 0.5;
   return level * nodeSize.height + betweenY * level;
 };
 
-const layoutGraph = function layoutGraph(graph: Graph, nodeSize: Size): LayoutedGraph {
+const layoutGraph = (graph: Graph, nodeSize: Size): LayoutedGraph => {
   const verticesSize = graph.vertices.length;
   let largestLevel = [0, 0];
   const leveledVertices: (string[] | undefined)[] = [];
@@ -93,7 +93,7 @@ const layoutGraph = function layoutGraph(graph: Graph, nodeSize: Size): Layouted
   };
 };
 
-const layoutOrphanGraphs = function layoutOrphanGraphs(graphs: Graph[], nodeSize: Size): LayoutedGraph {
+const layoutOrphanGraphs = (graphs: Graph[], nodeSize: Size): LayoutedGraph => {
   const countPerLine = 6;
   let copiedGraphs = Array.from(graphs);
   const graphLines = [];
@@ -130,7 +130,7 @@ const layoutOrphanGraphs = function layoutOrphanGraphs(graphs: Graph[], nodeSize
   };
 };
 
-export const calculateLayouts = function calculateLayouts(graph: Graph, nodeSize: Size) {
+export const calculateLayouts = (graph: Graph, nodeSize: Size) => {
   const subgraphs = getSubgraphs(graph);
 
   const orphanGraphs = subgraphs.filter((g) => g.vertices.length === 1);

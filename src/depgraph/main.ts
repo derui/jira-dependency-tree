@@ -4,9 +4,11 @@ import { constraint, difference } from "@/util/basic";
 type Edge = [string, string];
 type Vertex = string;
 
-type AdjacentMatrix = {
+interface AdjacentMatrix {
   [k: Vertex]: Set<Vertex>;
-};
+}
+
+type Cycle = "NotCycle" | "HasCycle";
 
 export type Graph = {
   // add vertex labelled by [label]
@@ -25,7 +27,7 @@ export type Graph = {
   adjacent(vertex: Vertex): Vertex[];
 
   // Get subgraph that has the root is given vertex
-  subgraphOf(vertex: Vertex): Graph;
+  subgraphOf(vertex: Vertex): [Graph, Cycle];
 
   // Return result that given graph is intersected
   intersect(graph: Graph): boolean;
@@ -81,22 +83,33 @@ const findRoots = function findRoots(mat: AdjacentMatrix) {
   return difference(vertices, adjacents);
 };
 
-const dfs = function dfs(mat: AdjacentMatrix, root: Vertex, work: (node: Vertex, depth: number) => void) {
-  const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, seen: Map<Vertex, number>) => {
-    work(node, depth);
+const dfs = (mat: AdjacentMatrix, root: Vertex, work: (node: Vertex, depth: number, parent: Vertex | null) => void) => {
+  const seen = new Set<Vertex>();
+  const finished = new Set<Vertex>();
+  let cycle: Cycle = "NotCycle";
+
+  const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, parent: Vertex | null) => {
+    seen.add(node);
+
+    work(node, depth, parent);
 
     const nextNodes = mat[node] || new Set();
 
     for (const nextNode of nextNodes) {
-      if (seen.has(nextNode) && seen.get(nextNode)! >= depth) {
+      if (seen.has(nextNode) && !finished.has(nextNode)) {
+        cycle = "HasCycle";
         continue;
       }
-      seen.set(nextNode, depth);
-      recursiveDfs(mat, nextNode, depth + 1, seen);
+
+      recursiveDfs(mat, nextNode, depth + 1, node);
     }
+
+    finished.add(node);
+
+    return cycle;
   };
 
-  recursiveDfs(mat, root, 0, new Map());
+  return recursiveDfs(mat, root, 0, null);
 };
 
 const largestLevelOf = function largestLevelOf(mat: AdjacentMatrix, target: Vertex) {
@@ -154,18 +167,20 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       return Array.from(nodesAtLevel);
     },
 
-    subgraphOf(subRoot: Vertex): Graph {
+    subgraphOf(subRoot: Vertex): [Graph, Cycle] {
       let subgraph = emptyGraph();
 
-      dfs(adjMatrix, subRoot, (node) => {
+      const cycle = dfs(adjMatrix, subRoot, (node) => {
         subgraph = subgraph.addVertex(node);
       });
 
-      return subgraph.vertices.reduce((graph, vertex) => {
+      subgraph = subgraph.vertices.reduce((graph, vertex) => {
         return this.adjacent(vertex).reduce((g, v) => {
           return g.directTo(vertex, v);
         }, graph);
       }, subgraph);
+
+      return [subgraph, cycle];
     },
 
     intersect(graph: Graph) {

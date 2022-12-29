@@ -53,7 +53,7 @@ export const JiraIssueLoader = (sources: Sources): Sinks => {
   };
 };
 
-const mapResponse = function mapResponse(body: { [k: string]: unknown }[]): Issue[] {
+const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
   const subtasks = body
     .map((b) => {
       return (b.subtasks as string[]).map((subtask: string) => {
@@ -79,19 +79,21 @@ const mapResponse = function mapResponse(body: { [k: string]: unknown }[]): Issu
   return mergeTasks(issues, subtasks);
 };
 
-const mergeTasks = function mergeTasks(issues: Issue[], subtasks: { parent: string; subtask: string }[]): Issue[] {
+const mergeTasks = (issues: Issue[], subtasks: { parent: string; subtask: string }[]): Issue[] => {
   const map = new Map<string, Issue>(issues.map((v) => [v.key, v]));
 
   for (const { parent, subtask } of subtasks) {
-    const accumulatedIssues = map.get(subtask);
+    const subtaskRelatedIssue = map.get(subtask);
 
-    if (accumulatedIssues) {
-      const outwardIssues = new Set<string>(accumulatedIssues.outwardIssueKeys);
+    if (subtaskRelatedIssue) {
+      const outwardIssues = new Set<string>(subtaskRelatedIssue.outwardIssueKeys);
+
       if (outwardIssues.has(parent) || outwardIssues.size > 0) {
         continue;
       }
+
       outwardIssues.add(parent);
-      accumulatedIssues.outwardIssueKeys = Array.from(outwardIssues);
+      subtaskRelatedIssue.outwardIssueKeys = Array.from(outwardIssues);
     }
   }
 

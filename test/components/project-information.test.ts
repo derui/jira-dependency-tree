@@ -106,7 +106,7 @@ test("show project after input name and after credential", async (t) => {
       };
     });
 
-    const expected$ = Time.diagram("a---b", {
+    const expected$ = Time.diagram("a--ab", {
       a: {
         name: "Click here",
       },

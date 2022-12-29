@@ -82,7 +82,7 @@ test("allow click button when it prepared", async (t) => {
         loading: select("[data-testid=button]", vtree)[0].data?.class?.["--loading"],
       };
     });
-    const expected$ = Time.diagram("a--(bb)", {
+    const expected$ = Time.diagram("a-a(bb)", {
       a: {
         mainDisabled: true,
         loading: false,

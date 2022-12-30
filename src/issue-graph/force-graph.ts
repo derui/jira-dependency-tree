@@ -221,7 +221,7 @@ export const makeForceGraph = (
     links
       .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
       .classed("stroke-lightgray-alpha", (d) => !d.relatedFocusingIssue && focusingANode)
-      .classed("stroke-darkgray", (d) => !focusingANode)
+      .classed("stroke-darkgray", () => !focusingANode)
       .attr("marker-end", (d) => {
         if (d.relatedFocusingIssue) {
           return "url(#selected-arrowhead)";
@@ -242,7 +242,7 @@ export const makeForceGraph = (
       .attr("stroke-weight", 1)
       .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
       .classed("stroke-lightgray-alpha", (d) => !d.relatedFocusingIssue && focusingANode)
-      .classed("stroke-darkgray", (d) => !focusingANode)
+      .classed("stroke-darkgray", () => !focusingANode)
       .attr("marker-end", (d) => {
         if (d.relatedFocusingIssue) {
           return "url(#selected-arrowhead)";

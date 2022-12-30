@@ -73,7 +73,7 @@ describe("load issues", () => {
     cy.testid("sync-option-editor/opener").should("contain.text", "TES スプリント 5");
   });
 
-  it("change condition if epic edited", () => {
+  it.only("change condition if epic edited", () => {
     // Input credentials
     cy.testid("user-configuration/opener").click();
     cy.testid("user-configuration/user-domain/input").type("domain").should("have.value", "domain");

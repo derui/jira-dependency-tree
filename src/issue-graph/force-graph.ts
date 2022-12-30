@@ -119,7 +119,7 @@ const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
 
 const buildIssueTreeFrame = (container: D3Node<any>, layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[]) => {
   const FrameSize = {
-    padding: 8,
+    padding: 16,
   };
 
   container

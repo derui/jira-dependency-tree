@@ -8,7 +8,20 @@ interface AdjacentMatrix {
   [k: Vertex]: Set<Vertex>;
 }
 
-type Cycle = "NotCycle" | "HasCycle";
+type NotHaveCycle = { kind: "NotHaveCycle" };
+interface Cycle {
+  cycle: Vertex[];
+  next: Vertex;
+}
+export type ContainCycle = {
+  kind: "ContainCycle";
+
+  /**
+   * cycles in graph. Each elements are cycle in graph.
+   */
+  cycles: Cycle[];
+};
+type CycleDetection = NotHaveCycle | ContainCycle;
 
 export type Graph = {
   // add vertex labelled by [label]
@@ -23,11 +36,16 @@ export type Graph = {
   // add edge that is directed [from] to [to]
   directTo(from: Vertex, to: Vertex): Graph;
 
+  /**
+   * remove direction from [from] to [to].
+   */
+  removeDirection(from: Vertex, to: Vertex): Graph;
+
   // Get adjacent vertices of [vertex]
   adjacent(vertex: Vertex): Vertex[];
 
   // Get subgraph that has the root is given vertex
-  subgraphOf(vertex: Vertex): [Graph, Cycle];
+  subgraphOf(vertex: Vertex): [Graph, CycleDetection];
 
   // Return result that given graph is intersected
   intersect(graph: Graph): boolean;
@@ -83,27 +101,53 @@ const findRoots = function findRoots(mat: AdjacentMatrix) {
   return difference(vertices, adjacents);
 };
 
+const notHaveCycle = (): NotHaveCycle => {
+  return {
+    kind: "NotHaveCycle",
+  };
+};
+
+const containCycle = (cycles: Cycle[]): ContainCycle => {
+  return {
+    kind: "ContainCycle",
+    cycles: Array.from(cycles),
+  };
+};
+
 const dfs = (mat: AdjacentMatrix, root: Vertex, work: (node: Vertex, depth: number, parent: Vertex | null) => void) => {
   const seen = new Set<Vertex>();
   const finished = new Set<Vertex>();
-  let cycle: Cycle = "NotCycle";
+  const stack: Vertex[] = [];
+  const cycles: Cycle[] = [];
+  let cycle: CycleDetection = notHaveCycle();
 
   const recursiveDfs = (mat: AdjacentMatrix, node: Vertex, depth: number, parent: Vertex | null) => {
     seen.add(node);
+    stack.push(node);
 
     work(node, depth, parent);
 
     const nextNodes = mat[node] || new Set();
 
     for (const nextNode of nextNodes) {
+      // prevent reflex
+      if (nextNode === parent) {
+        continue;
+      }
+
       if (seen.has(nextNode) && !finished.has(nextNode)) {
-        cycle = "HasCycle";
+        cycles.push({
+          cycle: Array.from(stack),
+          next: nextNode,
+        });
+        cycle = containCycle(cycles);
         continue;
       }
 
       recursiveDfs(mat, nextNode, depth + 1, node);
     }
 
+    stack.pop();
     finished.add(node);
 
     return cycle;
@@ -167,7 +211,7 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
       return Array.from(nodesAtLevel);
     },
 
-    subgraphOf(subRoot: Vertex): [Graph, Cycle] {
+    subgraphOf(subRoot: Vertex): [Graph, CycleDetection] {
       let subgraph = emptyGraph();
 
       const cycle = dfs(adjMatrix, subRoot, (node) => {
@@ -214,6 +258,12 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
 
     directTo(from, to) {
       const edges = this.edges.concat([[from, to]]);
+
+      return makeGraph(edges, this.vertices);
+    },
+
+    removeDirection(from, to) {
+      const edges = this.edges.filter(([_from, _to]) => !(from === _from && to === _to));
 
       return makeGraph(edges, this.vertices);
     },

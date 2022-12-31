@@ -1,23 +1,25 @@
 import assert from "assert";
 import test from "ava";
 
-import { emptyGraph, Graph } from "@/depgraph/main";
+import { ContainCycle, emptyGraph, Graph } from "@/depgraph/main";
 
-const diagrams = (diagrams: string[]): ((graph: Graph) => Graph) => {
+const diagrams = (diagrams: string[]): Graph => {
   const vertexDirections = diagrams.map((diagram) => diagram.split(/>/).map((v) => v.trim()));
 
   assert(vertexDirections.length > 0 && vertexDirections.every((v) => v.length > 1));
 
-  return (graph: Graph) => {
-    let ret = graph;
-    vertexDirections.forEach((vertexDirection) => {
-      for (let i = 0; i < vertexDirection.length - 1; i++) {
-        ret = ret.directTo(vertexDirection[i], vertexDirection[i + 1]);
-      }
-    });
+  const vertices = new Set(vertexDirections.flat());
+  let graph = emptyGraph();
 
-    return ret;
-  };
+  graph = graph.addVertices([...vertices]);
+
+  vertexDirections.forEach((vertexDirection) => {
+    for (let i = 0; i < vertexDirection.length - 1; i++) {
+      graph = graph.directTo(vertexDirection[i], vertexDirection[i + 1]);
+    }
+  });
+
+  return graph;
 };
 
 test("make empty depgraph", (t) => {
@@ -137,7 +139,7 @@ test("get adjacent vertices from given vertex", (t) => {
   // arrange
 
   // do
-  const graph = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d"]));
+  const graph = diagrams(["a > b > c", "b > d > c"]);
 
   // verify
   t.is(graph.edges.length, 4);
@@ -171,7 +173,7 @@ test("ignore vertex that is not included in graph", (t) => {
 
 test("get subgraph from given root vertex", (t) => {
   // arrange
-  const graph = diagrams(["a > b > c", "b > d > c", "e > c"])(emptyGraph().addVertices(["a", "b", "c", "d", "e"]));
+  const graph = diagrams(["a > b > c", "b > d > c", "e > c"]);
 
   // do
   const [subgraphA] = graph.subgraphOf("a");
@@ -193,7 +195,7 @@ test("get subgraph from given root vertex", (t) => {
 
 test("get subgraph from given inter-graph vertex", (t) => {
   // arrange
-  const graph = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d", "e"]));
+  const graph = diagrams(["a > b > c", "b > d > c"]);
 
   // do
   const [subgraph] = graph.subgraphOf("d");
@@ -207,7 +209,7 @@ test("get subgraph from given inter-graph vertex", (t) => {
 
 test("can detect intersection between two graphs", (t) => {
   // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d"]));
+  const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
   const graph2 = emptyGraph().addVertices(["b", "d", "c"]).directTo("b", "d").directTo("c", "b");
 
@@ -220,7 +222,7 @@ test("can detect intersection between two graphs", (t) => {
 
 test("do not intersect if not found any same edges", (t) => {
   // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d"]));
+  const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
   const graph2 = emptyGraph().addVertices(["d", "c", "e", "f"]).directTo("c", "f").directTo("c", "e");
 
@@ -233,7 +235,7 @@ test("do not intersect if not found any same edges", (t) => {
 
 test("merge between graphs that are intesected each other", (t) => {
   // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d"]));
+  const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
   const graph2 = emptyGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
 
@@ -252,7 +254,7 @@ test("merge between graphs that are intesected each other", (t) => {
 
 test("merge return same graph if merged same graph", (t) => {
   // arrange
-  const graph = diagrams(["a > b > c", "b > d > c"])(emptyGraph().addVertices(["a", "b", "c", "d"]));
+  const graph = diagrams(["a > b > c", "b > d > c"]);
 
   // do
   const merged = graph.merge(graph)!;
@@ -264,23 +266,50 @@ test("merge return same graph if merged same graph", (t) => {
 
 test("detect cycle to get subgraph", (t) => {
   // arrange
-  const graph = diagrams(["a > b > c > d > b > e"])(emptyGraph().addVertices(["a", "b", "c", "d", "e"]));
+  const graph = diagrams(["a > b > c > d > b > e"]);
 
   // do
   const [subgraph, cycle] = graph.subgraphOf("a");
 
   // verify
-  t.is(cycle, "HasCycle");
+  t.is(cycle.kind, "ContainCycle");
+  t.deepEqual((cycle as ContainCycle).cycles, [{ cycle: ["a", "b", "c", "d"], next: "b" }]);
   t.deepEqual(subgraph.adjacent("a"), ["b"], "adjacent of 'a'");
   t.deepEqual(subgraph.adjacent("b"), ["c", "e"], "adjacent of 'b'");
   t.deepEqual(subgraph.adjacent("c"), ["d"], "adjacent of 'c'");
   t.deepEqual(subgraph.adjacent("d"), ["b"], "adjacent of 'd'");
 });
 
+test("detect cycles to get subgraph", (t) => {
+  // arrange
+  const graph = diagrams(["a > b > c > d > b > e", "a > f > g > a"]);
+
+  // do
+  const [, cycle] = graph.subgraphOf("a");
+
+  // verify
+  t.is(cycle.kind, "ContainCycle");
+  t.deepEqual((cycle as ContainCycle).cycles, [
+    { cycle: ["a", "b", "c", "d"], next: "b" },
+    { cycle: ["a", "f", "g"], next: "a" },
+  ]);
+});
+
+test("remove direction", (t) => {
+  // arrange
+  const graph = diagrams(["a > b > c"]);
+
+  // do
+  const newGraph = graph.removeDirection("b", "c");
+
+  // verify
+  t.deepEqual(newGraph.adjacent("b"), []);
+});
+
 test("merge graphs have subgraph", (t) => {
   // arrange
-  const graph1 = diagrams(["a > b > c > b"])(emptyGraph().addVertices(["a", "b", "c"]));
-  const graph2 = diagrams(["c > d > e"])(emptyGraph().addVertices(["c", "d", "e"]));
+  const graph1 = diagrams(["a > b > c > b"]);
+  const graph2 = diagrams(["c > d > e"]);
 
   // do
   const ret = graph1.merge(graph2);

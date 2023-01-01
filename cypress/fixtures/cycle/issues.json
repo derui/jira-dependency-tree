@@ -1,0 +1,35 @@
+[
+{
+    "key": "TES-1",
+    "summary": "task 5",
+    "description": null,
+    "statusId": "10000",
+    "typeId": "10002",
+    "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
+    "links": [
+      {"outwardIssue": "TES-2"}],
+    "subtasks": []
+},
+{
+    "key": "TES-2",
+    "summary": "task 5",
+    "description": null,
+    "statusId": "10000",
+    "typeId": "10002",
+    "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
+    "links": [
+      {"outwardIssue": "TES-3"}],
+    "subtasks": []
+},
+ {
+    "key": "TES-3",
+    "summary": "task 5",
+    "description": null,
+    "statusId": "10000",
+    "typeId": "10002",
+    "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
+    "links": [
+      {"outwardIssue": "TES-1"}],
+    "subtasks": []
+ }
+]

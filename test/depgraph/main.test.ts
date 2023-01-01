@@ -322,3 +322,49 @@ test("merge graphs have subgraph", (t) => {
   t.deepEqual(ret?.adjacent("d"), ["e"], "adjacent of d");
   t.deepEqual(ret?.adjacent("e"), [], "adjacent of e");
 });
+
+test("union with empty graphs", (t) => {
+  const g1 = emptyGraph();
+  const g2 = emptyGraph();
+
+  const ret = g1.union(g2);
+
+  t.deepEqual(ret.vertices, []);
+  t.deepEqual(ret.edges, []);
+});
+
+test("union with each graphs", (t) => {
+  const g1 = emptyGraph().addVertices(["a", "b"]);
+  const g2 = emptyGraph().addVertices(["c", "b"]);
+
+  const ret = g1.union(g2);
+
+  t.deepEqual(ret.vertices, ["a", "b", "c"]);
+});
+
+test("union edges with each graphs", (t) => {
+  const g1 = diagrams(["a > b > c"]);
+  const g2 = diagrams(["a > c > d"]);
+
+  const ret = g1.union(g2);
+
+  t.deepEqual(ret.vertices, ["a", "b", "c", "d"]);
+  t.is(ret.edges.length, 4);
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b"));
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c"));
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "c"));
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "c" && e2 === "d"));
+});
+
+test("union edges when each graphs have same edge", (t) => {
+  const g1 = diagrams(["a > b > c"]);
+  const g2 = diagrams(["a > b > d"]);
+
+  const ret = g1.union(g2);
+
+  t.deepEqual(ret.vertices, ["a", "b", "c", "d"]);
+  t.is(ret.edges.length, 3);
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b"));
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c"));
+  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "d"));
+});

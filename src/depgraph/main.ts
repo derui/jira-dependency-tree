@@ -21,7 +21,7 @@ export type ContainCycle = {
    */
   cycles: Cycle[];
 };
-type CycleDetection = NotHaveCycle | ContainCycle;
+export type CycleDetection = NotHaveCycle | ContainCycle;
 
 export type Graph = {
   // add vertex labelled by [label]
@@ -52,6 +52,11 @@ export type Graph = {
 
   // Return new graph is merged with graph. If given graph is not intersected with this, return null.
   merge(graph: Graph): Graph | null;
+
+  /**
+   * The union of the other graph. Return new graph.
+   */
+  union(graph: Graph): Graph;
 
   readonly edges: Edge[];
   readonly vertices: Vertex[];
@@ -244,6 +249,19 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
         return null;
       }
 
+      const edges = Array.from(this.edges);
+      const vertices = new Set([...this.vertices, ...graph.vertices]);
+
+      for (const edge of graph.edges) {
+        if (edges.every((e) => !deepEqual(e, edge))) {
+          edges.push(edge);
+        }
+      }
+
+      return makeGraph(edges, Array.from(vertices));
+    },
+
+    union(graph) {
       const edges = Array.from(this.edges);
       const vertices = new Set([...this.vertices, ...graph.vertices]);
 

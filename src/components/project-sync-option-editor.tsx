@@ -19,6 +19,7 @@ export interface State {
   currentSearchCondition: SearchCondition | undefined;
   editorOpened: boolean;
   openAt?: Rect;
+  disabled: boolean;
 }
 
 interface Props {
@@ -56,37 +57,39 @@ const currentConditionName = (condition: SearchCondition | undefined) => {
 
 const Styles = {
   root: classes("relative", "w-full", "flex", "items-center", "justify-center"),
-  opener: (opened: boolean) => {
+  opener: (opened: boolean, disabled: boolean) => {
     return {
       ...classes(
         "inline-flex",
         "px-3",
         "py-1",
         "border",
-        "border-gray",
         "bg-white",
         "rounded",
         "transition-colors",
-        "hover:text-white",
-        "hover:bg-secondary1-200",
-        "hover:border-secondary1-500",
         "cursor-pointer",
         "items-center",
         "whitespace-nowrap",
         "text-sm",
       ),
 
-      ...(!opened ? classes("border-gray", "bg-white") : {}),
-      ...(opened ? classes("text-white", "bg-secondary1-200", "border-secondary1-500") : {}),
+      ...(opened ? classes("text-white", "bg-secondary1-200", "border-secondary1-500") : classes("bg-white")),
+      ...(disabled
+        ? classes("text-lightgray", "border-lightgray")
+        : classes("border-gray", "hover:text-white", "hover:bg-secondary1-200", "hover:border-secondary1-500")),
     };
   },
 };
 
 const view = (state$: Stream<State>, gen: TestIdGenerator) => {
-  return state$.map(({ editorOpened, currentSearchCondition }) => {
+  return state$.map(({ editorOpened, currentSearchCondition, disabled }) => {
     return (
       <div class={Styles.root}>
-        <button class={Styles.opener(editorOpened)} dataset={{ testid: gen("opener"), id: "opener" }}>
+        <button
+          class={Styles.opener(editorOpened, disabled)}
+          attrs={{ disabled }}
+          dataset={{ testid: gen("opener"), id: "opener" }}
+        >
           {currentConditionName(currentSearchCondition)}
         </button>
       </div>
@@ -113,8 +116,18 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
     return {
       currentSearchCondition: undefined,
       editorOpened: false,
+      disabled: true,
     };
   });
+
+  const disabledReducer$ = xs
+    .combine(sources.props.apiCredential, sources.props.projectKey)
+    .take(1)
+    .map(
+      simpleReduce<State, unknown>((draft) => {
+        draft.disabled = false;
+      }),
+    );
 
   const defaultConditionReducer$ = sources.props.projectKey.map(
     simpleReduce<State, string>((draft, key) => {
@@ -154,6 +167,7 @@ export const ProjectSyncOptionEditor = (sources: Sources): Sinks => {
       valueReducer$,
       cancelReducer$,
       defaultConditionReducer$,
+      disabledReducer$,
       dialog.state as Stream<Reducer<State>>,
     ),
     value: sources.state

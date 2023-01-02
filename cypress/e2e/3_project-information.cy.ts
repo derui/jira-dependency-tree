@@ -17,6 +17,9 @@ describe("project-information", () => {
     cy.testid("project-information/nameEditor").should("not.have.class", "--opened");
     cy.testid("project-information/name").should("contain.text", "Click here");
     cy.testid("project-information/marker").should("have.class", "--show");
+
+    // sync option is disabling continue.
+    cy.testid("sync-option-editor/opener").should("have.attr", "disabled");
   });
 
   it("open editor and input project key", () => {
@@ -44,6 +47,7 @@ describe("project-information", () => {
     cy.testid("project-information/name").should("contain", "Testing Project");
     cy.testid("project-information/marker").should("not.have.class", "--show");
     cy.testid("sync-issue-button/root").should("not.have.attr", "disabled");
+    cy.testid("sync-option-editor/opener").should("not.have.attr", "disabled");
   });
 
   it("show skeleton after key inputting finished", () => {

@@ -1,40 +1,11 @@
-import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
+import { Graph } from "@/depgraph/main";
 import { Position, Size } from "@/type";
 import { LayoutedLeveledVertex } from "@/issue-graph/type";
 
-const correctSubgraph = (subgraph: Graph, cycle: CycleDetection) => {
-  if (cycle.kind === "NotHaveCycle") {
-    return subgraph;
-  } else {
-    return cycle.cycles.reduce((graph, cycle) => {
-      const last = cycle.cycle.at(cycle.cycle.length - 1);
-
-      if (!last) {
-        return graph;
-      }
-
-      return graph.removeDirection(last, cycle.next);
-    }, subgraph);
-  }
-};
-
-const removeCycle = (graph: Graph) => {
-  return graph.vertices.reduce((g, vertex) => {
-    if (g.vertices.includes(vertex)) {
-      return g;
-    }
-    const [subgraph, cycle] = graph.subgraphOf(vertex);
-
-    return g.union(correctSubgraph(subgraph, cycle));
-  }, emptyGraph());
-};
-
 // get subgraphs from a graph that contains whole issues
 const getSubgraphs = (graph: Graph): Graph[] => {
-  const correctedGraph = removeCycle(graph);
-
-  return correctedGraph.levelAt(0).reduce<Graph[]>((graphs, vertex) => {
-    const [subgraph] = correctedGraph.subgraphOf(vertex);
+  return graph.levelAt(0).reduce<Graph[]>((graphs, vertex) => {
+    const [subgraph] = graph.subgraphOf(vertex);
 
     if (!graphs.some((g) => g.intersect(subgraph))) {
       graphs.push(subgraph);

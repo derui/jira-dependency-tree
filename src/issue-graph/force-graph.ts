@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
-import { emptyGraph, Graph } from "@/depgraph/main";
+import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { buildIssueGraph } from "@/issue-graph/issue";
@@ -8,13 +8,40 @@ import { Configuration, D3Node, IssueLink, GraphLayout, LayoutedLeveledIssue } f
 import { Position, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
+const correctSubgraph = (subgraph: Graph, cycle: CycleDetection) => {
+  if (cycle.kind === "NotHaveCycle") {
+    return subgraph;
+  } else {
+    return cycle.cycles.reduce((graph, cycle) => {
+      const last = cycle.cycle.at(cycle.cycle.length - 1);
+
+      if (!last) {
+        return graph;
+      }
+
+      return graph.removeDirection(last, cycle.next);
+    }, subgraph);
+  }
+};
+
+const removeCycle = (graph: Graph) => {
+  return graph.vertices.reduce((g, vertex) => {
+    if (g.vertices.includes(vertex)) {
+      return g;
+    }
+    const [subgraph, cycle] = graph.subgraphOf(vertex);
+
+    return g.union(correctSubgraph(subgraph, cycle));
+  }, emptyGraph());
+};
+
 const makeIssueGraph = (issues: Issue[]) => {
   const issueGraph = issues.reduce((graph, issue) => {
     const edited = graph.addVertex(issue.key);
     return issue.outwardIssueKeys.reduce((graph, key) => graph.directTo(issue.key, key), edited);
   }, emptyGraph());
 
-  return issueGraph;
+  return removeCycle(issueGraph);
 };
 
 const getNextPositionBy = (position: Position, layout: LayoutedGraph, nodeSize: Size, direction: GraphLayout) => {

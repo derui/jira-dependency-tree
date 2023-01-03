@@ -32,6 +32,7 @@ const icons: Record<string, string> = {
   square: "before:[mask:url(/assets/svg/tablar-icons/square.svg)]",
   "circle-x": "before:[mask:url(/assets/svg/tablar-icons/circle-x.svg)]",
   "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
+  x: "before:[mask:url(/assets/svg/tablar-icons/x.svg)]",
 };
 
 const Colors = {

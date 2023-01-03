@@ -15,5 +15,8 @@ describe("open", () => {
     cy.testid("side-toolbar/graph-layout").should("not.have.class", "--opened");
     cy.testid("side-toolbar/horizontal").should("have.class", "--selected");
     cy.testid("side-toolbar/vertical").should("not.have.class", "--selected");
+
+    // searcher
+    cy.testid("issue-searcher/opener").should("be.visible").should("not.have.class", "--opened");
   });
 });

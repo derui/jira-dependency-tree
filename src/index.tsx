@@ -24,6 +24,7 @@ import { classes, simpleReduce } from "./components/helper";
 import { ProjectSyncOptionEditor, State } from "./components/project-sync-option-editor";
 import { makePortalDriver, PortalSink, PortalSource } from "./drivers/portal";
 import { env } from "./env";
+import { IssueSearcher } from "./components/issue-searcher";
 
 type MainSources = {
   DOM: DOMSource;
@@ -142,6 +143,17 @@ const main = (sources: MainSources): MainSinks => {
     },
   });
 
+  const issueSearcherSinks = isolate(
+    IssueSearcher,
+    "issueSearcher",
+  )({
+    ...sources,
+    testid: "issue-searcher",
+    props: {
+      issues: sources.state.select<MainState["data"]>("data").select<MainState["data"]["issues"]>("issues").stream,
+    },
+  });
+
   const userConfiguration$ = userConfigurationSink.DOM;
   const projectInformation$ = projectInformationSink.DOM;
   const zoomSlider$ = zoomSliderSink.DOM;
@@ -157,9 +169,18 @@ const main = (sources: MainSources): MainSinks => {
       syncIssueButton$,
       sideToolbar$,
       projectSyncOptionEditor$,
+      issueSearcherSinks.DOM,
     )
     .map(
-      ([userConfiguration, projectInformation, zoomSlider, syncIssueButton, sideToolbar, projectSyncOptionEditor]) => (
+      ([
+        userConfiguration,
+        projectInformation,
+        zoomSlider,
+        syncIssueButton,
+        sideToolbar,
+        projectSyncOptionEditor,
+        issueSearcher,
+      ]) => (
         <div class={Styles.root}>
           <div class={Styles.topToolbars}>
             <div class={Styles.projectToolbar}>
@@ -169,6 +190,7 @@ const main = (sources: MainSources): MainSinks => {
               {syncIssueButton}
             </div>
             <div></div>
+            {issueSearcher}
             {userConfiguration}
           </div>
           {zoomSlider}
@@ -270,6 +292,7 @@ const main = (sources: MainSources): MainSinks => {
       userConfigurationSink.state as Stream<Reducer<MainState>>,
       projectInformationSink.state as Stream<Reducer<MainState>>,
       syncIssueButtonSink.state as Stream<Reducer<MainState>>,
+      issueSearcherSinks.state as Stream<Reducer<MainState>>,
     ),
     issueGraph: issueGraph$,
     HTTP: xs.merge(syncIssueButtonSink.HTTP, projectInformationSink.HTTP, projectSyncOpitonEditorSink.HTTP),

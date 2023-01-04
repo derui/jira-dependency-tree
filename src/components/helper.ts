@@ -95,7 +95,7 @@ export interface ComponentSource extends UnknownDrivers {
 export type ComponentSink<B extends SupportedDrivers> = ComponentSinkTypes[B];
 
 // reducer support
-export const simpleReduce = <U, T>(_produce: (draft: U, value: T) => void): ((value: T) => Reducer<U>) => {
+export const simpleReduce = <U, T = unknown>(_produce: (draft: U, value: T) => void): ((value: T) => Reducer<U>) => {
   return (value: T) => {
     return (prevState) => {
       if (!prevState) return prevState;

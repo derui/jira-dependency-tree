@@ -17,6 +17,8 @@ describe("open", () => {
     cy.testid("side-toolbar/vertical").should("not.have.class", "--selected");
 
     // searcher
-    cy.testid("issue-searcher/opener").should("be.visible").should("not.have.class", "--opened");
+    cy.testid("issue-searcher/opener").should("be.visible");
+    cy.testid("issue-searcher/cancel").should("not.be.visible");
+    cy.testid("issue-searcher/input").should("not.be.visible");
   });
 });

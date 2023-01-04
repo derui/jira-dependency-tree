@@ -1,8 +1,6 @@
 import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import isolate from "@cycle/isolate";
 import { Reducer, StateSource } from "@cycle/state";
 import xs, { Stream } from "xstream";
-import { Input, InputProps, InputSinks } from "./atoms/input";
 import {
   AsNodeStream,
   classes,
@@ -42,41 +40,65 @@ interface Sinks extends ComponentSink<"DOM"> {
 }
 
 const Styles = {
-  root: classes("flex", "flex-col", "items-center", "justify-center"),
-  opener: classes("flex-none", "w-6", "h-6"),
+  root: classes(
+    "flex",
+    "flex-row",
+    "items-center",
+    "justify-center",
+    "bg-white",
+    "rounded-full",
+    "px-3",
+    "mr-3",
+    "shadow-md",
+    "h-12",
+  ),
+  opener: classes("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
+  input: classes("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
   cancel: (status: Status) => {
     return {
-      ...classes("flex-none", "w-6", "h-6"),
-      ...(status === "Searched" || status === "Searching" ? classes("visible") : {}),
+      ...classes("flex-none", "w-6", "h-6", "flex"),
+      ...(status === "Searched" || status === "Searching" ? classes("visible") : classes("invisible")),
     };
   },
   inputWrapper: (status: Status) => {
     return {
-      ...classes("flex-1"),
-      ...(status === "Searching" ? classes("w-96") : classes("w-0")),
+      ...classes("flex-1", "overflow-hidden", "transition-width"),
+      ...(status === "Searching" ? classes("w-64") : classes("w-0")),
     };
   },
 };
 
-const view = (state$: Stream<State>, nodes$: AsNodeStream<["input", "opener", "cancel"]>, gen: TestIdGenerator) => {
+const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>, gen: TestIdGenerator) => {
   return xs.combine(state$, nodes$).map(([state, nodes]) => {
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
-        <span class={Styles.opener}>
-          <button testid={{ testid: gen("opener") }}>{nodes.opener}</button>
+        <span class={Styles.opener} dataset={{ id: "opener" }}>
+          <button dataset={{ testid: gen("opener") }}>{nodes.opener}</button>
         </span>
-        <span class={Styles.inputWrapper(state.status)}>{nodes.input}</span>
+        <span class={Styles.inputWrapper(state.status)}>
+          <input
+            class={Styles.input}
+            attrs={{ type: "text", value: state.term, placeholder: "Search term" }}
+            dataset={{ testid: gen("input") }}
+          ></input>
+        </span>
         <span class={Styles.cancel(state.status)}>
-          <button testid={{ testid: gen("cancel") }}>{nodes.cancel}</button>
+          <button dataset={{ id: "cancel", testid: gen("cancel") }}>{nodes.cancel}</button>
         </span>
       </div>
     );
   });
 };
 
-const reducer = (sources: Sources, input: InputSinks) => {
+const reducer = (sources: Sources) => {
   const openerClicked$ = domSourceOf(sources).select("[data-id=opener]").events("click");
   const cancelClicked$ = domSourceOf(sources).select("[data-id=cancel]").events("click");
+  const keyPressed$ = domSourceOf(sources).select("input[type=text]").events("keypress");
+  const blurred$ = domSourceOf(sources).select("input[type=text]").events("blur");
+  const input$ = domSourceOf(sources)
+    .select("input[type=text]")
+    .events("input")
+    .map((event) => (event.target as HTMLInputElement).value);
 
   const initialReducer$ = xs.of<Reducer<State>>(() => {
     return {
@@ -93,9 +115,21 @@ const reducer = (sources: Sources, input: InputSinks) => {
     }),
   );
 
+  const enterPressedReducer$ = keyPressed$
+    .filter((e) => e.key === "Enter")
+    .map(
+      simpleReduce<State>((draft) => {
+        draft.status = "Searched";
+      }),
+    );
+
   const cancelReducer$ = cancelClicked$.map(
     simpleReduce<State, unknown>((draft) => {
       draft.term = "";
+
+      if (draft.status === "Searched") {
+        draft.status = "Prepared";
+      }
     }),
   );
 
@@ -107,7 +141,7 @@ const reducer = (sources: Sources, input: InputSinks) => {
     }),
   );
 
-  const inputReducer$ = input.input.map(
+  const inputReducer$ = input$.map(
     simpleReduce<State, string>((draft, term) => {
       if (draft.status === "Searching") {
         draft.term = term;
@@ -118,34 +152,34 @@ const reducer = (sources: Sources, input: InputSinks) => {
     }),
   );
 
-  const focusOutReducer$ = input.keypress
-    .filter((key) => key === "Escape")
+  const focusOutReducer$ = xs
+    .merge(
+      keyPressed$.filter((event) => event.key === "Escape"),
+      blurred$,
+    )
     .map(
-      simpleReduce<State, unknown>((draft) => {
-        if (draft.status === "Searching") {
+      simpleReduce<State>((draft) => {
+        if (draft.status === "Searching" && !!draft.term) {
           draft.status = "Searched";
+        } else {
+          draft.status = "Prepared";
         }
       }),
     );
 
-  return xs.merge(initialReducer$, openReducer$, cancelReducer$, issuesReducer$, inputReducer$, focusOutReducer$);
+  return xs.merge(
+    initialReducer$,
+    openReducer$,
+    cancelReducer$,
+    issuesReducer$,
+    inputReducer$,
+    focusOutReducer$,
+    enterPressedReducer$,
+  );
 };
 
 export const IssueSearcher = (sources: Sources): Sinks => {
   const gen = generateTestId(sources.testid);
-  const input = isolate(
-    Input,
-    "input",
-  )({
-    ...sources,
-    testid: gen("input"),
-    props: sources.state.select<State["term"]>("status").stream.map<InputProps>((term) => {
-      return {
-        value: term,
-        placeholder: "Search term",
-      };
-    }),
-  });
 
   const opener = Icon({
     ...sources,
@@ -172,8 +206,8 @@ export const IssueSearcher = (sources: Sources): Sinks => {
   });
 
   return {
-    DOM: view(sources.state.stream, mergeNodes({ input, opener, cancel }), gen),
-    state: reducer(sources, input),
+    DOM: view(sources.state.stream, mergeNodes({ opener, cancel }), gen),
+    state: reducer(sources),
     value: xs.of<IssueKey[]>([]),
   };
 };

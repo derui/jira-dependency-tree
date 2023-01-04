@@ -48,7 +48,7 @@ module.exports = {
         'stroke': 'stroke, stroke-width',
       },
       gridTemplateColumns: {
-        'top-toolbar': 'min-content 1fr min-content',
+        'top-toolbar': 'min-content 1fr min-content min-content',
         'project-toolbar': '20rem 1px 10rem 3rem',
       },
     },

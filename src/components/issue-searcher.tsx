@@ -78,7 +78,8 @@ const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>,
         <span class={Styles.inputWrapper(state.status)}>
           <input
             class={Styles.input}
-            attrs={{ type: "text", value: state.term, placeholder: "Search term" }}
+            props={{ value: state.term }}
+            attrs={{ type: "text", placeholder: "Search term" }}
             dataset={{ testid: gen("input") }}
           ></input>
         </span>
@@ -111,7 +112,9 @@ const reducer = (sources: Sources) => {
 
   const openReducer$ = xs.merge(openerClicked$.mapTo(true)).map(
     simpleReduce<State, unknown>((draft) => {
-      draft.status = "Searching";
+      if (draft.status === "Prepared") {
+        draft.status = "Searching";
+      }
     }),
   );
 
@@ -119,7 +122,11 @@ const reducer = (sources: Sources) => {
     .filter((e) => e.key === "Enter")
     .map(
       simpleReduce<State>((draft) => {
-        draft.status = "Searched";
+        if (!!draft.term) {
+          draft.status = "Searched";
+        } else {
+          draft.status = "Prepared";
+        }
       }),
     );
 
@@ -138,6 +145,10 @@ const reducer = (sources: Sources) => {
       draft.issues = issues;
       draft.term = "";
       draft.searchedIssues = [];
+
+      if (draft.status === "BeforePrepared") {
+        draft.status = "Prepared";
+      }
     }),
   );
 

@@ -15,14 +15,14 @@ import {
 import { Icon, IconProps } from "./atoms/icon";
 import { Issue } from "@/model/issue";
 
-type Status = "Searching" | "Prepared" | "BeforePrepared" | "Searched";
+type Status = "Searching" | "Prepared" | "BeforePrepared";
 type IssueKey = string;
 
 interface State {
   term: string;
   issues: Issue[];
   status: Status;
-  searchedIssues: IssueKey[];
+  searchedIssues: Issue[];
 }
 
 interface Props {
@@ -36,28 +36,17 @@ interface Sources extends ComponentSource {
 
 interface Sinks extends ComponentSink<"DOM"> {
   state: Stream<Reducer<State>>;
-  value: Stream<IssueKey[]>;
+  value: Stream<IssueKey>;
 }
 
 const Styles = {
-  root: classes(
-    "flex",
-    "flex-row",
-    "items-center",
-    "justify-center",
-    "bg-white",
-    "rounded-full",
-    "px-3",
-    "mr-3",
-    "shadow-md",
-    "h-12",
-  ),
+  root: classes("flex", "flex-col", "bg-white", "rounded", "px-3", "mr-3", "shadow-md", "max-w-sm", "relative"),
   opener: classes("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
   input: classes("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
   cancel: (status: Status) => {
     return {
       ...classes("flex-none", "w-6", "h-6", "flex"),
-      ...(status === "Searched" || status === "Searching" ? classes("visible") : classes("invisible")),
+      ...(status === "Searching" ? classes("visible") : classes("invisible")),
     };
   },
   inputWrapper: (status: Status) => {
@@ -66,26 +55,74 @@ const Styles = {
       ...(status === "Searching" ? classes("w-64") : classes("w-0")),
     };
   },
+  searcher: classes("h-12", "flex", "items-center", "justify-center"),
+  issue: classes(
+    "flex",
+    "flex-col",
+    "align-center",
+    "border-b",
+    "last:border-b-0",
+    "border-b-secondary1-300/50",
+    "transition",
+    "py-2",
+    "px-2",
+    "cursor-pointer",
+    "hover:text-secondary1-300",
+    "hover:bg-secondary1-200/10",
+  ),
+  issueKey: classes("text-gray", "flex-none"),
+  issueSummary: classes("font-sm", "flex-none", "w-full", "overflow-hidden", "text-ellipsis", "whitespace-nowrap"),
+  issueList: (haveIssues: boolean) => {
+    return {
+      ...classes(
+        "max-h-64",
+        "overflow-y-auto",
+        "shadow-lg",
+        "p-2",
+        "mt-2",
+        "flex",
+        "flex-col",
+        "absolute",
+        "top-12",
+        "right-0",
+        "w-96",
+        "bg-white",
+      ),
+      ...(haveIssues ? classes() : classes("hidden")),
+    };
+  },
 };
 
 const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>, gen: TestIdGenerator) => {
   return xs.combine(state$, nodes$).map(([state, nodes]) => {
+    const issueList = state.searchedIssues.map((issue) => (
+      <li class={Styles.issue} dataset={{ testid: gen("issue") }}>
+        <span class={Styles.issueKey}>{issue.key}</span>
+        <span class={Styles.issueSummary}>{issue.summary}</span>
+      </li>
+    ));
+
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
-        <span class={Styles.opener} dataset={{ id: "opener" }}>
-          <button dataset={{ testid: gen("opener") }}>{nodes.opener}</button>
-        </span>
-        <span class={Styles.inputWrapper(state.status)}>
-          <input
-            class={Styles.input}
-            props={{ value: state.term }}
-            attrs={{ type: "text", placeholder: "Search term" }}
-            dataset={{ testid: gen("input") }}
-          ></input>
-        </span>
-        <span class={Styles.cancel(state.status)}>
-          <button dataset={{ id: "cancel", testid: gen("cancel") }}>{nodes.cancel}</button>
-        </span>
+        <div class={Styles.searcher}>
+          <span class={Styles.opener} dataset={{ id: "opener" }}>
+            <button dataset={{ testid: gen("opener") }}>{nodes.opener}</button>
+          </span>
+          <span class={Styles.inputWrapper(state.status)}>
+            <input
+              class={Styles.input}
+              props={{ value: state.term }}
+              attrs={{ type: "text", placeholder: "Search term" }}
+              dataset={{ testid: gen("input") }}
+            ></input>
+          </span>
+          <span class={Styles.cancel(state.status)}>
+            <button dataset={{ id: "cancel", testid: gen("cancel") }}>{nodes.cancel}</button>
+          </span>
+        </div>
+        <ul class={Styles.issueList(issueList.length > 0)} dataset={{ testid: gen("issue-list") }}>
+          {issueList}
+        </ul>
       </div>
     );
   });
@@ -94,8 +131,6 @@ const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>,
 const reducer = (sources: Sources) => {
   const openerClicked$ = domSourceOf(sources).select("[data-id=opener]").events("click");
   const cancelClicked$ = domSourceOf(sources).select("[data-id=cancel]").events("click");
-  const keyPressed$ = domSourceOf(sources).select("input[type=text]").events("keypress");
-  const blurred$ = domSourceOf(sources).select("input[type=text]").events("blur");
   const input$ = domSourceOf(sources)
     .select("input[type=text]")
     .events("input")
@@ -118,23 +153,12 @@ const reducer = (sources: Sources) => {
     }),
   );
 
-  const enterPressedReducer$ = keyPressed$
-    .filter((e) => e.key === "Enter")
-    .map(
-      simpleReduce<State>((draft) => {
-        if (!!draft.term) {
-          draft.status = "Searched";
-        } else {
-          draft.status = "Prepared";
-        }
-      }),
-    );
-
   const cancelReducer$ = cancelClicked$.map(
     simpleReduce<State, unknown>((draft) => {
       draft.term = "";
+      draft.searchedIssues = [];
 
-      if (draft.status === "Searched") {
+      if (draft.status !== "BeforePrepared") {
         draft.status = "Prepared";
       }
     }),
@@ -156,37 +180,12 @@ const reducer = (sources: Sources) => {
     simpleReduce<State, string>((draft, term) => {
       if (draft.status === "Searching") {
         draft.term = term;
-        draft.searchedIssues = draft.issues
-          .filter((issue) => issue.key.includes(term) || issue.summary.includes(term))
-          .map((issue) => issue.key);
+        draft.searchedIssues = draft.issues.filter((issue) => issue.key.includes(term) || issue.summary.includes(term));
       }
     }),
   );
 
-  const focusOutReducer$ = xs
-    .merge(
-      keyPressed$.filter((event) => event.key === "Escape"),
-      blurred$,
-    )
-    .map(
-      simpleReduce<State>((draft) => {
-        if (draft.status === "Searching" && !!draft.term) {
-          draft.status = "Searched";
-        } else {
-          draft.status = "Prepared";
-        }
-      }),
-    );
-
-  return xs.merge(
-    initialReducer$,
-    openReducer$,
-    cancelReducer$,
-    issuesReducer$,
-    inputReducer$,
-    focusOutReducer$,
-    enterPressedReducer$,
-  );
+  return xs.merge(initialReducer$, openReducer$, cancelReducer$, issuesReducer$, inputReducer$);
 };
 
 export const IssueSearcher = (sources: Sources): Sinks => {
@@ -199,7 +198,7 @@ export const IssueSearcher = (sources: Sources): Sinks => {
       return {
         type: "search",
         color: "complement",
-        active: status === "Searched" || status === "Searching",
+        active: status === "Searching",
       };
     }),
   });
@@ -207,11 +206,11 @@ export const IssueSearcher = (sources: Sources): Sinks => {
   const cancel = Icon({
     ...sources,
     testid: gen("cancel-icon"),
-    props: sources.state.select<State["status"]>("status").stream.map<IconProps>((status) => {
+    props: sources.state.select<State["term"]>("term").stream.map<IconProps>((term) => {
       return {
         type: "x",
         color: "primary",
-        active: status === "Searched",
+        active: !!term,
       };
     }),
   });
@@ -219,6 +218,6 @@ export const IssueSearcher = (sources: Sources): Sinks => {
   return {
     DOM: view(sources.state.stream, mergeNodes({ opener, cancel }), gen),
     state: reducer(sources),
-    value: xs.of<IssueKey[]>([]),
+    value: xs.of<IssueKey>(""),
   };
 };

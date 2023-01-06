@@ -105,10 +105,10 @@ const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>,
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
         <div class={Styles.searcher}>
-          <span class={Styles.opener} dataset={{ id: "opener" }}>
+          <span class={Styles.opener} dataset={{ id: gen("opener") }}>
             <button dataset={{ testid: gen("opener") }}>{nodes.opener}</button>
           </span>
-          <span class={Styles.inputWrapper(state.status)}>
+          <span class={Styles.inputWrapper(state.status)} dataset={{ testid: gen("input-wrapper") }}>
             <input
               class={Styles.input}
               props={{ value: state.term }}

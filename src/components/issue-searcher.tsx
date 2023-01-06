@@ -14,6 +14,7 @@ import {
 } from "./helper";
 import { Icon, IconProps } from "./atoms/icon";
 import { Issue } from "@/model/issue";
+import { filterUndefined } from "@/util/basic";
 
 type Status = "Searching" | "Prepared" | "BeforePrepared";
 type IssueKey = string;
@@ -96,7 +97,7 @@ const Styles = {
 const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>, gen: TestIdGenerator) => {
   return xs.combine(state$, nodes$).map(([state, nodes]) => {
     const issueList = state.searchedIssues.map((issue) => (
-      <li class={Styles.issue} dataset={{ testid: gen("issue") }}>
+      <li class={Styles.issue} dataset={{ id: "issue", key: issue.key, testid: gen("issue") }}>
         <span class={Styles.issueKey}>{issue.key}</span>
         <span class={Styles.issueSummary}>{issue.summary}</span>
       </li>
@@ -218,6 +219,10 @@ export const IssueSearcher = (sources: Sources): Sinks => {
   return {
     DOM: view(sources.state.stream, mergeNodes({ opener, cancel }), gen),
     state: reducer(sources),
-    value: xs.of<IssueKey>(""),
+    value: domSourceOf(sources)
+      .select("[data-id=issue]")
+      .events("click", { bubbles: false })
+      .map((e) => (e.target as HTMLLIElement).dataset.key)
+      .filter(filterUndefined),
   };
 };

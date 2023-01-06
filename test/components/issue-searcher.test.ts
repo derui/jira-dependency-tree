@@ -148,3 +148,47 @@ test("list issues matches input", async (t) => {
   });
   t.pass();
 });
+
+test("get issue key clicked", async (t) => {
+  await componentTest((done) => {
+    // Arrange
+    const Time = mockTimeSource();
+    const click$ = Time.diagram("--a|", { a: { target: {} } });
+    const input$ = Time.diagram("---a|", { a: { target: { value: "foo" } } });
+    const clickIssue$ = Time.diagram("----a|", { a: { target: { dataset: { key: "foo" } } } });
+    const dom = mockDOMSource({
+      "[data-id=opener]": {
+        click: click$,
+      },
+      "input[type=text]": {
+        input: input$,
+      },
+      "[data-id=issue]": {
+        click: clickIssue$,
+      },
+    });
+
+    const sinks = withState(IssueSearcher)({
+      HTTP: undefined,
+      Portal: undefined,
+      DOM: dom as unknown,
+      props: {
+        issues: Time.diagram("-a", { a: [getIssue("key", "foo"), getIssue("foo", "bar"), getIssue("key", "baz")] }),
+      },
+      testid: undefined,
+    });
+
+    // Act
+    const actual$ = sinks.value;
+
+    // Assert
+    const expected$ = Time.diagram("----a|", {
+      a: "foo",
+    });
+
+    Time.assertEqual(actual$, expected$);
+
+    Time.run(done);
+  });
+  t.pass();
+});

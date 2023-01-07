@@ -158,7 +158,7 @@ export const getTargetIssuePositionInSVG = (svg: SVG, key: string): Position | u
   if (!node) return;
 
   // find issue in SVG
-  const issueNode = node.querySelector(`[data-issue-key="${key}]`);
+  const issueNode = node.querySelector(`[data-issue-key="${key}"]`);
 
   if (!issueNode) return;
 

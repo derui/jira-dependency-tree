@@ -10,6 +10,7 @@ import { Position, Size } from "@/type";
 import { filterNull, Rect } from "@/util/basic";
 import { GraphLayout } from "@/issue-graph/type";
 import { getTargetIssuePositionInSVG } from "@/issue-graph/issue";
+import { cubicBezier } from "@/util/bezier";
 
 type AttentionIssueCommand = {
   kind: "AttentionIssue";
@@ -144,6 +145,7 @@ export const makeViewBox = function makeViewBox(panZoom: IssueGraphState, rect: 
 
 const attentionIssue = (
   svg: Selection<SVGSVGElement, undefined, null, undefined> | null,
+  svgRect: DOMRect,
   key: string,
   reference: IssueGraphState,
   callback: (pos: Position) => void,
@@ -153,15 +155,17 @@ const attentionIssue = (
   if (!targetPos) return;
 
   const { pan: initialPan } = reference;
-  const vector = { x: targetPos.x - initialPan.x, y: targetPos.y - initialPan.y };
+  const center = { x: initialPan.x + svgRect.width / 2, y: initialPan.y + svgRect.height / 2 };
+  const vector = { x: targetPos.x - center.x, y: targetPos.y - center.y };
+  const bezier = cubicBezier([0, 0.1, 0.75, 1.0]);
 
-  const interpolatePosition = (elapsed: number) => {
-    const rate = elapsed / 500;
+  const interpolatePosition = (time: number) => {
+    const rate = bezier(time);
 
     callback({ x: initialPan.x + vector.x * rate, y: initialPan.y + vector.y * rate });
   };
 
-  simpleTransit(500, interpolatePosition);
+  simpleTransit(250)(interpolatePosition);
 };
 
 export const makeIssueGraphDriver = function makeIssueGraphDriver(
@@ -228,7 +232,8 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       runCommand(command) {
         switch (command.kind) {
           case "AttentionIssue":
-            attentionIssue(svg, command.key, stateReference, (pan) => {
+            attentionIssue(svg, svgSize, command.key, stateReference, (pan) => {
+              stateReference.pan = pan;
               svg?.attr("viewBox", makeViewBox({ ...stateReference, pan }, svgSize));
             });
             break;

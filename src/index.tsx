@@ -7,9 +7,8 @@ import isolate from "@cycle/isolate";
 import produce from "immer";
 import { HTTPSource, makeHTTPDriver, RequestInput } from "@cycle/http";
 import equal from "fast-deep-equal/es6";
-import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
+import { IssueGraphSink, IssueGraphSource, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { Issue } from "./model/issue";
-import { makePanZoomDriver, PanZoomSource } from "./drivers/pan-zoom";
 import { Setting, SettingArgument, settingFactory } from "./model/setting";
 import { UserConfiguration } from "./components/user-configuration";
 import { ProjectInformation, State as ProjectInformationState } from "./components/project-information";
@@ -29,10 +28,10 @@ import { IssueSearcher } from "./components/issue-searcher";
 type MainSources = {
   DOM: DOMSource;
   state: StateSource<MainState>;
-  panZoom: PanZoomSource;
   HTTP: HTTPSource;
   STORAGE: StorageSource;
   Portal: PortalSource;
+  issueGraph: IssueGraphSource;
 };
 
 type MainSinks = {
@@ -115,7 +114,7 @@ const main = (sources: MainSources): MainSinks => {
 
   const zoomSliderSink = isolate(ZoomSlider, { DOM: "zoomSlider" })({
     ...sources,
-    props: sources.panZoom.state.map((v) => ({ zoom: v.zoomPercentage })),
+    props: sources.issueGraph.state.map((v) => ({ zoom: v.zoomPercentage })),
     testid: "zoom-slider",
   });
 
@@ -210,11 +209,9 @@ const main = (sources: MainSources): MainSinks => {
         .select<MainState["sideToolbar"]>("sideToolbar")
         .stream.map((sideToolbar) => sideToolbar?.graphLayout)
         .filter(filterUndefined),
-      sources.panZoom.state,
     )
-    .map(([issues, project, graphLayout, panZoomState]) => {
+    .map(([issues, project, graphLayout]) => {
       return {
-        panZoom: panZoomState,
         issues,
         project,
         graphLayout,
@@ -317,7 +314,6 @@ if (process.env.CI === "ci") {
 run(withState(main), {
   DOM: makeDOMDriver("#root"),
   issueGraph: makeIssueGraphDriver("#root"),
-  panZoom: makePanZoomDriver("#root"),
   HTTP: makeHTTPDriver(),
   STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
   Portal: makePortalDriver("#portal-root"),

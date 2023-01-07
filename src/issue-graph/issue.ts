@@ -1,7 +1,7 @@
-import { BaseType } from "d3";
+import { BaseType, Selection } from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Project } from "@/model/project";
-import { StatusCategory } from "@/type";
+import { Position, StatusCategory } from "@/type";
 import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "@/issue-graph/type";
 
 const IssueSizes = {
@@ -139,6 +139,7 @@ export const buildIssueGraph = (
     (data) => {
       issueNode
         .data(data)
+        .attr("data-issue-key", (d) => d.issueKey)
         .classed("graph-issue", () => true)
         .classed("transition-opacity", () => true)
         .classed("opacity-30", (d) => d.focusing === "unfocused");
@@ -146,4 +147,25 @@ export const buildIssueGraph = (
       buildIssueNode(issueNode, project, configuration);
     },
   ];
+};
+type SVG = Selection<SVGSVGElement, undefined, null, undefined> | null;
+
+/**
+ * support function to get graph issue from SVG
+ */
+export const getTargetIssuePositionInSVG = (svg: SVG, key: string): Position | undefined => {
+  const node = svg?.node();
+  if (!node) return;
+
+  // find issue in SVG
+  const issueNode = node.querySelector(`[data-issue-key="${key}]`);
+
+  if (!issueNode) return;
+
+  // get translation
+  const matrix = (issueNode as SVGGElement).transform.animVal[0].matrix;
+  const x = matrix.e;
+  const y = matrix.f;
+
+  return { x, y };
 };

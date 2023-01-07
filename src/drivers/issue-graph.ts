@@ -2,12 +2,21 @@ import { Driver } from "@cycle/run";
 import xs, { Listener, MemoryStream, Stream } from "xstream";
 import { Selection } from "d3";
 import { fromEvent } from "@cycle/dom/lib/cjs/fromEvent";
+import { simpleTransit } from "./util/transition";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Position, Size } from "@/type";
 import { filterNull, Rect } from "@/util/basic";
 import { GraphLayout } from "@/issue-graph/type";
+import { getTargetIssuePositionInSVG } from "@/issue-graph/issue";
+
+type AttentionIssueCommand = {
+  kind: "AttentionIssue";
+  key: string;
+};
+
+export type IssueGraphCommand = AttentionIssueCommand;
 
 interface IssueGraphState {
   pan: Position;
@@ -23,6 +32,10 @@ export interface IssueGraphSink {
 export interface IssueGraphSource {
   // reset pan and zoom
   reset(): void;
+  /**
+   * run command on issue graph
+   */
+  runCommand(command: IssueGraphCommand): void;
   state: MemoryStream<IssueGraphState>;
 }
 
@@ -129,6 +142,28 @@ export const makeViewBox = function makeViewBox(panZoom: IssueGraphState, rect: 
   return [newMinX, newMinY, zoomedWidth, zoomedHeight];
 };
 
+const attentionIssue = (
+  svg: Selection<SVGSVGElement, undefined, null, undefined> | null,
+  key: string,
+  reference: IssueGraphState,
+  callback: (pos: Position) => void,
+) => {
+  const targetPos = getTargetIssuePositionInSVG(svg, key);
+
+  if (!targetPos) return;
+
+  const { pan: initialPan } = reference;
+  const vector = { x: targetPos.x - initialPan.x, y: targetPos.y - initialPan.y };
+
+  const interpolatePosition = (elapsed: number) => {
+    const rate = elapsed / 500;
+
+    callback({ x: initialPan.x + vector.x * rate, y: initialPan.y + vector.y * rate });
+  };
+
+  simpleTransit(500, interpolatePosition);
+};
+
 export const makeIssueGraphDriver = function makeIssueGraphDriver(
   parentSelector: string,
   nodeSize: Size = { width: 160, height: 80 },
@@ -183,6 +218,15 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     return {
       reset() {
         stateReference.pan = { x: -1 * (svgSize.width / 2), y: -1 * (svgSize.height / 2) };
+      },
+      runCommand(command) {
+        switch (command.kind) {
+          case "AttentionIssue":
+            attentionIssue(svg, command.key, stateReference, (pan) => {
+              svg?.attr("viewBox", makeViewBox({ ...stateReference, pan }, svgSize));
+            });
+            break;
+        }
       },
       state: stateStream,
     };

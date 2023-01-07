@@ -24,11 +24,11 @@ const intent = (sources: SideToolbarSources) => {
   const layouterClicked$ = domSourceOf(sources).select('[data-id="opener"]').events("click");
   const verticalClicked$ = domSourceOf(sources)
     .select('[data-id="vertical"]')
-    .events("click", undefined, false)
+    .events("click", { bubbles: false, preventDefault: true })
     .mapTo(GraphLayout.Vertical);
   const horizontalClicked$ = domSourceOf(sources)
     .select('[data-id="horizontal"]')
-    .events("click", undefined, false)
+    .events("click", { bubbles: false, preventDefault: true })
     .mapTo(GraphLayout.Horizontal);
 
   return { layouterClicked$, verticalClicked$, horizontalClicked$ };
@@ -147,7 +147,7 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
   const layouterReducer$ = xs
     .merge(
       actions.layouterClicked$.mapTo(["layouter"] as const),
-      actions.verticalClicked$.map((v) => ["layout", v] as const),
+      actions.verticalClicked$.map((v) => ["layout", v] as const).debug(),
       actions.horizontalClicked$.map((v) => ["layout", v] as const),
     )
     .map(

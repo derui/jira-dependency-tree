@@ -115,20 +115,22 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
 
   const verticalIcon = Icon({
     ...sources,
-    props: xs.of<IconProps>({
+    props: sources.state.select<GraphLayout>("graphLayout").stream.map<IconProps>((layout) => ({
       type: "layout-distribute-vertical",
       size: "m",
       color: "secondary1",
-    }),
+      active: layout === GraphLayout.Vertical,
+    })),
   });
 
   const horizontalIcon = Icon({
     ...sources,
-    props: xs.of<IconProps>({
+    props: sources.state.select<GraphLayout>("graphLayout").stream.map<IconProps>((layout) => ({
       type: "layout-distribute-horizontal",
       size: "m",
       color: "secondary1",
-    }),
+      active: layout === GraphLayout.Horizontal,
+    })),
   });
 
   const actions = intent(sources);

@@ -119,7 +119,7 @@ test("change layout when specific layout is clicked", async (t) => {
     });
 
     // Assert
-    const expected$ = Time.diagram("-a(aa)(bb)", {
+    const expected$ = Time.diagram("-a(aa)(bbbb)", {
       a: {
         vertical: false,
         horizontal: true,
@@ -166,7 +166,7 @@ test("should close layouter if value changed", async (t) => {
     });
 
     // Assert
-    const expected$ = Time.diagram("-a(bb)(aa)", {
+    const expected$ = Time.diagram("-a(bb)(aaaa)", {
       a: false,
       b: true,
     });

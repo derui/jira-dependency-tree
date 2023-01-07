@@ -198,6 +198,12 @@ const main = (sources: MainSources): MainSinks => {
       ),
     );
 
+  issueSearcherSinks.value.subscribe({
+    next(value) {
+      sources.issueGraph.runCommand({ kind: "AttentionIssue", key: value });
+    },
+  });
+
   const issueGraph$ = xs
     .combine(
       sources.state.select<MainState["data"]>("data").stream.map((data) => data.issues),

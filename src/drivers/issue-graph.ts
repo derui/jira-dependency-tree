@@ -194,18 +194,24 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       },
     });
 
+    const updateIssueGraph = ({ issues, project, graphLayout }: IssueGraphSink) => {
+      svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
+      document.querySelector(parentSelector)?.append(svg.node() as Node);
+
+      svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
+      stateReference.pan = { x: -1 * (svgSize.width / 2), y: (-1 * svgSize.height) / 2 };
+
+      svg.attr("viewBox", makeViewBox(stateReference, svgSize));
+    };
+
     sink$.filter(filterNull).subscribe({
       next: ({ issues, project, graphLayout }) => {
         if (svg === null) {
-          svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
-          document.querySelector(parentSelector)?.append(svg.node() as Node);
-          svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
+          updateIssueGraph({ issues, project, graphLayout });
         } else if (prevIssues !== issues || prevProject !== project || prevLayout !== graphLayout) {
           svg.remove();
 
-          svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
-          document.querySelector(parentSelector)?.append(svg.node() as Node);
-          svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
+          updateIssueGraph({ issues, project, graphLayout });
         }
 
         configuration.canvasSize = { width: svgSize.width, height: svgSize.height };

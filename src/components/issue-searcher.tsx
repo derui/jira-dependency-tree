@@ -47,7 +47,7 @@ const Styles = {
   cancel: (status: Status) => {
     return {
       ...classes("flex-none", "w-6", "h-6", "flex"),
-      ...(status === "Searching" ? classes("visible") : classes("invisible")),
+      ...(status === "Searching" ? classes() : classes("hidden")),
     };
   },
   inputWrapper: (status: Status) => {
@@ -106,7 +106,7 @@ const view = (state$: Stream<State>, nodes$: AsNodeStream<["opener", "cancel"]>,
     return (
       <div class={Styles.root} dataset={{ testid: gen("root") }}>
         <div class={Styles.searcher}>
-          <span class={Styles.opener} dataset={{ id: gen("opener") }}>
+          <span class={Styles.opener} dataset={{ id: "opener" }}>
             <button dataset={{ testid: gen("opener") }}>{nodes.opener}</button>
           </span>
           <span class={Styles.inputWrapper(state.status)} dataset={{ testid: gen("input-wrapper") }}>
@@ -222,7 +222,7 @@ export const IssueSearcher = (sources: Sources): Sinks => {
     value: domSourceOf(sources)
       .select("[data-id=issue]")
       .events("click", { bubbles: false })
-      .map((e) => (e.target as HTMLLIElement).dataset.key)
+      .map((e) => (e.currentTarget as HTMLLIElement).dataset.key)
       .filter(filterUndefined),
   };
 };

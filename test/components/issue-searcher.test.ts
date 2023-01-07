@@ -155,7 +155,7 @@ test("get issue key clicked", async (t) => {
     const Time = mockTimeSource();
     const click$ = Time.diagram("--a|", { a: { target: {} } });
     const input$ = Time.diagram("---a|", { a: { target: { value: "foo" } } });
-    const clickIssue$ = Time.diagram("----a|", { a: { target: { dataset: { key: "foo" } } } });
+    const clickIssue$ = Time.diagram("----a|", { a: { currentTarget: { dataset: { key: "foo" } } } });
     const dom = mockDOMSource({
       "[data-id=opener]": {
         click: click$,

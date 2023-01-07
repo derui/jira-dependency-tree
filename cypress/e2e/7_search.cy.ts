@@ -23,11 +23,11 @@ describe("load issues", () => {
     cy.testid("project-information/submit/icon").click();
 
     // open and input issue searching term
-    cy.testid("issue-searcher/opener").click();
-    cy.testid("issue-searcher/cancel").should("be.visible");
+    cy.testid("issue-searcher/cancel").should("not.be.visible");
+    cy.testid("issue-searcher/opener").should("be.visible").click();
     cy.testid("issue-searcher/input").should("be.visible").type("task{enter}");
 
     // verify issues
-    cy.get(".graph-issue.--searched").should("exist").should("have.length", 5);
+    cy.testid("issue-searcher/issue").should("be.visible").should("have.length", 5);
   });
 });

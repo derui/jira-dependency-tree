@@ -319,7 +319,7 @@ if (process.env.CI === "ci") {
 
 run(withState(main), {
   DOM: makeDOMDriver("#root"),
-  issueGraph: makeIssueGraphDriver("#root"),
+  issueGraph: makeIssueGraphDriver("#graph-root"),
   HTTP: makeHTTPDriver(),
   STORAGE: makeStorageDriver("jiraDependencyTree", localStorage),
   Portal: makePortalDriver("#portal-root"),

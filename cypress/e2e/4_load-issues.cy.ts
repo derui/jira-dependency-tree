@@ -151,18 +151,18 @@ describe("load issues", () => {
     // verify suggestions
     cy.testid("sprint-suggestor/suggestion")
       .should("have.length", 2)
-      .should("contain.text", "TES スプリント 5")
-      .should("contain.text", "TES スプリント 6");
+      .and("contain.text", "TES スプリント 5")
+      .and("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
     cy.testid("sprint-suggestor/term").clear().type("FAR").wait(500);
     cy.testid("sprint-suggestor/suggestion")
       .should("have.length", 2)
-      .should("contain.text", "FAR 7")
-      .should("contain.text", "FAR 8");
+      .and("contain.text", "FAR 7")
+      .and("contain.text", "FAR 8");
 
     // having old suggestion
     cy.testid("sprint-suggestor/term").clear().type("5").wait(500);
-    cy.testid("sprint-suggestor/suggestion").should("have.length", 1).should("contain.text", "TES スプリント 5");
+    cy.testid("sprint-suggestor/suggestion").should("have.length", 1).and("contain.text", "TES スプリント 5");
   });
 });

@@ -58,15 +58,12 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
         }
 
         const fixtures = new Map<string, unknown>();
-        cy.wrap(
-          Promise.all(
-            definition.fixtures.map((fixture) => {
-              return cy.fixture(fixture).then((body) => {
-                fixtures.set(fixture, body);
-              });
-            }),
-          ),
-        ).then(() => {
+        definition.fixtures.forEach((fixture) => {
+          cy.fixture(fixture).then((body) => {
+            fixtures.set(fixture, body);
+          });
+        });
+        cy.wrap(fixtures).then(async (fixtures) => {
           const handler = rest(key, async (req, res, ctx) => {
             const predicates = await Promise.all(
               Array.from(fixtures.keys()).map(async (fixture) => {

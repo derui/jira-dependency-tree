@@ -114,7 +114,7 @@ const model = <T,>(actions: ReturnType<typeof intent<T>>) => {
   const filteredSuggestions$ = actions.termInputted$
     .map((term) =>
       allSuggestions$.map((suggestions) =>
-        suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term)),
+        suggestions.filter((suggestion) => suggestion.label.toLowerCase().includes(term.toLowerCase())),
       ),
     )
     .startWith(allSuggestions$)

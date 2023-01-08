@@ -68,21 +68,23 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
           ),
         ).then(() => {
           console.log(fixtures);
-          const handler = rest(key, (req, res, ctx) => {
-            const fixture = Array.from(fixtures.keys()).find((fixture) => {
-              const predicate = definition.predicates[fixture];
-              if (!predicate) {
-                return false;
-              }
+          const handler = rest(key, async (req, res, ctx) => {
+            const predicates = await Promise.all(
+              Array.from(fixtures.keys()).map(async (fixture) => {
+                const predicate = definition.predicates[fixture];
+                if (!predicate) {
+                  return [fixture, false] as const;
+                }
 
-              return predicate(req);
-            });
-            console.log(fixture);
+                return await predicate(req).then((ret) => [fixture, ret] as const);
+              }),
+            );
+            const fixture = predicates.find(([, ret]) => ret);
 
             return res(
               ctx.status(definition.status || 200),
               ctx.set("content-type", definition.contentType || "application/json"),
-              ctx.body(JSON.stringify(fixtures.get(fixture))),
+              ctx.body(JSON.stringify(fixtures.get(fixture[0]))),
             );
           });
 

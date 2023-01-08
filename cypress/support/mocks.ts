@@ -2,7 +2,7 @@
 
 import { RestRequest } from "msw";
 
-export type Predicate = (request: RestRequest) => boolean;
+export type Predicate = (request: RestRequest) => Promise<boolean>;
 
 // Response status is always 200, and content-type is always application/json.
 export type APIMockDefinition = {
@@ -31,7 +31,7 @@ export const get = function get(fixtures: string[], predicates?: { [k: string]: 
   return {
     fixtures,
     method: "GET",
-    predicates: !predicates ? { [fixtures[0]]: () => true } : predicates,
+    predicates: !predicates ? { [fixtures[0]]: () => Promise.resolve(true) } : predicates,
   };
 };
 
@@ -43,6 +43,6 @@ export const post = function post(fixtures: string[], predicates?: { [k: string]
   return {
     fixtures,
     method: "POST",
-    predicates: !predicates ? { [fixtures[0]]: () => true } : predicates,
+    predicates: !predicates ? { [fixtures[0]]: () => Promise.resolve(true) } : predicates,
   };
 };

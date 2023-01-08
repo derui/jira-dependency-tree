@@ -20,7 +20,7 @@
     "test": "ava",
     "test:watch": "ava --watch",
     "it:serve": "conc \"msw init dist\" \"pnpm:start:css\" \"pnpm:ci\" \"pnpm:cypress:open\"",
-    "it:run": "conc -k true \"pnpm:ci\" \"cypress run --browser chromium\"",
+    "it:run": "msw init dist && conc -k true \"pnpm:ci\" \"cypress run --browser chromium\"",
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
     "deploy:production": "firebase deploy",

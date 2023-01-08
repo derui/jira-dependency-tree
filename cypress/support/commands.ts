@@ -2,8 +2,8 @@
 
 import run, { Drivers, Sources } from "@cycle/run";
 import { DOMSource, makeDOMDriver } from "@cycle/dom";
-import { APIMockDefinition, APIMocks } from "./mocks";
 import { rest } from "msw";
+import { APIMockDefinition, APIMocks } from "./mocks";
 
 // ***********************************************
 // This example commands.ts shows you how to
@@ -19,7 +19,7 @@ import { rest } from "msw";
 // -- This is a parent command --
 const mount = function mount<D extends Drivers>(
   component: (source: Sources<D> & { DOM: DOMSource; state?: any }) => any,
-  drivers: D
+  drivers: D,
 ): void {
   const dispose = run(component, {
     ...drivers,
@@ -44,15 +44,7 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
     .its("msw")
     .then((msw) => {
       Object.keys(apiMocks).map((key) => {
-        const apiMock = apiMocks[key];
-        let definition: APIMockDefinition;
-
-        if (typeof apiMock === "string") {
-          definition = { fixture: apiMock };
-        } else {
-          definition = apiMock;
-        }
-
+        const definition = apiMocks[key];
         let rest: typeof msw.rest.all;
 
         switch (definition.method) {
@@ -65,12 +57,32 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
             break;
         }
 
-        cy.fixture(definition.fixture).then((fixture) => {
+        const fixtures = new Map<string, unknown>();
+        cy.wrap(
+          Promise.all(
+            definition.fixtures.map((fixture) => {
+              return cy.fixture(fixture).then((body) => {
+                fixtures.set(fixture, body);
+              });
+            }),
+          ),
+        ).then(() => {
+          console.log(fixtures);
           const handler = rest(key, (req, res, ctx) => {
+            const fixture = Array.from(fixtures.keys()).find((fixture) => {
+              const predicate = definition.predicates[fixture];
+              if (!predicate) {
+                return false;
+              }
+
+              return predicate(req);
+            });
+            console.log(fixture);
+
             return res(
               ctx.status(definition.status || 200),
               ctx.set("content-type", definition.contentType || "application/json"),
-              ctx.body(JSON.stringify(fixture))
+              ctx.body(JSON.stringify(fixtures.get(fixture))),
             );
           });
 
@@ -95,6 +107,7 @@ Cypress.Commands.add("mockAPI", mockAPI);
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       mount: typeof mount;

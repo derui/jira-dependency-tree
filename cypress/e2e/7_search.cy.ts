@@ -5,9 +5,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post("basic/issues"),
-      "http://localhost:3000/load-project": post("basic/project"),
-      "http://localhost:3000/get-suggestions": post("basic/suggestions"),
+      "http://localhost:3000/load-issues": post(["basic/issues"]),
+      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
     // Input credentials
@@ -35,9 +35,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post("basic/issues"),
-      "http://localhost:3000/load-project": post("basic/project"),
-      "http://localhost:3000/get-suggestions": post("basic/suggestions"),
+      "http://localhost:3000/load-issues": post(["basic/issues"]),
+      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
     // Input credentials
@@ -66,9 +66,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post("basic/issues"),
-      "http://localhost:3000/load-project": post("basic/project"),
-      "http://localhost:3000/get-suggestions": post("basic/suggestions"),
+      "http://localhost:3000/load-issues": post(["basic/issues"]),
+      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
     // Input credentials

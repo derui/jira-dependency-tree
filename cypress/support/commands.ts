@@ -67,7 +67,6 @@ const mockAPI = function mockAPI(apiMocks: APIMocks) {
             }),
           ),
         ).then(() => {
-          console.log(fixtures);
           const handler = rest(key, async (req, res, ctx) => {
             const predicates = await Promise.all(
               Array.from(fixtures.keys()).map(async (fixture) => {

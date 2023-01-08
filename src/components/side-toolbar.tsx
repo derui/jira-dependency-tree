@@ -147,7 +147,7 @@ export const SideToolbar = (sources: SideToolbarSources): SideToolbarSinks => {
   const layouterReducer$ = xs
     .merge(
       actions.layouterClicked$.mapTo(["layouter"] as const),
-      actions.verticalClicked$.map((v) => ["layout", v] as const).debug(),
+      actions.verticalClicked$.map((v) => ["layout", v] as const),
       actions.horizontalClicked$.map((v) => ["layout", v] as const),
     )
     .map(

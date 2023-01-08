@@ -13,10 +13,10 @@ export interface Suggestion<T = SuggestedItem> {
 export const suggestionFactory = function createSuggestion(
   args: Partial<Suggestion<Omit<SuggestedItem, "id">>>,
 ): Suggestion {
-  const sprints = (args.sprints ?? []).map((sprint, index) => {
+  const sprints = (args.sprints ?? []).map((sprint) => {
     return {
       ...sprint,
-      id: `${index}`,
+      id: `${sprint.value}`,
     };
   });
 

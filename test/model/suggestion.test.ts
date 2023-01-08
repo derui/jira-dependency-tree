@@ -23,7 +23,7 @@ test("use given sprint with id", (t) => {
 
   // verify
   t.deepEqual(setting.sprints, [
-    { id: "0", value: "foo", displayName: "bar" },
-    { id: "1", value: "value", displayName: "display" },
+    { id: "foo", value: "foo", displayName: "bar" },
+    { id: "value", value: "value", displayName: "display" },
   ]);
 });

@@ -16,13 +16,13 @@ const slice = createSlice({
   extraReducers: (builder) => {
     // applying api credential
     builder.addCase(submitApiCredentialFulfilled, (state, action) => {
-      produce(state, (draft) => {
+      return produce(state, (draft) => {
         draft.credential = action.payload;
       });
     });
 
     builder.addCase(restoreApiCredential, (state, action) => {
-      produce(state, (draft) => {
+      return produce(state, (draft) => {
         draft.credential = action.payload;
       });
     });

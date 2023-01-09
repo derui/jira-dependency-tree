@@ -4,14 +4,14 @@ import test from "ava";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { ButtonNew } from "./button-new";
+import { Button } from "./button";
 
 test.afterEach(() => {
   cleanup();
 });
 
 test.serial("should be able to render", (t) => {
-  render(<ButtonNew schema="primary" onClick={() => {}} />);
+  render(<Button schema="primary" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
@@ -20,7 +20,7 @@ test.serial("should be able to render", (t) => {
 });
 
 test.serial("render submit button", (t) => {
-  render(<ButtonNew schema="primary" type="submit" onClick={() => {}} />);
+  render(<Button schema="primary" type="submit" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
@@ -32,7 +32,7 @@ test.serial("should emit click event", async (t) => {
   t.plan(1);
 
   render(
-    <ButtonNew
+    <Button
       schema="primary"
       onClick={() => {
         t.pass("called");
@@ -44,7 +44,7 @@ test.serial("should emit click event", async (t) => {
 });
 
 test.serial("change color schema", (t) => {
-  render(<ButtonNew schema="secondary1" type="submit" onClick={() => {}} />);
+  render(<Button schema="secondary1" type="submit" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
@@ -52,7 +52,7 @@ test.serial("change color schema", (t) => {
 });
 
 test.serial("change disabled", (t) => {
-  render(<ButtonNew schema="primary" disabled onClick={() => {}} />);
+  render(<Button schema="primary" disabled onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 

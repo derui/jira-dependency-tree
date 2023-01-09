@@ -1,34 +1,15 @@
-import { jsx, VNode } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { Stream } from "xstream";
-import { classes, domSourceOf, generateTestId, ComponentSink, ComponentSource } from "../helper";
+import React, { PropsWithChildren } from "react";
+import classNames from "classnames";
+import { BaseProps, classes, generateTestId } from "../helper";
 
 type ColorSchema = "primary" | "secondary1" | "gray";
 
-export interface ButtonProps {
-  content: VNode;
+export interface Props extends PropsWithChildren, BaseProps {
   schema: ColorSchema;
   type?: "normal" | "submit";
   disabled?: boolean;
+  onClick: () => void;
 }
-
-interface ButtonSources extends ComponentSource {
-  props: Stream<ButtonProps>;
-}
-
-interface ButtonSinks extends ComponentSink<"DOM"> {
-  /**
-   * flow click event. values are always `true`
-   */
-  click: Stream<boolean>;
-}
-
-const intent = (sources: ButtonSources) => {
-  const buttonClicked$ = domSourceOf(sources).select("button").events("click", { bubbles: false }).mapTo(true);
-
-  return {
-    clicked$: buttonClicked$,
-  };
-};
 
 const Styles = {
   button: classes(
@@ -68,42 +49,37 @@ const Styles = {
   },
 };
 
-const view = (state$: Stream<Required<ButtonProps>>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ content, schema, type, disabled }) => {
-    const style = {
-      ...Styles.button,
-      ...Styles.color(schema),
-    };
+export const Button: React.FC<Props> = (props) => {
+  const gen = generateTestId(props.testid);
 
-    if (type === "normal") {
-      return (
-        <button class={style} attrs={{ type: "button", disabled }} dataset={{ testid: gen("button") }}>
-          {content}
-        </button>
-      );
-    } else {
-      return (
-        <button class={style} attrs={{ type: "submit", disabled }} dataset={{ testid: gen("button") }}>
-          {content}
-        </button>
-      );
-    }
-  });
-};
-
-export const Button = (sources: ButtonSources): ButtonSinks => {
-  const gen = generateTestId(sources.testid);
-  const actions = intent(sources);
-  const state$ = sources.props.map((props) => {
-    return {
-      ...props,
-      type: props.type ?? "normal",
-      disabled: props.disabled ?? false,
-    };
+  const classes = classNames({
+    ...Styles.button,
+    ...Styles.color(props.schema),
   });
 
-  return {
-    DOM: view(state$, gen),
-    click: actions.clicked$,
-  };
+  if (props.type === "submit") {
+    return (
+      <button
+        className={classes}
+        type='submit'
+        disabled={props.disabled}
+        data-testid={gen("button")}
+        onClick={props.onClick}
+      >
+        {props.children}
+      </button>
+    );
+  } else {
+    return (
+      <button
+        className={classes}
+        type='button'
+        disabled={props.disabled}
+        data-testid={gen("button")}
+        onClick={props.onClick}
+      >
+        {props.children}
+      </button>
+    );
+  }
 };

@@ -3,12 +3,12 @@ import React from "react";
 import test from "ava";
 import { render, screen, cleanup } from "@testing-library/react";
 
-import { IconNew } from "./icon-new";
+import { Icon } from "./icon";
 
 test.afterEach(cleanup);
 
 test.serial("should be able to render", (t) => {
-  render(<IconNew type="chevron-down" />);
+  render(<Icon type="chevron-down" />);
 
   const element = screen.getByTestId("icon");
 
@@ -18,7 +18,7 @@ test.serial("should be able to render", (t) => {
 });
 
 test.serial("size and color", (t) => {
-  render(<IconNew type="chevron-down" size="m" color="secondary1" />);
+  render(<Icon type="chevron-down" size="m" color="secondary1" />);
 
   const element = screen.getByTestId("icon");
 
@@ -28,7 +28,7 @@ test.serial("size and color", (t) => {
 });
 
 test.serial("active state", (t) => {
-  render(<IconNew type="chevron-down" active />);
+  render(<Icon type="chevron-down" active />);
 
   const element = screen.getByTestId("icon");
 

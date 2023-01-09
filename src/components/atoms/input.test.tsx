@@ -4,12 +4,12 @@ import test from "ava";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { InputNew } from "./input-new";
+import { Input } from "./input";
 
 test.afterEach(cleanup);
 
 test.serial("should be able to render", (t) => {
-  render(<InputNew value="" />);
+  render(<Input value="" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
@@ -18,7 +18,7 @@ test.serial("should be able to render", (t) => {
 });
 
 test.serial("render label if specified", (t) => {
-  render(<InputNew value="" label="A label" />);
+  render(<Input value="" label="A label" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
@@ -27,7 +27,7 @@ test.serial("render label if specified", (t) => {
 });
 
 test.serial("default value", (t) => {
-  render(<InputNew value="default" placeholder="some" />);
+  render(<Input value="default" placeholder="some" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
@@ -39,7 +39,7 @@ test.serial("change input values", async (t) => {
   t.plan(2);
 
   render(
-    <InputNew
+    <Input
       value=""
       onInput={(v) => {
         t.is(v, "changed");
@@ -58,7 +58,7 @@ test.serial("get key of key up", async (t) => {
   t.plan(1);
 
   render(
-    <InputNew
+    <Input
       value=""
       onKeypress={(key) => {
         t.is(key, "Enter");

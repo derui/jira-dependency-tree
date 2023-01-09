@@ -1,25 +1,21 @@
-import { jsx } from "snabbdom"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import { Stream } from "xstream";
-import { classes, generateTestId, ComponentSink, ComponentSource } from "../helper";
+import React from "react";
+import classNames from "classnames";
+import { BaseProps, classes, generateTestId } from "../helper";
 
 type IconSize = "s" | "m" | "l";
 
 type Color = "primary" | "secondary1" | "gray" | "secondary2" | "complement";
 
-export interface IconProps {
+export interface Props extends BaseProps {
   size?: IconSize;
-  type: string;
+  type: Icons;
   color?: Color;
   style?: Record<string, boolean>;
   disabled?: boolean;
   active?: boolean;
 }
 
-interface IconSources extends ComponentSource {
-  props: Stream<IconProps>;
-}
-
-const icons: Record<string, string> = {
+const Icons = {
   "chevron-down": "before:[mask:url(/assets/svg/tablar-icons/chevron-down.svg)]",
   "door-exit": "before:[mask:url(/assets/svg/tablar-icons/door-exit.svg)]",
   "layout-2": "before:[mask:url(/assets/svg/tablar-icons/layout-2.svg)]",
@@ -33,7 +29,8 @@ const icons: Record<string, string> = {
   "circle-x": "before:[mask:url(/assets/svg/tablar-icons/circle-x.svg)]",
   "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
   x: "before:[mask:url(/assets/svg/tablar-icons/x.svg)]",
-};
+} as const;
+type Icons = keyof typeof Icons;
 
 const Colors = {
   primary(active: boolean) {
@@ -77,8 +74,8 @@ const Colors = {
 };
 
 const Styles = {
-  type: (type: string) => {
-    return classes(icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
+  type: (type: Icons) => {
+    return classes(Icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
   },
 
   iconBase: classes(
@@ -112,43 +109,16 @@ const Styles = {
   },
 };
 
-const view = (state$: Stream<Required<IconProps>>, gen: ReturnType<typeof generateTestId>) => {
-  return state$.map(({ size, type, style, color, disabled, active }) => {
-    const iconClass = {
-      ...Styles.iconBase,
-      ...Styles.size(size),
-      ...Styles.type(type),
-      ...Styles.color(color, disabled, active),
-      ...style,
-    };
+export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, testid, style }) => {
+  const gen = generateTestId(testid);
 
-    return (
-      <span
-        class={iconClass}
-        attrs={{ disabled: disabled }}
-        dataset={{ testid: gen("icon"), type, color, size }}
-      ></span>
-    );
-  });
-};
-
-/**
- * do not have any behavior in this component. You do not use this component with `isolate`, then you found problem can not get any bubbling event.
- */
-export const Icon = (sources: IconSources): ComponentSink<"DOM"> => {
-  const gen = generateTestId(sources.testid);
-  const state$ = sources.props.map((props) => {
-    return {
-      size: props.size ?? "s",
-      type: props.type,
-      style: props.style ?? {},
-      color: props.color ?? "primary",
-      disabled: props.disabled ?? false,
-      active: props.active ?? false,
-    };
-  });
-
-  return {
-    DOM: view(state$, gen),
+  const iconClass = {
+    ...Styles.iconBase,
+    ...Styles.size(size ?? "s"),
+    ...Styles.type(type),
+    ...Styles.color(color ?? "primary", disabled ?? false, active ?? false),
+    ...style,
   };
+
+  return <span className={classNames(iconClass)} aria-disabled={disabled} data-testid={gen("icon")}></span>;
 };

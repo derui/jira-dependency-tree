@@ -9,3 +9,4 @@ type ApiCredentialPayload = {
 
 export const submitApiCredential = createAction<ApiCredentialPayload>("submitApiCredential");
 export const submitApiCredentialFulfilled = createAction<ApiCredential>("submitApiCredentialFulfilled");
+export const restoreApiCredential = createAction<ApiCredential>("restoreApiCredential");

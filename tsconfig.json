@@ -19,8 +19,6 @@
     "resolveJsonModule": false,
     "isolatedModules": true,
     "jsx": "react",
-    "jsxFactory": "jsx",
-    "jsxFragmentFactory": "Fragment",
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
@@ -30,8 +28,7 @@
     }
   },
   "include": [
-    "src",
-    "test"
+    "src"
   ],
   "exclude": ["node_modules"],
   "noEmit": true

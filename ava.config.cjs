@@ -1,14 +1,14 @@
 module.exports = {
-  files: [ "test/**/*",
-           '!test/helper.ts'
-         ],
+  files: [ "src/**/*.test.tsx", 'src/**/*.test.ts'],
   extensions: {
-    "ts": "module"
+    "ts": "module",
+    "tsx": "module",
   },
   "nodeArguments": [
     "--loader=./loader.js"
   ],
   "require": [
-    "esbuild-register"
+    "esbuild-register",
+    "jsdom-global/register"
   ]
 }

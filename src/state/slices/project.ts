@@ -7,9 +7,10 @@ import {
   submitProjectKeyFulfilled,
 } from "../actions";
 import { SearchCondition } from "@/model/event";
+import { Project } from "@/model/project";
 
 interface ProjectState {
-  key?: string;
+  project?: Project;
   searchCondition: SearchCondition;
 }
 
@@ -24,30 +25,31 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(submitProjectKeyFulfilled, (state, action) => {
       return produce(state, (draft) => {
-        draft.key = action.payload;
+        draft.project = action.payload;
+        draft.searchCondition = { projectKey: action.payload.key };
       });
     });
 
     builder.addCase(changeConditionToEpic, (state, action) => {
       return produce(state, (draft) => {
-        if (draft.key) {
-          draft.searchCondition = { epic: action.payload, projectKey: draft.key };
+        if (draft.project) {
+          draft.searchCondition = { epic: action.payload, projectKey: draft.project.key };
         }
       });
     });
 
     builder.addCase(changeConditionToSprint, (state, action) => {
       return produce(state, (draft) => {
-        if (draft.key) {
-          draft.searchCondition = { sprint: action.payload, projectKey: draft.key };
+        if (draft.project) {
+          draft.searchCondition = { sprint: action.payload, projectKey: draft.project.key };
         }
       });
     });
 
     builder.addCase(changeDefaultCondition, (state) => {
       return produce(state, (draft) => {
-        if (draft.key) {
-          draft.searchCondition = { projectKey: draft.key };
+        if (draft.project) {
+          draft.searchCondition = { projectKey: draft.project.key };
         }
       });
     });

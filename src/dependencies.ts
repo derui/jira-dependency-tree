@@ -1,4 +1,6 @@
-// define dependencies
-export const Dependencies = {} as const;
+import type { Env } from "./model/env";
 
-export type Dependencies = typeof Dependencies;
+// define dependencies
+export type Dependencies = {
+  env: Env;
+};

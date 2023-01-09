@@ -4,7 +4,8 @@ to: src/components/<%= type %>/<%= name %>.test.tsx
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
 import test from 'ava';
-import {render, screen, cleanup} from '@testing-library/react';
+import {render, screen, cleanup, fireEvent} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 <%
   splittedNames = name.split('/');

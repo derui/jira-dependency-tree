@@ -2,6 +2,7 @@
 to: src/components/<%= type %>/<%= name %>.tsx
 ---
 import React from 'react';
+import classNames from 'classnames';
 
 export interface Props {
   // need Property definition

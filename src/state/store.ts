@@ -1,12 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { combineEpics, createEpicMiddleware, Epic } from "redux-observable";
+import { combineEpics, createEpicMiddleware } from "redux-observable";
+import * as apiCredential from "./state/slices/api-credential";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
 // INJECT REDUCER IMPORT HERE
+
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  apiCredential: apiCredential.reducer,
   // do not format this structure.
 } as const;
 

@@ -8,7 +8,9 @@ specifiers:
   '@cycle/state': ^1.7.0
   '@cycle/time': ^0.21.0
   '@reduxjs/toolkit': ^1.9.1
+  '@testing-library/dom': ^8.19.1
   '@testing-library/react': ^13.4.0
+  '@testing-library/user-event': ^14.4.3
   '@types/d3': ^7.4.0
   '@types/node': ^18.11.17
   '@types/react': ^18.0.26
@@ -20,6 +22,7 @@ specifiers:
   ava: ^5.1.0
   chokidar: ^3.5.3
   chokidar-cli: ^3.0.0
+  classnames: ^2.3.2
   concurrently: ^7.6.0
   cypress: ^12.2.0
   d3: ^7.8.0
@@ -65,6 +68,7 @@ dependencies:
   '@cycle/run': 5.7.0
   '@cycle/state': 1.7.0
   '@reduxjs/toolkit': 1.9.1_k4ae6lp43ej6mezo3ztvx6pykq
+  classnames: 2.3.2
   d3: 7.8.0
   fast-deep-equal: 3.1.3
   immer: 9.0.16
@@ -79,7 +83,9 @@ dependencies:
 
 devDependencies:
   '@cycle/time': 0.21.0
+  '@testing-library/dom': 8.19.1
   '@testing-library/react': 13.4.0_biqbaboplfbrettd7655fr4n2y
+  '@testing-library/user-event': 14.4.3_ua4wuun3fnehcjqtqj2e2ldgpe
   '@types/d3': 7.4.0
   '@types/node': 18.11.17
   '@types/react': 18.0.26
@@ -1100,6 +1106,15 @@ packages:
       '@types/react-dom': 18.0.10
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: true
+
+  /@testing-library/user-event/14.4.3_ua4wuun3fnehcjqtqj2e2ldgpe:
+    resolution: {integrity: sha512-kCUc5MEwaEMakkO5x7aoD+DLi02ehmEM2QCGWvNqAS1dV/fAvORWEjnjsEIvml59M7Y5kCkWN6fCCyPOe8OL6Q==}
+    engines: {node: '>=12', npm: '>=6'}
+    peerDependencies:
+      '@testing-library/dom': '>=7.21.4'
+    dependencies:
+      '@testing-library/dom': 8.19.1
     dev: true
 
   /@tootallnate/once/1.1.2:
@@ -2714,6 +2729,10 @@ packages:
       isobject: 3.0.1
       static-extend: 0.1.2
     dev: true
+
+  /classnames/2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
 
   /clean-stack/2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -5130,7 +5149,6 @@ packages:
       function-bind: 1.1.1
       has: 1.0.3
       has-symbols: 1.0.3
-    dev: true
 
   /get-stream/4.1.0:
     resolution: {integrity: sha512-GMat4EJ5161kIy2HevLlr4luNjBgvmj413KaQA7jt4V8B4RDsfpHk7WQ9GVqfYyyx8OS/L66Kox+rJRNklLK7w==}
@@ -9214,7 +9232,7 @@ packages:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
     dependencies:
       call-bind: 1.0.2
-      get-intrinsic: 1.1.2
+      get-intrinsic: 1.1.3
       object-inspect: 1.12.2
 
   /signal-exit/3.0.7:

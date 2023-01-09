@@ -21,6 +21,10 @@ export const generateTestId = function generateTestId(parent: string | undefined
   return (id: string) => `${fixedParent}${id}`;
 };
 
+export interface BaseProps {
+  testid?: string;
+}
+
 /**
  * shortcut function to get snabbdom's classes object from array of classes
  */

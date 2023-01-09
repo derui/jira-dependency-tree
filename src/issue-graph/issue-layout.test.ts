@@ -23,12 +23,12 @@ test("layout orphan graphs", (t) => {
   const { orphans: ret } = calculateLayouts(graph, { width: 10, height: 10 });
 
   // verify
-  t.deepEqual(ret!.size, { width: 10, height: 40 });
+  t.deepEqual(ret?.size, { width: 10, height: 40 });
 
-  const vertices = ret!.vertices.sort((v1, v2) => v1.vertex.localeCompare(v2.vertex));
-  t.deepEqual(vertices[0], { vertex: "a", level: 0, indexInLevel: 0, baseX: 0, baseY: 0 });
-  t.deepEqual(vertices[1], { vertex: "b", level: 0, indexInLevel: 1, baseX: 0, baseY: 15 });
-  t.deepEqual(vertices[2], { vertex: "c", level: 0, indexInLevel: 2, baseX: 0, baseY: 30 });
+  const vertices = ret?.vertices?.sort((v1, v2) => v1.vertex.localeCompare(v2.vertex));
+  t.deepEqual(vertices?.[0], { vertex: "a", level: 0, indexInLevel: 0, baseX: 0, baseY: 0 });
+  t.deepEqual(vertices?.[1], { vertex: "b", level: 0, indexInLevel: 1, baseX: 0, baseY: 15 });
+  t.deepEqual(vertices?.[2], { vertex: "c", level: 0, indexInLevel: 2, baseX: 0, baseY: 30 });
 });
 
 test("layout orphan graphs with multi lines", (t) => {
@@ -39,16 +39,16 @@ test("layout orphan graphs with multi lines", (t) => {
   const { orphans: ret } = calculateLayouts(graph, { width: 10, height: 10 });
 
   // verify
-  t.deepEqual(ret!.size, { width: 27.5, height: 85 });
+  t.deepEqual(ret?.size, { width: 27.5, height: 85 });
 
-  const vertices = ret!.vertices.sort((v1, v2) => v1.vertex.localeCompare(v2.vertex));
-  t.deepEqual(vertices[0], { vertex: "a", level: 0, indexInLevel: 0, baseX: 0, baseY: 0 });
-  t.deepEqual(vertices[1], { vertex: "b", level: 0, indexInLevel: 1, baseX: 0, baseY: 15 });
-  t.deepEqual(vertices[2], { vertex: "c", level: 0, indexInLevel: 2, baseX: 0, baseY: 30 });
-  t.deepEqual(vertices[3], { vertex: "d", level: 0, indexInLevel: 3, baseX: 0, baseY: 45 });
-  t.deepEqual(vertices[4], { vertex: "e", level: 0, indexInLevel: 4, baseX: 0, baseY: 60 });
-  t.deepEqual(vertices[5], { vertex: "f", level: 0, indexInLevel: 5, baseX: 0, baseY: 75 });
-  t.deepEqual(vertices[6], { vertex: "g", level: 1, indexInLevel: 0, baseX: 17.5, baseY: 0 });
+  const vertices = ret?.vertices?.sort((v1, v2) => v1.vertex.localeCompare(v2.vertex));
+  t.deepEqual(vertices?.[0], { vertex: "a", level: 0, indexInLevel: 0, baseX: 0, baseY: 0 });
+  t.deepEqual(vertices?.[1], { vertex: "b", level: 0, indexInLevel: 1, baseX: 0, baseY: 15 });
+  t.deepEqual(vertices?.[2], { vertex: "c", level: 0, indexInLevel: 2, baseX: 0, baseY: 30 });
+  t.deepEqual(vertices?.[3], { vertex: "d", level: 0, indexInLevel: 3, baseX: 0, baseY: 45 });
+  t.deepEqual(vertices?.[4], { vertex: "e", level: 0, indexInLevel: 4, baseX: 0, baseY: 60 });
+  t.deepEqual(vertices?.[5], { vertex: "f", level: 0, indexInLevel: 5, baseX: 0, baseY: 75 });
+  t.deepEqual(vertices?.[6], { vertex: "g", level: 1, indexInLevel: 0, baseX: 17.5, baseY: 0 });
 });
 
 test("layout subgraph", (t) => {

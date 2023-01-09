@@ -240,16 +240,16 @@ test("merge between graphs that are intesected each other", (t) => {
   const graph2 = emptyGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
 
   // do
-  const merged = graph1.merge(graph2)!;
+  const merged = graph1.merge(graph2);
 
   // verify
-  t.is(merged.edges.length, 5, "edge of graph");
-  t.is(merged.vertices.length, 5, "vertices of graph");
-  t.deepEqual(merged.adjacent("a"), ["b"]);
-  t.deepEqual(merged.adjacent("b"), ["c", "d"]);
-  t.deepEqual(merged.adjacent("d"), ["c"]);
-  t.deepEqual(merged.adjacent("c"), []);
-  t.deepEqual(merged.adjacent("e"), ["b"]);
+  t.is(merged?.edges.length, 5, "edge of graph");
+  t.is(merged?.vertices.length, 5, "vertices of graph");
+  t.deepEqual(merged?.adjacent("a"), ["b"]);
+  t.deepEqual(merged?.adjacent("b"), ["c", "d"]);
+  t.deepEqual(merged?.adjacent("d"), ["c"]);
+  t.deepEqual(merged?.adjacent("c"), []);
+  t.deepEqual(merged?.adjacent("e"), ["b"]);
 });
 
 test("merge return same graph if merged same graph", (t) => {
@@ -257,11 +257,11 @@ test("merge return same graph if merged same graph", (t) => {
   const graph = diagrams(["a > b > c", "b > d > c"]);
 
   // do
-  const merged = graph.merge(graph)!;
+  const merged = graph.merge(graph);
 
   // verify
-  t.deepEqual(merged.edges, graph.edges, "edge of graph");
-  t.deepEqual(merged.vertices, graph.vertices, "vertices of graph");
+  t.deepEqual(merged?.edges, graph.edges, "edge of graph");
+  t.deepEqual(merged?.vertices, graph.vertices, "vertices of graph");
 });
 
 test("detect cycle to get subgraph", (t) => {

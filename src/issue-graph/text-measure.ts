@@ -8,7 +8,11 @@ export interface TextMeasure {
 
 export const makeTextMeasure = function makeTextMeasure(font: string): TextMeasure {
   const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d")!;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw Error("can not get context");
+  }
+
   context.font = font;
 
   return {

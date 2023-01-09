@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
 import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
 import { Issue } from "@/model/issue";
@@ -144,7 +145,7 @@ const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
   }, []);
 };
 
-const buildIssueTreeFrame = (container: D3Node<any>, layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[]) => {
+const buildIssueTreeFrame = (container: D3Node<BaseType>, layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[]) => {
   const FrameSize = {
     padding: 16,
   };
@@ -166,7 +167,7 @@ const buildIssueTreeFrame = (container: D3Node<any>, layoutedLeveledIssueUnits: 
 };
 
 export const makeForceGraph = (
-  container: D3Node<any>,
+  container: D3Node<BaseType>,
   issues: Issue[],
   project: Project,
   configuration: Configuration,
@@ -181,7 +182,7 @@ export const makeForceGraph = (
   let focusingANode = false;
 
   // make link between issues
-  let links: d3.Selection<any, IssueLink, any, undefined> = container.append("svg:g").selectAll("path");
+  let links: d3.Selection<SVGPathElement, IssueLink, BaseType, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
   const [issueNode, issueNodeRestarter] = buildIssueGraph(container, leveledIssues, project, configuration);
@@ -197,11 +198,13 @@ export const makeForceGraph = (
 
     // link draw right-most center to left-most center of next issue.
     links.attr("d", (d) => {
+      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       const startX = d.source.x! + configuration.nodeSize.width;
       const startY = d.source.y! + configuration.nodeSize.height / 2;
       const endY = d.target.y! + configuration.nodeSize.height / 2;
       const betweenDistanceX = d.target.x! - startX;
       const betweenDistanceY = Math.abs(startY - endY);
+
       let yAxis = -1;
       if (startY >= endY) {
         yAxis = 1;
@@ -215,6 +218,7 @@ export const makeForceGraph = (
         [d.target.x!, endY],
       ];
 
+      /* eslint-enable @typescript-eslint/no-non-null-assertion */
       return curve(pointData);
     });
   };

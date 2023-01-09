@@ -2,7 +2,7 @@ import { RequestInput, Response } from "@cycle/http";
 import xs, { Stream } from "xstream";
 import { ComponentSink, ComponentSource } from "./helper";
 import { Events } from "@/model/event";
-import { Project, projectFactory } from "@/model/project";
+import { Project, ProjectArgument, projectFactory } from "@/model/project";
 import { httpSourceOf, selectResponse } from "@/components/helper";
 
 export interface JiraProjectLoaderSources extends ComponentSource {
@@ -50,7 +50,7 @@ export const JiraProjectLoader = (sources: JiraProjectLoaderSources): JiraProjec
   };
 };
 
-const mapResponse = (body: { [k: string]: any }): Project => {
+const mapResponse = (body: { [k: string]: unknown }): Project => {
   return projectFactory({
     id: body.id,
     key: body.key,
@@ -58,5 +58,5 @@ const mapResponse = (body: { [k: string]: any }): Project => {
     statuses: body.statuses,
     statusCategories: body.statusCategories,
     issueTypes: body.issueTypes,
-  });
+  } as ProjectArgument);
 };

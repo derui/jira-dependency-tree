@@ -122,7 +122,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
 };
 
 export const buildIssueGraph = (
-  container: D3Node<any>,
+  container: D3Node<BaseType>,
   data: LayoutedLeveledIssue[],
   project: Project,
   configuration: Configuration,

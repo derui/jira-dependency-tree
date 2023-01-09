@@ -11,7 +11,7 @@ window.msw = {
 declare global {
   interface Window {
     msw: {
-      worker: any;
+      worker: unknown;
       rest: typeof rest;
     };
   }

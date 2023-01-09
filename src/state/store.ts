@@ -22,6 +22,7 @@ const reducers = {
 // export type of application state.
 export type RootState = typeof reducers;
 
+// eslint-disable-next-line
 export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
   const rootEpic = [
     // do not format this structure.

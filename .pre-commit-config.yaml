@@ -16,7 +16,7 @@ repos:
       verbose: true
     - id: eslint
       name: eslint
-      entry: npx eslint --fix --cache --cache-location node_modules/.cache/eslint
+      entry: npx eslint --fix --cache-strategy content --cache --cache-location node_modules/.cache/eslint
       language: system
       files: "\\.tsx?$"
       verbose: true

@@ -1,7 +1,7 @@
 ---
 to: src/state/store.ts
 inject: true
-skip_if: <%= h.changeCase.camel(name) %>
+skip_if: <%= h.changeCase.camel(name) %>.reducer
 after: "const reducers = {"
 ---
-<%= h.changeCase.camel(name) %>: <%= h.changeCase.camel(name) + '.reducer' %>,
+<%= h.changeCase.camel(name) %>: <%= h.changeCase.camel(name) %>.reducer,

@@ -10,10 +10,10 @@ interface <%= h.changeCase.pascal(name) %>State {
 
 const initialState = {
 
-} satisfies State;
+} satisfies <%= h.changeCase.pascal(name) %>State;
 
 const slice = createSlice({
-  name: <%= h.changeCase.camel(name) %>,
+  name: '<%= h.changeCase.camel(name) %>',
   initialState,
   reducers: {},
   extraReducers: (builder) => {

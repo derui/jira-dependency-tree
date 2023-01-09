@@ -21,4 +21,5 @@ const slice = createSlice({
   }
 });
 
+export const getInitialState = slice.getInitialState;
 export const reducer = slice.reducer;

@@ -4,7 +4,7 @@ to: src/components/<%= type %>/<%= name %>.test.tsx
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
 import test from 'ava';
-import {render, screen} from '@testing-library/react';
+import {render, screen, cleanup} from '@testing-library/react';
 
 <%
   splittedNames = name.split('/');
@@ -13,6 +13,8 @@ import {render, screen} from '@testing-library/react';
 
 import { <%= h.changeCase.pascal(componentName) %> } from './<%= name %>';
 
-test("should be able to render", (t) => {
+test.afterEach(cleanup);
+
+test.serial("should be able to render", (t) => {
   render(<<%= h.changeCase.pascal(componentName) %> />);
 });

@@ -30,5 +30,5 @@ export type IssueRequest = {
   searchCondition: SearchCondition;
 };
 
-export const synchronizeIssues = createAction<IssueRequest>("synchronizeIssues");
+export const synchronizeIssues = createAction("synchronizeIssues");
 export const synchronizeIssuesFulfilled = createAction<Issue[]>("synchronizeIssuesFulfilled");

@@ -10,3 +10,8 @@ export const queryIssues = () =>
     state.loading,
     state.loading === Loading.Loading ? undefined : state.issues,
   ]);
+
+export const isSyncable = () =>
+  createDraftSafeSelector(selectSelf, (state) =>
+    state.apiCredential.credential && state.project.project ? true : false,
+  );

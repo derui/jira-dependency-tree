@@ -1,5 +1,5 @@
 module.exports = {
-  files: [ "src/**/*.test.tsx", 'src/**/*.test.ts'],
+  files: [ "src/**/*.test.*"],
   extensions: {
     "ts": "module",
     "tsx": "module",

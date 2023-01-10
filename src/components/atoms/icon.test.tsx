@@ -34,3 +34,11 @@ test.serial("active state", (t) => {
 
   t.false(element.className.includes("primary-500"));
 });
+
+test.serial("disabled", (t) => {
+  render(<Icon type="chevron-down" disabled />);
+
+  const element = screen.getByTestId("icon");
+
+  t.true(element.className.includes("before:bg-lightgray"));
+});

@@ -4,4 +4,4 @@ inject: true
 skip_if: <%= h.changeCase.camel(name) %>
 after: "// INJECT REDUCER IMPORT HERE"
 ---
-import * as <%= h.changeCase.camel(name) %> from './state/slices/<%= name %>';
+import * as <%= h.changeCase.camel(name) %> from './slices/<%= name %>';

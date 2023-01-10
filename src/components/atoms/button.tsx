@@ -62,7 +62,7 @@ export const Button: React.FC<Props> = (props) => {
       <button
         className={classes}
         type='submit'
-        disabled={props.disabled}
+        aria-disabled={props.disabled}
         data-testid={gen("button")}
         onClick={props.onClick}
       >
@@ -74,7 +74,7 @@ export const Button: React.FC<Props> = (props) => {
       <button
         className={classes}
         type='button'
-        disabled={props.disabled}
+        aria-disabled={props.disabled}
         data-testid={gen("button")}
         onClick={props.onClick}
       >

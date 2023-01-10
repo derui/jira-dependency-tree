@@ -15,7 +15,7 @@ test.serial("should be able to render", (t) => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.is(element.disabled, false);
+  t.is(element.ariaDisabled, undefined);
   t.is(element.type, "button");
 });
 
@@ -24,7 +24,7 @@ test.serial("render submit button", (t) => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.is(element.disabled, false);
+  t.is(element.ariaDisabled, undefined);
   t.is(element.type, "submit");
 });
 
@@ -56,5 +56,5 @@ test.serial("change disabled", (t) => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.true(element.disabled);
+  t.is(element.getAttribute("aria-disabled"), "true");
 });

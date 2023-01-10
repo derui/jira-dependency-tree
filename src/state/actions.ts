@@ -25,7 +25,7 @@ export const changeDefaultCondition = createAction("changeDefaultCondition");
 export const changeSearchConditionFullfilled = createAction<Issue[]>("changeSearchConditionFullfilled");
 
 // actions for issue
-type IssueRequest = {
+export type IssueRequest = {
   apiCredential: ApiCredential;
   searchCondition: SearchCondition;
 };

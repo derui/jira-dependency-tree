@@ -1,3 +1,13 @@
+/**
+ * type and constants for loading state
+ */
+export const Loading = {
+  Loading: "Loading",
+  Completed: "Completed",
+  Errored: "Errored",
+} as const;
+export type Loading = typeof Loading[keyof typeof Loading];
+
 export const StatusCategory = {
   DONE: "DONE",
   IN_PROGRESS: "IN_PROGRESS",

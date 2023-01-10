@@ -2,15 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 import produce from "immer";
 import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { Issue } from "@/model/issue";
+import { Loading } from "@/type";
 
 interface IssuesState {
   issues: Issue[];
-  loading: boolean;
+  loading: Loading;
 }
 
 const initialState = {
   issues: [],
-  loading: false,
+  loading: "Completed",
 } as IssuesState satisfies IssuesState;
 
 const slice = createSlice({
@@ -20,14 +21,14 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(synchronizeIssues, (state) => {
       return produce(state, (draft) => {
-        draft.loading = true;
+        draft.loading = "Loading";
       });
     });
 
     builder.addCase(synchronizeIssuesFulfilled, (state, action) => {
       return produce(state, (draft) => {
         draft.issues = action.payload;
-        draft.loading = false;
+        draft.loading = "Completed";
       });
     });
   },

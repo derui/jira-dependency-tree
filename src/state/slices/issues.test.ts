@@ -2,9 +2,10 @@ import test from "ava";
 import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { getInitialState, reducer } from "./issues";
 import { ApiCredential, SearchCondition } from "@/model/event";
+import { Loading } from "@/type";
 
 test("initial state", (t) => {
-  t.deepEqual(getInitialState(), { issues: [], loading: false });
+  t.deepEqual(getInitialState(), { issues: [], loading: Loading.Completed });
 });
 test("loading", (t) => {
   const ret = reducer(
@@ -15,7 +16,7 @@ test("loading", (t) => {
     }),
   );
 
-  t.is(ret.loading, true);
+  t.is(ret.loading, Loading.Loading);
   t.deepEqual(ret.issues, []);
 });
 
@@ -33,5 +34,5 @@ test("loaded issues", (t) => {
 
   t.is(ret.issues.length, 1);
   t.is(ret.issues[0], issue);
-  t.is(ret.loading, false);
+  t.is(ret.loading, Loading.Completed);
 });

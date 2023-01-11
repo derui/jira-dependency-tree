@@ -40,6 +40,13 @@ export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
   return store;
 };
 
+/**
+ * create pure store. This store does not have any epic/thunk based process. To use for test.
+ */
+export const createPureStore = () => {
+  return configureStore({ reducer: reducers });
+};
+
 // export type of application state.
 export type RootState = ReturnType<ReturnType<typeof createStore>["getState"]>;
 export type AppDispatch = ReturnType<typeof createStore>["dispatch"];

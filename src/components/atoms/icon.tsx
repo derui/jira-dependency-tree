@@ -120,5 +120,12 @@ export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, tes
     ...style,
   };
 
-  return <span className={classNames(iconClass)} aria-disabled={disabled} data-testid={gen("icon")}></span>;
+  return (
+    <span
+      className={classNames(iconClass)}
+      aria-disabled={disabled}
+      data-active={active ?? false}
+      data-testid={gen("icon")}
+    ></span>
+  );
 };

@@ -3,13 +3,15 @@ import {
   changeConditionToEpic,
   changeConditionToSprint,
   changeDefaultCondition,
+  submitProjectKey,
   submitProjectKeyFulfilled,
 } from "../actions";
 import { getInitialState, reducer } from "./project";
 import { projectFactory } from "@/model/project";
+import { Loading } from "@/type";
 
 test("initial state", (t) => {
-  t.deepEqual(getInitialState(), { searchCondition: {} });
+  t.deepEqual(getInitialState(), { searchCondition: {}, loading: Loading.Completed });
 });
 
 test("apply project key", (t) => {
@@ -17,6 +19,12 @@ test("apply project key", (t) => {
   const ret = reducer(getInitialState(), submitProjectKeyFulfilled(project));
 
   t.is(ret.project, project);
+});
+
+test("loading", (t) => {
+  const ret = reducer(getInitialState(), submitProjectKey("key"));
+
+  t.is(ret.loading, Loading.Loading);
 });
 
 test("can not change search condition if key have not applied", (t) => {

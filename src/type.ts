@@ -14,7 +14,7 @@ export const StatusCategory = {
   TODO: "TODO",
 } as const;
 
-export type StatausCategory = typeof StatusCategory[keyof typeof StatusCategory];
+export type StatusCategory = typeof StatusCategory[keyof typeof StatusCategory];
 
 export type IssueStatusCategory = {
   id: string;
@@ -25,7 +25,7 @@ export type IssueStatusCategory = {
 export type IssueStatus = {
   id: string;
   name: string;
-  statusCategory: StatausCategory;
+  statusCategory: StatusCategory;
 };
 
 export type IssueType = {
@@ -36,6 +36,7 @@ export type IssueType = {
 
 export type IssueTypeId = string;
 export type IssueStatusId = string;
+export type IssueStatusCategoryId = string;
 
 export type Size = {
   width: number;

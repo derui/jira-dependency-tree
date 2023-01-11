@@ -17,8 +17,8 @@ test("get issuetype by id", (t) => {
   // arrange
 
   // do
-  const issueType = project.findIssueTypeBy("2");
-  const notFound = project.findIssueTypeBy("3");
+  const issueType = project.issueTypes["2"];
+  const notFound = project.issueTypes["3"];
 
   // verify
   t.deepEqual(issueType, issueTypes[0]);
@@ -29,8 +29,8 @@ test("get issue status by id", (t) => {
   // arrange
 
   // do
-  const status = project.findStatusBy("1");
-  const notFound = project.findStatusBy("2");
+  const status = project.statuses["1"];
+  const notFound = project.statuses["2"];
 
   // verify
   t.deepEqual(status, statuses[0]);

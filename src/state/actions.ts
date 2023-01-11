@@ -32,3 +32,7 @@ export type IssueRequest = {
 
 export const synchronizeIssues = createAction("synchronizeIssues");
 export const synchronizeIssuesFulfilled = createAction<Issue[]>("synchronizeIssuesFulfilled");
+
+// actions for graph layout
+export const changeToVerticalLayout = createAction("changeToVerticalLayout");
+export const changeToHorizontalLayout = createAction("changeToHorizontalLayout");

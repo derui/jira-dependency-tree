@@ -3,6 +3,7 @@ import { combineEpics, createEpicMiddleware } from "redux-observable";
 import * as apiCredential from "./slices/api-credential";
 import * as project from "./slices/project";
 import * as issues from "./slices/issues";
+import * as graphLayout from "./slices/graph-layout";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -11,6 +12,8 @@ import { DependencyRegistrar } from "@/util/dependency-registrar";
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  graphLayout: graphLayout.reducer,
+
   issues: issues.reducer,
 
   project: project.reducer,

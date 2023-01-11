@@ -81,4 +81,5 @@ test.serial("dispatch action when click action", async (t) => {
   await userEvent.click(button);
 
   t.is(store.getState().issues.loading, Loading.Loading);
+  t.is(button.getAttribute("aria-disabled"), "true");
 });

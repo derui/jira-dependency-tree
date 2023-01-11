@@ -13,5 +13,5 @@ export const queryIssues = () =>
 
 export const isSyncable = () =>
   createDraftSafeSelector(selectSelf, (state) =>
-    state.apiCredential.credential && state.project.project ? true : false,
+    state.apiCredential.credential && state.project.project && state.issues.loading !== Loading.Loading ? true : false,
   );

@@ -35,6 +35,7 @@ test("does not syncable if setup did not finished", (t) => {
   const state = {
     project: project.getInitialState(),
     apiCredential: apiCredential.getInitialState(),
+    issues: issues.getInitialState(),
   } as RootState;
 
   const ret = s.isSyncable()(state);
@@ -60,6 +61,7 @@ test("return request if request setup finished", (t) => {
     apiCredential: {
       credential: credential,
     },
+    issues: issues.getInitialState(),
   } as RootState;
 
   const ret = s.isSyncable()(state);

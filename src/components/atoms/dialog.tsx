@@ -64,7 +64,12 @@ export const Dialog: React.FC<Props> = (props) => {
   const style = getPositionalStyle(props);
 
   const container = (
-    <div className={classNames(Styles.dialog(props.opened, props.aligned))} style={style} data-testid={gen("dialog")}>
+    <div
+      className={classNames(Styles.dialog(props.opened, props.aligned))}
+      aria-hidden={!props.opened}
+      style={style}
+      data-testid={gen("dialog")}
+    >
       {props.children}
     </div>
   );

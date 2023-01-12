@@ -29,7 +29,7 @@ test.serial("opened", (t) => {
   const child = screen.getByTestId("dialog");
 
   t.is(child.classList.contains("w-96"), true, "width");
-  t.is(child.classList.contains("left-0"), true, "position");
+  t.is(child.getAttribute("aria-hidden"), "false");
 });
 
 test.serial("calculate top by rect", (t) => {

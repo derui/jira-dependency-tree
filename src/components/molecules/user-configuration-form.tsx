@@ -68,7 +68,7 @@ export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEd
           placeholder='required'
           value={obj.token ?? ""}
           label='Credential'
-          testid={gen("jira-token")}
+          testid={gen("token")}
           onInput={update("token")}
         />
       </div>

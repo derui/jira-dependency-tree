@@ -4,7 +4,7 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 
 type ApiCredentialPayload = {
-  jiraToken: string;
+  token: string;
   email: string;
   userDomain: string;
 };

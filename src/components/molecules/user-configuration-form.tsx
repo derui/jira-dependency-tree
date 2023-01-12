@@ -5,7 +5,7 @@ import { Input } from "../atoms/input";
 import { Button } from "../atoms/button";
 import { filterEmptyString } from "@/util/basic";
 
-type Payload = { userDomain: string; jiraToken: string; email: string };
+type Payload = { userDomain: string; token: string; email: string };
 
 export interface Props extends BaseProps {
   initialPayload?: Payload;
@@ -19,7 +19,7 @@ const Styles = {
 };
 
 const canSubmit = (obj: Partial<Payload>) => {
-  return filterEmptyString(obj.email) && filterEmptyString(obj.jiraToken) && filterEmptyString(obj.userDomain);
+  return filterEmptyString(obj.email) && filterEmptyString(obj.token) && filterEmptyString(obj.userDomain);
 };
 
 export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEdit, ...props }) => {
@@ -38,10 +38,10 @@ export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEd
   };
 
   const handleSubmit = () => {
-    if (filterEmptyString(obj.email) && filterEmptyString(obj.jiraToken) && filterEmptyString(obj.userDomain)) {
+    if (filterEmptyString(obj.email) && filterEmptyString(obj.token) && filterEmptyString(obj.userDomain)) {
       onEndEdit({
         email: obj.email,
-        jiraToken: obj.jiraToken,
+        token: obj.token,
         userDomain: obj.userDomain,
       });
     }
@@ -66,10 +66,10 @@ export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEd
         />
         <Input
           placeholder='required'
-          value={obj.jiraToken ?? ""}
+          value={obj.token ?? ""}
           label='Credential'
           testid={gen("jira-token")}
-          onInput={update("jiraToken")}
+          onInput={update("token")}
         />
       </div>
       <div className={classNames(Styles.footer)}>

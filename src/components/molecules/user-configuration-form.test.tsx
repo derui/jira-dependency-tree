@@ -23,7 +23,7 @@ test.serial("should be able to render", (t) => {
 test.serial("set initial payload as initial value", (t) => {
   render(
     <UserConfigurationForm
-      initialPayload={{ email: "email", jiraToken: "token", userDomain: "userdomain" }}
+      initialPayload={{ email: "email", token: "token", userDomain: "userdomain" }}
       onEndEdit={() => {}}
     />,
   );
@@ -43,7 +43,7 @@ test.serial("get payload when typed", async (t) => {
     <UserConfigurationForm
       onEndEdit={(obj) => {
         t.is(obj?.email, "email");
-        t.is(obj?.jiraToken, "token");
+        t.is(obj?.token, "token");
         t.is(obj?.userDomain, "userDomain");
       }}
     />,

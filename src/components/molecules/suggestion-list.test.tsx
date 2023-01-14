@@ -2,6 +2,7 @@
 import React from "react";
 import test from "ava";
 import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Suggestor } from "./suggestion-list";
 import type { SuggestedItem } from "@/model/suggestion";
 
@@ -48,4 +49,28 @@ test.serial("mark selected suggestion", (t) => {
   const suggestion = screen.getByTestId("suggestion");
 
   t.is(suggestion.classList.contains("border-l-secondary1-300"), true);
+});
+
+test.serial("return id when clicked", async (t) => {
+  t.plan(1);
+  const element = document.createElement("div");
+
+  const suggestions: SuggestedItem[] = [
+    { displayName: "display", value: "value", id: "value" },
+    { displayName: "display2", value: "value2", id: "value2" },
+  ];
+  renderWrapper(
+    <Suggestor
+      suggestionIdSelected='value'
+      suggestions={suggestions}
+      parentElement={element}
+      onSelect={(id) => {
+        t.is(id, "value2");
+      }}
+    />,
+  );
+
+  const suggestion = screen.getByText("display2");
+
+  await userEvent.click(suggestion);
 });

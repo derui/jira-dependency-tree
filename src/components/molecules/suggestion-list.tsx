@@ -9,6 +9,7 @@ export interface Props extends BaseProps {
   suggestions: SuggestedItem[];
   parentElement?: HTMLElement;
   suggestionIdSelected: string;
+  onSelect?: (id: string) => void;
 }
 
 const Styles = {
@@ -37,7 +38,13 @@ const Styles = {
   empty: classes("text-lightgray"),
 };
 
-export const Suggestor: React.FC<Props> = ({ suggestions, parentElement, suggestionIdSelected, ...props }) => {
+export const Suggestor: React.FC<Props> = ({
+  suggestions,
+  parentElement,
+  suggestionIdSelected,
+  onSelect,
+  ...props
+}) => {
   const gen = generateTestId(props.testid);
   const opened = parentElement ? true : false;
 
@@ -48,6 +55,7 @@ export const Suggestor: React.FC<Props> = ({ suggestions, parentElement, suggest
         className={classNames(Styles.suggestionNode(obj.id === suggestionIdSelected))}
         data-testid={gen("suggestion")}
         data-id={obj.id}
+        onClick={() => (onSelect ? onSelect(obj.id) : undefined)}
       >
         <span className={classNames(Styles.suggestorLabel)}>{obj.displayName}</span>
       </li>

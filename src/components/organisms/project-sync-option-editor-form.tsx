@@ -86,7 +86,7 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   );
 };
 
-export const ProjectSyncOptionEditorDialog: React.FC<Props> = (props) => {
+export const ProjectSyncOptionEditorForm: React.FC<Props> = (props) => {
   const gen = generateTestId(props.testid);
   const [conditionType, setConditionType] = useState<ConditionType>(ConditionType.Default);
   const [epic, setEpic] = useState<string>("");

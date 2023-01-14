@@ -5,7 +5,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
-import { ProjectSyncOptionEditorDialog } from "./project-sync-option-editor-form";
+import { ProjectSyncOptionEditorForm } from "./project-sync-option-editor-form";
 import { createPureStore } from "@/state/store";
 import { submitProjectKeyFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
@@ -29,7 +29,7 @@ test.serial("should be able to render", (t) => {
 
   wrappedRender(
     <Provider store={store}>
-      <ProjectSyncOptionEditorDialog onClose={() => {}} />
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
     </Provider>,
   );
 
@@ -43,7 +43,7 @@ test.serial("show epic when condition is changed to epic", async (t) => {
 
   wrappedRender(
     <Provider store={store}>
-      <ProjectSyncOptionEditorDialog onClose={() => {}} />
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
     </Provider>,
   );
 
@@ -61,7 +61,7 @@ test.serial("close when cancel clicked", async (t) => {
 
   wrappedRender(
     <Provider store={store}>
-      <ProjectSyncOptionEditorDialog
+      <ProjectSyncOptionEditorForm
         onClose={() => {
           t.pass();
         }}
@@ -79,7 +79,7 @@ test.serial("change to epic", async (t) => {
 
   wrappedRender(
     <Provider store={store}>
-      <ProjectSyncOptionEditorDialog onClose={() => {}} />
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
     </Provider>,
   );
 

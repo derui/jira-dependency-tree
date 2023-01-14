@@ -68,3 +68,20 @@ test("return request if request setup finished", (t) => {
 
   t.is(ret, true);
 });
+
+test("sarch issues", (t) => {
+  const fulfilledIssues = [
+    { key: "key", summary: "summary" },
+    { key: "not match", summary: "not match" },
+  ] as Issue[];
+  const state = {
+    issues: issues.reducer(
+      issues.reducer(issues.getInitialState(), synchronizeIssues()),
+      synchronizeIssuesFulfilled(fulfilledIssues),
+    ),
+  } as RootState;
+
+  const ret = s.selectMatchedIssue("ke")(state);
+
+  t.deepEqual(ret, [{ key: "key", summary: "summary" }]);
+});

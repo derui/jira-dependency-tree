@@ -14,3 +14,12 @@ export const queryProject = () => {
     (project) => [project.loading, project.loading === Loading.Loading ? undefined : project.project] as const,
   );
 };
+
+/**
+ * select current search condition
+ */
+export const selectSearchCondition = () => {
+  return createDraftSafeSelector(selectProject, (project) => {
+    return project.searchCondition;
+  });
+};

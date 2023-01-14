@@ -55,6 +55,6 @@ export const JiraSuggestionLoader = (sources: Sources): Sinks => {
 
 const mapResponse = function mapResponse(body: Record<string, unknown>): Suggestion {
   return suggestionFactory({
-    sprints: body.sprints as { value: string; displayName: string }[],
+    suggestions: body.sprints as { value: string; displayName: string }[],
   });
 };

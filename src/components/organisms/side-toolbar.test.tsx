@@ -1,26 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from "react";
 import test from "ava";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
-import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { SideToolbar } from "./side-toolbar";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
-import { env } from "@/env";
-import { createStore } from "@/state/store";
+import { createPureStore } from "@/state/store";
 
 test.afterEach(cleanup);
 
-const registrar = createDependencyRegistrar<Dependencies>();
-
-test.before(() => {
-  registrar.register("env", env);
-});
-
 test.serial("should be able to render", (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
 
   render(
     <Provider store={store}>
@@ -34,7 +24,7 @@ test.serial("should be able to render", (t) => {
 });
 
 test.serial("active when layouter clicked", async (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
 
   render(
     <Provider store={store}>
@@ -55,7 +45,7 @@ test.serial("active when layouter clicked", async (t) => {
 });
 
 test.serial("change layout when clicked", async (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
 
   render(
     <Provider store={store}>
@@ -76,7 +66,7 @@ test.serial("change layout when clicked", async (t) => {
 });
 
 test.serial("toggle layouter", async (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
 
   render(
     <Provider store={store}>

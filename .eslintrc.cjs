@@ -9,17 +9,6 @@ module.exports = {
     es6: true,
     browser: true,
   },
-  parserOptions:  {
-    ecmaVersion:  2020,  // Allows for the parsing of modern ECMAScript features
-    sourceType:  'module',  // Allows for the use of imports
-    ecmaFeatures:  {
-      jsx: true,  // Allows for the parsing of JSX
-    },
-    project: [
-      "./tsconfig.json",
-      "./cypress/tsconfig.json"
-    ],
-  },
   rules: {
     "import/order": "error",
     "func-style": ["error", "expression"],

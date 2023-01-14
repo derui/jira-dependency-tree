@@ -6,16 +6,16 @@ export interface SuggestedItem {
 
 export interface Suggestion {
   // suggestions for sprint
-  sprints: Record<string, SuggestedItem>;
+  [k: string]: SuggestedItem;
 }
 
 interface SuggestionFactoryArg {
-  sprints: Omit<SuggestedItem, "id">[];
+  suggestions: Omit<SuggestedItem, "id">[];
 }
 
 // create suggestion
 export const suggestionFactory = function createSuggestion(args: Partial<SuggestionFactoryArg>): Suggestion {
-  const sprints = (args.sprints ?? []).reduce<Record<string, SuggestedItem>>((accum, sprint) => {
+  const suggestions = (args.suggestions ?? []).reduce<Record<string, SuggestedItem>>((accum, sprint) => {
     accum[`${sprint.value}`] = {
       ...sprint,
       id: `${sprint.value}`,
@@ -24,15 +24,9 @@ export const suggestionFactory = function createSuggestion(args: Partial<Suggest
     return accum;
   }, {});
 
-  return {
-    get sprints() {
-      return sprints;
-    },
-  } as Suggestion;
+  return suggestions;
 };
 
 export const mergeSuggestion = (source: Suggestion, other: Suggestion): Suggestion => {
-  return {
-    sprints: Object.assign({}, source.sprints, other.sprints),
-  };
+  return Object.assign({}, source, other);
 };

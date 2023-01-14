@@ -5,24 +5,24 @@ test("empty sprints", (t) => {
   // arrange
 
   // do
-  const setting = suggestionFactory({});
+  const suggestion = suggestionFactory({});
 
   // verify
-  t.deepEqual(setting.sprints, {});
+  t.deepEqual(suggestion, {});
 });
 
 test("use given sprint with id", (t) => {
   // arrange
-  const sprints = [
+  const suggestions = [
     { value: "foo", displayName: "bar" },
     { value: "value", displayName: "display" },
   ];
 
   // do
-  const setting = suggestionFactory({ sprints });
+  const suggestion = suggestionFactory({ suggestions: suggestions });
 
   // verify
-  t.deepEqual(setting.sprints, {
+  t.deepEqual(suggestion, {
     foo: { id: "foo", value: "foo", displayName: "bar" },
     value: { id: "value", value: "value", displayName: "display" },
   });
@@ -30,14 +30,14 @@ test("use given sprint with id", (t) => {
 
 test("merge two suggestion", (t) => {
   // arrange
-  const suggestion1 = suggestionFactory({ sprints: [{ value: "foo", displayName: "bar" }] });
-  const suggestion2 = suggestionFactory({ sprints: [{ value: "value", displayName: "display" }] });
+  const suggestion1 = suggestionFactory({ suggestions: [{ value: "foo", displayName: "bar" }] });
+  const suggestion2 = suggestionFactory({ suggestions: [{ value: "value", displayName: "display" }] });
 
   // do
   const suggestions = mergeSuggestion(suggestion1, suggestion2);
 
   // verify
-  t.deepEqual(suggestions.sprints, {
+  t.deepEqual(suggestions, {
     foo: { id: "foo", value: "foo", displayName: "bar" },
     value: { id: "value", value: "value", displayName: "display" },
   });

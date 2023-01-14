@@ -31,3 +31,52 @@ test("do not return project in loading", (t) => {
 
   t.deepEqual(ret, [Loading.Loading, undefined]);
 });
+
+test("return false if setup is not finished yet", (t) => {
+  const credential = {
+    apiBaseUrl: "api",
+    apiKey: "key",
+    email: "test@example.com",
+    token: "token",
+    userDomain: "domain",
+  };
+  const state = {
+    project: {
+      searchCondition: {
+        projectKey: "key",
+      },
+    },
+    apiCredential: {
+      credential: credential,
+    },
+  } as RootState;
+
+  const ret = s.isSearchConditionEditable()(state);
+
+  t.is(ret, false);
+});
+
+test("return request if request setup finished", (t) => {
+  const credential = {
+    apiBaseUrl: "api",
+    apiKey: "key",
+    email: "test@example.com",
+    token: "token",
+    userDomain: "domain",
+  };
+  const state = {
+    project: {
+      project: projectFactory({ id: "id", key: "key", name: "name" }),
+      searchCondition: {
+        projectKey: "key",
+      },
+    },
+    apiCredential: {
+      credential: credential,
+    },
+  } as RootState;
+
+  const ret = s.isSearchConditionEditable()(state);
+
+  t.is(ret, true);
+});

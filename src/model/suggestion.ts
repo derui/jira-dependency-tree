@@ -4,25 +4,35 @@ export interface SuggestedItem {
   displayName: string;
 }
 
-export interface Suggestion<T = SuggestedItem> {
+export interface Suggestion {
   // suggestions for sprint
-  sprints: T[];
+  sprints: Record<string, SuggestedItem>;
+}
+
+interface SuggestionFactoryArg {
+  sprints: Omit<SuggestedItem, "id">[];
 }
 
 // create suggestion
-export const suggestionFactory = function createSuggestion(
-  args: Partial<Suggestion<Omit<SuggestedItem, "id">>>,
-): Suggestion {
-  const sprints = (args.sprints ?? []).map((sprint) => {
-    return {
+export const suggestionFactory = function createSuggestion(args: Partial<SuggestionFactoryArg>): Suggestion {
+  const sprints = (args.sprints ?? []).reduce<Record<string, SuggestedItem>>((accum, sprint) => {
+    accum[`${sprint.value}`] = {
       ...sprint,
       id: `${sprint.value}`,
     };
-  });
+
+    return accum;
+  }, {});
 
   return {
     get sprints() {
       return sprints;
     },
   } as Suggestion;
+};
+
+export const mergeSuggestion = (source: Suggestion, other: Suggestion): Suggestion => {
+  return {
+    sprints: Object.assign({}, source.sprints, other.sprints),
+  };
 };

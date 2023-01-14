@@ -12,8 +12,6 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  suggestor: classes("inline-block", "relative"),
-  suggestorContainer: classes("flex", "flex-row", "content-between", "items-center"),
   suggestorLabel: classes("flex", "flex-auto", "cursor-pointer", "items-center"),
   suggestions: classes("flex", "flex-col", "list-none"),
   suggestionNode: (selected: boolean) => {
@@ -34,12 +32,6 @@ const Styles = {
     return {
       ...classes("flex-col", "top-full", "bg-white", "whitespace-nowrap", "text-base", "w-full"),
       ...(!opened ? classes("hidden") : classes("flex")),
-    };
-  },
-  suggestorOpenerIcon: (opened: boolean) => {
-    return {
-      ...classes("transition-colors", "transition-transform"),
-      ...(opened ? classes("origin-center", "rotate-180") : {}),
     };
   },
   empty: classes("text-lightgray"),

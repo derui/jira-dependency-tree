@@ -1,17 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 import produce from "immer";
-import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
+import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { Issue } from "@/model/issue";
 import { Loading } from "@/type";
 
 interface IssuesState {
   issues: Issue[];
   loading: Loading;
+  matchedIssues: Issue[];
 }
 
 const initialState = {
   issues: [],
   loading: "Completed",
+  matchedIssues: [],
 } as IssuesState satisfies IssuesState;
 
 const slice = createSlice({
@@ -30,6 +32,12 @@ const slice = createSlice({
         draft.issues = action.payload;
         draft.loading = "Completed";
       });
+    });
+
+    builder.addCase(searchIssue, (state, { payload }) => {
+      state.matchedIssues = state.issues.filter(
+        (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
+      );
     });
   },
 });

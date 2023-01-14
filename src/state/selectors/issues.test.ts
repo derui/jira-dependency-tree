@@ -1,5 +1,5 @@
 import test from "ava";
-import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
+import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import * as issues from "../slices/issues";
 import * as project from "../slices/project";
 import * as apiCredential from "../slices/api-credential";
@@ -69,19 +69,21 @@ test("return request if request setup finished", (t) => {
   t.is(ret, true);
 });
 
-test("sarch issues", (t) => {
+test("search issues", (t) => {
   const fulfilledIssues = [
     { key: "key", summary: "summary" },
     { key: "not match", summary: "not match" },
   ] as Issue[];
-  const state = {
+  let state = {
     issues: issues.reducer(
       issues.reducer(issues.getInitialState(), synchronizeIssues()),
       synchronizeIssuesFulfilled(fulfilledIssues),
     ),
   } as RootState;
 
-  const ret = s.selectMatchedIssue("ke")(state);
+  state = { ...state, issues: issues.reducer(state.issues, searchIssue("ke")) };
+
+  const ret = s.selectMatchedIssue()(state);
 
   t.deepEqual(ret, [{ key: "key", summary: "summary" }]);
 });

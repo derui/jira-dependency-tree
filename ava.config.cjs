@@ -5,7 +5,8 @@ module.exports = {
     "tsx": "module",
   },
   "nodeArguments": [
-    "--loader=./loader.js"
+    "--loader=./loader.js",
+    "--no-warnings"
   ],
   "require": [
     "esbuild-register",

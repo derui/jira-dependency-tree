@@ -1,16 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { requestSuggestion, requestSuggestionFulfilled } from "../actions";
-import { mergeSuggestion, Suggestion, suggestionFactory } from "@/model/suggestion";
-import { LoaderState, Loading } from "@/type";
+import { mergeSuggestion, Suggestion } from "@/model/suggestion";
+import { Loading, SuggestionKind } from "@/type";
 
 interface SuggestionsState {
-  suggestions: Suggestion;
+  suggestions: Record<SuggestionKind, Suggestion>;
   loading: Loading;
 }
 
 const initialState = {
   loading: Loading.Completed,
-  suggestions: suggestionFactory({}),
+  suggestions: {},
 } as SuggestionsState satisfies SuggestionsState;
 
 const slice = createSlice({
@@ -18,15 +18,20 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
-      .addCase(requestSuggestion, (state) => {
-        state.loading = Loading.Loading;
-      })
-      .addCase(requestSuggestionFulfilled, (state, action) => {
-        state.loading = Loading.Completed;
+    builder.addCase(requestSuggestion, (state) => {
+      state.loading = Loading.Loading;
+    });
+    builder.addCase(requestSuggestionFulfilled, (state, action) => {
+      state.loading = Loading.Completed;
 
-        state.suggestions = mergeSuggestion(state.suggestions, action.payload);
-      });
+      const suggestion = state.suggestions[action.payload.kind];
+
+      if (suggestion) {
+        state.suggestions[action.payload.kind] = mergeSuggestion(suggestion, action.payload.suggestion);
+      } else {
+        state.suggestions[action.payload.kind] = action.payload.suggestion;
+      }
+    });
   },
 });
 

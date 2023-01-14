@@ -3,6 +3,7 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
+import { SuggestionKind } from "@/type";
 
 type ApiCredentialPayload = {
   token: string;
@@ -39,6 +40,8 @@ export const changeToVerticalLayout = createAction("changeToVerticalLayout");
 export const changeToHorizontalLayout = createAction("changeToHorizontalLayout");
 
 // actions for suggestion
-export const requestSuggestion = createAction<string>("requestSuggestion");
-export const requestSuggestionFulfilled = createAction<Suggestion>("requestSuggestionFulfilled");
+export const requestSuggestion = createAction<{ term: string; kind: SuggestionKind }>("requestSuggestion");
+export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; suggestion: Suggestion }>(
+  "requestSuggestionFulfilled",
+);
 export const requestSuggestionError = createAction<string>("requestSuggestionError");

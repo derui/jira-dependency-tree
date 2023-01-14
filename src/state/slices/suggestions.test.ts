@@ -1,7 +1,7 @@
 import test from "ava";
 import { requestSuggestion, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "./suggestions";
-import { Loading } from "@/type";
+import { Loading, SuggestionKind } from "@/type";
 import { mergeSuggestion, suggestionFactory } from "@/model/suggestion";
 
 test("initial state", (t) => {
@@ -9,32 +9,35 @@ test("initial state", (t) => {
 });
 
 test("loading", (t) => {
-  const state = reducer(getInitialState(), requestSuggestion("foo"));
+  const state = reducer(getInitialState(), requestSuggestion({ kind: SuggestionKind.Sprint, term: "foo" }));
 
   t.deepEqual(state, { loading: Loading.Loading, suggestions: suggestionFactory({}) });
 });
 
 test("store suggestion", (t) => {
-  const suggestions = suggestionFactory({ sprints: [{ displayName: "name", value: "value" }] });
+  const suggestion = suggestionFactory({ suggestions: [{ displayName: "name", value: "value" }] });
 
-  const state = reducer(getInitialState(), requestSuggestionFulfilled(suggestions));
+  const state = reducer(getInitialState(), requestSuggestionFulfilled({ kind: SuggestionKind.Sprint, suggestion }));
 
-  t.deepEqual(state, { loading: Loading.Completed, suggestions: suggestions });
+  t.deepEqual(state, { loading: Loading.Completed, suggestions: { [SuggestionKind.Sprint]: suggestion } });
 });
 
 test("merge suggestion", (t) => {
-  const suggestions = suggestionFactory({ sprints: [{ displayName: "name", value: "value" }] });
-  const nextSuggestions = suggestionFactory({
-    sprints: [
+  const suggestion = suggestionFactory({ suggestions: [{ displayName: "name", value: "value" }] });
+  const nextSuggestion = suggestionFactory({
+    suggestions: [
       { displayName: "name", value: "value" },
       { displayName: "foo", value: "bar" },
     ],
   });
 
   const state = reducer(
-    reducer(getInitialState(), requestSuggestionFulfilled(suggestions)),
-    requestSuggestionFulfilled(nextSuggestions),
+    reducer(getInitialState(), requestSuggestionFulfilled({ kind: SuggestionKind.Sprint, suggestion: suggestion })),
+    requestSuggestionFulfilled({ kind: SuggestionKind.Sprint, suggestion: nextSuggestion }),
   );
 
-  t.deepEqual(state, { loading: Loading.Completed, suggestions: mergeSuggestion(suggestions, nextSuggestions) });
+  t.deepEqual(state, {
+    loading: Loading.Completed,
+    suggestions: { [SuggestionKind.Sprint]: mergeSuggestion(suggestion, nextSuggestion) },
+  });
 });

@@ -2,6 +2,7 @@ import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
+import { Suggestion } from "@/model/suggestion";
 
 type ApiCredentialPayload = {
   token: string;
@@ -36,3 +37,8 @@ export const synchronizeIssuesFulfilled = createAction<Issue[]>("synchronizeIssu
 // actions for graph layout
 export const changeToVerticalLayout = createAction("changeToVerticalLayout");
 export const changeToHorizontalLayout = createAction("changeToHorizontalLayout");
+
+// actions for suggestion
+export const requestSuggestion = createAction<string>("requestSuggestion");
+export const requestSuggestionFulfilled = createAction<Suggestion>("requestSuggestionFulfilled");
+export const requestSuggestionError = createAction<string>("requestSuggestionError");

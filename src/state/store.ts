@@ -4,6 +4,7 @@ import * as apiCredential from "./slices/api-credential";
 import * as project from "./slices/project";
 import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
+import * as suggestions from "./slices/suggestions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -12,6 +13,8 @@ import { DependencyRegistrar } from "@/util/dependency-registrar";
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  suggestions: suggestions.reducer,
+
   graphLayout: graphLayout.reducer,
 
   issues: issues.reducer,

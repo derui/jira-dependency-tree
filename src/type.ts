@@ -48,9 +48,8 @@ export type Position = {
   y: number;
 };
 
-export const LoaderStatus = {
-  LOADING: "LOADING",
-  COMPLETED: "COMPLETED",
+export const SuggestionKind = {
+  Sprint: "Sprint",
 } as const;
 
-export type LoaderState = typeof LoaderStatus[keyof typeof LoaderStatus];
+export type SuggestionKind = typeof SuggestionKind[keyof typeof SuggestionKind];

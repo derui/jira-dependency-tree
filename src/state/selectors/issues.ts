@@ -6,10 +6,10 @@ const selectSelf = (state: RootState) => state;
 const selectIssues = createDraftSafeSelector(selectSelf, (state) => state.issues);
 
 export const queryIssues = () =>
-  createDraftSafeSelector(selectIssues, (state) => [
-    state.loading,
-    state.loading === Loading.Loading ? undefined : state.issues,
-  ]);
+  createDraftSafeSelector(
+    selectIssues,
+    (state) => [state.loading, state.loading === Loading.Loading ? undefined : state.issues] as const,
+  );
 
 export const isSyncable = () =>
   createDraftSafeSelector(selectSelf, (state) =>

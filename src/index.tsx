@@ -1,14 +1,11 @@
 import React from "react"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as ReactDOM from "react-dom";
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import { IssueGraphSink, IssueGraphSource, makeIssueGraphDriver } from "./drivers/issue-graph";
-import { Issue } from "./model/issue";
-import { Setting, SettingArgument, settingFactory } from "./model/setting";
-import { makeStorageDriver, StorageSink, StorageSource } from "./drivers/storage";
-import { ApiCredential, SearchCondition } from "./model/event";
-import { GraphLayout } from "./issue-graph/type";
+import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
+import { Setting } from "./model/setting";
+import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
 import { createStore } from "./state/store";
 import { createDependencyRegistrar } from "./util/dependency-registrar";
@@ -21,40 +18,6 @@ import { queryIssues } from "./state/selectors/issues";
 import { getApiCrednetial } from "./state/selectors/api-credential";
 import { App } from "./app";
 
-type MainSources = {
-  DOM: DOMSource;
-  state: StateSource<MainState>;
-  HTTP: HTTPSource;
-  STORAGE: StorageSource;
-  Portal: PortalSource;
-  issueGraph: IssueGraphSource;
-};
-
-type MainSinks = {
-  DOM: Stream<VNode>;
-  state: Stream<Reducer<MainState>>;
-  issueGraph: Stream<IssueGraphSink>;
-  HTTP: Stream<RequestInput>;
-  STORAGE: Stream<StorageSink>;
-  Portal: Stream<PortalSink>;
-};
-
-type MainState = {
-  data: {
-    issues: Issue[];
-    searchCondition?: SearchCondition;
-  };
-  projectKey: string | undefined;
-  setting?: Setting;
-  apiCredential?: ApiCredential;
-} & { sideToolbar?: SideToolbarState } & { projectSyncOptionEditor?: State } & {
-  projectInformation?: ProjectInformationState;
-};
-
-type Storage = {
-  settings: SettingArgument & { graphLayout?: GraphLayout };
-};
-
 // wiring depencencies
 
 const registrar = createDependencyRegistrar<Dependencies>();
@@ -63,6 +26,7 @@ registrar.register("postJSON", postJSON);
 
 const store = createStore(registrar);
 
+// wiring storage driver
 const storageDriver = makeStorageDriver("jiraDependencyTree", localStorage);
 
 const storageSubject = new BehaviorSubject<StorageSink | undefined>(undefined);
@@ -87,7 +51,7 @@ storageDriver(storageSubject)
     }
   });
 
-const issueGraphSubject = new Subject<IssueGraphSink>();
+const issueGraphSubject = new BehaviorSubject<IssueGraphSink | null>(null);
 
 const selectIssueGraphSink = createDraftSafeSelector(
   queryProject(),
@@ -102,6 +66,13 @@ const selectIssueGraphSink = createDraftSafeSelector(
   },
 );
 
+const issueGraphSource = makeIssueGraphDriver("#graph-root")(issueGraphSubject);
+
+registrar.register("sendCommandTo", (command) => {
+  issueGraphSource.runCommand(command);
+});
+
+// get data from
 store.subscribe(() => {
   const sink = selectIssueGraphSink(store.getState());
 

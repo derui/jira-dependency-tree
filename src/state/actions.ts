@@ -51,4 +51,5 @@ export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; s
 export const requestSuggestionError = createAction<string>("requestSuggestionError");
 
 // actions for issue graph
-export const sendCommand = createAction<IssueGraphCommand>("sendCommand");
+export const focusIssueOnSearch = createAction<string>("focusIssueOnSearch");
+export const focusIssueOnSearchFulfilled = createAction("focusIssueOnSearchFulfilled");

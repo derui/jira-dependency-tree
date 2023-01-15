@@ -6,25 +6,16 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
-import { createStore } from "@/state/store";
-import { env } from "@/env";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
-import { Dependencies } from "@/dependencies";
+import { createPureStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectKeyFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 import { Loading } from "@/type";
 
 test.afterEach(cleanup);
 
-const registrar = createDependencyRegistrar<Dependencies>();
-
-test.before(() => {
-  registrar.register("env", env);
-});
-
 test.serial("initial state is disabled all", (t) => {
   render(
-    <Provider store={createStore(registrar)}>
+    <Provider store={createPureStore()}>
       <SyncIssueButton />
     </Provider>,
   );
@@ -35,7 +26,7 @@ test.serial("initial state is disabled all", (t) => {
 });
 
 test.serial("do not disable if setup finished", (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
@@ -58,7 +49,7 @@ test.serial("do not disable if setup finished", (t) => {
 });
 
 test.serial("dispatch action when click action", async (t) => {
-  const store = createStore(registrar);
+  const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({

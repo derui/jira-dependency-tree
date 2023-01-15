@@ -1,14 +1,12 @@
 ---
 to: src/state/epics/<%= name %>.ts
 ---
-import {ofType} from 'redux-observable';
-import * as actions from '../actions';
-import type RootState from '../store';
-import type {Dependencies} from '@/dependencies';
+import { Epic } from "redux-observable";
+import type { Action } from "@reduxjs/toolkit";
+import type { RootState } from "../store";
+import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
-export const <%= h.changeCase.camel(name) %>Epic = (registrar: DependencyRegistrar<Dependencies>) => (action$: Observable<actions.Actions>, state$: Observable<RootState>) =>
-  action$.pipe(
-    ofType(''),
-    // implement epic
-  );
+export const issueEpic = (registrar: DependencyRegistrar<Dependencies>): Epic<Action, Action, RootState>[] => [
+  // implement epics
+];

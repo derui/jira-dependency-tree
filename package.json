@@ -30,11 +30,6 @@
   "author": "derui",
   "license": "MIT",
   "dependencies": {
-    "@cycle/dom": "^23.1.0",
-    "@cycle/http": "^15.4.0",
-    "@cycle/isolate": "^5.2.0",
-    "@cycle/run": "^5.7.0",
-    "@cycle/state": "^1.7.0",
     "@reduxjs/toolkit": "^1.9.1",
     "classnames": "^2.3.2",
     "d3": "^7.8.0",
@@ -45,12 +40,9 @@
     "react-redux": "^8.0.5",
     "redux": "^4.2.0",
     "redux-observable": "^2.0.0",
-    "rxjs": "^7.8.0",
-    "snabbdom": "^3.5.1",
-    "xstream": "^11.14.0"
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
-    "@cycle/time": "^0.21.0",
     "@faker-js/faker": "^7.6.0",
     "@testing-library/dom": "^8.19.1",
     "@testing-library/react": "^13.4.0",
@@ -82,7 +74,6 @@
     "prettier": "^2.8.1",
     "rome": "^11.0.0",
     "sinon": "^15.0.1",
-    "snabbdom-selector": "^5.0.0",
     "stylelint": "^14.16.0",
     "stylelint-config-prettier": "^9.0.4",
     "stylelint-config-standard": "^29.0.0",

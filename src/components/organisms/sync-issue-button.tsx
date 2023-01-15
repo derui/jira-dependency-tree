@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppSelector } from "../hooks";
 import { Icon } from "../atoms/icon";
-import { Button } from "../atoms/button";
 import { isSyncable, queryIssues } from "@/state/selectors/issues";
 import { Loading } from "@/type";
 import { synchronizeIssues } from "@/state/actions";
@@ -31,10 +30,10 @@ export const SyncIssueButton: React.FC<Props> = (props) => {
 
   return (
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
-      <Button
-        schema='secondary1'
+      <button
         disabled={!syncable}
-        testid={gen("button")}
+        aria-disabled={!syncable}
+        data-testid={gen("button")}
         onClick={() => {
           dispatch(synchronizeIssues());
         }}
@@ -47,7 +46,7 @@ export const SyncIssueButton: React.FC<Props> = (props) => {
           color="complement"
           disabled={!syncable}
         ></Icon>
-      </Button>
+      </button>
     </div>
   );
 };

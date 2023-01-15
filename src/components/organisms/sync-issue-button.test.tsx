@@ -20,7 +20,7 @@ test.serial("initial state is disabled all", (t) => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("button/button") as HTMLBaseElement;
+  const button = screen.getByTestId("button") as HTMLBaseElement;
 
   t.is(button.getAttribute("aria-disabled"), "true");
 });
@@ -44,7 +44,7 @@ test.serial("do not disable if setup finished", (t) => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("button/button") as HTMLBaseElement;
+  const button = screen.getByTestId("button") as HTMLBaseElement;
   t.is(button.getAttribute("aria-disabled"), "false");
 });
 
@@ -67,7 +67,7 @@ test.serial("dispatch action when click action", async (t) => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("button/button") as HTMLBaseElement;
+  const button = screen.getByTestId("button") as HTMLBaseElement;
 
   await userEvent.click(button);
 

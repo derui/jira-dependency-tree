@@ -31,7 +31,7 @@ export type IssueStatus = {
 export type IssueType = {
   id: string;
   name: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
 };
 
 export type IssueTypeId = string;

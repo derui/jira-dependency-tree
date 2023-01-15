@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { Action, configureStore } from "@reduxjs/toolkit";
 import { combineEpics, createEpicMiddleware } from "redux-observable";
 import * as apiCredential from "./slices/api-credential";
 import * as project from "./slices/project";
@@ -29,19 +29,20 @@ const reducers = {
 // eslint-disable-next-line
 export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
   const rootEpics = [
-    ...issueEpic(registrar),
+    ...Object.values(issueEpic(registrar)),
 
     // do not format this structure.
   ];
 
-  const epicMiddleware = createEpicMiddleware();
+  // eslint-disable-next-line
+  const epicMiddleware = createEpicMiddleware<Action, Action, any>();
 
   const store = configureStore({
     reducer: reducers,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(epicMiddleware),
   });
 
-  epicMiddleware.run(combineEpics(...rootEpics));
+  epicMiddleware.run(combineEpics<Action, Action, RootState>(...rootEpics));
 
   return store;
 };

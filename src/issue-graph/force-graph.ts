@@ -145,7 +145,10 @@ const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
   }, []);
 };
 
-const buildIssueTreeFrame = (container: D3Node<BaseType>, layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[]) => {
+const buildIssueTreeFrame = (
+  container: D3Node<SVGSVGElement>,
+  layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[],
+) => {
   const FrameSize = {
     padding: 16,
   };
@@ -167,7 +170,7 @@ const buildIssueTreeFrame = (container: D3Node<BaseType>, layoutedLeveledIssueUn
 };
 
 export const makeForceGraph = (
-  container: D3Node<BaseType>,
+  container: D3Node<SVGSVGElement>,
   issues: Issue[],
   project: Project,
   configuration: Configuration,

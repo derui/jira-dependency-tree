@@ -1,4 +1,3 @@
-import assert from "assert";
 import test from "ava";
 
 import { ContainCycle, emptyGraph, Graph } from "@/depgraph/main";
@@ -6,7 +5,9 @@ import { ContainCycle, emptyGraph, Graph } from "@/depgraph/main";
 const diagrams = (diagrams: string[]): Graph => {
   const vertexDirections = diagrams.map((diagram) => diagram.split(/>/).map((v) => v.trim()));
 
-  assert(vertexDirections.length > 0 && vertexDirections.every((v) => v.length > 1));
+  if (vertexDirections.length > 0 && vertexDirections.every((v) => v.length > 1)) {
+    throw "invalid state";
+  }
 
   const vertices = new Set(vertexDirections.flat());
   let graph = emptyGraph();

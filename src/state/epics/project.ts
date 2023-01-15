@@ -29,7 +29,7 @@ export const projectEpic = (
             headers: {
               "x-api-key": credential.apiKey,
             },
-            send: {
+            body: {
               authorization: {
                 jira_token: credential.token,
                 email: credential.email,

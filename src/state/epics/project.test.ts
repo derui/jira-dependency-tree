@@ -1,7 +1,7 @@
 import test from "ava";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
-import { NEVER, of } from "rxjs";
+import { NEVER } from "rxjs";
 import { Dependencies } from "../../dependencies";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { createPureStore } from "../store";

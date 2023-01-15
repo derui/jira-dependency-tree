@@ -22,7 +22,7 @@
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "paths": {
       "@/*": ["src/*"]
     }

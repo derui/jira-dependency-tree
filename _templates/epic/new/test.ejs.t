@@ -1,5 +1,5 @@
 ---
-to: src/state/epic/<%= name %>.test.ts
+to: src/state/epics/<%= name %>.test.ts
 ---
 import test from 'ava';
 import * as epic from './<%= name %>';

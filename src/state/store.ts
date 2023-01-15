@@ -5,6 +5,7 @@ import * as project from "./slices/project";
 import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
 import * as suggestions from "./slices/suggestions";
+import { issueEpic } from "./epics/issue";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -27,7 +28,9 @@ const reducers = {
 
 // eslint-disable-next-line
 export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
-  const rootEpic = [
+  const rootEpics = [
+    ...issueEpic(registrar),
+
     // do not format this structure.
   ];
 
@@ -38,7 +41,7 @@ export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(epicMiddleware),
   });
 
-  epicMiddleware.run(combineEpics(...rootEpic));
+  epicMiddleware.run(combineEpics(...rootEpics));
 
   return store;
 };

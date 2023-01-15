@@ -8,6 +8,7 @@ import * as suggestions from "./slices/suggestions";
 import { issueEpic } from "./epics/issue";
 import { suggestionEpic } from "./epics/suggestion";
 import { projectEpic } from "./epics/project";
+import * as zoom from "./slices/zoom";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -16,6 +17,8 @@ import { DependencyRegistrar } from "@/util/dependency-registrar";
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  zoom: zoom.reducer,
+
   suggestions: suggestions.reducer,
 
   graphLayout: graphLayout.reducer,

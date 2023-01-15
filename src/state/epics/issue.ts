@@ -1,7 +1,7 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, filter, map, switchMap } from "rxjs/operators";
-import { of } from "rxjs";
+import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
+import { of, throwError } from "rxjs";
 import type { RootState } from "../store";
 import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import type { Dependencies } from "@/dependencies";

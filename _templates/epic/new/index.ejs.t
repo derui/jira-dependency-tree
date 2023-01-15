@@ -7,6 +7,8 @@ import type { RootState } from "../store";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
-export const issueEpic = (registrar: DependencyRegistrar<Dependencies>): Epic<Action, Action, RootState>[] => [
+type Epics = '';
+
+export const issueEpic = (registrar: DependencyRegistrar<Dependencies>): Record<Epics, Epic<Action, Action, RootState>> => ({
   // implement epics
-];
+});

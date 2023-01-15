@@ -8,45 +8,49 @@ import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Issue } from "@/model/issue";
 
-export const issueEpic = (registrar: DependencyRegistrar<Dependencies>): Epic<Action, Action, RootState>[] => [
-  (action$, state$) =>
-    action$.pipe(
-      filter(synchronizeIssues.match),
-      switchMap(() => {
-        const credential = state$.value.apiCredential.credential;
-        const condition = state$.value.project.searchCondition;
+export const issueEpic = (
+  registrar: DependencyRegistrar<Dependencies>,
+): Record<string, Epic<Action, Action, RootState>> => {
+  return {
+    synchronizeIssues: (action$, state$) =>
+      action$.pipe(
+        filter(synchronizeIssues.match),
+        switchMap(() => {
+          const credential = state$.value.apiCredential.credential;
+          const condition = state$.value.project.searchCondition;
 
-        if (!credential) {
-          return of(synchronizeIssuesFulfilled([]));
-        }
+          if (!credential) {
+            return of(synchronizeIssuesFulfilled([]));
+          }
 
-        return registrar
-          .resolve("postJSON")({
-            url: `${credential.apiBaseUrl}/load-issues`,
-            headers: {
-              "x-api-key": credential.apiKey,
-            },
-            body: {
-              authorization: {
-                jira_token: credential.token,
-                email: credential.email,
-                user_domain: credential.userDomain,
+          return registrar
+            .resolve("postJSON")({
+              url: `${credential.apiBaseUrl}/load-issues`,
+              headers: {
+                "x-api-key": credential.apiKey,
               },
-              project: condition.projectKey,
-              condition: {
-                sprint: condition.sprint?.value,
-                epic: condition.epic,
+              body: {
+                authorization: {
+                  jira_token: credential.token,
+                  email: credential.email,
+                  user_domain: credential.userDomain,
+                },
+                project: condition.projectKey,
+                condition: {
+                  sprint: condition.sprint?.value,
+                  epic: condition.epic,
+                },
               },
-            },
-          })
-          .pipe(
-            map((response) => mapResponse(response as { [k: string]: unknown }[])),
-            map((issues) => synchronizeIssuesFulfilled(issues)),
-          );
-      }),
-      catchError(() => of(synchronizeIssuesFulfilled([]))),
-    ),
-];
+            })
+            .pipe(
+              map((response) => mapResponse(response as { [k: string]: unknown }[])),
+              map((issues) => synchronizeIssuesFulfilled(issues)),
+            );
+        }),
+        catchError(() => of(synchronizeIssuesFulfilled([]))),
+      ),
+  };
+};
 
 const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
   const subtasks = body

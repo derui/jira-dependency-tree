@@ -4,6 +4,7 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
 import { SuggestionKind } from "@/type";
+import { IssueGraphCommand } from "@/drivers/issue-graph";
 
 type ApiCredentialPayload = {
   token: string;
@@ -48,3 +49,6 @@ export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; s
   "requestSuggestionFulfilled",
 );
 export const requestSuggestionError = createAction<string>("requestSuggestionError");
+
+// actions for issue graph
+export const sendCommand = createAction<IssueGraphCommand>("sendCommand");

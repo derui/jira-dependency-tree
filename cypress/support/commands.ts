@@ -1,7 +1,5 @@
 /// <reference types="cypress" />
 
-import run, { Drivers, Sources } from "@cycle/run";
-import { DOMSource, makeDOMDriver } from "@cycle/dom";
 import { rest } from "msw";
 import { APIMockDefinition, APIMocks } from "./mocks";
 
@@ -17,20 +15,6 @@ import { APIMockDefinition, APIMocks } from "./mocks";
 //
 //
 // -- This is a parent command --
-const mount = function mount<D extends Drivers>(
-  component: (source: Sources<D> & { DOM: DOMSource; state?: any }) => any,
-  drivers: D,
-): void {
-  const dispose = run(component, {
-    ...drivers,
-    DOM: makeDOMDriver("#root"),
-  });
-
-  // unmount component automatically
-  Cypress.once("test:after:run", dispose);
-};
-
-Cypress.Commands.add("mount", mount);
 
 // shortcut function for testid
 const getByTestId = function getByTestId(testid: string) {
@@ -108,7 +92,6 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
-      mount: typeof mount;
       testid: typeof getByTestId;
       mockAPI: typeof mockAPI;
     }

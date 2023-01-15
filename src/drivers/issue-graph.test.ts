@@ -1,5 +1,5 @@
 import test from "ava";
-import { makeViewBox } from "@/drivers/issue-graph";
+import { makeViewBox } from "./issue-graph";
 import { Rect } from "@/util/basic";
 
 const rect = function rect(width: number, height: number) {

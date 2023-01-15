@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@cycle/time": "^0.21.0",
+    "@faker-js/faker": "^7.6.0",
     "@testing-library/dom": "^8.19.1",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",

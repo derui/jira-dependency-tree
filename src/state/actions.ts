@@ -20,6 +20,7 @@ export const restoreApiCredential = createAction<ApiCredential>("restoreApiCrede
 
 export const submitProjectKey = createAction<string>("submitProjectKey");
 export const submitProjectKeyFulfilled = createAction<Project>("submitProjectKeyFulfilled");
+export const submitProjectKeyError = createAction("submitProjectKeyError");
 export const changeConditionToEpic = createAction<string>("changeConditionToEpic");
 export const changeConditionToSprint = createAction<{ value: string; displayName: string }>("changeConditionToSprint");
 export const changeDefaultCondition = createAction("changeDefaultCondition");

@@ -9,6 +9,6 @@ import { DependencyRegistrar } from "@/util/dependency-registrar";
 
 type Epics = '';
 
-export const issueEpic = (registrar: DependencyRegistrar<Dependencies>): Record<Epics, Epic<Action, Action, RootState>> => ({
+export const <%= h.changeCase.camel(name) %>Epic = (registrar: DependencyRegistrar<Dependencies>): Record<Epics, Epic<Action, Action, RootState>> => ({
   // implement epics
 });

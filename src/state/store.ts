@@ -6,6 +6,7 @@ import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
 import * as suggestions from "./slices/suggestions";
 import { issueEpic } from "./epics/issue";
+import { suggestionEpic } from "./epics/suggestion";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -29,8 +30,8 @@ const reducers = {
 // eslint-disable-next-line
 export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
   const rootEpics = [
+    ...Object.values(suggestionEpic(registrar)),
     ...Object.values(issueEpic(registrar)),
-
     // do not format this structure.
   ];
 

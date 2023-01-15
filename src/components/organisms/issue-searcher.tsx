@@ -4,7 +4,7 @@ import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Icon } from "../atoms/icon";
 import { isSyncable, selectMatchedIssue } from "@/state/selectors/issues";
-import { searchIssue } from "@/state/actions";
+import { focusIssueOnSearch, searchIssue } from "@/state/actions";
 
 export type Props = BaseProps;
 
@@ -97,8 +97,17 @@ export const IssueSearcher: React.FC<Props> = (props) => {
     dispatch(searchIssue(""));
   };
 
+  const handleIssueClick = (key: string) => {
+    dispatch(focusIssueOnSearch(key));
+  };
+
   const issueList = matchedIssues.map((issue) => (
-    <li key={issue.key} className={classNames(Styles.issue)} data-testid={gen("issue")}>
+    <li
+      key={issue.key}
+      className={classNames(Styles.issue)}
+      data-testid={gen("issue")}
+      onClick={() => handleIssueClick(issue.key)}
+    >
       <span className={classNames(Styles.issueKey)}>{issue.key}</span>
       <span className={classNames(Styles.issueSummary)}>{issue.summary}</span>
     </li>

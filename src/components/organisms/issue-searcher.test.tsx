@@ -7,7 +7,12 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createPureStore } from "@/state/store";
-import { submitApiCredentialFulfilled, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
+import {
+  focusIssueOnSearch,
+  submitApiCredentialFulfilled,
+  submitProjectKeyFulfilled,
+  synchronizeIssuesFulfilled,
+} from "@/state/actions";
 import { randomCredential, randomProject } from "@/mock-data";
 import { Issue } from "@/model/issue";
 
@@ -126,4 +131,30 @@ test.serial("reset after click cancel", async (t) => {
 
   t.is(issues.length, 0);
   t.is(term.value, "");
+});
+
+test.serial("send action when issue click", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(
+    synchronizeIssuesFulfilled([
+      { key: "TES-10", summary: "summary" } as Issue,
+      { key: "TES-11", summary: "other" } as Issue,
+      { key: "OTHER-11", summary: "not match" } as Issue,
+    ]),
+  );
+
+  render(
+    <Provider store={store}>
+      <IssueSearcher />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("opener"));
+  await userEvent.type(screen.getByTestId("input"), "TES-10");
+
+  const issue = screen.getByTestId("issue");
+  await userEvent.click(issue);
+  t.pass();
 });

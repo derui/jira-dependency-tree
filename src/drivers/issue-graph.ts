@@ -233,7 +233,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
             break;
         }
       },
-      state: stateStream,
+      state$: stateStream,
     };
   };
 };

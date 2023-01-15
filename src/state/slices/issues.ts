@@ -3,6 +3,7 @@ import produce from "immer";
 import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { Issue } from "@/model/issue";
 import { Loading } from "@/type";
+import { filterEmptyString } from "@/util/basic";
 
 interface IssuesState {
   issues: Issue[];
@@ -35,9 +36,13 @@ const slice = createSlice({
     });
 
     builder.addCase(searchIssue, (state, { payload }) => {
-      state.matchedIssues = state.issues.filter(
-        (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
-      );
+      if (!filterEmptyString(payload)) {
+        state.matchedIssues = [];
+      } else {
+        state.matchedIssues = state.issues.filter(
+          (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
+        );
+      }
     });
   },
 });

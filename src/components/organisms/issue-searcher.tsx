@@ -94,6 +94,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
   const handleCancelClicked = () => {
     setStatus("Prepared");
     setTerm("");
+    dispatch(searchIssue(""));
   };
 
   const issueList = matchedIssues.map((issue) => (
@@ -107,11 +108,20 @@ export const IssueSearcher: React.FC<Props> = (props) => {
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
       <div className={classNames(Styles.searcher)}>
         <span className={classNames(Styles.opener)}>
-          <button type='button' data-testid={gen("opener")} onClick={handleOpenerClicked}>
+          <button
+            type='button'
+            data-testid={gen("opener")}
+            aria-disabled={status === "BeforePrepared"}
+            onClick={handleOpenerClicked}
+          >
             <Icon type='search' color='complement' active={status === "Searching"} />
           </button>
         </span>
-        <span className={classNames(Styles.inputWrapper(status))} data-testid={gen("input-wrapper")}>
+        <span
+          className={classNames(Styles.inputWrapper(status))}
+          aria-hidden={status !== "Searching"}
+          data-testid={gen("input-wrapper")}
+        >
           <input
             className={classNames(Styles.input)}
             type='text'

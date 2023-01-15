@@ -53,3 +53,5 @@ export const requestSuggestionError = createAction<string>("requestSuggestionErr
 // actions for issue graph
 export const focusIssueOnSearch = createAction<string>("focusIssueOnSearch");
 export const focusIssueOnSearchFulfilled = createAction("focusIssueOnSearchFulfilled");
+
+export const changeZoom = createAction<number>("changeZoom");

@@ -1,5 +1,5 @@
 import { Selection } from "d3";
-import { filter, fromEvent, Observable, Subject, take, takeUntil } from "rxjs";
+import { distinctUntilChanged, filter, fromEvent, Observable, Subject, take, takeUntil } from "rxjs";
 import { simpleTransit } from "./util/transition";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
@@ -35,6 +35,11 @@ export interface IssueGraphSource {
    * run command on issue graph
    */
   runCommand(command: IssueGraphCommand): void;
+
+  /**
+   * state stream of pan zoom
+   */
+  state$: Observable<IssueGraphState>;
 }
 
 const makeDragListener = (
@@ -197,7 +202,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       svg.attr("viewBox", makeViewBox(stateReference, svgSize));
     };
 
-    sink$.pipe(filter(filterNull)).subscribe({
+    sink$.pipe(filter(filterNull), distinctUntilChanged()).subscribe({
       next: ({ issues, project, graphLayout }) => {
         if (svg === null) {
           updateIssueGraph({ issues, project, graphLayout });

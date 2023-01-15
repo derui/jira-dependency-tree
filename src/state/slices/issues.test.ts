@@ -51,3 +51,22 @@ test("get issue matched", (t) => {
   t.is(ret.matchedIssues.length, 1);
   t.deepEqual(ret.matchedIssues, [issues[0]]);
 });
+
+test("empty matched issues if term is empty", (t) => {
+  const issues: Issue[] = [
+    {
+      key: "key",
+      summary: "summary",
+      description: "description",
+      statusId: "",
+      typeId: "",
+      selfUrl: "",
+      outwardIssueKeys: [],
+    },
+    { key: "not match", summary: "not match" } as Issue satisfies Issue,
+  ];
+  let ret = reducer(getInitialState(), synchronizeIssuesFulfilled(issues));
+  ret = reducer(ret, searchIssue(""));
+
+  t.is(ret.matchedIssues.length, 0);
+});

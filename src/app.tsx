@@ -9,6 +9,7 @@ import { UserConfiguration } from "./components/organisms/user-configuration";
 import { ZoomSlider } from "./components/molecules/zoom-slider";
 import { useAppSelector } from "./components/hooks";
 import { SideToolbar } from "./components/organisms/side-toolbar";
+import { getZoom } from "./state/selectors/zoom";
 
 export type Props = BaseProps;
 

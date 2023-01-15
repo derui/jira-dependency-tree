@@ -11,7 +11,7 @@ import { createStore } from "./state/store";
 import { createDependencyRegistrar } from "./util/dependency-registrar";
 import { Dependencies } from "./dependencies";
 import { postJSON } from "./infrastructures/fetch";
-import { restoreApiCredential } from "./state/actions";
+import { changeZoom, restoreApiCredential } from "./state/actions";
 import { queryProject } from "./state/selectors/project";
 import { getGraphLayout } from "./state/selectors/graph-layout";
 import { queryIssues } from "./state/selectors/issues";
@@ -70,6 +70,12 @@ const issueGraphSource = makeIssueGraphDriver("#graph-root")(issueGraphSubject);
 
 registrar.register("sendCommandTo", (command) => {
   issueGraphSource.runCommand(command);
+});
+
+issueGraphSource.state$.subscribe((state) => {
+  if (store.getState().zoom.zoomPercentage !== state.zoomPercentage) {
+    store.dispatch(changeZoom(state.zoomPercentage));
+  }
 });
 
 // get data from

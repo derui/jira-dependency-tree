@@ -1,4 +1,4 @@
-import { map, filter, Observable, Subject } from "rxjs";
+import { map, filter, Observable, Subject, distinctUntilChanged } from "rxjs";
 import { filterUndefined } from "@/util/basic";
 
 type HashMap = { [k: string]: unknown };
@@ -28,7 +28,7 @@ export const makeStorageDriver = (
       } catch {}
     }
 
-    sink$.pipe(filter(filterUndefined)).subscribe({
+    sink$.pipe(filter(filterUndefined), distinctUntilChanged()).subscribe({
       next: (values) => {
         originalHashMap = Object.assign(originalHashMap, values);
         storage.setItem(rootKey, JSON.stringify(originalHashMap));

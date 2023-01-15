@@ -47,7 +47,11 @@ export const issueEpic = (
               map((issues) => synchronizeIssuesFulfilled(issues)),
             );
         }),
-        catchError(() => of(synchronizeIssuesFulfilled([]))),
+        catchError((e) => {
+          console.error(e);
+
+          return of(synchronizeIssuesFulfilled([]));
+        }),
       ),
   };
 };

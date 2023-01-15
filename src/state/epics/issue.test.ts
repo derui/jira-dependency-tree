@@ -83,7 +83,7 @@ test("get issues from response", (t) => {
           selfUrl: "",
           statusId: "",
           typeId: "",
-        } as Issue,
+        },
       ]),
     });
   });

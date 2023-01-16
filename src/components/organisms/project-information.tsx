@@ -112,7 +112,7 @@ export const ProjectInformation: React.FC<Props> = (props) => {
       <span className={classNames(Styles.skeletonRoot(loading))} data-testid={gen("skeleton")}>
         <span className={classNames(Styles.skeleton)}></span>
       </span>
-      <div className={classNames(Styles.keyEditor(opened))} data-testid={gen("nameEditor")}>
+      <div className={classNames(Styles.keyEditor(opened))} aria-hidden={!opened} data-testid={gen("nameEditor")}>
         <Input focus={true} value={key} placeholder='Project Key' testid={gen("key")} onInput={(v) => setKey(v)} />
         <span className={classNames(Styles.keyEditorButtonGroup)}>
           <span

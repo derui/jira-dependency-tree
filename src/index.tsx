@@ -1,5 +1,5 @@
 import React from "react"; // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
@@ -105,9 +105,11 @@ if (process.env.CI === "ci") {
   worker.start();
 }
 
-ReactDOM.render(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(document.getElementById("root")!);
+
+root.render(
   <Provider store={store}>
     <App />
   </Provider>,
-  document.querySelector("#root"),
 );

@@ -1,7 +1,7 @@
 import { post } from "support/mocks";
 
 describe("load issues", () => {
-  it.only("open condition editor and suggestion", () => {
+  it("open condition editor and suggestion", () => {
     cy.visit("/");
 
     cy.mockAPI({
@@ -40,7 +40,7 @@ describe("load issues", () => {
       .should("contain.text", "TES スプリント 5");
   });
 
-  it("change condition if suggestion item is selected", () => {
+  it.only("change condition if suggestion item is selected", () => {
     cy.visit("/");
 
     cy.mockAPI({
@@ -63,14 +63,14 @@ describe("load issues", () => {
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
-    cy.testid("sprint-suggestor/suggestor-opener").click();
-    cy.testid("sprint-suggestor/term").type("te");
+    cy.testid("project-sync-option-editor/form/sprint/input").type("te");
 
     // click suggenstion
-    cy.testid("sprint-suggestor/suggestion").contains("TES スプリント 5").click();
+    cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion").contains("TES スプリント 5").click();
+    cy.testid("project-sync-option-editor/form/sprint/input").type("{enter}");
 
     // verify clicked suggestion
-    cy.testid("sprint-suggestor/suggestor-opener").should("contain.text", "TES スプリント 5");
+    cy.testid("project-sync-option-editor/form/sprint/input").should("have.value", "TES スプリント 5");
 
     // Click apply
     cy.testid("project-sync-option-editor/submit").click();

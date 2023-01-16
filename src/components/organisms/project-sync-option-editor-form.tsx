@@ -83,16 +83,26 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
     }
   };
 
+  const handleSuggestionSelect = (id: string) => {
+    setSelectedSuggestionId(id);
+
+    const selected = suggestions?.find((v) => v.id === id);
+    if (!selected) {
+      return;
+    }
+    setTerm(selected.displayName);
+  };
+
   return (
     <div ref={sprintTermElement} className={classNames(Styles.sprintSuggestor(conditionType === ConditionType.Sprint))}>
-      <Input placeholder="term" value="" testid={gen("sprint")} onInput={handleInput} onKeypress={handleKeypress} />
+      <Input placeholder="term" value={""} testid={gen("sprint")} onInput={handleInput} onKeypress={handleKeypress} />
       {loading === Loading.Loading ? null : (
         <SuggestionList
           suggestions={suggestions}
           testid={gen("suggested-sprint")}
           parentElement={sprintTermElement.current ?? undefined}
           suggestionIdSelected={selectedSuggestionId || ""}
-          onSelect={(id) => setSelectedSuggestionId(id)}
+          onSelect={handleSuggestionSelect}
         />
       )}
     </div>

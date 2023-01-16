@@ -3,12 +3,18 @@ import type { Action } from "@reduxjs/toolkit";
 import { catchError, filter, switchMap, map } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
-import { submitProjectKey, submitProjectKeyError, submitProjectKeyFulfilled } from "../actions";
+import {
+  submitApiCredential,
+  submitApiCredentialFulfilled,
+  submitProjectKey,
+  submitProjectKeyError,
+  submitProjectKeyFulfilled,
+} from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Project, ProjectArgument, projectFactory } from "@/model/project";
 
-type Epics = "loadProject";
+type Epics = "loadProject" | "submitCredential";
 
 export const projectEpic = (
   registrar: DependencyRegistrar<Dependencies>,
@@ -47,6 +53,16 @@ export const projectEpic = (
         console.error(e);
 
         return of(submitProjectKeyError());
+      }),
+    ),
+
+  submitCredential: (action$) =>
+    action$.pipe(
+      filter(submitApiCredential.match),
+      map(({ payload }) => {
+        const env = registrar.resolve("env");
+
+        return submitApiCredentialFulfilled({ ...payload, ...env });
       }),
     ),
 });

@@ -6,6 +6,7 @@ import { Dependencies } from "../../dependencies";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { createPureStore } from "../store";
 import {
+  submitApiCredential,
   submitApiCredentialFulfilled,
   submitProjectKey,
   submitProjectKeyError,
@@ -78,6 +79,37 @@ test("get project", async (t) => {
           issueTypes: response.issueTypes,
         } as ProjectArgument),
       ),
+    });
+  });
+});
+
+test("submit api credential", async (t) => {
+  t.plan(1);
+  const registrar = createDependencyRegistrar<Dependencies>();
+
+  const testScheduler = new TestScheduler((a, b) => t.deepEqual(a, b));
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  testScheduler.run(({ hot, expectObservable: expect }) => {
+    registrar.register("env", { apiBaseUrl: "base", apiKey: "key" });
+    const epics = epic.projectEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: submitApiCredential({ email: "email", token: "token", userDomain: "domain" }),
+    });
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.loadProject(action$, state$, null);
+
+    expect(ret$).toBe("-a", {
+      a: submitApiCredentialFulfilled({
+        apiBaseUrl: "base",
+        apiKey: "key",
+        email: "email",
+        token: "token",
+        userDomain: "domain",
+      }),
     });
   });
 });

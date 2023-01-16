@@ -70,10 +70,11 @@ export const ProjectSyncOptionEditor: React.FC<Props> = (props) => {
       <Dialog
         testid={gen("form-dialog")}
         aligned='bottomLeft'
+        margin='all'
         opened={opened}
         parentRect={ref.current ? Rect.fromDOMRect(ref.current.getBoundingClientRect()) : undefined}
       >
-        <ProjectSyncOptionEditorForm onClose={() => setOpened(false)} testid='sync-editor-form' />
+        <ProjectSyncOptionEditorForm onClose={() => setOpened(false)} testid={gen("form")} />
       </Dialog>
     </div>
   );

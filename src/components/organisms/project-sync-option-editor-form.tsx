@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
@@ -8,7 +8,12 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { querySuggestion } from "@/state/selectors/suggestion";
 import { Loading, SuggestionKind } from "@/type";
 import { SuggestedItem } from "@/model/suggestion";
-import { changeConditionToEpic, changeConditionToSprint, changeDefaultCondition } from "@/state/actions";
+import {
+  changeConditionToEpic,
+  changeConditionToSprint,
+  changeDefaultCondition,
+  requestSuggestion,
+} from "@/state/actions";
 
 const ConditionType = {
   Default: "default",
@@ -38,6 +43,7 @@ const Styles = {
   controlButton: classes("flex-none", "first:ml-0", "last:mr-0", "mx-1", "cursor-pointer"),
   sprintSuggestor: (opened: boolean) => {
     return {
+      ...classes("p-2", "pt-0"),
       ...(!opened ? classes("hidden") : {}),
     };
   },
@@ -55,6 +61,13 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   const [term, setTerm] = useState("");
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | undefined>(undefined);
   const [loading, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint, term));
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (suggestions && suggestions.length === 0) {
+      dispatch(requestSuggestion({ kind: SuggestionKind.Sprint, term }));
+    }
+  }, [term]);
 
   const handleInput = (term: string) => {
     setTerm(term);

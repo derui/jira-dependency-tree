@@ -84,7 +84,7 @@ test.serial("close dialog after finished to edit search condition", async (t) =>
   );
 
   await userEvent.click(screen.getByTestId("opener"));
-  await userEvent.click(screen.getByTestId("sync-editor-form/cancel"));
+  await userEvent.click(screen.getByTestId("form/cancel"));
 
   const dialog = screen.getByTestId("form-dialog/dialog");
 

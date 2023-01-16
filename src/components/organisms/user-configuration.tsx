@@ -76,6 +76,7 @@ export const UserConfiguration: React.FC<Props> = (props) => {
       <Dialog
         testid='container'
         opened={opened}
+        margin='all'
         parentRect={ref.current?.getBoundingClientRect()}
         aligned='bottomRight'
       >

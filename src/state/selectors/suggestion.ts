@@ -15,7 +15,9 @@ export const querySuggestion = (kind: SuggestionKind, term: string) => {
     }
 
     const suggestion = suggestions[kind] ?? suggestionFactory({});
-    const suggestionList = Object.values(suggestion).filter((v) => v.value.toLowerCase().includes(term.toLowerCase()));
+    const suggestionList = Object.values(suggestion).filter((v) =>
+      v.displayName.toLowerCase().includes(term.toLowerCase()),
+    );
 
     return [loading, suggestionList] as const;
   });

@@ -35,7 +35,7 @@ const Styles = {
       ...(!opened ? classes("hidden") : classes("flex")),
     };
   },
-  empty: classes("text-lightgray"),
+  empty: classes("text-lightgray", "flex-none", "px-4", "py-3"),
 };
 
 export const Suggestor: React.FC<Props> = ({
@@ -78,10 +78,11 @@ export const Suggestor: React.FC<Props> = ({
     <Dialog
       aligned='bottomLeft'
       opened={opened}
+      margin='top'
       parentRect={Rect.fromDOMRect(parentElement.getBoundingClientRect())}
       testid={gen("root")}
     >
-      <div className={classNames(Styles.suggestorMain(opened))} data-testid={gen("search-dialog")}>
+      <div className={classNames(Styles.suggestorMain(opened))} data-testid={gen("dialog")}>
         <ul className={classNames(Styles.suggestions)}>{suggestionNodes}</ul>
       </div>
     </Dialog>

@@ -79,7 +79,7 @@ export const UserConfiguration: React.FC<Props> = (props) => {
         parentRect={ref.current?.getBoundingClientRect()}
         aligned='bottomRight'
       >
-        <UserConfigurationForm testid='form' initialPayload={currentCredential} onEndEdit={handleEndEdit} />
+        <UserConfigurationForm testid={gen("form")} initialPayload={currentCredential} onEndEdit={handleEndEdit} />
       </Dialog>
     </div>
   );

@@ -51,7 +51,7 @@ const getPositionalStyle = (props: Props) => {
 export const Dialog: React.FC<Props> = (props) => {
   const gen = generateTestId(props.testid);
   const ref = useRef(document.createElement("div"));
-  const selector = props.selector ?? "#modal-root";
+  const selector = props.selector ?? "#dialog-root";
 
   useEffect(() => {
     document.querySelector(selector)?.appendChild(ref.current);

@@ -36,7 +36,7 @@ test.serial("initial payload is empty", (t) => {
         return (
           <>
             {props.children}
-            <div id='modal-root' />
+            <div id='dialog-root' />
           </>
         );
       },
@@ -73,7 +73,7 @@ test.serial("initial payload inputted", (t) => {
         return (
           <>
             {props.children}
-            <div id='modal-root' />
+            <div id='dialog-root' />
           </>
         );
       },
@@ -101,7 +101,7 @@ test.serial("open dialog when opener clicked", async (t) => {
         return (
           <>
             {props.children}
-            <div id='modal-root' />
+            <div id='dialog-root' />
           </>
         );
       },
@@ -129,7 +129,7 @@ test.serial("hide dialog when submitted", async (t) => {
         return (
           <>
             {props.children}
-            <div id='modal-root' />
+            <div id='dialog-root' />
           </>
         );
       },
@@ -166,7 +166,7 @@ test.serial("hide dialog when canceled on form", async (t) => {
         return (
           <>
             {props.children}
-            <div id='modal-root' />
+            <div id='dialog-root' />
           </>
         );
       },

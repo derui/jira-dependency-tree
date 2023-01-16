@@ -22,7 +22,7 @@ test("get target kind of selection", (t) => {
         kind: SuggestionKind.Sprint,
         suggestion: suggestionFactory({
           suggestions: [
-            { displayName: "foo", value: "Var" },
+            { displayName: "Var", value: "foo" },
             { displayName: "foo", value: "bar" },
           ],
         }),
@@ -32,7 +32,7 @@ test("get target kind of selection", (t) => {
 
   t.deepEqual(s.querySuggestion(SuggestionKind.Sprint, "var")(state), [
     Loading.Completed,
-    [{ displayName: "foo", value: "Var", id: "Var" }],
+    [{ displayName: "Var", value: "foo", id: "foo" }],
   ]);
 });
 

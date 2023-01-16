@@ -18,7 +18,7 @@ const wrappedRender = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='modal-root' />
+          <div id='dialog-root' />
         </>
       );
     },

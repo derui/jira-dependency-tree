@@ -14,7 +14,7 @@ const renderWrapper = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='modal-root' />
+          <div id='dialog-root' />
         </>
       );
     },
@@ -59,6 +59,7 @@ test.serial("return id when clicked", async (t) => {
     { displayName: "display", value: "value", id: "value" },
     { displayName: "display2", value: "value2", id: "value2" },
   ];
+
   renderWrapper(
     <Suggestor
       suggestionIdSelected='value'

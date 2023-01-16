@@ -100,7 +100,7 @@ test("submit api credential", async (t) => {
     });
     const state$ = new StateObservable(NEVER, store.getState());
 
-    const ret$ = epics.loadProject(action$, state$, null);
+    const ret$ = epics.submitCredential(action$, state$, null);
 
     expect(ret$).toBe("-a", {
       a: submitApiCredentialFulfilled({

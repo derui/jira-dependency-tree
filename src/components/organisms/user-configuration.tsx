@@ -62,7 +62,11 @@ export const UserConfiguration: React.FC<Props> = (props) => {
     <div ref={ref} className={classNames(Styles.root)}>
       <div className={classNames(Styles.toolbar)}>
         <button className={classNames(Styles.opener())} data-testid={gen("opener")} onClick={() => setOpened(!opened)}>
-          <span className={classNames(Styles.marker(!setupFinished))} data-testid={gen("marker")}>
+          <span
+            className={classNames(Styles.marker(!setupFinished))}
+            aria-hidden={setupFinished}
+            data-testid={gen("marker")}
+          >
             <span className={classNames(Styles.markerPing)}></span>
             <span className={classNames(Styles.markerInner)}></span>
           </span>

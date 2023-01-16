@@ -22,8 +22,10 @@ test.serial("should be able to render", (t) => {
   );
 
   const span = screen.getByText("Click here");
+  const marker = screen.getByTestId("marker");
 
   t.truthy(span, "name");
+  t.is(marker.getAttribute("aria-hidden"), "false");
 });
 
 test.serial("show editor if name clicked", async (t) => {

@@ -94,9 +94,11 @@ export const ProjectInformation: React.FC<Props> = (props) => {
     dispatch(submitProjectKey(key));
   };
 
+  const showMarker = Boolean(!project && !opened && !loading);
+
   return (
     <div className={classNames(Styles.root(opened))} data-testid={gen("main")}>
-      <span className={classNames(Styles.marker(!project && !opened && !loading))} data-testid={gen("marker")}>
+      <span className={classNames(Styles.marker(showMarker))} aria-hidden={!showMarker} data-testid={gen("marker")}>
         <span className={classNames(Styles.markerPing)}></span>
         <span className={classNames(Styles.markerInner)}></span>
       </span>

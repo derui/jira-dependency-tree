@@ -107,7 +107,7 @@ test.serial("show button when it is not editing", async (t) => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  const button = screen.queryByTestId("open-suggestion");
+  const button = screen.queryByTestId("open-suggestion/button");
 
   t.not(button, null);
 });
@@ -124,7 +124,7 @@ test.serial("show term input when open-suggestion clicked", async (t) => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  const button = screen.getByTestId("open-suggestion");
+  const button = screen.getByTestId("open-suggestion/button");
   await userEvent.click(button);
 
   const input = screen.getByTestId("sprint/input") as HTMLInputElement;
@@ -144,12 +144,12 @@ test.serial("show button again when type enter in term", async (t) => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  await userEvent.click(screen.getByTestId("open-suggestion"));
+  await userEvent.click(screen.getByTestId("open-suggestion/button"));
 
   const input = screen.getByTestId("sprint/input") as HTMLInputElement;
   await userEvent.type(input, "{enter}");
 
-  const button = screen.getByTestId("open-suggestion");
+  const button = screen.getByTestId("open-suggestion/button");
 
   t.is(button.textContent, "Click to select sprint");
 });

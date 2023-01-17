@@ -1,5 +1,5 @@
 import test from "ava";
-import { requestSuggestion, requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
+import { requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "../slices/suggestions";
 import { RootState } from "../store";
 import * as s from "./suggestion";

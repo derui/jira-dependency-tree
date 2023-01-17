@@ -6,6 +6,7 @@ import { SuggestedItem } from "@/model/suggestion";
 import { Rect } from "@/util/basic";
 
 export interface Props extends BaseProps {
+  opened: boolean;
   suggestions: SuggestedItem[];
   parentElement?: HTMLElement;
   suggestionIdSelected: string;
@@ -38,7 +39,7 @@ const Styles = {
   empty: classes("text-lightgray", "flex-none", "px-4", "py-3"),
 };
 
-export const Suggestor: React.FC<Props> = ({
+export const SuggestionList: React.FC<Props> = ({
   suggestions,
   parentElement,
   suggestionIdSelected,
@@ -46,7 +47,7 @@ export const Suggestor: React.FC<Props> = ({
   ...props
 }) => {
   const gen = generateTestId(props.testid);
-  const opened = parentElement ? true : false;
+  const opened = props.opened && parentElement ? true : false;
 
   const suggestionNodes = suggestions.map((obj) => {
     return (

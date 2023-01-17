@@ -7,6 +7,7 @@ type ColorSchema = "primary" | "secondary1" | "gray";
 export interface Props extends PropsWithChildren, BaseProps {
   schema: ColorSchema;
   type?: "normal" | "submit";
+  size?: "full" | "l" | "m" | "s";
   disabled?: boolean;
   onClick: () => void;
 }
@@ -20,10 +21,27 @@ const Styles = {
     "rounded",
     "transition-colors",
     "border",
+    "whitespace-nowrap",
+    "overflow-hidden",
+    "text-ellipsis",
     "disabled:color-gray",
     "disabled:bg-lightgray",
     "disabled:border-gray",
   ),
+
+  width: (size: Props["size"]) => {
+    switch (size) {
+      case "full":
+        return classes("w-full");
+      case "l":
+        return classes("w-40");
+      case "s":
+        return classes("w-12");
+      case "m":
+      default:
+        return classes("w-20");
+    }
+  },
 
   color: (schema: ColorSchema) => {
     switch (schema) {
@@ -55,6 +73,7 @@ export const Button: React.FC<Props> = (props) => {
   const classes = classNames({
     ...Styles.button,
     ...Styles.color(props.schema),
+    ...Styles.width(props.size),
   });
 
   if (props.type === "submit") {

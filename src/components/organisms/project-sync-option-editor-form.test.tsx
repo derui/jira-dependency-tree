@@ -94,3 +94,62 @@ test.serial("change to epic", async (t) => {
     epic: "A-B",
   });
 });
+
+test.serial("show button when it is not editing", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  const button = screen.queryByTestId("open-suggestion");
+
+  t.not(button, null);
+});
+
+test.serial("show term input when open-suggestion clicked", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  const button = screen.getByTestId("open-suggestion");
+  await userEvent.click(button);
+
+  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+
+  t.is(input.value, "");
+});
+
+test.serial("show button again when type enter in term", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  await userEvent.click(screen.getByTestId("open-suggestion"));
+
+  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+  await userEvent.type(input, "{enter}");
+
+  const button = screen.getByTestId("open-suggestion");
+
+  t.is(button.textContent, "Click to select sprint");
+});

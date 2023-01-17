@@ -3,7 +3,7 @@ import React from "react";
 import test from "ava";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Suggestor } from "./suggestion-list";
+import { SuggestionList } from "./suggestion-list";
 import type { SuggestedItem } from "@/model/suggestion";
 
 test.afterEach(cleanup);
@@ -23,7 +23,7 @@ const renderWrapper = (v: React.ReactElement) =>
 test.serial("should be able to render", (t) => {
   const element = document.createElement("div");
 
-  renderWrapper(<Suggestor suggestionIdSelected='' suggestions={[]} parentElement={element} />);
+  renderWrapper(<SuggestionList suggestionIdSelected='' suggestions={[]} parentElement={element} />);
 
   const root = screen.getByTestId("root/dialog");
   const empty = screen.queryByTestId("empty");
@@ -33,7 +33,7 @@ test.serial("should be able to render", (t) => {
 });
 
 test.serial("do not render when did not pass parent", (t) => {
-  renderWrapper(<Suggestor suggestionIdSelected='' suggestions={[]} />);
+  renderWrapper(<SuggestionList suggestionIdSelected='' suggestions={[]} />);
 
   const root = screen.queryByTestId("root/dialog");
 
@@ -44,7 +44,7 @@ test.serial("mark selected suggestion", (t) => {
   const element = document.createElement("div");
 
   const suggestions: SuggestedItem[] = [{ displayName: "display", value: "value", id: "value" }];
-  renderWrapper(<Suggestor suggestionIdSelected='value' suggestions={suggestions} parentElement={element} />);
+  renderWrapper(<SuggestionList suggestionIdSelected='value' suggestions={suggestions} parentElement={element} />);
 
   const suggestion = screen.getByTestId("suggestion");
 
@@ -61,7 +61,7 @@ test.serial("return id when clicked", async (t) => {
   ];
 
   renderWrapper(
-    <Suggestor
+    <SuggestionList
       suggestionIdSelected='value'
       suggestions={suggestions}
       parentElement={element}

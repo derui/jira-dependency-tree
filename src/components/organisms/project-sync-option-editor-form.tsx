@@ -3,8 +3,9 @@ import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
 import { Icon } from "../atoms/icon";
-import { Suggestor as SuggestionList } from "../molecules/suggestion-list";
+import { SuggestionList } from "../molecules/suggestion-list";
 import { useAppDispatch, useAppSelector } from "../hooks";
+import { Button } from "../atoms/button";
 import { querySuggestion } from "@/state/selectors/suggestion";
 import { Loading, SuggestionKind } from "@/type";
 import { SuggestedItem } from "@/model/suggestion";
@@ -60,8 +61,11 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   const sprintTermElement = useRef<HTMLDivElement | null>(null);
   const [term, setTerm] = useState("");
   const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | undefined>(undefined);
+  const [editing, setEditing] = useState<boolean>(false);
   const [loading, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint, term));
   const dispatch = useAppDispatch();
+
+  const selectedIssue = (suggestions ?? []).find((v) => v.id === selectedSuggestionId);
 
   useEffect(() => {
     if (suggestions && suggestions.length === 0) {
@@ -75,15 +79,20 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
 
   const handleKeypress = (key: string) => {
     if (key === "Enter") {
+      setEditing(false);
+
       const selected = suggestions?.find((v) => v.id === selectedSuggestionId);
+
       if (!selected) {
         return;
       }
+
       onFinished(selected);
     }
   };
 
   const handleSuggestionSelect = (id: string) => {
+    setEditing(false);
     setSelectedSuggestionId(id);
 
     const selected = suggestions?.find((v) => v.id === id);
@@ -93,11 +102,28 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
     setTerm(selected.displayName);
   };
 
+  const input = () => (
+    <Input
+      placeholder="term"
+      value={""}
+      focus={true}
+      testid={gen("sprint")}
+      onInput={handleInput}
+      onKeypress={handleKeypress}
+    />
+  );
+  const button = () => (
+    <Button testid={gen("open-suggestion")} size='full' onClick={() => setEditing(true)} schema={"gray"}>
+      {selectedIssue ? selectedIssue.displayName : "Click to select sprint"}
+    </Button>
+  );
+
   return (
     <div ref={sprintTermElement} className={classNames(Styles.sprintSuggestor(conditionType === ConditionType.Sprint))}>
-      <Input placeholder="term" value={""} testid={gen("sprint")} onInput={handleInput} onKeypress={handleKeypress} />
+      {editing ? input() : button()}
       {loading === Loading.Loading ? null : (
         <SuggestionList
+          opened={editing}
           suggestions={suggestions}
           testid={gen("suggested-sprint")}
           parentElement={sprintTermElement.current ?? undefined}

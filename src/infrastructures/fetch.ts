@@ -14,7 +14,7 @@ export const postJSON = (obj: PostJSONArg) => {
   return fromFetch(obj.url, {
     method: "POST",
     headers: Object.assign({}, obj.headers, {
-      "context-type": "application/json",
+      "content-type": "application/json",
     }),
     body: JSON.stringify(obj.body),
   }).pipe(

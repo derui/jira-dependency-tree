@@ -94,7 +94,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
     .attr("filter", (d) => {
       if (!d.issue) return null;
 
-      const status = project.findStatusBy(d.issue.statusId);
+      const status = project.statuses[d.issue.statusId];
       switch (status?.statusCategory) {
         case StatusCategory.TODO:
           return "url(#todo-bg)";
@@ -114,7 +114,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
         return "";
       }
 
-      const status = project.findStatusBy(d.issue.statusId);
+      const status = project.statuses[d.issue.statusId];
       return status?.name ?? "";
     });
 
@@ -122,7 +122,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
 };
 
 export const buildIssueGraph = (
-  container: D3Node<any>,
+  container: D3Node<SVGSVGElement>,
   data: LayoutedLeveledIssue[],
   project: Project,
   configuration: Configuration,

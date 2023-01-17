@@ -1,0 +1,155 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from "react";
+import test from "ava";
+import { render, screen, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { Provider } from "react-redux";
+import { ProjectSyncOptionEditorForm } from "./project-sync-option-editor-form";
+import { createPureStore } from "@/state/store";
+import { submitProjectKeyFulfilled } from "@/state/actions";
+import { projectFactory } from "@/model/project";
+
+test.afterEach(cleanup);
+
+const wrappedRender = (v: React.ReactElement) =>
+  render(v, {
+    wrapper(props) {
+      return (
+        <>
+          {props.children}
+          <div id='modal-root' />
+        </>
+      );
+    },
+  });
+
+test.serial("should be able to render", (t) => {
+  const store = createPureStore();
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  const select = screen.getByTestId("condition-type") as HTMLSelectElement;
+
+  t.is(select.value, "default");
+});
+
+test.serial("show epic when condition is changed to epic", async (t) => {
+  const store = createPureStore();
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  const select = screen.getByTestId("condition-type") as HTMLSelectElement;
+  await userEvent.selectOptions(select, "epic");
+  const epic = screen.getByTestId("epic");
+
+  t.is(select.value, "epic");
+  t.is(epic.getAttribute("aria-hidden"), "false");
+});
+
+test.serial("close when cancel clicked", async (t) => {
+  t.plan(1);
+  const store = createPureStore();
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm
+        onClose={() => {
+          t.pass();
+        }}
+      />
+    </Provider>,
+  );
+
+  const cancel = screen.getByTestId("cancel");
+  await userEvent.click(cancel);
+});
+
+test.serial("change to epic", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "epic");
+  await userEvent.type(screen.getByTestId("epic-input/input"), "A-B");
+
+  const submit = screen.getByTestId("submit");
+  await userEvent.click(submit);
+
+  t.deepEqual(store.getState().project.searchCondition, {
+    projectKey: "key",
+    epic: "A-B",
+  });
+});
+
+test.serial("show button when it is not editing", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  const button = screen.queryByTestId("open-suggestion/button");
+
+  t.not(button, null);
+});
+
+test.serial("show term input when open-suggestion clicked", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  const button = screen.getByTestId("open-suggestion/button");
+  await userEvent.click(button);
+
+  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+
+  t.is(input.value, "");
+});
+
+test.serial("show button again when type enter in term", async (t) => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditorForm onClose={() => {}} />
+    </Provider>,
+  );
+
+  await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
+
+  await userEvent.click(screen.getByTestId("open-suggestion/button"));
+
+  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+  await userEvent.type(input, "{enter}");
+
+  const button = screen.getByTestId("open-suggestion/button");
+
+  t.is(button.textContent, "Click to select sprint");
+});

@@ -8,5 +8,8 @@
     "test/**/*.test.ts",
     "test/**/*.test.tsx"
   ],
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
   "types": ["vite/client"]
 }

@@ -18,20 +18,17 @@
     "sourceMap": true,
     "resolveJsonModule": false,
     "isolatedModules": true,
-    "jsx": "react",
-    "jsxFactory": "jsx",
-    "jsxFragmentFactory": "Fragment",
+    "jsx": "react-jsxdev",
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "paths": {
       "@/*": ["src/*"]
     }
   },
   "include": [
-    "src",
-    "test"
+    "src"
   ],
   "exclude": ["node_modules"],
   "noEmit": true

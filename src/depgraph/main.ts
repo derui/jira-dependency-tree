@@ -207,7 +207,7 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
             largestLevelMap.set(node, largestLevelOf(adjMatrix, node));
           }
 
-          if (largestLevelMap.get(node)! === level) {
+          if (largestLevelMap.get(node) === level) {
             nodesAtLevel.add(node);
           }
         });

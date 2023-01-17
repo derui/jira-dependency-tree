@@ -1,7 +1,5 @@
-import { Driver } from "@cycle/run";
-import xs, { Listener, MemoryStream, Stream } from "xstream";
 import { Selection } from "d3";
-import { fromEvent } from "@cycle/dom/lib/cjs/fromEvent";
+import { distinctUntilChanged, filter, fromEvent, Observable, Subject, take, takeUntil } from "rxjs";
 import { simpleTransit } from "./util/transition";
 import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
@@ -37,57 +35,56 @@ export interface IssueGraphSource {
    * run command on issue graph
    */
   runCommand(command: IssueGraphCommand): void;
-  state: MemoryStream<IssueGraphState>;
+
+  /**
+   * state stream of pan zoom
+   */
+  state$: Observable<IssueGraphState>;
 }
 
 const makeDragListener = (
-  mousemove$: Stream<Event>,
-  mouseup$: Stream<Event>,
+  mousemove$: Observable<Event>,
+  mouseup$: Observable<Event>,
   next: (pos: Position) => void,
-): Partial<Listener<Event>> => {
-  return {
-    next: (e) => {
-      const event = e as MouseEvent;
+): ((e: Event) => void) => {
+  return (e) => {
+    const event = e as MouseEvent;
 
-      let prevX = event.clientX;
-      let prevY = event.clientY;
+    let prevX = event.clientX;
+    let prevY = event.clientY;
 
-      const mmStream = mousemove$.endWhen(mouseup$.take(1));
-      const listener: Partial<Listener<Event>> = {
-        next: (mm) => {
-          mm.preventDefault();
-          const moveEvent = mm as MouseEvent;
+    const mmStream = mousemove$.pipe(takeUntil(mouseup$.pipe(take(1))));
 
-          const deltaX = prevX - moveEvent.clientX;
-          const deltaY = prevY - moveEvent.clientY;
-          prevX = moveEvent.clientX;
-          prevY = moveEvent.clientY;
+    const subscription = mmStream.subscribe({
+      next(mm) {
+        mm.preventDefault();
+        const moveEvent = mm as MouseEvent;
 
-          next({ x: deltaX, y: deltaY });
-        },
-        complete() {
-          mmStream.removeListener(listener);
-        },
-      };
+        const deltaX = prevX - moveEvent.clientX;
+        const deltaY = prevY - moveEvent.clientY;
+        prevX = moveEvent.clientX;
+        prevY = moveEvent.clientY;
 
-      mmStream.addListener(listener);
-    },
+        next({ x: deltaX, y: deltaY });
+      },
+      complete() {
+        subscription.unsubscribe();
+      },
+    });
   };
 };
 
-const makeWheelListener = (next: (delta: number) => void): Partial<Listener<Event>> => {
-  return {
-    next: (e) => {
-      const event = e as WheelEvent;
-      const delta = event.deltaY > 0 ? 1 : -1;
-      event.preventDefault();
+const makeWheelListener = (next: (delta: number) => void): ((e: Event) => void) => {
+  return (e) => {
+    const event = e as WheelEvent;
+    const delta = event.deltaY > 0 ? 1 : -1;
+    event.preventDefault();
 
-      next(delta);
-    },
+    next(delta);
   };
 };
 
-const makePanZoomStream = (selector: string, reference: IssueGraphState): MemoryStream<IssueGraphState> => {
+const makePanZoomStream = (selector: string, reference: IssueGraphState): Observable<IssueGraphState> => {
   const element = document.querySelector(selector);
 
   if (!element) {
@@ -103,30 +100,27 @@ const makePanZoomStream = (selector: string, reference: IssueGraphState): Memory
   reference.pan = { x: -1 * (rect.width / 2), y: (-1 * rect.height) / 2 };
   reference.zoomPercentage = 100;
 
-  return xs.createWithMemory<IssueGraphState>({
-    start: (listener) => {
-      const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
-        const { pan, zoomPercentage: zoom } = reference;
-        reference.pan = { x: pan.x + delta.x * (100 / zoom), y: pan.y + delta.y * (100 / zoom) };
+  return new Observable<IssueGraphState>((subscriber) => {
+    const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
+      const { pan, zoomPercentage: zoom } = reference;
+      reference.pan = { x: pan.x + delta.x * (100 / zoom), y: pan.y + delta.y * (100 / zoom) };
 
-        listener.next({ pan, zoomPercentage: zoom });
-      });
+      subscriber.next({ pan, zoomPercentage: zoom });
+    });
 
-      const wheelListener = makeWheelListener((delta) => {
-        const { pan, zoomPercentage: zoom } = reference;
-        const zoomScale = delta * 5 * (zoom / 100);
+    const wheelListener = makeWheelListener((delta) => {
+      const { pan, zoomPercentage: zoom } = reference;
+      const zoomScale = delta * 5 * (zoom / 100);
 
-        reference.zoomPercentage = Math.max(Math.min(zoom + -1 * zoomScale, 200), 1);
+      reference.zoomPercentage = Math.max(Math.min(zoom + -1 * zoomScale, 200), 1);
 
-        listener.next({ pan, zoomPercentage: zoom });
-      });
+      subscriber.next({ pan, zoomPercentage: zoom });
+    });
 
-      mousedown$.addListener(dragListener);
-      wheel$.addListener(wheelListener);
+    mousedown$.subscribe(dragListener);
+    wheel$.subscribe(wheelListener);
 
-      listener.next(reference);
-    },
-    stop() {},
+    subscriber.next(reference);
   });
 };
 
@@ -171,7 +165,7 @@ const attentionIssue = (
 export const makeIssueGraphDriver = function makeIssueGraphDriver(
   parentSelector: string,
   nodeSize: Size = { width: 160, height: 80 },
-): Driver<Stream<IssueGraphSink | null>, IssueGraphSource> {
+): (sink: Subject<IssueGraphSink | null>) => IssueGraphSource {
   return (sink$) => {
     let svg: Selection<SVGSVGElement, undefined, null, undefined> | null = null;
     let svgSize: DOMRect;
@@ -208,7 +202,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       svg.attr("viewBox", makeViewBox(stateReference, svgSize));
     };
 
-    sink$.filter(filterNull).subscribe({
+    sink$.pipe(filter(filterNull), distinctUntilChanged()).subscribe({
       next: ({ issues, project, graphLayout }) => {
         if (svg === null) {
           updateIssueGraph({ issues, project, graphLayout });
@@ -239,7 +233,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
             break;
         }
       },
-      state: stateStream,
+      state$: stateStream,
     };
   };
 };

@@ -106,6 +106,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
       key={issue.key}
       className={classNames(Styles.issue)}
       data-testid={gen("issue")}
+      data-key={issue.key}
       onClick={() => handleIssueClick(issue.key)}
     >
       <span className={classNames(Styles.issueKey)}>{issue.key}</span>

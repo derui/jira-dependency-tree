@@ -25,17 +25,17 @@ describe("load issues", () => {
     // check restored value
     cy.testid("user-configuration/marker").should("not.have.class", "--show");
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/user-domain/input").should("have.value", "domain");
-    cy.testid("user-configuration/email/input").should("have.value", "email");
-    cy.testid("user-configuration/jira-token/input").should("have.value", "token");
+    cy.testid("user-configuration/form/user-domain/input").should("have.value", "domain");
+    cy.testid("user-configuration/form/email/input").should("have.value", "email");
+    cy.testid("user-configuration/form/token/input").should("have.value", "token");
 
     // re-open and keep previous value
-    cy.testid("user-configuration/submit/button").click();
+    cy.testid("user-configuration/form/submit/button").click();
     cy.testid("user-configuration/opener").click();
 
-    cy.testid("user-configuration/user-domain/input").should("have.value", "domain");
-    cy.testid("user-configuration/email/input").should("have.value", "email");
-    cy.testid("user-configuration/jira-token/input").should("have.value", "token");
+    cy.testid("user-configuration/form/user-domain/input").should("have.value", "domain");
+    cy.testid("user-configuration/form/email/input").should("have.value", "email");
+    cy.testid("user-configuration/form/token/input").should("have.value", "token");
   });
 
   it("store local storage submitted settings", () => {
@@ -43,10 +43,10 @@ describe("load issues", () => {
 
     // type value and submit
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/user-domain/input").type("domain");
-    cy.testid("user-configuration/email/input").type("email");
-    cy.testid("user-configuration/jira-token/input").type("token");
-    cy.testid("user-configuration/submit/button").click();
+    cy.testid("user-configuration/form/user-domain/input").type("domain");
+    cy.testid("user-configuration/form/email/input").type("email");
+    cy.testid("user-configuration/form/token/input").type("token");
+    cy.testid("user-configuration/form/submit/button").click();
 
     // check in local storage
     cy.window().then((win) => {

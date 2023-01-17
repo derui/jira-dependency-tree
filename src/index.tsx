@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
-import { Setting } from "./model/setting";
+import { Setting, SettingArgument } from "./model/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
 import { createStore } from "./state/store";
@@ -32,11 +32,11 @@ const storageDriver = makeStorageDriver("jiraDependencyTree", localStorage);
 const storageSubject = new BehaviorSubject<StorageSink | undefined>(undefined);
 
 storageDriver(storageSubject)
-  .select<Setting>("settings")
+  .select<SettingArgument>("settings")
   .subscribe((v) => {
-    const email = v.credentials.email;
+    const email = v.credentials?.email;
     const userDomain = v.userDomain;
-    const token = v.credentials.jiraToken;
+    const token = v.credentials?.jiraToken;
 
     if (email && userDomain && token) {
       store.dispatch(
@@ -66,6 +66,21 @@ const selectIssueGraphSink = createDraftSafeSelector(
   },
 );
 
+const selectStorageValue = createDraftSafeSelector(getGraphLayout(), getApiCrednetial(), (graphLayout, credential) => {
+  if (!credential) {
+    return undefined;
+  }
+
+  return {
+    graphLayout,
+    credentials: {
+      email: credential.email,
+      jiraToken: credential.token,
+    },
+    userDomain: credential.userDomain,
+    issueNodeSize: { width: 160, height: 80 },
+  } as SettingArgument;
+});
 const issueGraphSource = makeIssueGraphDriver("#graph-root")(issueGraphSubject);
 
 registrar.register("sendCommandTo", (command) => {
@@ -90,12 +105,11 @@ store.subscribe(() => {
     });
   }
 
-  const credential = getApiCrednetial()(store.getState());
+  const newValue = selectStorageValue(store.getState());
+  const storage = storageSubject.getValue()?.settings as SettingArgument | undefined;
 
-  if (storageSubject.getValue()?.credential !== credential) {
-    storageSubject.next({
-      apiCredential: credential,
-    });
+  if (newValue && storage !== newValue) {
+    storageSubject.next({ settings: newValue });
   }
 });
 

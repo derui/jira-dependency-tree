@@ -7,6 +7,7 @@ import { Dependencies } from "../../dependencies";
 import { createPureStore } from "../store";
 import {
   requestSuggestion,
+  requestSuggestionAccepted,
   requestSuggestionFulfilled,
   submitApiCredentialFulfilled,
   submitProjectKeyFulfilled,
@@ -34,7 +35,7 @@ test("do not request when did not credential setupeed", async (t) => {
     const epics = epic.suggestionEpic(registrar);
 
     const action$ = hot("-a", {
-      a: requestSuggestion({ kind: SuggestionKind.Sprint, term: "term" }),
+      a: requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "term" }),
     });
 
     const state$ = new StateObservable(NEVER, store.getState());
@@ -71,7 +72,7 @@ test("send request when setupped", async (t) => {
     const epics = epic.suggestionEpic(registrar);
 
     const action$ = hot("-a", {
-      a: requestSuggestion({ kind: SuggestionKind.Sprint, term: "term" }),
+      a: requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "term" }),
     });
 
     const state$ = new StateObservable(NEVER, store.getState());
@@ -87,6 +88,35 @@ test("send request when setupped", async (t) => {
             { value: "v2", displayName: "version 2" },
           ],
         }),
+      }),
+    });
+  });
+});
+
+test("return accepted event", async (t) => {
+  const testScheduler = new TestScheduler((a, b) => {
+    t.deepEqual(a, b);
+  });
+
+  testScheduler.run(({ hot, expectObservable: expect }) => {
+    const store = createPureStore();
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+
+    const epics = epic.suggestionEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: requestSuggestion({ kind: SuggestionKind.Sprint, term: "term" }),
+    });
+
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.acceptSuggestion(action$, state$, null);
+
+    expect(ret$).toBe(`-${"-".repeat(500)}a`, {
+      a: requestSuggestionAccepted({
+        kind: SuggestionKind.Sprint,
+        term: "term",
       }),
     });
   });

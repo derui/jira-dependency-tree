@@ -1,5 +1,5 @@
 import test from "ava";
-import { requestSuggestion, requestSuggestionFulfilled } from "../actions";
+import { requestSuggestion, requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "../slices/suggestions";
 import { RootState } from "../store";
 import * as s from "./suggestion";
@@ -38,7 +38,7 @@ test("get target kind of selection", (t) => {
 
 test("loading", (t) => {
   const state = {
-    suggestions: reducer(getInitialState(), requestSuggestion({ kind: SuggestionKind.Sprint, term: "var" })),
+    suggestions: reducer(getInitialState(), requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "var" })),
   } as RootState;
 
   t.deepEqual(s.querySuggestion(SuggestionKind.Sprint, "var")(state), [Loading.Loading, undefined]);

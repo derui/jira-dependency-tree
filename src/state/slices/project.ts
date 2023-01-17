@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import produce from "immer";
 import {
   changeConditionToEpic,
   changeConditionToSprint,
@@ -27,41 +26,32 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
-      .addCase(submitProjectKey, (state) => {
-        state.loading = Loading.Loading;
-      })
-      .addCase(submitProjectKeyFulfilled, (state, action) => {
-        return produce(state, (draft) => {
-          draft.loading = Loading.Completed;
-          draft.project = action.payload;
-          draft.searchCondition = { projectKey: action.payload.key };
-        });
-      })
+    builder.addCase(submitProjectKey, (state) => {
+      state.loading = Loading.Loading;
+    });
+    builder.addCase(submitProjectKeyFulfilled, (state, action) => {
+      state.loading = Loading.Completed;
+      state.project = action.payload;
+      state.searchCondition = { projectKey: action.payload.key };
+    });
 
-      .addCase(changeConditionToEpic, (state, action) => {
-        return produce(state, (draft) => {
-          if (draft.project) {
-            draft.searchCondition = { epic: action.payload, projectKey: draft.project.key };
-          }
-        });
-      })
+    builder.addCase(changeConditionToEpic, (state, action) => {
+      if (state.project) {
+        state.searchCondition = { epic: action.payload, projectKey: state.project.key };
+      }
+    });
 
-      .addCase(changeConditionToSprint, (state, action) => {
-        return produce(state, (draft) => {
-          if (draft.project) {
-            draft.searchCondition = { sprint: action.payload, projectKey: draft.project.key };
-          }
-        });
-      })
+    builder.addCase(changeConditionToSprint, (state, action) => {
+      if (state.project) {
+        state.searchCondition = { sprint: action.payload, projectKey: state.project.key };
+      }
+    });
 
-      .addCase(changeDefaultCondition, (state) => {
-        return produce(state, (draft) => {
-          if (draft.project) {
-            draft.searchCondition = { projectKey: draft.project.key };
-          }
-        });
-      });
+    builder.addCase(changeDefaultCondition, (state) => {
+      if (state.project) {
+        state.searchCondition = { projectKey: state.project.key };
+      }
+    });
   },
 });
 

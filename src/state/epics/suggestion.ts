@@ -1,21 +1,26 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, filter, map, switchMap } from "rxjs/operators";
+import { catchError, debounce, debounceTime, filter, map, switchMap } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
-import { requestSuggestion, requestSuggestionError, requestSuggestionFulfilled } from "../actions";
+import {
+  requestSuggestion,
+  requestSuggestionAccepted,
+  requestSuggestionError,
+  requestSuggestionFulfilled,
+} from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Suggestion, suggestionFactory } from "@/model/suggestion";
 
-type Epics = "getSuggestion";
+type Epics = "acceptSuggestion" | "getSuggestion";
 
 export const suggestionEpic = (
   registrar: DependencyRegistrar<Dependencies>,
 ): Record<Epics, Epic<Action, Action, RootState>> => ({
   getSuggestion: (action$, state$) =>
     action$.pipe(
-      filter(requestSuggestion.match),
+      filter(requestSuggestionAccepted.match),
       switchMap((action) => {
         const credential = state$.value.apiCredential.credential;
         const projectKey = state$.value.project.project?.key;
@@ -50,6 +55,12 @@ export const suggestionEpic = (
 
         return of(requestSuggestionError("Have error"));
       }),
+    ),
+  acceptSuggestion: (action$) =>
+    action$.pipe(
+      filter(requestSuggestion.match),
+      debounceTime(500),
+      map(({ payload }) => requestSuggestionAccepted(payload)),
     ),
 });
 

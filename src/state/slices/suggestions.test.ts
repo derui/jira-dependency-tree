@@ -1,5 +1,5 @@
 import test from "ava";
-import { requestSuggestion, requestSuggestionFulfilled } from "../actions";
+import { requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "./suggestions";
 import { Loading, SuggestionKind } from "@/type";
 import { mergeSuggestion, suggestionFactory } from "@/model/suggestion";
@@ -9,7 +9,7 @@ test("initial state", (t) => {
 });
 
 test("loading", (t) => {
-  const state = reducer(getInitialState(), requestSuggestion({ kind: SuggestionKind.Sprint, term: "foo" }));
+  const state = reducer(getInitialState(), requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "foo" }));
 
   t.deepEqual(state, { loading: Loading.Loading, suggestions: suggestionFactory({}) });
 });

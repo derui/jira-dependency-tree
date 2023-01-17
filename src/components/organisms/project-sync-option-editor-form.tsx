@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
@@ -67,14 +67,12 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
 
   const selectedIssue = (suggestions ?? []).find((v) => v.id === selectedSuggestionId);
 
-  useEffect(() => {
+  const handleInput = (term: string) => {
+    setTerm(term);
+
     if (suggestions && suggestions.length === 0) {
       dispatch(requestSuggestion({ kind: SuggestionKind.Sprint, term }));
     }
-  }, [term]);
-
-  const handleInput = (term: string) => {
-    setTerm(term);
   };
 
   const handleKeypress = (key: string) => {
@@ -99,7 +97,8 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
     if (!selected) {
       return;
     }
-    setTerm(selected.displayName);
+
+    onFinished(selected);
   };
 
   const input = () => (

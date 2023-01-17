@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { requestSuggestion, requestSuggestionFulfilled } from "../actions";
+import { requestSuggestion, requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { mergeSuggestion, Suggestion } from "@/model/suggestion";
 import { Loading, SuggestionKind } from "@/type";
 
@@ -18,7 +18,7 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(requestSuggestion, (state) => {
+    builder.addCase(requestSuggestionAccepted, (state) => {
       state.loading = Loading.Loading;
     });
     builder.addCase(requestSuggestionFulfilled, (state, action) => {

@@ -45,6 +45,9 @@ export const changeToHorizontalLayout = createAction("changeToHorizontalLayout")
 
 // actions for suggestion
 export const requestSuggestion = createAction<{ term: string; kind: SuggestionKind }>("requestSuggestion");
+export const requestSuggestionAccepted = createAction<{ term: string; kind: SuggestionKind }>(
+  "requestSuggestionAccepted",
+);
 export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; suggestion: Suggestion }>(
   "requestSuggestionFulfilled",
 );

@@ -25,6 +25,7 @@ describe("load issues", () => {
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
+    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
     cy.testid("project-sync-option-editor/form/sprint/input").type("te");
 
     // verify suggestions
@@ -40,7 +41,7 @@ describe("load issues", () => {
       .should("contain.text", "TES スプリント 5");
   });
 
-  it.only("change condition if suggestion item is selected", () => {
+  it("change condition if suggestion item is selected", () => {
     cy.visit("/");
 
     cy.mockAPI({
@@ -63,17 +64,17 @@ describe("load issues", () => {
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
+    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
     cy.testid("project-sync-option-editor/form/sprint/input").type("te");
 
     // click suggenstion
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion").contains("TES スプリント 5").click();
-    cy.testid("project-sync-option-editor/form/sprint/input").type("{enter}");
 
     // verify clicked suggestion
-    cy.testid("project-sync-option-editor/form/sprint/input").should("have.value", "TES スプリント 5");
+    cy.testid("project-sync-option-editor/form/open-suggestion/button").should("contain.text", "TES スプリント 5");
 
     // Click apply
-    cy.testid("project-sync-option-editor/submit").click();
+    cy.testid("project-sync-option-editor/form/submit").click();
 
     // verify condition name
     cy.testid("project-sync-option-editor/opener").should("contain.text", "TES スプリント 5");
@@ -102,16 +103,16 @@ describe("load issues", () => {
     // enter epic
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("epic");
-    cy.testid("project-sync-option-editor/epic-input/input").type("ABC-352");
+    cy.testid("project-sync-option-editor/form/epic-input/input").type("ABC-352");
 
     // Click apply
-    cy.testid("project-sync-option-editor/submit").click();
+    cy.testid("project-sync-option-editor/form/submit").click();
 
     // verify condition name
     cy.testid("project-sync-option-editor/opener").should("contain.text", "ABC-352");
   });
 
-  it("show new suggestions if it do not find any suggestion", () => {
+  it.only("show new suggestions if it do not find any suggestion", () => {
     cy.visit("/");
 
     cy.mockAPI({
@@ -120,7 +121,6 @@ describe("load issues", () => {
       "http://localhost:3000/get-suggestions": post(["basic/suggestions", "basic/other-suggestions"], {
         "basic/suggestions": async (req) => {
           const json = await req.clone().json();
-
           return json.input_value === "te";
         },
         "basic/other-suggestions": async (req) => {
@@ -146,24 +146,26 @@ describe("load issues", () => {
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
-    cy.testid("sprint-suggestor/suggestor-opener").click();
-    cy.testid("sprint-suggestor/term").type("te");
+    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
+    cy.testid("project-sync-option-editor/form/sprint/input").type("te");
 
     // verify suggestions
-    cy.testid("sprint-suggestor/suggestion")
+    cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 2)
       .and("contain.text", "TES スプリント 5")
       .and("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
-    cy.testid("sprint-suggestor/term").clear().type("FAR").wait(500);
-    cy.testid("sprint-suggestor/suggestion")
+    cy.testid("project-sync-option-editor/form/sprint/input").clear().type("FAR").wait(500);
+    cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 2)
       .and("contain.text", "FAR 7")
       .and("contain.text", "FAR 8");
 
     // having old suggestion
-    cy.testid("sprint-suggestor/term").clear().type("5").wait(500);
-    cy.testid("sprint-suggestor/suggestion").should("have.length", 1).and("contain.text", "TES スプリント 5");
+    cy.testid("project-sync-option-editor/form/sprint/input").clear().type("5").wait(500);
+    cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
+      .should("have.length", 1)
+      .and("contain.text", "TES スプリント 5");
   });
 });

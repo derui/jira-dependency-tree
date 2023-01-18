@@ -14,18 +14,11 @@ import { createPureStore } from "../store";
 import * as epic from "./issue";
 import { randomCredential, randomProject } from "@/mock-data";
 
-const registrar = createDependencyRegistrar<Dependencies>();
-const env = {
-  apiBaseUrl: "http://base.url",
-  apiKey: "key",
-};
-registrar.register("env", env);
-
 test("return empty action if no any credential", () => {
   const testScheduler = new TestScheduler((a, b) => {
     expect(a).toEqual(b);
   });
-
+  const registrar = createDependencyRegistrar<Dependencies>();
   const store = createPureStore();
   const epics = epic.issueEpic(registrar);
 
@@ -50,6 +43,7 @@ test("get issues from response", () => {
   });
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
     registrar.register("postJSON", () => {
       return cold("--a", {
         a: [{ key: "key", summary: "summary", description: "description", subtasks: [], links: [] }],
@@ -77,6 +71,69 @@ test("get issues from response", () => {
           summary: "summary",
           description: "description",
           outwardIssueKeys: [],
+          selfUrl: "",
+          statusId: "",
+          typeId: "",
+        },
+      ]),
+    });
+  });
+});
+
+test("do not add outward issues if subtask already has other outward issues", () => {
+  const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
+
+  testScheduler.run(({ cold, hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
+    registrar.register("postJSON", () => {
+      return cold("--a", {
+        a: [
+          { key: "key", summary: "summary", description: "description", subtasks: ["a", "b"], links: [] },
+          { key: "a", summary: "summary", description: "description", subtasks: [], links: [] },
+          { key: "b", summary: "summary", description: "description", subtasks: [], links: [{ outwardIssue: "a" }] },
+        ],
+      });
+    });
+
+    const store = createPureStore();
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+
+    const epics = epic.issueEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: synchronizeIssues(),
+    });
+
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.synchronizeIssues(action$, state$, null);
+
+    expect(ret$).toBe("---a", {
+      a: synchronizeIssuesFulfilled([
+        {
+          key: "key",
+          summary: "summary",
+          description: "description",
+          outwardIssueKeys: [],
+          selfUrl: "",
+          statusId: "",
+          typeId: "",
+        },
+        {
+          key: "a",
+          summary: "summary",
+          description: "description",
+          outwardIssueKeys: ["key"],
+          selfUrl: "",
+          statusId: "",
+          typeId: "",
+        },
+        {
+          key: "b",
+          summary: "summary",
+          description: "description",
+          outwardIssueKeys: ["a"],
           selfUrl: "",
           statusId: "",
           typeId: "",

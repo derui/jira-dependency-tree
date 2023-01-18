@@ -1,16 +1,18 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, filter, map, switchMap, tap } from "rxjs/operators";
-import { of, throwError } from "rxjs";
+import { catchError, filter, map, switchMap } from "rxjs/operators";
+import { of } from "rxjs";
 import type { RootState } from "../store";
 import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Issue } from "@/model/issue";
 
+type IssueEpic = "synchronizeIssues";
+
 export const issueEpic = (
   registrar: DependencyRegistrar<Dependencies>,
-): Record<string, Epic<Action, Action, RootState>> => {
+): Record<IssueEpic, Epic<Action, Action, RootState>> => {
   return {
     synchronizeIssues: (action$, state$) =>
       action$.pipe(

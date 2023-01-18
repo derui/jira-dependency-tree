@@ -29,6 +29,7 @@ const slice = createSlice({
     builder.addCase(submitProjectKey, (state) => {
       state.loading = Loading.Loading;
     });
+
     builder.addCase(submitProjectKeyFulfilled, (state, action) => {
       state.loading = Loading.Completed;
       state.project = action.payload;

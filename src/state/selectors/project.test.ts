@@ -1,10 +1,10 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import type { RootState } from "../store";
 import * as s from "./project";
 import { Loading } from "@/type";
 import { projectFactory } from "@/model/project";
 
-test("return project if state of loading is not loading", (t) => {
+test("return project if state of loading is not loading", () => {
   const state = {
     project: {
       project: projectFactory({ key: "key", id: "id", name: "name" }),
@@ -15,10 +15,10 @@ test("return project if state of loading is not loading", (t) => {
 
   const ret = s.queryProject()(state);
 
-  t.deepEqual(ret, [Loading.Completed, state.project.project]);
+  expect(ret).toEqual([Loading.Completed, state.project.project]);
 });
 
-test("do not return project in loading", (t) => {
+test("do not return project in loading", () => {
   const state = {
     project: {
       project: projectFactory({ key: "key", id: "id", name: "name" }),
@@ -29,10 +29,10 @@ test("do not return project in loading", (t) => {
 
   const ret = s.queryProject()(state);
 
-  t.deepEqual(ret, [Loading.Loading, undefined]);
+  expect(ret).toEqual([Loading.Loading, undefined]);
 });
 
-test("return false if setup is not finished yet", (t) => {
+test("return false if setup is not finished yet", () => {
   const credential = {
     apiBaseUrl: "api",
     apiKey: "key",
@@ -53,10 +53,10 @@ test("return false if setup is not finished yet", (t) => {
 
   const ret = s.isSearchConditionEditable()(state);
 
-  t.is(ret, false);
+  expect(ret).toBeFalsy();
 });
 
-test("return request if request setup finished", (t) => {
+test("return request if request setup finished", () => {
   const credential = {
     apiBaseUrl: "api",
     apiKey: "key",
@@ -78,5 +78,5 @@ test("return request if request setup finished", (t) => {
 
   const ret = s.isSearchConditionEditable()(state);
 
-  t.is(ret, true);
+  expect(ret).toBeTruthy();
 });

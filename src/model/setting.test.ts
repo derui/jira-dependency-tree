@@ -1,32 +1,32 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { settingFactory } from "@/model/setting";
 import { Env } from "@/model/env";
 
-test("empty setting", (t) => {
+test("empty setting", () => {
   // arrange
 
   // do
   const setting = settingFactory({});
 
   // verify
-  t.deepEqual(setting.credentials, {});
-  t.deepEqual(setting.userDomain, undefined);
-  t.deepEqual(setting.isSetupFinished(), false);
+  expect(setting.credentials).toEqual({});
+  expect(setting.userDomain).toBeUndefined();
+  expect(setting.isSetupFinished()).toBe(false);
 });
 
-test("setup finished if all informations are set", (t) => {
+test("setup finished if all informations are set", () => {
   // arrange
 
   // do
   const setting = settingFactory({}).applyCredentials("cred", "email").applyUserDomain("domain");
 
   // verify
-  t.deepEqual(setting.credentials, { jiraToken: "cred", email: "email" });
-  t.deepEqual(setting.userDomain, "domain");
-  t.deepEqual(setting.isSetupFinished(), true);
+  expect(setting.credentials).toEqual({ jiraToken: "cred", email: "email" });
+  expect(setting.userDomain).toBe("domain");
+  expect(setting.isSetupFinished()).toBe(true);
 });
 
-test("can not get api credential when it does not finish setup", (t) => {
+test("can not get api credential when it does not finish setup", () => {
   // arrange
   const setting = settingFactory({});
   const fakeEnv: Env = { apiBaseUrl: "url", apiKey: "" };
@@ -35,10 +35,10 @@ test("can not get api credential when it does not finish setup", (t) => {
   const ret = setting.asApiCredential(fakeEnv);
 
   // verify
-  t.is(ret, undefined);
+  expect(ret).toBeUndefined();
 });
 
-test("can get api credentail if setup finished", (t) => {
+test("can get api credentail if setup finished", () => {
   // arrange
   const setting = settingFactory({ userDomain: "domain", credentials: { jiraToken: "token", email: "email" } });
   const fakeEnv: Env = { apiBaseUrl: "url", apiKey: "" };
@@ -47,7 +47,7 @@ test("can get api credentail if setup finished", (t) => {
   const ret = setting.asApiCredential(fakeEnv);
 
   // verify
-  t.deepEqual(ret, {
+  expect(ret).toEqual({
     apiBaseUrl: "url",
     apiKey: "",
     userDomain: "domain",

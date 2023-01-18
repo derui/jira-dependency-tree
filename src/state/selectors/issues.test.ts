@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import * as issues from "../slices/issues";
 import * as project from "../slices/project";
@@ -9,15 +9,15 @@ import { Loading } from "@/type";
 import { Issue } from "@/model/issue";
 import { projectFactory } from "@/model/project";
 
-test("do not return issues while loading", (t) => {
+test("do not return issues while loading", () => {
   const state = { issues: issues.reducer(issues.getInitialState(), synchronizeIssues()) } as RootState;
 
   const ret = s.queryIssues()(state);
 
-  t.deepEqual(ret, [Loading.Loading, undefined]);
+  expect(ret).toEqual([Loading.Loading, undefined]);
 });
 
-test("get issues after fulfilled", (t) => {
+test("get issues after fulfilled", () => {
   const issue = { key: "key" } as Issue;
   const state = {
     issues: issues.reducer(
@@ -28,10 +28,10 @@ test("get issues after fulfilled", (t) => {
 
   const ret = s.queryIssues()(state);
 
-  t.deepEqual(ret, [Loading.Completed, [issue]]);
+  expect(ret).toEqual([Loading.Completed, [issue]]);
 });
 
-test("does not syncable if setup did not finished", (t) => {
+test("does not syncable if setup did not finished", () => {
   const state = {
     project: project.getInitialState(),
     apiCredential: apiCredential.getInitialState(),
@@ -40,10 +40,10 @@ test("does not syncable if setup did not finished", (t) => {
 
   const ret = s.isSyncable()(state);
 
-  t.is(ret, false);
+  expect(ret).toBe(false);
 });
 
-test("return request if request setup finished", (t) => {
+test("return request if request setup finished", () => {
   const credential = {
     apiBaseUrl: "api",
     apiKey: "key",
@@ -66,10 +66,10 @@ test("return request if request setup finished", (t) => {
 
   const ret = s.isSyncable()(state);
 
-  t.is(ret, true);
+  expect(ret).toBe(true);
 });
 
-test("search issues", (t) => {
+test("search issues", () => {
   const fulfilledIssues = [
     { key: "key", summary: "summary" },
     { key: "not match", summary: "not match" },
@@ -85,5 +85,5 @@ test("search issues", (t) => {
 
   const ret = s.selectMatchedIssue()(state);
 
-  t.deepEqual(ret, [{ key: "key", summary: "summary" }]);
+  expect(ret).toEqual([{ key: "key", summary: "summary" }]);
 });

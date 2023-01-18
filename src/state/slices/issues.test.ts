@@ -1,21 +1,21 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { getInitialState, reducer } from "./issues";
 import { Loading } from "@/type";
 import { Issue } from "@/model/issue";
 
-test("initial state", (t) => {
-  t.deepEqual(getInitialState(), { issues: [], loading: Loading.Completed, matchedIssues: [] });
+test("initial state", () => {
+  expect(getInitialState()).toEqual({ issues: [], loading: Loading.Completed, matchedIssues: [] });
 });
 
-test("loading", (t) => {
+test("loading", () => {
   const ret = reducer(getInitialState(), synchronizeIssues());
 
-  t.is(ret.loading, Loading.Loading);
-  t.deepEqual(ret.issues, []);
+  expect(ret.loading).toBe(Loading.Loading);
+  expect(ret.issues).toEqual([]);
 });
 
-test("loaded issues", (t) => {
+test("loaded issues", () => {
   const issue = {
     key: "key",
     summary: "summary",
@@ -27,12 +27,12 @@ test("loaded issues", (t) => {
   };
   const ret = reducer(getInitialState(), synchronizeIssuesFulfilled([issue]));
 
-  t.is(ret.issues.length, 1);
-  t.is(ret.issues[0], issue);
-  t.is(ret.loading, Loading.Completed);
+  expect(ret.issues.length).toBe(1);
+  expect(ret.issues[0]).toEqual(issue);
+  expect(ret.loading).toBe(Loading.Completed);
 });
 
-test("get issue matched", (t) => {
+test("get issue matched", () => {
   const issues: Issue[] = [
     {
       key: "key",
@@ -48,11 +48,11 @@ test("get issue matched", (t) => {
   let ret = reducer(getInitialState(), synchronizeIssuesFulfilled(issues));
   ret = reducer(ret, searchIssue("ke"));
 
-  t.is(ret.matchedIssues.length, 1);
-  t.deepEqual(ret.matchedIssues, [issues[0]]);
+  expect(ret.matchedIssues.length).toBe(1);
+  expect(ret.matchedIssues).toEqual([issues[0]]);
 });
 
-test("empty matched issues if term is empty", (t) => {
+test("empty matched issues if term is empty", () => {
   const issues: Issue[] = [
     {
       key: "key",
@@ -68,5 +68,5 @@ test("empty matched issues if term is empty", (t) => {
   let ret = reducer(getInitialState(), synchronizeIssuesFulfilled(issues));
   ret = reducer(ret, searchIssue(""));
 
-  t.is(ret.matchedIssues.length, 0);
+  expect(ret.matchedIssues.length).toBe(0);
 });

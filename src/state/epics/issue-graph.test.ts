@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
 import { NEVER } from "rxjs";
@@ -8,14 +8,15 @@ import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { RootState } from "../store";
 import * as epic from "./issue-graph";
 
-test("send command to issue graph", async (t) => {
-  t.plan(3);
+test("send command to issue graph", async () => {
+  expect.assertions(3);
+
   const registrar = createDependencyRegistrar<Dependencies>();
   registrar.register("sendCommandTo", (payload) => {
-    t.is(payload.kind, "AttentionIssue");
-    t.is(payload.key, "key");
+    expect(payload.kind).toBe("AttentionIssue");
+    expect(payload.key).toBe("key");
   });
-  const scheduler = new TestScheduler(t.deepEqual);
+  const scheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
 
   scheduler.run(({ hot, expectObservable }) => {
     const action$ = hot("-a", { a: focusIssueOnSearch("key") });

@@ -1,7 +1,7 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
-import { NEVER, of } from "rxjs";
+import { NEVER } from "rxjs";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { Dependencies } from "../../dependencies";
 import {
@@ -12,7 +12,6 @@ import {
 } from "../actions";
 import { createPureStore } from "../store";
 import * as epic from "./issue";
-import { Issue } from "@/model/issue";
 import { randomCredential, randomProject } from "@/mock-data";
 
 const registrar = createDependencyRegistrar<Dependencies>();
@@ -22,10 +21,9 @@ const env = {
 };
 registrar.register("env", env);
 
-test("return empty action if no any credential", (t) => {
-  t.plan(1);
+test("return empty action if no any credential", () => {
   const testScheduler = new TestScheduler((a, b) => {
-    t.deepEqual(a, b);
+    expect(a).toEqual(b);
   });
 
   const store = createPureStore();
@@ -46,10 +44,9 @@ test("return empty action if no any credential", (t) => {
   });
 });
 
-test("get issues from response", (t) => {
-  t.plan(1);
+test("get issues from response", () => {
   const testScheduler = new TestScheduler((a, b) => {
-    t.deepEqual(a, b);
+    expect(a).toEqual(b);
   });
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {

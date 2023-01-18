@@ -1,12 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SuggestionList } from "./suggestion-list";
 import type { SuggestedItem } from "@/model/suggestion";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
 const renderWrapper = (v: React.ReactElement) =>
   render(v, {
@@ -20,7 +18,7 @@ const renderWrapper = (v: React.ReactElement) =>
     },
   });
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", (t) => {
   const element = document.createElement("div");
 
   renderWrapper(<SuggestionList opened={true} suggestionIdSelected='' suggestions={[]} parentElement={element} />);
@@ -28,19 +26,19 @@ test.serial("should be able to render", (t) => {
   const root = screen.getByTestId("root/dialog");
   const empty = screen.queryByTestId("empty");
 
-  t.is(root.getAttribute("aria-hidden"), "false");
-  t.truthy(empty);
+  expect(root.getAttribute("aria-hidden")).toBe("false");
+  expect(empty).toBeTruthy();
 });
 
-test.serial("do not render when did not pass parent", (t) => {
+test("do not render when did not pass parent", (t) => {
   renderWrapper(<SuggestionList opened={true} suggestionIdSelected='' suggestions={[]} />);
 
   const root = screen.queryByTestId("root/dialog");
 
-  t.falsy(root);
+  expect(root).toBeFalsy();
 });
 
-test.serial("mark selected suggestion", (t) => {
+test("mark selected suggestion", (t) => {
   const element = document.createElement("div");
 
   const suggestions: SuggestedItem[] = [{ displayName: "display", value: "value", id: "value" }];
@@ -50,11 +48,12 @@ test.serial("mark selected suggestion", (t) => {
 
   const suggestion = screen.getByTestId("suggestion");
 
-  t.is(suggestion.classList.contains("border-l-secondary1-300"), true);
+  expect(suggestion.classList.contains("border-l-secondary1-300")).toBe(true);
 });
 
-test.serial("return id when clicked", async (t) => {
-  t.plan(1);
+test("return id when clicked", async (t) => {
+  expect.assertions(1);
+
   const element = document.createElement("div");
 
   const suggestions: SuggestedItem[] = [
@@ -69,7 +68,7 @@ test.serial("return id when clicked", async (t) => {
       suggestions={suggestions}
       parentElement={element}
       onSelect={(id) => {
-        t.is(id, "value2");
+        expect(id).toBe("value2");
       }}
     />,
   );

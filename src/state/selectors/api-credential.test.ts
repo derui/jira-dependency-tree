@@ -1,17 +1,17 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { getInitialState } from "../slices/api-credential";
 import { RootState } from "../store";
 import * as s from "./api-credential";
 
-test("get undefined if credential is not setupped", (t) => {
+test("get undefined if credential is not setupped", () => {
   const state = {
     apiCredential: getInitialState(),
   } as RootState;
 
-  t.is(s.getApiCrednetial()(state), undefined);
+  expect(s.getApiCrednetial()(state)).toBeUndefined();
 });
 
-test("get api credential", (t) => {
+test("get api credential", () => {
   const credential = {
     apiBaseUrl: "aa",
     apiKey: "key",
@@ -25,5 +25,5 @@ test("get api credential", (t) => {
     },
   } as RootState;
 
-  t.is(s.getApiCrednetial()(state), credential);
+  expect(s.getApiCrednetial()(state)).toEqual(credential);
 });

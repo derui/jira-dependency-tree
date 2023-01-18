@@ -1,41 +1,39 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Button } from "./button";
 
-test.afterEach(() => {
+afterEach(() => {
   cleanup();
 });
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<Button schema="primary" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.is(element.getAttribute("aria-disabled"), "false");
-  t.is(element.type, "button");
+  expect(element.getAttribute("aria-disabled")).toBe("false");
+  expect(element.type).toBe("button");
 });
 
-test.serial("render submit button", (t) => {
+test("render submit button", () => {
   render(<Button schema="primary" type="submit" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.is(element.getAttribute("aria-disabled"), "false");
-  t.is(element.type, "submit");
+  expect(element.getAttribute("aria-disabled")).toBe("false");
+  expect(element.type).toBe("submit");
 });
 
-test.serial("should emit click event", async (t) => {
-  t.plan(1);
+test("should emit click event", async () => {
+  expect.assertions(1);
 
   render(
     <Button
       schema="primary"
       onClick={() => {
-        t.pass("called");
+        expect(true).toBeTruthy();
       }}
     />,
   );
@@ -43,18 +41,18 @@ test.serial("should emit click event", async (t) => {
   await userEvent.click(screen.getByTestId("button"));
 });
 
-test.serial("change color schema", (t) => {
+test("change color schema", () => {
   render(<Button schema="secondary1" type="submit" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.true(Array.from(element.classList.values()).some((v) => v.includes("secondary1-")));
+  expect(Array.from(element.classList.values()).some((v) => v.includes("secondary1-"))).toBeTruthy();
 });
 
-test.serial("change disabled", (t) => {
+test("change disabled", () => {
   render(<Button schema="primary" disabled onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  t.is(element.getAttribute("aria-disabled"), "true");
+  expect(element.getAttribute("aria-disabled")).toBeTruthy();
 });

@@ -1,15 +1,13 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { SideToolbar } from "./side-toolbar";
 import { createPureStore } from "@/state/store";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   const store = createPureStore();
 
   render(
@@ -20,10 +18,10 @@ test.serial("should be able to render", (t) => {
 
   const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
 
-  t.is(icon.dataset.active, "false");
+  expect(icon.dataset.active).toBe("false");
 });
 
-test.serial("active when layouter clicked", async (t) => {
+test("active when layouter clicked", async () => {
   const store = createPureStore();
 
   render(
@@ -38,13 +36,13 @@ test.serial("active when layouter clicked", async (t) => {
   const horizontal = screen.getByTestId("horizontal/icon") as HTMLSpanElement;
   const vertical = screen.getByTestId("vertical/icon") as HTMLSpanElement;
 
-  t.is(icon.dataset.active, "true");
-  t.is(horizontal.dataset.active, "true");
-  t.is(vertical.dataset.active, "false");
-  t.is(screen.getByTestId("layouter").classList.contains("visible"), true);
+  expect(icon.dataset.active).toBe("true");
+  expect(horizontal.dataset.active).toBe("true");
+  expect(vertical.dataset.active).toBe("false");
+  expect(screen.getByTestId("layouter").classList.contains("visible")).toBe(true);
 });
 
-test.serial("change layout when clicked", async (t) => {
+test("change layout when clicked", async () => {
   const store = createPureStore();
 
   render(
@@ -60,12 +58,12 @@ test.serial("change layout when clicked", async (t) => {
   const horizontal = screen.getByTestId("horizontal/icon") as HTMLSpanElement;
   const vertical = screen.getByTestId("vertical/icon") as HTMLSpanElement;
 
-  t.is(icon.dataset.active, "true");
-  t.is(horizontal.dataset.active, "false");
-  t.is(vertical.dataset.active, "true");
+  expect(icon.dataset.active).toBe("true");
+  expect(horizontal.dataset.active).toBe("false");
+  expect(vertical.dataset.active).toBe("true");
 });
 
-test.serial("toggle layouter", async (t) => {
+test("toggle layouter", async () => {
   const store = createPureStore();
 
   render(
@@ -79,6 +77,6 @@ test.serial("toggle layouter", async (t) => {
 
   const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
 
-  t.is(icon.dataset.active, "false");
-  t.is(screen.getByTestId("layouter").classList.contains("visible"), false);
+  expect(icon.dataset.active).toBe("false");
+  expect(screen.getByTestId("layouter").classList.contains("visible")).toBe(false);
 });

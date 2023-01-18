@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
@@ -8,9 +6,9 @@ import { UserConfiguration } from "./user-configuration";
 import { createPureStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   const store = createPureStore();
 
   render(
@@ -21,10 +19,10 @@ test.serial("should be able to render", (t) => {
 
   const marker = screen.getByTestId("marker");
 
-  t.true(marker.classList.contains("visible"), "marker");
+  expect(marker.classList.contains("visible"), "marker").toBeTruthy();
 });
 
-test.serial("initial payload is empty", (t) => {
+test("initial payload is empty", () => {
   const store = createPureStore();
 
   render(
@@ -47,12 +45,12 @@ test.serial("initial payload is empty", (t) => {
   const email = screen.getByTestId("form/email/input") as HTMLInputElement;
   const token = screen.getByTestId("form/token/input") as HTMLInputElement;
 
-  t.is(userDomain.value, "");
-  t.is(email.value, "");
-  t.is(token.value, "");
+  expect(userDomain.value).toBe("");
+  expect(email.value).toBe("");
+  expect(token.value).toBe("");
 });
 
-test.serial("initial payload inputted", (t) => {
+test("initial payload inputted", () => {
   const store = createPureStore();
   store.dispatch(
     submitApiCredentialFulfilled({
@@ -84,12 +82,12 @@ test.serial("initial payload inputted", (t) => {
   const email = screen.getByTestId("form/email/input") as HTMLInputElement;
   const token = screen.getByTestId("form/token/input") as HTMLInputElement;
 
-  t.is(userDomain.value, "domain");
-  t.is(email.value, "email");
-  t.is(token.value, "token");
+  expect(userDomain.value).toBe("domain");
+  expect(email.value).toBe("email");
+  expect(token.value).toBe("token");
 });
 
-test.serial("open dialog when opener clicked", async (t) => {
+test("open dialog when opener clicked", async () => {
   const store = createPureStore();
 
   render(
@@ -113,11 +111,11 @@ test.serial("open dialog when opener clicked", async (t) => {
 
   const dialog = screen.getByTestId("container/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "false");
+  expect(dialog.getAttribute("aria-hidden")).toBe("false");
 });
 
-test.serial("hide dialog when submitted", async (t) => {
-  t.plan(1);
+test("hide dialog when submitted", async () => {
+  expect.assertions(1);
   const store = createPureStore();
 
   render(
@@ -150,11 +148,11 @@ test.serial("hide dialog when submitted", async (t) => {
 
   const dialog = screen.getByTestId("container/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "true");
+  expect(dialog.getAttribute("aria-hidden")).toBe("true");
 });
 
-test.serial("hide dialog when canceled on form", async (t) => {
-  t.plan(1);
+test("hide dialog when canceled on form", async () => {
+  expect.assertions(1);
   const store = createPureStore();
 
   render(
@@ -179,5 +177,5 @@ test.serial("hide dialog when canceled on form", async (t) => {
 
   const dialog = screen.getByTestId("container/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "true");
+  expect(dialog.getAttribute("aria-hidden")).toBe("true");
 });

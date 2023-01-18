@@ -1,44 +1,42 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 
 import { Icon } from "./icon";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<Icon type="chevron-down" />);
 
   const element = screen.getByTestId("icon");
 
-  t.true(element.className.includes("chevron-down.svg"));
-  t.true(element.className.includes("w-5") && element.className.includes("h-5"));
-  t.true(element.className.includes("primary-"));
+  expect(element.className.includes("chevron-down.svg")).toBeTruthy();
+  expect(element.className.includes("w-5") && element.className.includes("h-5")).toBeTruthy();
+  expect(element.className.includes("primary-")).toBeTruthy();
 });
 
-test.serial("size and color", (t) => {
+test("size and color", () => {
   render(<Icon type="chevron-down" size="m" color="secondary1" />);
 
   const element = screen.getByTestId("icon");
 
-  t.true(element.className.includes("chevron-down.svg"));
-  t.true(element.className.includes("w-6") && element.className.includes("h-6"));
-  t.true(element.className.includes("secondary1-"));
+  expect(element.className.includes("chevron-down.svg")).toBe(true);
+  expect(element.className.includes("w-6") && element.className.includes("h-6")).toBe(true);
+  expect(element.className.includes("secondary1-")).toBe(true);
 });
 
-test.serial("active state", (t) => {
+test("active state", () => {
   render(<Icon type="chevron-down" active />);
 
   const element = screen.getByTestId("icon");
 
-  t.false(element.className.includes("primary-500"));
+  expect(element.className.includes("primary-500")).toBe(false);
 });
 
-test.serial("disabled", (t) => {
+test("disabled", () => {
   render(<Icon type="chevron-down" disabled />);
 
   const element = screen.getByTestId("icon");
 
-  t.true(element.className.includes("before:bg-lightgray"));
+  expect(element.className.includes("before:bg-lightgray")).toBe(true);
 });

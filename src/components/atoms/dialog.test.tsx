@@ -1,13 +1,11 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { Dialog } from "./dialog";
 import { Rect } from "@/util/basic";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(
     <Dialog selector='body' opened={false} aligned='bottomLeft'>
       abc
@@ -16,10 +14,10 @@ test.serial("should be able to render", (t) => {
 
   const child = screen.queryByText("abc");
 
-  t.not(child, null);
+  expect(child).not.toBeNull();
 });
 
-test.serial("opened", (t) => {
+test("opened", () => {
   render(
     <Dialog selector='body' opened={true} aligned='bottomLeft'>
       abc
@@ -28,11 +26,11 @@ test.serial("opened", (t) => {
 
   const child = screen.getByTestId("dialog");
 
-  t.is(child.classList.contains("w-96"), true, "width");
-  t.is(child.getAttribute("aria-hidden"), "false");
+  expect(child.classList.contains("w-96")).toBe(true);
+  expect(child.getAttribute("aria-hidden")).toBe("false");
 });
 
-test.serial("calculate top by rect", (t) => {
+test("calculate top by rect", () => {
   const rect = new Rect({ bottom: 10, right: 10, left: 0, top: 5 });
   render(
     <Dialog selector='body' parentRect={rect} opened={true} aligned='bottomLeft'>
@@ -42,5 +40,5 @@ test.serial("calculate top by rect", (t) => {
 
   const child = screen.getByTestId("dialog");
 
-  t.is(child.style.top, "calc(10px)", "calc");
+  expect(child.style.top).toBe("calc(10px)");
 });

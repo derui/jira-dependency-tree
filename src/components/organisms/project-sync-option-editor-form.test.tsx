@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -10,7 +8,7 @@ import { createPureStore } from "@/state/store";
 import { submitProjectKeyFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
 const wrappedRender = (v: React.ReactElement) =>
   render(v, {
@@ -24,7 +22,7 @@ const wrappedRender = (v: React.ReactElement) =>
     },
   });
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   const store = createPureStore();
 
   wrappedRender(
@@ -35,10 +33,10 @@ test.serial("should be able to render", (t) => {
 
   const select = screen.getByTestId("condition-type") as HTMLSelectElement;
 
-  t.is(select.value, "default");
+  expect(select.value).toBe("default");
 });
 
-test.serial("show epic when condition is changed to epic", async (t) => {
+test("show epic when condition is changed to epic", async () => {
   const store = createPureStore();
 
   wrappedRender(
@@ -51,19 +49,20 @@ test.serial("show epic when condition is changed to epic", async (t) => {
   await userEvent.selectOptions(select, "epic");
   const epic = screen.getByTestId("epic");
 
-  t.is(select.value, "epic");
-  t.is(epic.getAttribute("aria-hidden"), "false");
+  expect(select.value).toBe("epic");
+  expect(epic.getAttribute("aria-hidden")).toBe("false");
 });
 
-test.serial("close when cancel clicked", async (t) => {
-  t.plan(1);
+test("close when cancel clicked", async () => {
+  expect.assertions(1);
+
   const store = createPureStore();
 
   wrappedRender(
     <Provider store={store}>
       <ProjectSyncOptionEditorForm
         onClose={() => {
-          t.pass();
+          expect(true).toBeTruthy();
         }}
       />
     </Provider>,
@@ -73,7 +72,7 @@ test.serial("close when cancel clicked", async (t) => {
   await userEvent.click(cancel);
 });
 
-test.serial("change to epic", async (t) => {
+test("change to epic", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
@@ -89,13 +88,13 @@ test.serial("change to epic", async (t) => {
   const submit = screen.getByTestId("submit");
   await userEvent.click(submit);
 
-  t.deepEqual(store.getState().project.searchCondition, {
+  expect(store.getState().project.searchCondition).toEqual({
     projectKey: "key",
     epic: "A-B",
   });
 });
 
-test.serial("show button when it is not editing", async (t) => {
+test("show button when it is not editing", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
@@ -109,10 +108,10 @@ test.serial("show button when it is not editing", async (t) => {
 
   const button = screen.queryByTestId("open-suggestion/button");
 
-  t.not(button, null);
+  expect(button).not.toBeNull();
 });
 
-test.serial("show term input when open-suggestion clicked", async (t) => {
+test("show term input when open-suggestion clicked", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
@@ -129,10 +128,10 @@ test.serial("show term input when open-suggestion clicked", async (t) => {
 
   const input = screen.getByTestId("sprint/input") as HTMLInputElement;
 
-  t.is(input.value, "");
+  expect(input.value).toBe("");
 });
 
-test.serial("show button again when type enter in term", async (t) => {
+test("show button again when type enter in term", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
@@ -151,5 +150,5 @@ test.serial("show button again when type enter in term", async (t) => {
 
   const button = screen.getByTestId("open-suggestion/button");
 
-  t.is(button.textContent, "Click to select sprint");
+  expect(button.textContent).toBe("Click to select sprint");
 });

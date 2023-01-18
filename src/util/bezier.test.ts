@@ -1,11 +1,11 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { factorialize } from "@/util/bezier";
 
-test("factorialize", (t) => {
-  t.is(factorialize(0), 1);
-  t.is(factorialize(1), 1);
-  t.is(factorialize(2), 2);
-  t.is(factorialize(3), 6);
-  t.is(factorialize(4), 24);
-  t.is(factorialize(5), 120);
+test("factorialize", () => {
+  expect(factorialize(0)).toBe(1);
+  expect(factorialize(1)).toBe(1);
+  expect(factorialize(2)).toBe(2);
+  expect(factorialize(3)).toBe(6);
+  expect(factorialize(4)).toBe(24);
+  expect(factorialize(5)).toBe(120);
 });

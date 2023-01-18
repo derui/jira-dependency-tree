@@ -1,17 +1,17 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { changeZoom } from "../actions";
 import { createPureStore } from "../store";
 import * as s from "./zoom";
 
-test("get percentage", (t) => {
+test("get percentage", () => {
   const store = createPureStore();
 
   const ret = s.getZoom()(store.getState());
 
-  t.is(ret, 100);
+  expect(ret).toBe(100);
 });
 
-test("get changed percentage", (t) => {
+test("get changed percentage", () => {
   const selector = s.getZoom();
 
   const store = createPureStore();
@@ -21,6 +21,6 @@ test("get changed percentage", (t) => {
 
   const ret2 = selector(store.getState());
 
-  t.is(ret1, 100);
-  t.is(ret2, 150);
+  expect(ret1).toBe(100);
+  expect(ret2).toBe(150);
 });

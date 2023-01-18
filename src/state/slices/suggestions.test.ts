@@ -1,28 +1,28 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "./suggestions";
 import { Loading, SuggestionKind } from "@/type";
 import { mergeSuggestion, suggestionFactory } from "@/model/suggestion";
 
-test("initial state", (t) => {
-  t.deepEqual(getInitialState(), { loading: Loading.Completed, suggestions: suggestionFactory({}) });
+test("initial state", () => {
+  expect(getInitialState()).toEqual({ loading: Loading.Completed, suggestions: suggestionFactory({}) });
 });
 
-test("loading", (t) => {
+test("loading", () => {
   const state = reducer(getInitialState(), requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "foo" }));
 
-  t.deepEqual(state, { loading: Loading.Loading, suggestions: suggestionFactory({}) });
+  expect(state).toEqual({ loading: Loading.Loading, suggestions: suggestionFactory({}) });
 });
 
-test("store suggestion", (t) => {
+test("store suggestion", () => {
   const suggestion = suggestionFactory({ suggestions: [{ displayName: "name", value: "value" }] });
 
   const state = reducer(getInitialState(), requestSuggestionFulfilled({ kind: SuggestionKind.Sprint, suggestion }));
 
-  t.deepEqual(state, { loading: Loading.Completed, suggestions: { [SuggestionKind.Sprint]: suggestion } });
+  expect(state).toEqual({ loading: Loading.Completed, suggestions: { [SuggestionKind.Sprint]: suggestion } });
 });
 
-test("merge suggestion", (t) => {
+test("merge suggestion", () => {
   const suggestion = suggestionFactory({ suggestions: [{ displayName: "name", value: "value" }] });
   const nextSuggestion = suggestionFactory({
     suggestions: [
@@ -36,7 +36,7 @@ test("merge suggestion", (t) => {
     requestSuggestionFulfilled({ kind: SuggestionKind.Sprint, suggestion: nextSuggestion }),
   );
 
-  t.deepEqual(state, {
+  expect(state).toEqual({
     loading: Loading.Completed,
     suggestions: { [SuggestionKind.Sprint]: mergeSuggestion(suggestion, nextSuggestion) },
   });

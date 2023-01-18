@@ -1,48 +1,46 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Input } from "./input";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<Input value="" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
-  t.is(element.value, "");
-  t.is(screen.queryByTestId("label"), null);
+  expect(element.value).toBe("");
+  expect(screen.queryByTestId("label")).toBe(null);
 });
 
-test.serial("render label if specified", (t) => {
+test("render label if specified", () => {
   render(<Input value="" label="A label" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
-  t.is(element.value, "");
-  t.truthy(screen.queryByText("A label"));
+  expect(element.value).toBe("");
+  expect(screen.queryByText("A label")).not.toBeNull();
 });
 
-test.serial("default value", (t) => {
+test("default value", () => {
   render(<Input value="default" placeholder="some" />);
 
   const element = screen.getByTestId<HTMLInputElement>("input");
 
-  t.is(element.value, "default");
-  t.is(element.placeholder, "some");
+  expect(element.value).toBe("default");
+  expect(element.placeholder).toBe("some");
 });
 
-test.serial("change input values", async (t) => {
-  t.plan(2);
+test("change input values", async () => {
+  expect.assertions(2);
 
   render(
     <Input
       value=""
       onInput={(v) => {
-        t.is(v, "changed");
+        expect(v).toBe("changed");
       }}
     />,
   );
@@ -51,17 +49,17 @@ test.serial("change input values", async (t) => {
 
   fireEvent.input(element, { target: { value: "changed" } });
 
-  t.is(element.value, "changed");
+  expect(element.value).toBe("changed");
 });
 
-test.serial("get key of key up", async (t) => {
-  t.plan(1);
+test("get key of key up", async () => {
+  expect.assertions(1);
 
   render(
     <Input
       value=""
       onKeypress={(key) => {
-        t.is(key, "Enter");
+        expect(key).toBe("Enter");
       }}
     />,
   );

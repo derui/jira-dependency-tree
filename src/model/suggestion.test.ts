@@ -1,17 +1,17 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { mergeSuggestion, suggestionFactory } from "@/model/suggestion";
 
-test("empty sprints", (t) => {
+test("empty sprints", () => {
   // arrange
 
   // do
   const suggestion = suggestionFactory({});
 
   // verify
-  t.deepEqual(suggestion, {});
+  expect(suggestion).toEqual({});
 });
 
-test("use given sprint with id", (t) => {
+test("use given sprint with id", () => {
   // arrange
   const suggestions = [
     { value: "foo", displayName: "bar" },
@@ -22,13 +22,13 @@ test("use given sprint with id", (t) => {
   const suggestion = suggestionFactory({ suggestions: suggestions });
 
   // verify
-  t.deepEqual(suggestion, {
+  expect(suggestion).toEqual({
     foo: { id: "foo", value: "foo", displayName: "bar" },
     value: { id: "value", value: "value", displayName: "display" },
   });
 });
 
-test("merge two suggestion", (t) => {
+test("merge two suggestion", () => {
   // arrange
   const suggestion1 = suggestionFactory({ suggestions: [{ value: "foo", displayName: "bar" }] });
   const suggestion2 = suggestionFactory({ suggestions: [{ value: "value", displayName: "display" }] });
@@ -37,7 +37,7 @@ test("merge two suggestion", (t) => {
   const suggestions = mergeSuggestion(suggestion1, suggestion2);
 
   // verify
-  t.deepEqual(suggestions, {
+  expect(suggestions).toEqual({
     foo: { id: "foo", value: "foo", displayName: "bar" },
     value: { id: "value", value: "value", displayName: "display" },
   });

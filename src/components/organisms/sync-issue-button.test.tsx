@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -11,9 +9,9 @@ import { submitApiCredentialFulfilled, submitProjectKeyFulfilled } from "@/state
 import { projectFactory } from "@/model/project";
 import { Loading } from "@/type";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("initial state is disabled all", (t) => {
+test("initial state is disabled all", () => {
   render(
     <Provider store={createPureStore()}>
       <SyncIssueButton />
@@ -22,10 +20,10 @@ test.serial("initial state is disabled all", (t) => {
 
   const button = screen.getByTestId("button") as HTMLBaseElement;
 
-  t.is(button.getAttribute("aria-disabled"), "true");
+  expect(button.getAttribute("aria-disabled")).toBe("true");
 });
 
-test.serial("do not disable if setup finished", (t) => {
+test("do not disable if setup finished", () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
@@ -45,10 +43,10 @@ test.serial("do not disable if setup finished", (t) => {
   );
 
   const button = screen.getByTestId("button") as HTMLBaseElement;
-  t.is(button.getAttribute("aria-disabled"), "false");
+  expect(button.getAttribute("aria-disabled")).toBe("false");
 });
 
-test.serial("dispatch action when click action", async (t) => {
+test("dispatch action when click action", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
@@ -71,6 +69,6 @@ test.serial("dispatch action when click action", async (t) => {
 
   await userEvent.click(button);
 
-  t.is(store.getState().issues.loading, Loading.Loading);
-  t.is(button.getAttribute("aria-disabled"), "true");
+  expect(store.getState().issues.loading).toBe(Loading.Loading);
+  expect(button.getAttribute("aria-disabled")).toBe("true");
 });

@@ -1,13 +1,13 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { changeZoom } from "../actions";
 import { getInitialState, reducer } from "./zoom";
 
-test("initial state", (t) => {
-  t.deepEqual(getInitialState(), { zoomPercentage: 100 });
+test("initial state", () => {
+  expect(getInitialState()).toEqual({ zoomPercentage: 100 });
 });
 
-test("update zoom", (t) => {
+test("update zoom", () => {
   const state = reducer(getInitialState(), changeZoom(120));
 
-  t.is(state.zoomPercentage, 120);
+  expect(state.zoomPercentage).toBe(120);
 });

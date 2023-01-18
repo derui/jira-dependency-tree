@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { projectFactory } from "@/model/project";
 import { StatusCategory } from "@/type";
 
@@ -13,7 +13,7 @@ const statuses = [{ id: "1", name: "TODO", statusCategory: StatusCategory.TODO }
 const statusCategories = [{ id: "3", name: "TODO", colorName: "yellow" }];
 const project = projectFactory({ id: "150", name: "project", key: "foo", statuses, issueTypes, statusCategories });
 
-test("get issuetype by id", (t) => {
+test("get issuetype by id", () => {
   // arrange
 
   // do
@@ -21,11 +21,11 @@ test("get issuetype by id", (t) => {
   const notFound = project.issueTypes["3"];
 
   // verify
-  t.deepEqual(issueType, issueTypes[0]);
-  t.is(notFound, undefined);
+  expect(issueType).toBe(issueTypes[0]);
+  expect(notFound).toBe(undefined);
 });
 
-test("get issue status by id", (t) => {
+test("get issue status by id", () => {
   // arrange
 
   // do
@@ -33,6 +33,6 @@ test("get issue status by id", (t) => {
   const notFound = project.statuses["2"];
 
   // verify
-  t.deepEqual(status, statuses[0]);
-  t.is(notFound, undefined);
+  expect(status).toBe(statuses[0]);
+  expect(notFound).toBe(undefined);
 });

@@ -1,24 +1,17 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
-import { render, screen, cleanup, waitFor, act } from "@testing-library/react";
+import { test, expect, afterEach } from "vitest";
+import { render, screen, cleanup, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createPureStore } from "@/state/store";
-import {
-  focusIssueOnSearch,
-  submitApiCredentialFulfilled,
-  submitProjectKeyFulfilled,
-  synchronizeIssuesFulfilled,
-} from "@/state/actions";
+import { submitApiCredentialFulfilled, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
 import { randomCredential, randomProject } from "@/mock-data";
 import { Issue } from "@/model/issue";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   const store = createPureStore();
 
   render(
@@ -29,10 +22,10 @@ test.serial("should be able to render", (t) => {
 
   const opener = screen.getByTestId("opener");
 
-  t.is(opener.getAttribute("aria-disabled"), "true");
+  expect(opener.getAttribute("aria-disabled")).toBe("true");
 });
 
-test.serial("should be clickable after setup finished", async (t) => {
+test("should be clickable after setup finished", async () => {
   const store = createPureStore();
 
   render(
@@ -48,11 +41,11 @@ test.serial("should be clickable after setup finished", async (t) => {
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   });
 
-  t.is(opener.getAttribute("aria-disabled"), "false");
-  t.is(screen.getByTestId("input-wrapper").getAttribute("aria-hidden"), "true");
+  expect(opener.getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("input-wrapper").getAttribute("aria-hidden")).toBe("true");
 });
 
-test.serial("open term input after opener clicked", async (t) => {
+test("open term input after opener clicked", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -67,10 +60,10 @@ test.serial("open term input after opener clicked", async (t) => {
 
   const term = screen.getByTestId("input-wrapper");
 
-  t.is(term.getAttribute("aria-hidden"), "false");
+  expect(term.getAttribute("aria-hidden")).toBe("false");
 });
 
-test.serial("show issue are matched with inputted term", async (t) => {
+test("show issue are matched with inputted term", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -93,18 +86,12 @@ test.serial("show issue are matched with inputted term", async (t) => {
 
   const issues = screen.getAllByTestId("issue");
 
-  t.is(issues.length, 2);
-  t.is(
-    issues.some((v) => v.textContent?.includes("TES-10")),
-    true,
-  );
-  t.is(
-    issues.some((v) => v.textContent?.includes("TES-11")),
-    true,
-  );
+  expect(issues).toHaveLength(2);
+  expect(issues.some((v) => v.textContent?.includes("TES-10"))).toBeTruthy();
+  expect(issues.some((v) => v.textContent?.includes("TES-11"))).toBeTruthy();
 });
 
-test.serial("reset after click cancel", async (t) => {
+test("reset after click cancel", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -129,11 +116,11 @@ test.serial("reset after click cancel", async (t) => {
   const issues = screen.queryAllByTestId("issue");
   const term = screen.getByTestId("input") as HTMLInputElement;
 
-  t.is(issues.length, 0);
-  t.is(term.value, "");
+  expect(issues).toHaveLength(0);
+  expect(term.value).toBe("");
 });
 
-test.serial("send action when issue click", async (t) => {
+test("send action when issue click", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -156,5 +143,4 @@ test.serial("send action when issue click", async (t) => {
 
   const issue = screen.getByTestId("issue");
   await userEvent.click(issue);
-  t.pass();
 });

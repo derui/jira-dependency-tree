@@ -1,12 +1,12 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { restoreApiCredential, submitApiCredentialFulfilled } from "../actions";
 import { getInitialState, reducer } from "./api-credential";
 
-test("initial state", (t) => {
-  t.deepEqual(getInitialState(), {});
+test("initial state", () => {
+  expect(getInitialState()).toEqual({});
 });
 
-test("apply fulfilled api credential", (t) => {
+test("apply fulfilled api credential", () => {
   const payload = {
     email: "email",
     apiBaseUrl: "http://example.com",
@@ -17,10 +17,10 @@ test("apply fulfilled api credential", (t) => {
 
   const ret = reducer(getInitialState(), submitApiCredentialFulfilled(payload));
 
-  t.deepEqual(ret, { credential: payload });
+  expect(ret).toEqual({ credential: payload });
 });
 
-test("apply restored api credential", (t) => {
+test("apply restored api credential", () => {
   const payload = {
     email: "email",
     apiBaseUrl: "http://example.com",
@@ -31,5 +31,5 @@ test("apply restored api credential", (t) => {
 
   const ret = reducer(getInitialState(), restoreApiCredential(payload));
 
-  t.deepEqual(ret, { credential: payload });
+  expect(ret).toEqual({ credential: payload });
 });

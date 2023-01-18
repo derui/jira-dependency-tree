@@ -1,7 +1,7 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { createDependencyRegistrar } from "@/util/dependency-registrar";
 
-test("can registrar any type and get any type with key", (t) => {
+test("can registrar any type and get any type with key", () => {
   type dep = {
     name: number;
     name2: string;
@@ -14,15 +14,15 @@ test("can registrar any type and get any type with key", (t) => {
   const name = registar.resolve("name");
   const name2 = registar.resolve("name2");
 
-  t.is(name, 5);
-  t.deepEqual(name2, "foo");
+  expect(name).toBe(5);
+  expect(name2).toBe("foo");
 });
 
-test("throw error if not found", (t) => {
+test("throw error if not found", () => {
   type dep = {
     name: number;
   };
   const registar = createDependencyRegistrar<dep>();
 
-  t.throws(() => registar.resolve("name"));
+  expect(() => registar.resolve("name")).toThrow();
 });

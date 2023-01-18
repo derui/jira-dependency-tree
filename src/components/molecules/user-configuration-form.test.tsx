@@ -1,26 +1,24 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { UserConfigurationForm } from "./user-configuration-form";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<UserConfigurationForm onEndEdit={() => {}} />);
 
   const userDomain = screen.getByPlaceholderText("e.g. your-domain") as HTMLInputElement;
   const email = screen.getByPlaceholderText("e.g. your@example.com") as HTMLInputElement;
   const token = screen.getByPlaceholderText("required") as HTMLInputElement;
 
-  t.is(userDomain.value, "");
-  t.is(email.value, "");
-  t.is(token.value, "");
+  expect(userDomain.value).toBe("");
+  expect(email.value).toBe("");
+  expect(token.value).toBe("");
 });
 
-test.serial("set initial payload as initial value", (t) => {
+test("set initial payload as initial value", () => {
   render(
     <UserConfigurationForm
       initialPayload={{ email: "email", token: "token", userDomain: "userdomain" }}
@@ -32,19 +30,20 @@ test.serial("set initial payload as initial value", (t) => {
   const email = screen.getByPlaceholderText("e.g. your@example.com") as HTMLInputElement;
   const token = screen.getByPlaceholderText("required") as HTMLInputElement;
 
-  t.is(userDomain.value, "userdomain");
-  t.is(email.value, "email");
-  t.is(token.value, "token");
+  expect(userDomain.value).toBe("userdomain");
+  expect(email.value).toBe("email");
+  expect(token.value).toBe("token");
 });
 
-test.serial("get payload when typed", async (t) => {
-  t.plan(3);
+test("get payload when typed", async () => {
+  expect.assertions(3);
+
   render(
     <UserConfigurationForm
       onEndEdit={(obj) => {
-        t.is(obj?.email, "email");
-        t.is(obj?.token, "token");
-        t.is(obj?.userDomain, "userDomain");
+        expect(obj?.email).toBe("email");
+        expect(obj?.token).toBe("token");
+        expect(obj?.userDomain).toBe("userDomain");
       }}
     />,
   );
@@ -60,12 +59,13 @@ test.serial("get payload when typed", async (t) => {
   await userEvent.click(screen.getByTestId("submit/button"));
 });
 
-test.serial("do not send payload if canceled", async (t) => {
-  t.plan(1);
+test("do not send payload if canceled", async () => {
+  expect.assertions(1);
+
   render(
     <UserConfigurationForm
       onEndEdit={(obj) => {
-        t.is(obj, undefined);
+        expect(obj).toBeUndefined();
       }}
     />,
   );

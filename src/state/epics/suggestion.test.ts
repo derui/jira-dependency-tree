@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
 import { NEVER } from "rxjs";
@@ -26,7 +26,7 @@ registrar.register("env", env);
 
 test("do not request when did not credential setupeed", async (t) => {
   const testScheduler = new TestScheduler((a, b) => {
-    t.deepEqual(a, b);
+    expect(a).toEqual(b);
   });
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
@@ -48,9 +48,9 @@ test("do not request when did not credential setupeed", async (t) => {
   });
 });
 
-test("send request when setupped", async (t) => {
+test("send request when setupped", async () => {
   const testScheduler = new TestScheduler((a, b) => {
-    t.deepEqual(a, b);
+    expect(a).toEqual(b);
   });
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
@@ -93,9 +93,9 @@ test("send request when setupped", async (t) => {
   });
 });
 
-test("return accepted event", async (t) => {
+test("return accepted event", async () => {
   const testScheduler = new TestScheduler((a, b) => {
-    t.deepEqual(a, b);
+    expect(a).toEqual(b);
   });
 
   testScheduler.run(({ hot, expectObservable: expect }) => {

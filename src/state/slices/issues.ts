@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import produce from "immer";
 import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import { Issue } from "@/model/issue";
 import { Loading } from "@/type";
@@ -23,16 +22,12 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(synchronizeIssues, (state) => {
-      return produce(state, (draft) => {
-        draft.loading = "Loading";
-      });
+      state.loading = "Loading";
     });
 
     builder.addCase(synchronizeIssuesFulfilled, (state, action) => {
-      return produce(state, (draft) => {
-        draft.issues = action.payload;
-        draft.loading = "Completed";
-      });
+      state.issues = action.payload;
+      state.loading = "Completed";
     });
 
     builder.addCase(searchIssue, (state, { payload }) => {

@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
 import { NEVER } from "rxjs";
@@ -16,11 +16,10 @@ import * as epic from "./project";
 import { ProjectArgument, projectFactory } from "@/model/project";
 import { randomCredential } from "@/mock-data";
 
-test("get error if credential was not setupeped", async (t) => {
-  t.plan(1);
+test("get error if credential was not setupeped", async () => {
   const registrar = createDependencyRegistrar<Dependencies>();
 
-  const testScheduler = new TestScheduler((a, b) => t.deepEqual(a, b));
+  const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
   const store = createPureStore();
 
   testScheduler.run(({ hot, expectObservable: expect }) => {
@@ -39,11 +38,10 @@ test("get error if credential was not setupeped", async (t) => {
   });
 });
 
-test("get project", async (t) => {
-  t.plan(1);
+test("get project", async () => {
   const registrar = createDependencyRegistrar<Dependencies>();
 
-  const testScheduler = new TestScheduler((a, b) => t.deepEqual(a, b));
+  const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
@@ -83,11 +81,10 @@ test("get project", async (t) => {
   });
 });
 
-test("submit api credential", async (t) => {
-  t.plan(1);
+test("submit api credential", async () => {
   const registrar = createDependencyRegistrar<Dependencies>();
 
-  const testScheduler = new TestScheduler((a, b) => t.deepEqual(a, b));
+  const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 

@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 import { requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { getInitialState, reducer } from "../slices/suggestions";
 import { RootState } from "../store";
@@ -6,15 +6,15 @@ import * as s from "./suggestion";
 import { Loading, SuggestionKind } from "@/type";
 import { suggestionFactory } from "@/model/suggestion";
 
-test("get empty suggestion", (t) => {
+test("get empty suggestion", () => {
   const state = {
     suggestions: getInitialState(),
   } as RootState;
 
-  t.deepEqual(s.querySuggestion(SuggestionKind.Sprint, "")(state), [Loading.Completed, []]);
+  expect(s.querySuggestion(SuggestionKind.Sprint, "")(state)).toEqual([Loading.Completed, []]);
 });
 
-test("get target kind of selection", (t) => {
+test("get target kind of selection", () => {
   const state = {
     suggestions: reducer(
       getInitialState(),
@@ -30,16 +30,16 @@ test("get target kind of selection", (t) => {
     ),
   } as RootState;
 
-  t.deepEqual(s.querySuggestion(SuggestionKind.Sprint, "var")(state), [
+  expect(s.querySuggestion(SuggestionKind.Sprint, "var")(state)).toEqual([
     Loading.Completed,
     [{ displayName: "Var", value: "foo", id: "foo" }],
   ]);
 });
 
-test("loading", (t) => {
+test("loading", () => {
   const state = {
     suggestions: reducer(getInitialState(), requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "var" })),
   } as RootState;
 
-  t.deepEqual(s.querySuggestion(SuggestionKind.Sprint, "var")(state), [Loading.Loading, undefined]);
+  expect(s.querySuggestion(SuggestionKind.Sprint, "var")(state)).toEqual([Loading.Loading, undefined]);
 });

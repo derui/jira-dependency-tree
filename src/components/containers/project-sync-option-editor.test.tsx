@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React from "react";
-import test from "ava";
+import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -10,7 +8,7 @@ import { createPureStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectKeyFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 
-test.afterEach(cleanup);
+afterEach(cleanup);
 
 const wrappedRender = (v: React.ReactElement) =>
   render(v, {
@@ -24,7 +22,7 @@ const wrappedRender = (v: React.ReactElement) =>
     },
   });
 
-test.serial("should be able to render", async (t) => {
+test("should be able to render", async () => {
   const store = createPureStore();
 
   wrappedRender(
@@ -35,10 +33,10 @@ test.serial("should be able to render", async (t) => {
 
   const dialog = screen.getByTestId("form-dialog/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "true");
+  expect(dialog.getAttribute("aria-hidden")).toBe("true");
 });
 
-test.serial("open dialog when opener clicked", async (t) => {
+test("open dialog when opener clicked", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
   store.dispatch(
@@ -61,10 +59,10 @@ test.serial("open dialog when opener clicked", async (t) => {
 
   const dialog = screen.getByTestId("form-dialog/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "false");
+  expect(dialog.getAttribute("aria-hidden")).toBe("false");
 });
 
-test.serial("close dialog after finished to edit search condition", async (t) => {
+test("close dialog after finished to edit search condition", async () => {
   const store = createPureStore();
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
   store.dispatch(
@@ -88,5 +86,5 @@ test.serial("close dialog after finished to edit search condition", async (t) =>
 
   const dialog = screen.getByTestId("form-dialog/dialog");
 
-  t.is(dialog.getAttribute("aria-hidden"), "true");
+  expect(dialog.getAttribute("aria-hidden")).toBe("true");
 });

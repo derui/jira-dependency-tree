@@ -12,7 +12,7 @@ interface PostJSONArg {
  */
 export const postJSON = (obj: PostJSONArg) => {
   return fromFetch(obj.url, {
-    method: "POST",
+    method: "OST",
     headers: Object.assign({}, obj.headers, {
       "content-type": "application/json",
     }),

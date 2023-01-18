@@ -1,4 +1,4 @@
-import test from "ava";
+import { test, expect } from "vitest";
 
 import { ContainCycle, emptyGraph, Graph } from "@/depgraph/main";
 
@@ -23,88 +23,88 @@ const diagrams = (diagrams: string[]): Graph => {
   return graph;
 };
 
-test("make empty depgraph", (t) => {
+test("make empty depgraph", () => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  t.is(graph.edges.length, 0);
-  t.is(graph.vertices.length, 0);
+  expect(graph.edges).toHaveLength(0);
+  expect(graph.vertices).toHaveLength(0);
 });
 
-test("add a vertex to graph", (t) => {
+test("add a vertex to graph", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a");
 
   // verify
-  t.is(graph.edges.length, 0);
-  t.is(graph.vertices.length, 1);
-  t.deepEqual(graph.levelAt(0), ["a"]);
+  expect(graph.edges).toHaveLength(0);
+  expect(graph.vertices).toHaveLength(1);
+  expect(graph.levelAt(0)).toEqual(["a"]);
 });
 
-test("can not add same vertex twice", (t) => {
+test("can not add same vertex twice", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("a");
 
   // verify
-  t.is(graph.edges.length, 0);
-  t.is(graph.vertices.length, 1);
+  expect(graph.edges).toHaveLength(0);
+  expect(graph.vertices).toHaveLength(1);
 });
 
-test("add adjacent between two vertices", (t) => {
+test("add adjacent between two vertices", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("b").directTo("a", "b");
 
   // verify
-  t.is(graph.edges.length, 1);
-  t.is(graph.vertices.length, 2);
-  t.deepEqual(graph.levelAt(0), ["a"]);
+  expect(graph.edges).toHaveLength(1);
+  expect(graph.vertices).toHaveLength(2);
+  expect(graph.levelAt(0)).toEqual(["a"]);
 });
 
-test("can not accept empty or blank vertex", (t) => {
+test("can not accept empty or blank vertex", () => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  t.throws(() => graph.addVertex(""));
-  t.throws(() => graph.addVertex("   "));
+  expect(() => graph.addVertex("")).toThrow();
+  expect(() => graph.addVertex("   ")).toThrow();
 });
 
-test("level must be greater equal 0", (t) => {
+test("level must be greater equal 0", () => {
   // arrange
 
   // do
   const graph = emptyGraph();
 
   // verify
-  t.throws(() => graph.levelAt(-1));
+  expect(() => graph.levelAt(-1)).toThrow();
 });
 
-test("level get from multiple root", (t) => {
+test("level get from multiple root", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertex("a").addVertex("b").addVertex("c").directTo("a", "b");
 
   // verify
-  t.is(graph.edges.length, 1);
-  t.is(graph.vertices.length, 3);
-  t.deepEqual(graph.levelAt(0), ["a", "c"]);
-  t.deepEqual(graph.levelAt(1), ["b"]);
-  t.deepEqual(graph.levelAt(2), []);
+  expect(graph.edges).toHaveLength(1);
+  expect(graph.vertices).toHaveLength(3);
+  expect(graph.levelAt(0)).toEqual(["a", "c"]);
+  expect(graph.levelAt(1)).toEqual(["b"]);
+  expect(graph.levelAt(2)).toEqual([]);
 });
 
-test("should be largest level ", (t) => {
+test("should be largest level ", () => {
   // arrange
 
   // do
@@ -116,63 +116,63 @@ test("should be largest level ", (t) => {
     .directTo("c", "d");
 
   // verify
-  t.deepEqual(graph.adjacent("c"), ["d"], "d is adjacent of c");
-  t.deepEqual(graph.levelAt(0), ["a", "b"], "level 0");
-  t.deepEqual(graph.levelAt(1), ["c"], "level 1");
-  t.deepEqual(graph.levelAt(2), ["d"], "level 2");
+  expect(graph.adjacent("c")).toEqual(["d"]);
+  expect(graph.levelAt(0)).toEqual(["a", "b"]);
+  expect(graph.levelAt(1)).toEqual(["c"]);
+  expect(graph.levelAt(2)).toEqual(["d"]);
 });
 
-test("level get from multiple edges", (t) => {
+test("level get from multiple edges", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("b", "c").directTo("d", "c");
 
   // verify
-  t.is(graph.edges.length, 3);
-  t.is(graph.vertices.length, 4);
-  t.deepEqual(graph.levelAt(0), ["a", "d"]);
-  t.deepEqual(graph.levelAt(1), ["b"]);
-  t.deepEqual(graph.levelAt(2), ["c"]);
+  expect(graph.edges).toHaveLength(3);
+  expect(graph.vertices).toHaveLength(4);
+  expect(graph.levelAt(0)).toEqual(["a", "d"]);
+  expect(graph.levelAt(1)).toEqual(["b"]);
+  expect(graph.levelAt(2)).toEqual(["c"]);
 });
 
-test("get adjacent vertices from given vertex", (t) => {
+test("get adjacent vertices from given vertex", () => {
   // arrange
 
   // do
   const graph = diagrams(["a > b > c", "b > d > c"]);
 
   // verify
-  t.is(graph.edges.length, 4);
-  t.is(graph.vertices.length, 4);
-  t.deepEqual(graph.adjacent("a"), ["b"]);
-  t.deepEqual(graph.adjacent("b"), ["c", "d"]);
-  t.deepEqual(graph.adjacent("d"), ["c"]);
-  t.deepEqual(graph.adjacent("c"), []);
+  expect(graph.edges).toHaveLength(4);
+  expect(graph.vertices).toHaveLength(4);
+  expect(graph.adjacent("a")).toEqual(["b"]);
+  expect(graph.adjacent("b")).toEqual(["c", "d"]);
+  expect(graph.adjacent("d")).toEqual(["c"]);
+  expect(graph.adjacent("c")).toEqual([]);
 });
 
-test("ignore empty or blank vertices when add multiple vertices to graph at once", (t) => {
+test("ignore empty or blank vertices when add multiple vertices to graph at once", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["    ", "", "c", "d"]);
 
   // verify
-  t.is(graph.edges.length, 0);
-  t.deepEqual(new Set(graph.vertices), new Set(["c", "d"]));
+  expect(graph.edges).toHaveLength(0);
+  expect(new Set(graph.vertices)).toEqual(new Set(["c", "d"]));
 });
 
-test("ignore vertex that is not included in graph", (t) => {
+test("ignore vertex that is not included in graph", () => {
   // arrange
 
   // do
   const graph = emptyGraph().addVertices(["c", "d"]);
 
   // verify
-  t.deepEqual(graph.adjacent("e"), []);
+  expect(graph.adjacent("e")).toEqual([]);
 });
 
-test("get subgraph from given root vertex", (t) => {
+test("get subgraph from given root vertex", () => {
   // arrange
   const graph = diagrams(["a > b > c", "b > d > c", "e > c"]);
 
@@ -181,20 +181,20 @@ test("get subgraph from given root vertex", (t) => {
   const [subgraphE] = graph.subgraphOf("e");
 
   // verify
-  t.is(subgraphA.edges.length, 4, "edge of subgraph A");
-  t.is(subgraphA.vertices.length, 4, "vertices of subgraph A");
-  t.is(subgraphE.edges.length, 1);
-  t.is(subgraphE.vertices.length, 2);
-  t.deepEqual(subgraphA.adjacent("a"), ["b"]);
-  t.deepEqual(subgraphA.adjacent("b"), ["c", "d"]);
-  t.deepEqual(subgraphA.adjacent("d"), ["c"]);
-  t.deepEqual(subgraphA.adjacent("c"), []);
-  t.deepEqual(subgraphE.adjacent("e"), ["c"]);
-  t.deepEqual(subgraphE.adjacent("c"), []);
-  t.deepEqual(subgraphE.adjacent("a"), [], "not found other root");
+  expect(subgraphA.edges).toHaveLength(4);
+  expect(subgraphA.vertices).toHaveLength(4);
+  expect(subgraphE.edges).toHaveLength(1);
+  expect(subgraphE.vertices).toHaveLength(2);
+  expect(subgraphA.adjacent("a")).toEqual(["b"]);
+  expect(subgraphA.adjacent("b")).toEqual(["c", "d"]);
+  expect(subgraphA.adjacent("d")).toEqual(["c"]);
+  expect(subgraphA.adjacent("c")).toEqual([]);
+  expect(subgraphE.adjacent("e")).toEqual(["c"]);
+  expect(subgraphE.adjacent("c")).toEqual([]);
+  expect(subgraphE.adjacent("a")).toEqual([]);
 });
 
-test("get subgraph from given inter-graph vertex", (t) => {
+test("get subgraph from given inter-graph vertex", () => {
   // arrange
   const graph = diagrams(["a > b > c", "b > d > c"]);
 
@@ -202,13 +202,13 @@ test("get subgraph from given inter-graph vertex", (t) => {
   const [subgraph] = graph.subgraphOf("d");
 
   // verify
-  t.is(subgraph.edges.length, 1);
-  t.is(subgraph.vertices.length, 2);
-  t.deepEqual(subgraph.adjacent("d"), ["c"]);
-  t.deepEqual(subgraph.adjacent("c"), []);
+  expect(subgraph.edges).toHaveLength(1);
+  expect(subgraph.vertices).toHaveLength(2);
+  expect(subgraph.adjacent("d")).toEqual(["c"]);
+  expect(subgraph.adjacent("c")).toEqual([]);
 });
 
-test("can detect intersection between two graphs", (t) => {
+test("can detect intersection between two graphs", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
@@ -217,11 +217,11 @@ test("can detect intersection between two graphs", (t) => {
   // do
 
   // verify
-  t.is(graph1.intersect(graph2), true, "between graph1 and graph2");
-  t.is(graph2.intersect(graph1), true, "between graph2 and graph1");
+  expect(graph1.intersect(graph2)).toBe(true);
+  expect(graph2.intersect(graph1)).toBe(true);
 });
 
-test("do not intersect if not found any same edges", (t) => {
+test("do not intersect if not found any same edges", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
@@ -230,11 +230,11 @@ test("do not intersect if not found any same edges", (t) => {
   // do
 
   // verify
-  t.is(graph1.intersect(graph2), false, "between graph1 and graph2");
-  t.is(graph2.intersect(graph1), false, "between graph2 and graph1");
+  expect(graph1.intersect(graph2)).toBe(false);
+  expect(graph2.intersect(graph1)).toBe(false);
 });
 
-test("merge between graphs that are intesected each other", (t) => {
+test("merge between graphs that are intesected each other", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
@@ -244,16 +244,16 @@ test("merge between graphs that are intesected each other", (t) => {
   const merged = graph1.merge(graph2);
 
   // verify
-  t.is(merged?.edges.length, 5, "edge of graph");
-  t.is(merged?.vertices.length, 5, "vertices of graph");
-  t.deepEqual(merged?.adjacent("a"), ["b"]);
-  t.deepEqual(merged?.adjacent("b"), ["c", "d"]);
-  t.deepEqual(merged?.adjacent("d"), ["c"]);
-  t.deepEqual(merged?.adjacent("c"), []);
-  t.deepEqual(merged?.adjacent("e"), ["b"]);
+  expect(merged?.edges).toHaveLength(5);
+  expect(merged?.vertices).toHaveLength(5);
+  expect(merged?.adjacent("a")).toEqual(["b"]);
+  expect(merged?.adjacent("b")).toEqual(["c", "d"]);
+  expect(merged?.adjacent("d")).toEqual(["c"]);
+  expect(merged?.adjacent("c")).toEqual([]);
+  expect(merged?.adjacent("e")).toEqual(["b"]);
 });
 
-test("merge return same graph if merged same graph", (t) => {
+test("merge return same graph if merged same graph", () => {
   // arrange
   const graph = diagrams(["a > b > c", "b > d > c"]);
 
@@ -261,11 +261,11 @@ test("merge return same graph if merged same graph", (t) => {
   const merged = graph.merge(graph);
 
   // verify
-  t.deepEqual(merged?.edges, graph.edges, "edge of graph");
-  t.deepEqual(merged?.vertices, graph.vertices, "vertices of graph");
+  expect(merged?.edges).toEqual(graph.edges);
+  expect(merged?.vertices).toEqual(graph.vertices);
 });
 
-test("detect cycle to get subgraph", (t) => {
+test("detect cycle to get subgraph", () => {
   // arrange
   const graph = diagrams(["a > b > c > d > b > e"]);
 
@@ -273,15 +273,15 @@ test("detect cycle to get subgraph", (t) => {
   const [subgraph, cycle] = graph.subgraphOf("a");
 
   // verify
-  t.is(cycle.kind, "ContainCycle");
-  t.deepEqual((cycle as ContainCycle).cycles, [{ cycle: ["a", "b", "c", "d"], next: "b" }]);
-  t.deepEqual(subgraph.adjacent("a"), ["b"], "adjacent of 'a'");
-  t.deepEqual(subgraph.adjacent("b"), ["c", "e"], "adjacent of 'b'");
-  t.deepEqual(subgraph.adjacent("c"), ["d"], "adjacent of 'c'");
-  t.deepEqual(subgraph.adjacent("d"), ["b"], "adjacent of 'd'");
+  expect(cycle.kind, "ContainCycle");
+  expect((cycle as ContainCycle).cycles).toEqual([{ cycle: ["a", "b", "c", "d"], next: "b" }]);
+  expect(subgraph.adjacent("a")).toEqual(["b"]);
+  expect(subgraph.adjacent("b")).toEqual(["c", "e"]);
+  expect(subgraph.adjacent("c")).toEqual(["d"]);
+  expect(subgraph.adjacent("d")).toEqual(["b"]);
 });
 
-test("detect cycles to get subgraph", (t) => {
+test("detect cycles to get subgraph", () => {
   // arrange
   const graph = diagrams(["a > b > c > d > b > e", "a > f > g > a"]);
 
@@ -289,14 +289,14 @@ test("detect cycles to get subgraph", (t) => {
   const [, cycle] = graph.subgraphOf("a");
 
   // verify
-  t.is(cycle.kind, "ContainCycle");
-  t.deepEqual((cycle as ContainCycle).cycles, [
+  expect(cycle.kind, "ContainCycle");
+  expect((cycle as ContainCycle).cycles).toEqual([
     { cycle: ["a", "b", "c", "d"], next: "b" },
     { cycle: ["a", "f", "g"], next: "a" },
   ]);
 });
 
-test("remove direction", (t) => {
+test("remove direction", () => {
   // arrange
   const graph = diagrams(["a > b > c"]);
 
@@ -304,10 +304,10 @@ test("remove direction", (t) => {
   const newGraph = graph.removeDirection("b", "c");
 
   // verify
-  t.deepEqual(newGraph.adjacent("b"), []);
+  expect(newGraph.adjacent("b")).toEqual([]);
 });
 
-test("merge graphs have subgraph", (t) => {
+test("merge graphs have subgraph", () => {
   // arrange
   const graph1 = diagrams(["a > b > c > b"]);
   const graph2 = diagrams(["c > d > e"]);
@@ -316,56 +316,56 @@ test("merge graphs have subgraph", (t) => {
   const ret = graph1.merge(graph2);
 
   // verify
-  t.is(ret?.vertices.length, 5, "vertices");
-  t.deepEqual(ret?.adjacent("a"), ["b"], "adjacent of a");
-  t.deepEqual(ret?.adjacent("b"), ["c"], "adjacent of b");
-  t.deepEqual(ret?.adjacent("c"), ["b", "d"], "adjacent of c");
-  t.deepEqual(ret?.adjacent("d"), ["e"], "adjacent of d");
-  t.deepEqual(ret?.adjacent("e"), [], "adjacent of e");
+  expect(ret?.vertices).toHaveLength(5);
+  expect(ret?.adjacent("a")).toEqual(["b"]);
+  expect(ret?.adjacent("b")).toEqual(["c"]);
+  expect(ret?.adjacent("c")).toEqual(["b", "d"]);
+  expect(ret?.adjacent("d")).toEqual(["e"]);
+  expect(ret?.adjacent("e")).toEqual([]);
 });
 
-test("union with empty graphs", (t) => {
+test("union with empty graphs", () => {
   const g1 = emptyGraph();
   const g2 = emptyGraph();
 
   const ret = g1.union(g2);
 
-  t.deepEqual(ret.vertices, []);
-  t.deepEqual(ret.edges, []);
+  expect(ret.vertices).toHaveLength(0);
+  expect(ret.edges).toHaveLength(0);
 });
 
-test("union with each graphs", (t) => {
+test("union with each graphs", () => {
   const g1 = emptyGraph().addVertices(["a", "b"]);
   const g2 = emptyGraph().addVertices(["c", "b"]);
 
   const ret = g1.union(g2);
 
-  t.deepEqual(ret.vertices, ["a", "b", "c"]);
+  expect(ret.vertices).toEqual(["a", "b", "c"]);
 });
 
-test("union edges with each graphs", (t) => {
+test("union edges with each graphs", () => {
   const g1 = diagrams(["a > b > c"]);
   const g2 = diagrams(["a > c > d"]);
 
   const ret = g1.union(g2);
 
-  t.deepEqual(ret.vertices, ["a", "b", "c", "d"]);
-  t.is(ret.edges.length, 4);
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b"));
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c"));
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "c"));
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "c" && e2 === "d"));
+  expect(ret.vertices).toEqual(["a", "b", "c", "d"]);
+  expect(ret.edges).toHaveLength(4);
+  expect(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b")).toBeTruthy();
+  expect(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c")).toBeTruthy();
+  expect(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "c")).toBeTruthy();
+  expect(ret.edges.some(([e1, e2]) => e1 === "c" && e2 === "d")).toBeTruthy();
 });
 
-test("union edges when each graphs have same edge", (t) => {
+test("union edges when each graphs have same edge", () => {
   const g1 = diagrams(["a > b > c"]);
   const g2 = diagrams(["a > b > d"]);
 
   const ret = g1.union(g2);
 
-  t.deepEqual(ret.vertices, ["a", "b", "c", "d"]);
-  t.is(ret.edges.length, 3);
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b"));
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c"));
-  t.truthy(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "d"));
+  expect(ret.vertices).toEqual(["a", "b", "c", "d"]);
+  expect(ret.edges).toHaveLength(3);
+  expect(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b")).toBeTruthy();
+  expect(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c")).toBeTruthy();
+  expect(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "d")).toBeTruthy();
 });

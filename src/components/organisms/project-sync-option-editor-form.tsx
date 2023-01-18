@@ -29,7 +29,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  searchConditionEditorContainer: classes("flex", "flex-col", "top-full", "mt-6", "bg-white", "w-full"),
+  searchConditionEditorContainer: classes("flex", "flex-col", "top-full", "bg-white", "w-full"),
   header: classes(
     "border-b-2",
     "border-b-secondary1-200",

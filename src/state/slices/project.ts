@@ -4,6 +4,7 @@ import {
   changeConditionToSprint,
   changeDefaultCondition,
   submitProjectKey,
+  submitProjectKeyError,
   submitProjectKeyFulfilled,
 } from "../actions";
 import { SearchCondition } from "@/model/event";
@@ -34,6 +35,10 @@ const slice = createSlice({
       state.loading = Loading.Completed;
       state.project = action.payload;
       state.searchCondition = { projectKey: action.payload.key };
+    });
+
+    builder.addCase(submitProjectKeyError, (state) => {
+      state.loading = Loading.Completed;
     });
 
     builder.addCase(changeConditionToEpic, (state, action) => {

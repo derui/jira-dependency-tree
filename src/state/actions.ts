@@ -4,7 +4,6 @@ import { Issue } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
 import { SuggestionKind } from "@/type";
-import { IssueGraphCommand } from "@/drivers/issue-graph";
 
 type ApiCredentialPayload = {
   token: string;
@@ -58,3 +57,16 @@ export const focusIssueOnSearch = createAction<string>("focusIssueOnSearch");
 export const focusIssueOnSearchFulfilled = createAction("focusIssueOnSearchFulfilled");
 
 export const changeZoom = createAction<number>("changeZoom");
+
+// actions for relation edit
+export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
+export const deselectIssueInGraph = createAction("deselectIssueInGraph");
+
+export const addRelation = createAction<{ fromKey: string; toKey: string }>("addRelation");
+export const addRelationAccepted = createAction<{ relationId: string }>("addRelationAccepted");
+export const addRelationSucceeded = createAction<{ relationId: string; externalId: string }>("addRelationSucceeded");
+export const addRelationError = createAction<{ relationId: string }>("addRelationError");
+
+export const removeRelation = createAction<{ relationId: string }>("removeRelation");
+export const removeRelationSucceeded = createAction<{ relationId: string }>("removeRelationSucceeded");
+export const removeRelationError = createAction<{ relationId: string }>("removeRelationError");

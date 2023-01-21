@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer/dist/internal";
 import {
-  addRelation,
   addRelationAccepted,
   addRelationError,
   addRelationSucceeded,
@@ -18,12 +17,15 @@ type DraftPerIssue = Record<IssueRelationId, Loading>;
 
 interface RelationEditorState {
   loading: Loading;
+  opened: boolean;
+  selectedIssueKey: IssueKey | undefined;
   draft: Record<IssueKey, DraftPerIssue>;
   relations: Record<IssueKey, Record<IssueRelationId, Relation>>;
 }
 
 const initialState = {
   loading: Loading.Completed,
+  opened: false,
   draft: {},
   relations: {},
 } as RelationEditorState satisfies RelationEditorState;

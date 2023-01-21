@@ -11,7 +11,7 @@ import { Loading } from "@/type";
 import { randomIssue } from "@/mock-data";
 
 test("initial state", () => {
-  expect(getInitialState()).toEqual({ loading: Loading.Completed, draft: {}, relations: {} });
+  expect(getInitialState()).toEqual({ loading: Loading.Completed, draft: {}, relations: {}, opened: false });
 });
 
 test("fulfill relations", () => {

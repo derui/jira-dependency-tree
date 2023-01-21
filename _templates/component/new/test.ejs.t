@@ -14,6 +14,6 @@ import { <%= h.changeCase.pascal(componentName) %> } from './<%= name %>';
 
 afterEach(cleanup);
 
-test.serial("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<<%= h.changeCase.pascal(componentName) %> />);
 });

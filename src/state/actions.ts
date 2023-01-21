@@ -1,6 +1,6 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential, SearchCondition } from "@/model/event";
-import { Issue } from "@/model/issue";
+import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
 import { SuggestionKind } from "@/type";
@@ -63,8 +63,10 @@ export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
 export const deselectIssueInGraph = createAction("deselectIssueInGraph");
 
 export const addRelation = createAction<{ fromKey: string; toKey: string }>("addRelation");
-export const addRelationAccepted = createAction<{ relationId: string }>("addRelationAccepted");
-export const addRelationSucceeded = createAction<{ relationId: string; externalId: string }>("addRelationSucceeded");
+export const addRelationAccepted = createAction<{ relationId: string; fromKey: string; toKey: string }>(
+  "addRelationAccepted",
+);
+export const addRelationSucceeded = createAction<Relation>("addRelationSucceeded");
 export const addRelationError = createAction<{ relationId: string }>("addRelationError");
 
 export const removeRelation = createAction<{ relationId: string }>("removeRelation");

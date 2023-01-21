@@ -34,6 +34,7 @@ export type IssueType = {
   avatarUrl: string | null;
 };
 
+export type IssueKey = string;
 export type IssueTypeId = string;
 export type IssueStatusId = string;
 export type IssueStatusCategoryId = string;

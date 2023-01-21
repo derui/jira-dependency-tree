@@ -70,7 +70,7 @@ test("get issues from response", () => {
           key: "key",
           summary: "summary",
           description: "description",
-          outwardIssueKeys: [],
+          relations: [],
           selfUrl: "",
           statusId: "",
           typeId: "",
@@ -80,7 +80,7 @@ test("get issues from response", () => {
   });
 });
 
-test("do not add outward issues if subtask already has other outward issues", () => {
+test("apply relations", () => {
   const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
@@ -89,8 +89,26 @@ test("do not add outward issues if subtask already has other outward issues", ()
       return cold("--a", {
         a: [
           { key: "key", summary: "summary", description: "description", subtasks: ["a", "b"], links: [] },
-          { key: "a", summary: "summary", description: "description", subtasks: [], links: [] },
-          { key: "b", summary: "summary", description: "description", subtasks: [], links: [{ outwardIssue: "a" }] },
+          {
+            key: "a",
+            summary: "summary",
+            description: "description",
+            subtasks: [],
+            links: [
+              {
+                id: "id2",
+                inwardIssue: "b",
+                outwardIssue: "a",
+              },
+            ],
+          },
+          {
+            key: "b",
+            summary: "summary",
+            description: "description",
+            subtasks: [],
+            links: [{ inwardIssue: "b", outwardIssue: "a", id: "id2" }],
+          },
         ],
       });
     });
@@ -115,7 +133,7 @@ test("do not add outward issues if subtask already has other outward issues", ()
           key: "key",
           summary: "summary",
           description: "description",
-          outwardIssueKeys: [],
+          relations: [],
           selfUrl: "",
           statusId: "",
           typeId: "",
@@ -124,19 +142,21 @@ test("do not add outward issues if subtask already has other outward issues", ()
           key: "a",
           summary: "summary",
           description: "description",
-          outwardIssueKeys: ["key"],
+          relations: [{ id: "id2", externalId: "id2", inwardIssue: "b", outwardIssue: "a" }],
           selfUrl: "",
           statusId: "",
           typeId: "",
+          parentIssue: "key",
         },
         {
           key: "b",
           summary: "summary",
           description: "description",
-          outwardIssueKeys: ["a"],
+          relations: [{ id: "id2", externalId: "id2", inwardIssue: "b", outwardIssue: "a" }],
           selfUrl: "",
           statusId: "",
           typeId: "",
+          parentIssue: "key",
         },
       ]),
     });

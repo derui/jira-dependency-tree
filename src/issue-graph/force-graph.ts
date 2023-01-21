@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
 import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
-import { Issue } from "@/model/issue";
+import { Issue, selectOutwardIssues } from "@/model/issue";
 import { Project } from "@/model/project";
 import { buildIssueGraph } from "@/issue-graph/issue";
 import { Configuration, D3Node, IssueLink, GraphLayout, LayoutedLeveledIssue } from "@/issue-graph/type";
@@ -39,7 +39,7 @@ const removeCycle = (graph: Graph) => {
 const makeIssueGraph = (issues: Issue[]) => {
   const issueGraph = issues.reduce((graph, issue) => {
     const edited = graph.addVertex(issue.key);
-    return issue.outwardIssueKeys.reduce((graph, key) => graph.directTo(issue.key, key), edited);
+    return selectOutwardIssues(issue).reduce((graph, key) => graph.directTo(issue.key, key), edited);
   }, emptyGraph());
 
   return removeCycle(issueGraph);

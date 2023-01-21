@@ -23,7 +23,7 @@ test("loaded issues", () => {
     statusId: "",
     typeId: "",
     selfUrl: "",
-    outwardIssueKeys: [],
+    relations: [],
   };
   const ret = reducer(getInitialState(), synchronizeIssuesFulfilled([issue]));
 
@@ -41,7 +41,7 @@ test("get issue matched", () => {
       statusId: "",
       typeId: "",
       selfUrl: "",
-      outwardIssueKeys: [],
+      relations: [],
     },
     { key: "not match", summary: "not match" } as Issue satisfies Issue,
   ];
@@ -61,7 +61,7 @@ test("empty matched issues if term is empty", () => {
       statusId: "",
       typeId: "",
       selfUrl: "",
-      outwardIssueKeys: [],
+      relations: [],
     },
     { key: "not match", summary: "not match" } as Issue satisfies Issue,
   ];

@@ -75,9 +75,10 @@ const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
       statusId: b.statusId ?? "",
       typeId: b.typeId ?? "",
       selfUrl: b.selfUrl ?? "",
-      outwardIssueKeys: (b.links as { outwardIssue: string }[])
-        .filter((v) => !!v.outwardIssue)
-        .map((v) => v.outwardIssue),
+      relations: (b.links as { inwardIssue: string; id: string; outwardIssue: string }[]).map((v) => ({
+        ...v,
+        externalId: v.id,
+      })),
     } as Issue;
   });
 
@@ -91,14 +92,7 @@ const mergeTasks = (issues: Issue[], subtasks: { parent: string; subtask: string
     const subtaskRelatedIssue = map.get(subtask);
 
     if (subtaskRelatedIssue) {
-      const outwardIssues = new Set<string>(subtaskRelatedIssue.outwardIssueKeys);
-
-      if (outwardIssues.has(parent) || outwardIssues.size > 0) {
-        continue;
-      }
-
-      outwardIssues.add(parent);
-      subtaskRelatedIssue.outwardIssueKeys = Array.from(outwardIssues);
+      subtaskRelatedIssue.parentIssue = parent;
     }
   }
 

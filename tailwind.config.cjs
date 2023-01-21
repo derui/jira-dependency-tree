@@ -40,6 +40,9 @@ module.exports = {
       'lightgray-alpha': "rgb(0 0 0 / 10%)",
       white: '#FFF'
     },
+    overflow: {
+      'overlay': 'overlay'
+    },
     extend: {
       transitionProperty: {
         'outline': 'outline',

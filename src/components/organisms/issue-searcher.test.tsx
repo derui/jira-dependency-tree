@@ -6,8 +6,7 @@ import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createPureStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
-import { randomCredential, randomProject } from "@/mock-data";
-import { Issue } from "@/model/issue";
+import { randomCredential, randomIssue, randomProject } from "@/mock-data";
 
 afterEach(cleanup);
 
@@ -69,9 +68,9 @@ test("show issue are matched with inputted term", async () => {
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
     synchronizeIssuesFulfilled([
-      { key: "TES-10", summary: "summary" } as Issue,
-      { key: "TES-11", summary: "other" } as Issue,
-      { key: "OTHER-11", summary: "not match" } as Issue,
+      randomIssue({ key: "TES-10", summary: "summary" }),
+      randomIssue({ key: "TES-11", summary: "other" }),
+      randomIssue({ key: "OTHER-11", summary: "not match" }),
     ]),
   );
 
@@ -97,9 +96,9 @@ test("reset after click cancel", async () => {
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
     synchronizeIssuesFulfilled([
-      { key: "TES-10", summary: "summary" } as Issue,
-      { key: "TES-11", summary: "other" } as Issue,
-      { key: "OTHER-11", summary: "not match" } as Issue,
+      randomIssue({ key: "TES-10", summary: "summary" }),
+      randomIssue({ key: "TES-11", summary: "other" }),
+      randomIssue({ key: "OTHER-11", summary: "not match" }),
     ]),
   );
 
@@ -126,9 +125,9 @@ test("send action when issue click", async () => {
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
     synchronizeIssuesFulfilled([
-      { key: "TES-10", summary: "summary" } as Issue,
-      { key: "TES-11", summary: "other" } as Issue,
-      { key: "OTHER-11", summary: "not match" } as Issue,
+      randomIssue({ key: "TES-10", summary: "summary" }),
+      randomIssue({ key: "TES-11", summary: "other" }),
+      randomIssue({ key: "OTHER-11", summary: "not match" }),
     ]),
   );
 

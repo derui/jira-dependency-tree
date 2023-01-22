@@ -14,26 +14,38 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classes("rounded", "flex", "flex-col", "border", "px-4", "py-2", "border-lightgray", "relative"),
-  summary: classes("text-sm", "mb-2"),
-  information: classes("flex", "flex-row", "items-center", "space-x-2", "w-full"),
-  issueType: () => {
+  root: (clickable: boolean) => {
+    const base = classes(
+      "rounded",
+      "flex",
+      "flex-col",
+      "border",
+      "hover:border-complement-300",
+      "px-4",
+      "py-2",
+      "border-lightgray",
+      "relative",
+      "transition",
+    );
+
     return {
-      ...classes("w-3", "h-3", "inline-block", "overflow-hidden"),
+      ...base,
+      "cursor-pointer": clickable,
     };
   },
+  summary: classes("text-sm", "mb-2"),
+  information: classes("flex", "flex-row", "items-center", "space-x-2", "w-full"),
+  issueType: classes("w-3", "h-3", "inline-block", "overflow-hidden"),
   issueStatus: (category?: StatusCategory) => {
     const base = classes("inline-block", "px-2", "py-1", "text-sm");
-    switch (category) {
-      case "DONE":
-        return { ...base, ...classes("bg-complement-200") };
-      case "IN_PROGRESS":
-        return { ...base, ...classes("bg-secondary1-200", "text-white") };
-      case "TODO":
-        return { ...base, ...classes("bg-lightgray") };
-      default:
-        return base;
-    }
+
+    return {
+      ...base,
+      "bg-complement-200": category === "DONE",
+      "bg-secondary1-200": category === "IN_PROGRESS",
+      "text-white": category === "IN_PROGRESS",
+      "bg-lightgray": category === "TODO",
+    };
   },
   key: classes("mx-3"),
   skeletonRoot: classes(
@@ -81,7 +93,7 @@ const IssueKeyDisplay: React.FC<{ value: string; testid: string }> = ({ value, t
 const IssueTypeDisplay: React.FC<{ value: IssueType | undefined; testid: string }> = ({ value, testid }) => {
   const backgroundColor = value ? stringToColour(value.name) : "lightgray";
 
-  return <span data-testid={testid} className={classNames(Styles.issueType())} style={{ backgroundColor }}></span>;
+  return <span data-testid={testid} className={classNames(Styles.issueType)} style={{ backgroundColor }}></span>;
 };
 
 const IssueStatusDisplay: React.FC<{ value: IssueStatus | undefined; testid: string }> = ({ value, testid }) => {
@@ -124,7 +136,7 @@ export const Issue: React.FC<Props> = (props) => {
   }
 
   return (
-    <li className={classNames(Styles.root)} onClick={handleClick} data-testid={gen("root")}>
+    <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
       <span className={classNames(Styles.summary)} data-testid={gen("summary")}>
         {issue.summary}
       </span>

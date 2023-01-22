@@ -4,11 +4,7 @@ import { Project } from "@/model/project";
 import { makeForceGraph } from "@/issue-graph/force-graph";
 import { Configuration } from "@/issue-graph/type";
 
-export const makeIssueGraphRoot = function makeIssueGraphRoot(
-  issues: Issue[],
-  project: Project,
-  configuration: Configuration,
-) {
+export const makeIssueGraphRoot = (issues: Issue[], project: Project, configuration: Configuration) => {
   const { width, height } = configuration.canvasSize;
   const svg = d3
     .create("svg")
@@ -70,7 +66,7 @@ export const makeIssueGraphRoot = function makeIssueGraphRoot(
   return svg;
 };
 
-const defineFilters = function defineFilters(defs: d3.Selection<SVGDefsElement, undefined, null, undefined>) {
+const defineFilters = (defs: d3.Selection<SVGDefsElement, undefined, null, undefined>) => {
   const todo = defs
     .append("filter")
     .attr("id", "todo-bg")

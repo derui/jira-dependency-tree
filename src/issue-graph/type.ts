@@ -38,6 +38,8 @@ export interface Configuration {
   canvasSize: Size;
 
   graphLayout: GraphLayout;
+
+  onIssueClick: (key: string) => void;
 }
 
 export const GraphLayout = Object.freeze({

@@ -17,6 +17,13 @@ type AttentionIssueCommand = {
 
 export type IssueGraphCommand = AttentionIssueCommand;
 
+type SelectIssueAction = {
+  kind: "SelectIssue";
+  key: string;
+};
+
+export type IssueGraphAction = SelectIssueAction;
+
 interface IssueGraphState {
   pan: Position;
   zoomPercentage: number;
@@ -40,6 +47,11 @@ export interface IssueGraphSource {
    * state stream of pan zoom
    */
   state$: Observable<IssueGraphState>;
+
+  /**
+   * subscription for actions occuring in graph
+   */
+  action$: Observable<IssueGraphAction>;
 }
 
 const makeDragListener = (
@@ -183,6 +195,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     };
 
     const stateStream = makePanZoomStream(parentSelector, stateReference);
+    const actionStream = new Subject<IssueGraphAction>();
 
     stateStream.subscribe({
       next(panZoom) {
@@ -193,7 +206,13 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     });
 
     const updateIssueGraph = ({ issues, project, graphLayout }: IssueGraphSink) => {
-      svg = makeIssueGraphRoot(issues, project, { ...configuration, graphLayout });
+      svg = makeIssueGraphRoot(issues, project, {
+        ...configuration,
+        graphLayout,
+        onIssueClick(key) {
+          actionStream.next({ kind: "SelectIssue", key });
+        },
+      });
       document.querySelector(parentSelector)?.append(svg.node() as Node);
 
       svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
@@ -234,6 +253,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
         }
       },
       state$: stateStream,
+      action$: actionStream,
     };
   };
 };

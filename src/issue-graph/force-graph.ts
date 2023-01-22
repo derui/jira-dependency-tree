@@ -291,6 +291,7 @@ export const makeForceGraph = (
 
   // update links are related clicked issue
   issueNode.on("click", (event, d) => {
+    event.preventDefault();
     event.stopPropagation();
 
     focusingANode = true;
@@ -313,6 +314,8 @@ export const makeForceGraph = (
         issue.focusing = "unfocused";
       }
     });
+
+    configuration.onIssueClick(d.issueKey);
 
     restart();
   });

@@ -11,6 +11,7 @@
         },
         "issuelinks": [
           {
+            "id": "100",
             "outwardIssue": {
               "key": "other"
             }

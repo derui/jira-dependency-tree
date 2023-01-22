@@ -9,7 +9,9 @@ use crate::{jira_url::JiraUrl, IssueLoadingRequest, IssueSearchCondition};
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueLink {
+    pub id: String,
     pub outward_issue: String,
+    pub inward_issue: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
@@ -26,22 +28,9 @@ pub struct JiraIssue {
 }
 
 impl JiraIssue {
-    /// correct self links/subtasks with issue map
+    /// correct self with issue map
     fn correct_from_map(&self, map: &HashMap<String, JiraIssue>) -> JiraIssue {
         JiraIssue {
-            links: self
-                .links
-                .iter()
-                .filter_map(|v| {
-                    if map.contains_key(&v.outward_issue) {
-                        Some(JiraIssueLink {
-                            outward_issue: v.outward_issue.clone(),
-                        })
-                    } else {
-                        None
-                    }
-                })
-                .collect(),
             subtasks: self
                 .subtasks
                 .iter()
@@ -59,13 +48,28 @@ impl JiraIssue {
 }
 
 /// json to issue link
-fn as_issuelink(value: &[Value]) -> Vec<JiraIssueLink> {
+fn as_issuelink(value: &[Value], issue_key: &str) -> Vec<JiraIssueLink> {
     value
         .iter()
         .filter_map(|v| {
-            v["outwardIssue"]["key"].as_str().map(|v| JiraIssueLink {
-                outward_issue: v.to_string(),
-            })
+            let id = v["id"].as_str();
+            let outward = v["outwardIssue"]["key"].as_str();
+            let inward = v["inwardIssue"]["key"].as_str();
+
+            match (id, outward, inward) {
+                (Some(id), Some(outward_issue), None) => Some(JiraIssueLink {
+                    id: id.to_string(),
+                    outward_issue: outward_issue.to_string(),
+                    inward_issue: issue_key.to_string(),
+                }),
+                (Some(id), None, Some(inward_issue)) => Some(JiraIssueLink {
+                    id: id.to_string(),
+
+                    outward_issue: issue_key.to_string(),
+                    inward_issue: inward_issue.to_string(),
+                }),
+                (_, _, _) => None,
+            }
         })
         .collect()
 }
@@ -80,8 +84,10 @@ fn as_subtasks(value: &[Value]) -> Vec<String> {
 
 /// json to JiraIssue
 fn as_issue(issue: &Value) -> JiraIssue {
+    let key = issue["key"].as_str().expect("key must not null");
+
     JiraIssue {
-        key: issue["key"].as_str().expect("key must not null").into(),
+        key: key.to_string(),
         summary: issue["fields"]["summary"]
             .as_str()
             .expect("summary must not null")
@@ -96,7 +102,7 @@ fn as_issue(issue: &Value) -> JiraIssue {
         self_url: issue["self"].as_str().map(|v| v.into()),
         links: issue["fields"]["issuelinks"]
             .as_array()
-            .map(|v| as_issuelink(v))
+            .map(|v| as_issuelink(v, key))
             .unwrap_or_default(),
         subtasks: issue["fields"]["subtasks"]
             .as_array()

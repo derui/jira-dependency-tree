@@ -26,7 +26,7 @@ impl JiraUrl for TestRequest<'_> {
 fn request_to_get_an_issue() {
     // arrange
     let server = httpmock::MockServer::start();
-    let mock = server.mock(|when, then| {
+    let _mock = server.mock(|when, then| {
         when.method(Method::POST)
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
@@ -48,6 +48,7 @@ fn request_to_get_an_issue() {
                             },
                             "issuelinks": [
                                 {
+                                    "id": "100",
                                     "outwardIssue": {
                                         "key": "other"
                                     }
@@ -108,6 +109,8 @@ fn request_to_get_an_issue() {
     assert_eq!(
         result[0].links[0],
         JiraIssueLink {
+            id: "100".to_string(),
+            inward_issue: "test".to_string(),
             outward_issue: "other".to_string()
         }
     );
@@ -166,7 +169,7 @@ fn request_to_get_simplest_issue() {
 fn request_to_get_simplest_issue_with_subtasks() {
     // arrange
     let server = httpmock::MockServer::start();
-    let mock = server.mock(|when, then| {
+    let _mock = server.mock(|when, then| {
         when.method(Method::POST)
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
@@ -209,7 +212,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
     assert_eq!(result[0].status_id, Some("10001".to_string()));
-    assert_eq!(result[0].links.len(), 0);
+    assert_eq!(result[0].links.len(), 1);
     assert_eq!(result[0].subtasks.len(), 1);
     assert_eq!(result[0].subtasks[0], "key-2");
 }

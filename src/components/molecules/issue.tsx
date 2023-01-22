@@ -2,15 +2,9 @@ import React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Icon } from "../atoms/icon";
-import { IssueKey, IssueStatus, IssueType, Loading, StatusCategory } from "@/type";
+import { IssueStatus, IssueType, Loading, StatusCategory } from "@/type";
 import { stringToColour } from "@/util/color";
-
-export interface IssueModel {
-  key: IssueKey;
-  summary: string;
-  issueStatus?: IssueStatus;
-  issueType?: IssueType;
-}
+import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
   issue: IssueModel;

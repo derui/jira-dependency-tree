@@ -4,6 +4,7 @@ import {
   addRelationAccepted,
   addRelationError,
   addRelationSucceeded,
+  deselectIssueInGraph,
   removeRelation,
   removeRelationError,
   removeRelationSucceeded,
@@ -44,6 +45,12 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(selectIssueInGraph, (state, { payload }) => {
       state.selectedIssueKey = payload;
+      state.opened = true;
+    });
+
+    builder.addCase(deselectIssueInGraph, (state) => {
+      state.opened = false;
+      state.selectedIssueKey = undefined;
     });
 
     builder.addCase(synchronizeIssues, (state) => {

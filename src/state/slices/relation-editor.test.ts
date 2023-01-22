@@ -2,8 +2,10 @@ import { test, expect } from "vitest";
 import {
   addRelationAccepted,
   addRelationSucceeded,
+  deselectIssueInGraph,
   removeRelation,
   removeRelationSucceeded,
+  selectIssueInGraph,
   synchronizeIssuesFulfilled,
 } from "../actions";
 import { getInitialState, reducer } from "./relation-editor";
@@ -110,4 +112,15 @@ test("remove relation after succeeded", () => {
     b: {},
     c: { id2: relationAtoC },
   });
+});
+test("select and deselect", () => {
+  let state = reducer(getInitialState(), selectIssueInGraph("key"));
+
+  expect(state.selectedIssueKey).toBe("key");
+  expect(state.opened).toBe(true);
+
+  state = reducer(state, deselectIssueInGraph());
+
+  expect(state.selectedIssueKey).toBeUndefined();
+  expect(state.opened).toBe(false);
 });

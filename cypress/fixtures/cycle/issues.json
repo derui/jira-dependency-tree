@@ -7,7 +7,9 @@
     "typeId": "10002",
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
     "links": [
-      {"outwardIssue": "TES-2"}],
+      {"id": "10", "inwardIssue": "TES-1", "outwardIssue": "TES-2"},
+      {"id": "12", "inwardIssue": "TES-3", "outwardIssue": "TES-1"}
+    ],
     "subtasks": []
 },
 {
@@ -18,7 +20,9 @@
     "typeId": "10002",
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
     "links": [
-      {"outwardIssue": "TES-3"}],
+      {"id": "11", "inwardIssue": "TES-2", "outwardIssue": "TES-3"},
+      {"id": "10", "inwardIssue": "TES-1", "outwardIssue": "TES-2"}
+    ],
     "subtasks": []
 },
  {
@@ -29,7 +33,9 @@
     "typeId": "10002",
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10050",
     "links": [
-      {"outwardIssue": "TES-1"}],
+      {"id": "11", "inwardIssue": "TES-2", "outwardIssue": "TES-3"},
+      {"id": "12", "inwardIssue": "TES-3", "outwardIssue": "TES-1"}
+    ],
     "subtasks": []
  }
 ]

@@ -93,6 +93,8 @@
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10028",
     "links": [
       {
+        "id": "10",
+        "inwardIssue": "TES-29",
         "outwardIssue": "TES-3"
       }
     ],
@@ -248,6 +250,8 @@
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10008",
     "links": [
       {
+        "id": "11",
+        "inwardIssue": "TES-9",
         "outwardIssue": "TES-13"
       }
     ],
@@ -275,7 +279,18 @@
     "statusId": "10001",
     "typeId": "10001",
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10002",
-    "links": [],
+    "links": [
+      {
+        "id": "12",
+        "inwardIssue": "TES-2",
+        "outwardIssue": "TES-3"
+      },
+      {
+        "id": "10",
+        "inwardIssue": "TES-29",
+        "outwardIssue": "TES-3"
+      }
+    ],
     "subtasks": []
   },
   {
@@ -287,6 +302,8 @@
     "selfUrl": "https://derui.atlassian.net/rest/api/3/issue/10001",
     "links": [
       {
+        "id": "12",
+        "inwardIssue": "TES-2",
         "outwardIssue": "TES-3"
       }
     ],

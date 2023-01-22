@@ -90,22 +90,27 @@ const slice = createSlice({
     });
 
     builder.addCase(removeRelation, (state, { payload }) => {
-      const relationInDraft = Object.values(state.draft)
-        .map((v) => Object.keys(v))
+      const targetRelations = Object.entries(state.relations)
+        .map(([, value]) => {
+          return Object.values(value)
+            .flat()
+            .filter((relation) => {
+              return relation.inwardIssue === payload.fromKey && relation.outwardIssue === payload.toKey;
+            });
+        })
         .flat();
-      if (relationInDraft.includes(payload.relationId)) {
-        return;
-      }
 
-      const issues = Object.entries(state.relations).filter(([, value]) => {
-        return Object.keys(value).includes(payload.relationId);
-      });
-
-      issues.forEach(([key]) => {
-        if (state.draft[key]) {
-          state.draft[key][payload.relationId] = Loading.Loading;
+      targetRelations.forEach((relation) => {
+        if (state.draft[relation.inwardIssue]) {
+          state.draft[relation.inwardIssue][relation.id] = Loading.Loading;
         } else {
-          state.draft[key] = { [payload.relationId]: Loading.Loading };
+          state.draft[relation.inwardIssue] = { [relation.id]: Loading.Loading };
+        }
+
+        if (state.draft[relation.outwardIssue]) {
+          state.draft[relation.outwardIssue][relation.id] = Loading.Loading;
+        } else {
+          state.draft[relation.outwardIssue] = { [relation.id]: Loading.Loading };
         }
       });
     });

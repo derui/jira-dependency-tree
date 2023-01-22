@@ -15,7 +15,7 @@ export const queryCurrentRelatedIssuesWithKind = (kind: RelationKind) =>
     selectIssue,
     selectProject,
     selectRelationEditor,
-    (issueState, projectState, relationEditorState): [Loading, IssueModel[] | undefined] => {
+    (issueState, projectState, relationEditorState): [Loading, [Loading, IssueModel][] | undefined] => {
       if (issueState.loading === Loading.Loading || projectState.loading === Loading.Loading) {
         return [Loading.Loading, undefined];
       }
@@ -39,24 +39,39 @@ export const queryCurrentRelatedIssuesWithKind = (kind: RelationKind) =>
         case "inward":
           relatedIssues = Object.values(relations)
             .filter((r) => r.outwardIssue === selectedIssueKey)
-            .map((r) => r.inwardIssue);
+            .map((r) => [r.id, r.inwardIssue]);
           break;
         case "outward":
           relatedIssues = Object.values(relations)
             .filter((r) => r.inwardIssue === selectedIssueKey)
-            .map((r) => r.outwardIssue);
+            .map((r) => [r.id, r.outwardIssue]);
           break;
       }
 
-      const issueModels = relatedIssues.map((issueKey) => {
-        const issue = issues[issueKey];
-        if (!issue) {
-          return { key: issueKey, summary: "Unknown issue" };
+      const issueModels: [Loading, IssueModel][] = relatedIssues.map(([id, issueKey]) => {
+        const draft = relationEditorState.draft[issueKey];
+        const _issue = issues[issueKey];
+        let issue: IssueModel;
+
+        if (!_issue) {
+          issue = { key: issueKey, summary: "Unknown issue" };
+        } else {
+          issue = issueToIssueModel(project, _issue);
         }
 
-        return issueToIssueModel(project, issue);
+        if (!draft || !draft[id]) {
+          return [Loading.Completed, issue];
+        }
+
+        return [draft[id], issue];
       });
 
       return [Loading.Completed, issueModels];
     },
   );
+
+/**
+ * get current selected key
+ */
+export const selectSelectedIssueKey = () =>
+  createDraftSafeSelector(selectRelationEditor, (state) => state.selectedIssueKey);

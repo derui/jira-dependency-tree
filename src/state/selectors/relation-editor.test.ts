@@ -1,6 +1,5 @@
-import exp from "constants";
 import { test, expect, describe } from "vitest";
-import { selectIssueInGraph, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "../actions";
+import { removeRelation, selectIssueInGraph, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "../actions";
 import { createPureStore } from "../store";
 import * as s from "./relation-editor";
 import { Loading } from "@/type";
@@ -41,7 +40,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
 
     const ret = s.queryCurrentRelatedIssuesWithKind("inward")(store.getState());
 
-    expect(ret).toEqual([Loading.Completed, [{ key: "foo", summary: "Unknown issue" }]]);
+    expect(ret).toEqual([Loading.Completed, [[Loading.Completed, { key: "foo", summary: "Unknown issue" }]]]);
   });
 
   test("get inward issues", () => {
@@ -62,7 +61,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
 
     const ret = s.queryCurrentRelatedIssuesWithKind("inward")(store.getState());
 
-    expect(ret).toEqual([Loading.Completed, [{ key: "foo", summary: inwardIssue.summary }]]);
+    expect(ret).toEqual([Loading.Completed, [[Loading.Completed, { key: "foo", summary: inwardIssue.summary }]]]);
   });
 
   test("get outward issues", () => {
@@ -83,6 +82,28 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
 
     const ret = s.queryCurrentRelatedIssuesWithKind("outward")(store.getState());
 
-    expect(ret).toEqual([Loading.Completed, [{ key: "foo", summary: outwardIssue.summary }]]);
+    expect(ret).toEqual([Loading.Completed, [[Loading.Completed, { key: "foo", summary: outwardIssue.summary }]]]);
+  });
+
+  test("add loading state when a relation is draft", () => {
+    const issue = randomIssue({
+      key: "key",
+      relations: [{ externalId: "id", id: "id", inwardIssue: "key", outwardIssue: "foo" }],
+    });
+    const outwardIssue = randomIssue({
+      key: "foo",
+      relations: [{ externalId: "id", id: "id", inwardIssue: "key", outwardIssue: "foo" }],
+      typeId: "",
+      statusId: "",
+    });
+    const store = createPureStore();
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(synchronizeIssuesFulfilled([issue, outwardIssue]));
+    store.dispatch(selectIssueInGraph("key"));
+    store.dispatch(removeRelation({ fromKey: "key", toKey: "foo" }));
+
+    const ret = s.queryCurrentRelatedIssuesWithKind("outward")(store.getState());
+
+    expect(ret).toEqual([Loading.Completed, [[Loading.Loading, { key: "foo", summary: outwardIssue.summary }]]]);
   });
 });

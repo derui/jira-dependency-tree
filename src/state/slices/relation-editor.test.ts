@@ -74,7 +74,7 @@ test("remove relation to draft", () => {
       randomIssue({ key: "c", relations: [relationAtoC] }),
     ]),
   );
-  state = reducer(state, removeRelation({ relationId: relationAtoB.id }));
+  state = reducer(state, removeRelation({ fromKey: "a", toKey: "b" }));
 
   expect(state.draft).toEqual({
     a: { id: Loading.Loading },
@@ -98,7 +98,7 @@ test("remove relation after succeeded", () => {
       randomIssue({ key: "c", relations: [relationAtoC] }),
     ]),
   );
-  state = reducer(state, removeRelation({ relationId: relationAtoB.id }));
+  state = reducer(state, removeRelation({ fromKey: "a", toKey: "b" }));
   state = reducer(state, removeRelationSucceeded({ relationId: relationAtoB.id }));
 
   expect(state.draft).toEqual({

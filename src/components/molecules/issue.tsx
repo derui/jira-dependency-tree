@@ -124,7 +124,7 @@ export const Issue: React.FC<Props> = (props) => {
 
   if (loading === Loading.Loading) {
     return (
-      <li className={classNames(Styles.skeletonRoot)} onClick={handleClick} data-testid={gen("root")}>
+      <li className={classNames(Styles.skeletonRoot)} data-testid={gen("root-skeleton")}>
         <span className={classNames(Styles.skeletonSummary)}></span>
         <span className={classNames(Styles.information)}>
           <span className={classNames(Styles.skeletonType)}></span>

@@ -1,7 +1,7 @@
 import { post } from "support/mocks";
 
 describe("edit relation of issue", () => {
-  it("allow search issue with term", () => {
+  it("open panel", () => {
     cy.visit("/");
 
     cy.mockAPI({
@@ -27,6 +27,8 @@ describe("edit relation of issue", () => {
     cy.get('[data-issue-key="TES-1"]').click();
 
     // verify panel
-    cy.testid("relation-editor/root").should("have.a.property", "aria-hidden", "false").and("be.visible");
+    cy.testid("relation-editor/root").should("have.attr", "aria-hidden", "false").and("be.visible");
+    cy.testid("relation-editor/inward-editor/issue").should("have.length", 0);
+    cy.testid("relation-editor/outward-editor/issue/root").should("have.length", 1).and("contain.text", "TES-2");
   });
 });

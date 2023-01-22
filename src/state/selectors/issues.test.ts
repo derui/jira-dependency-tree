@@ -1,13 +1,20 @@
-import { test, expect } from "vitest";
-import { searchIssue, synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
+import { test, expect, describe } from "vitest";
+import {
+  searchIssue,
+  submitProjectKey,
+  submitProjectKeyFulfilled,
+  synchronizeIssues,
+  synchronizeIssuesFulfilled,
+} from "../actions";
 import * as issues from "../slices/issues";
 import * as project from "../slices/project";
 import * as apiCredential from "../slices/api-credential";
-import { RootState } from "../store";
+import { createPureStore, RootState } from "../store";
 import * as s from "./issues";
 import { Loading } from "@/type";
 import { Issue } from "@/model/issue";
 import { projectFactory } from "@/model/project";
+import { randomIssue, randomProject } from "@/mock-data";
 
 test("do not return issues while loading", () => {
   const state = { issues: issues.reducer(issues.getInitialState(), synchronizeIssues()) } as RootState;
@@ -86,4 +93,36 @@ test("search issues", () => {
   const ret = s.selectMatchedIssue()(state);
 
   expect(ret).toEqual([{ key: "key", summary: "summary" }]);
+});
+
+describe("queryIssueModels", () => {
+  test("loading when project or issue are loading", () => {
+    const store = createPureStore();
+    store.dispatch(submitProjectKey("key"));
+
+    const ret = s.queryIssueModels()(store.getState());
+
+    expect(ret).toEqual([Loading.Loading, undefined]);
+  });
+
+  test("can not get issues when project is invalid", () => {
+    const store = createPureStore();
+    store.dispatch(synchronizeIssuesFulfilled([randomIssue()]));
+
+    const ret = s.queryIssueModels()(store.getState());
+
+    expect(ret).toEqual([Loading.Completed, []]);
+  });
+
+  test("get issue model", () => {
+    const issues = [randomIssue({ statusId: "", typeId: "" })];
+    const store = createPureStore();
+
+    store.dispatch(synchronizeIssuesFulfilled(issues));
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+
+    const ret = s.queryIssueModels()(store.getState());
+
+    expect(ret).toEqual([Loading.Completed, [{ key: issues[0].key, summary: issues[0].summary }]]);
+  });
 });

@@ -54,3 +54,18 @@ test("close panel after click close button", async () => {
 
   expect(panel.getAttribute("aria-hidden")).toBe("true");
 });
+
+test("display selected key", async () => {
+  const store = createPureStore();
+  store.dispatch(selectIssueInGraph("key"));
+
+  render(
+    <Provider store={store}>
+      <RelationEditorPanel />
+    </Provider>,
+  );
+
+  const header = screen.getByTestId("header");
+
+  expect(header.textContent).toContain("key");
+});

@@ -10,6 +10,7 @@ import { ZoomSlider } from "./components/molecules/zoom-slider";
 import { useAppSelector } from "./components/hooks";
 import { SideToolbar } from "./components/organisms/side-toolbar";
 import { getZoom } from "./state/selectors/zoom";
+import { RelationEditorPanel } from "./components/containers/relation-editor-panel";
 
 export type Props = BaseProps;
 
@@ -47,6 +48,7 @@ export const App: React.FC<Props> = () => {
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />
       <SideToolbar testid="side-toolbar" />
+      <RelationEditorPanel testid='relation-editor' />
     </div>
   );
 };

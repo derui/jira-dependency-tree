@@ -75,3 +75,8 @@ export const queryCurrentRelatedIssuesWithKind = (kind: RelationKind) =>
  */
 export const selectSelectedIssueKey = () =>
   createDraftSafeSelector(selectRelationEditor, (state) => state.selectedIssueKey);
+
+/**
+ * get editor is opened or not
+ */
+export const getRelationEditorOpened = () => createDraftSafeSelector(selectRelationEditor, (state) => state.opened);

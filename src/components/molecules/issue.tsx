@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
+import { Icon } from "../atoms/icon";
 import { IssueKey, IssueStatus, IssueType, Loading, StatusCategory } from "@/type";
 import { stringToColour } from "@/util/color";
 
@@ -14,11 +15,12 @@ export interface IssueModel {
 export interface Props extends BaseProps {
   issue: IssueModel;
   loading?: Loading;
+  onDelete?: (key: string) => void;
   onClick?: (key: string) => void;
 }
 
 const Styles = {
-  root: classes("rounded", "flex", "flex-col", "border", "px-4", "py-2", "border-lightgray"),
+  root: classes("rounded", "flex", "flex-col", "border", "px-4", "py-2", "border-lightgray", "relative"),
   summary: classes("text-sm", "mb-2"),
   information: classes("flex", "flex-row", "items-center", "space-x-2", "w-full"),
   issueType: () => {
@@ -58,6 +60,20 @@ const Styles = {
   skeletonType: classes("w-3", "h-3", "bg-lightgray", "flex-none"),
   skeletonKey: classes("w-16", "h-3", "bg-lightgray", "flex-none"),
   skeletonStatus: classes("w-8", "h-3", "bg-lightgray", "flex-none"),
+  deleteButton: classes(
+    "rounded",
+    "flex",
+    "absolute",
+    "h-5",
+    "w-5",
+    "border",
+    "border-transparent",
+    "hover:border-lightgray",
+    "right-2",
+    "top-1",
+    "transition",
+    "items-center",
+  ),
 };
 
 const IssueKeyDisplay: React.FC<{ value: string; testid: string }> = ({ value, testid }) => {
@@ -82,9 +98,17 @@ const IssueStatusDisplay: React.FC<{ value: IssueStatus | undefined; testid: str
   );
 };
 
+const DeleteButton: React.FC<{ onDelete: () => void; testid: string }> = ({ onDelete, testid }) => {
+  return (
+    <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={onDelete}>
+      <Icon color="primary" type="x" size="s" />
+    </button>
+  );
+};
+
 export const Issue: React.FC<Props> = (props) => {
   const gen = generateTestId(props.testid);
-  const { issue, onClick, loading } = props;
+  const { issue, onClick, loading, onDelete } = props;
 
   const handleClick = () => {
     if (onClick) {
@@ -115,6 +139,8 @@ export const Issue: React.FC<Props> = (props) => {
         <IssueKeyDisplay value={issue.key} testid={gen("key")} />
         <IssueStatusDisplay value={issue.issueStatus} testid={gen("status")} />
       </span>
+
+      {onDelete ? <DeleteButton onDelete={() => onDelete(issue.key)} testid={gen("delete")} /> : null}
     </li>
   );
 };

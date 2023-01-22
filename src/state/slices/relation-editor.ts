@@ -7,6 +7,7 @@ import {
   removeRelation,
   removeRelationError,
   removeRelationSucceeded,
+  selectIssueInGraph,
   synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "../actions";
@@ -41,6 +42,10 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(selectIssueInGraph, (state, { payload }) => {
+      state.selectedIssueKey = payload;
+    });
+
     builder.addCase(synchronizeIssues, (state) => {
       state.loading = Loading.Loading;
     });

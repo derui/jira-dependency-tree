@@ -1,4 +1,5 @@
 pub mod jira_issue_request;
+pub mod jira_link_request;
 pub mod jira_project_request;
 pub mod jira_suggestion_request;
 pub mod jira_url;

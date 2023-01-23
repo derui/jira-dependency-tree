@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     jira_link_request::{create_link, delete_link},
-    jira_suggestion_request::{get_suggestions, JiraSuggestion},
     jira_url::JiraUrl,
 };
 

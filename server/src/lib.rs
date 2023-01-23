@@ -5,6 +5,7 @@ pub mod jira_suggestion_request;
 pub mod jira_url;
 
 use isahc::http::Method;
+use jira_link_request::{create_link, delete_link};
 use jira_url::JiraAuhtorization;
 use lambda_http::{Body, Error, Request, Response};
 use serde::Deserialize;
@@ -30,6 +31,19 @@ pub struct SuggestionRequest {
     pub input_value: String,
 }
 
+#[derive(Deserialize)]
+pub struct CreateLinkRequest {
+    pub authorization: JiraAuhtorization,
+    pub inward_issue: String,
+    pub outward_issue: String,
+}
+
+#[derive(Deserialize)]
+pub struct DeleteLinkRequest {
+    pub authorization: JiraAuhtorization,
+    pub id: String,
+}
+
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let unmatch = not_found();
@@ -48,6 +62,16 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
         },
         "/prod/get-suggestions" => match event.method() {
             &Method::POST => execute_get_suggestions(&event).await,
+            &Method::OPTIONS => preflight,
+            _ => unmatch,
+        },
+        "/prod/create-link" => match event.method() {
+            &Method::POST => execute_create_link(&event).await,
+            &Method::OPTIONS => preflight,
+            _ => unmatch,
+        },
+        "/prod/delete-link" => match event.method() {
+            &Method::DELETE => execute_delete_link(&event).await,
             &Method::OPTIONS => preflight,
             _ => unmatch,
         },
@@ -126,6 +150,50 @@ async fn execute_get_suggestions(event: &Request) -> Result<Response<Body>, Erro
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .body(
             serde_json::to_string(&project)
+                .expect("unexpected format")
+                .into(),
+        )
+        .map_err(Box::new)?;
+    Ok(resp)
+}
+
+async fn execute_delete_link(event: &Request) -> Result<Response<Body>, Error> {
+    let json: DeleteLinkRequest = match event.body() {
+        Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
+        _ => Err("Invalid body type"),
+    }?;
+
+    delete_link(&json.id, &json.authorization).expect("Not found");
+
+    // Return something that implements IntoResponse.
+    // It will be serialized to the right response event automatically by the runtime
+    let resp = Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Method", "POST,OPTIONS")
+        .body(().into())?;
+    Ok(resp)
+}
+
+async fn execute_create_link(event: &Request) -> Result<Response<Body>, Error> {
+    let json: CreateLinkRequest = match event.body() {
+        Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
+        _ => Err("Invalid body type"),
+    }?;
+
+    let link = create_link(&json.inward_issue, &json.outward_issue, &json.authorization)
+        .expect("Not found");
+
+    // Return something that implements IntoResponse.
+    // It will be serialized to the right response event automatically by the runtime
+    let resp = Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Method", "POST,OPTIONS")
+        .body(
+            serde_json::to_string(&link)
                 .expect("unexpected format")
                 .into(),
         )

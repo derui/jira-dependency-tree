@@ -25,12 +25,22 @@ export class CdkStack extends cdk.Stack {
     const issues = restApi.root.addResource("load-issues");
     issues.addMethod("POST", integration, { apiKeyRequired: true });
     issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+
     const project = restApi.root.addResource("load-project");
     project.addMethod("POST", integration, { apiKeyRequired: true });
     project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+
     const suggestions = restApi.root.addResource("get-suggestions");
     suggestions.addMethod("POST", integration, { apiKeyRequired: true });
     suggestions.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+
+    const createLink = restApi.root.addResource("create-link");
+    createLink.addMethod("POST", integration, { apiKeyRequired: true });
+    createLink.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+
+    const deleteLink = restApi.root.addResource("delete-link");
+    deleteLink.addMethod("DELETE", integration, { apiKeyRequired: true });
+    deleteLink.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     new apigw.RateLimitedApiKey(this, "default", {
       apiKeyName: "default",

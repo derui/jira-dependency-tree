@@ -121,21 +121,21 @@ fn as_issue_keys(issue: &Value) -> HashSet<String> {
         .to_string();
     keys.insert(key);
 
-    issue["fields"]["issuelinks"].as_array().map(|v| {
+    if let Some(v) = issue["fields"]["issuelinks"].as_array() {
         v.iter().for_each(|v| {
             if let Some(key) = v["outwardIssue"]["key"].as_str() {
                 keys.insert(key.to_string());
             }
         })
-    });
+    }
 
-    issue["fields"]["subtasks"].as_array().map(|v| {
+    if let Some(v) = issue["fields"]["subtasks"].as_array() {
         v.iter().for_each(|v| {
             if let Some(key) = v["key"].as_str() {
                 keys.insert(key.to_string());
             }
         })
-    });
+    }
 
     keys
 }
@@ -240,7 +240,7 @@ pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraI
         .map(|v| v.to_string())
         .collect::<Vec<String>>();
 
-    if keys.len() > 0 {
+    if !keys.is_empty() {
         let jql = format!("key IN ({})", keys.join(","));
         println!("{}", jql);
 

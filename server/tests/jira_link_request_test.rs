@@ -75,9 +75,8 @@ fn request_to_delete_link() {
 
     // do
     let url = TestRequest { server: &server };
-    let result = delete_link("12345", &url).unwrap();
+    delete_link("12345", &url).unwrap();
 
     // verify
     project_mock.assert();
-    assert_eq!(result, ());
 }

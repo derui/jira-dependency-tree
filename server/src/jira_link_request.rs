@@ -1,6 +1,6 @@
-use isahc::{http::StatusCode, Body, Error, ReadResponseExt, RequestExt, Response};
+use isahc::{http::StatusCode, Body, Error, RequestExt, Response};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::json;
 use url::Url;
 
 use crate::{jira_project_request::build_partial_request, jira_url::JiraUrl};
@@ -47,7 +47,7 @@ pub fn create_link(
 
         if let StatusCode::CREATED = status {
             let location = res.headers().get("location").unwrap().to_str().unwrap();
-            let url = Url::parse(&location).expect("should be URL as location");
+            let url = Url::parse(location).expect("should be URL as location");
             let id_segment = url
                 .path_segments()
                 .map(|c| c.collect::<Vec<_>>())

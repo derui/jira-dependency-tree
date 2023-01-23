@@ -90,12 +90,11 @@ fn load_sprints(
                         .as_str()
                         .unwrap_or_default()
                         .replace("<b>", "")
-                        .replace("</b>", "")
-                        .into(),
+                        .replace("</b>", ""),
                 })
             });
 
-            Ok(vec.clone())
+            Ok(vec)
         }
     }
 }
@@ -112,7 +111,7 @@ pub fn get_suggestions(
     match sprints {
         Ok(sprints) => Some(JiraSuggestions { sprints }),
         Err(e) => {
-            println!("{}", e.to_string());
+            println!("{}", e);
             None
         }
     }

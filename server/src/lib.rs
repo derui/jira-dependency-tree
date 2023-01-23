@@ -71,7 +71,7 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
             _ => unmatch,
         },
         "/prod/delete-link" => match event.method() {
-            &Method::DELETE => execute_delete_link(&event).await,
+            &Method::POST => execute_delete_link(&event).await,
             &Method::OPTIONS => preflight,
             _ => unmatch,
         },

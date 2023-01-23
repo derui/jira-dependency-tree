@@ -39,7 +39,7 @@ export class CdkStack extends cdk.Stack {
     createLink.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     const deleteLink = restApi.root.addResource("delete-link");
-    deleteLink.addMethod("DELETE", integration, { apiKeyRequired: true });
+    deleteLink.addMethod("POST", integration, { apiKeyRequired: true });
     deleteLink.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     new apigw.RateLimitedApiKey(this, "default", {

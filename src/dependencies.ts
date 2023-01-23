@@ -11,7 +11,17 @@ export type Dependencies = {
   postJSON: (param: { url: string; headers: Record<string, string>; body: object }) => Observable<unknown>;
 
   /**
+   *dependency to post JSON as DELETE
+   */
+  deleteJSON: (param: { url: string; headers: Record<string, string> }) => Observable<unknown>;
+
+  /**
    * send command to issueGraph
    */
   sendCommandTo: (command: IssueGraphCommand) => void;
+
+  /**
+   * generate unique id
+   */
+  generateId: () => string;
 };

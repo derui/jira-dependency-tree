@@ -1,20 +1,18 @@
 import { test, expect, describe } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
-import { NEVER, of, throwError } from "rxjs";
+import { NEVER, of } from "rxjs";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { Dependencies } from "../../dependencies";
 import { createPureStore } from "../store";
 import {
   addRelation,
   addRelationAccepted,
-  addRelationError,
   addRelationSucceeded,
   removeRelation,
   removeRelationError,
   removeRelationSucceeded,
   submitApiCredentialFulfilled,
-  synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "../actions";
 import * as epic from "./relation";
@@ -116,7 +114,7 @@ describe("removeRelation", () => {
       const ret$ = epic.relationEpic(registrar).removeRelation(action$, state$, null);
 
       expectObservable(ret$).toBe("---a", {
-        a: removeRelationError("raise error"),
+        a: removeRelationError({ fromKey: "a", toKey: "b" }),
       });
     });
   });

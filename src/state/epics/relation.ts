@@ -84,12 +84,12 @@ export const relationEpic = (
         const target = Object.values(relation[payload.fromKey] || {}).find((r) => r.outwardIssue === payload.toKey);
 
         if (!credential || !target) {
-          return of(removeRelationError("Can not delete relation"));
+          return of(removeRelationError({ ...payload }));
         }
 
         return registrar
           .resolve("postJSON")({
-            url: `${credential.apiBaseUrl}/create-link`,
+            url: `${credential.apiBaseUrl}/delete-link`,
             headers: {
               "x-api-key": credential.apiKey,
             },
@@ -108,7 +108,7 @@ export const relationEpic = (
             catchError((e) => {
               console.error(e);
 
-              return of(removeRelationError("raise error"));
+              return of(removeRelationError({ ...payload }));
             }),
           );
       }),

@@ -71,4 +71,4 @@ export const addRelationError = createAction<{ relationId: string }>("addRelatio
 
 export const removeRelation = createAction<{ fromKey: string; toKey: string }>("removeRelation");
 export const removeRelationSucceeded = createAction<{ relationId: string }>("removeRelationSucceeded");
-export const removeRelationError = createAction<string>("removeRelationError");
+export const removeRelationError = createAction<{ fromKey: string; toKey: string }>("removeRelationError");

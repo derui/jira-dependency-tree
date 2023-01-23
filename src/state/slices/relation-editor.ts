@@ -38,6 +38,18 @@ const deleteRelationFromDraft = (state: WritableDraft<RelationEditorState>, id: 
   });
 };
 
+const getTargetRelations = (state: WritableDraft<RelationEditorState>, target: { fromKey: string; toKey: string }) => {
+  return Object.entries(state.relations)
+    .map(([, value]) => {
+      return Object.values(value)
+        .flat()
+        .filter((relation) => {
+          return relation.inwardIssue === target.fromKey && relation.outwardIssue === target.toKey;
+        });
+    })
+    .flat();
+};
+
 const slice = createSlice({
   name: "relationEditor",
   initialState,
@@ -97,15 +109,7 @@ const slice = createSlice({
     });
 
     builder.addCase(removeRelation, (state, { payload }) => {
-      const targetRelations = Object.entries(state.relations)
-        .map(([, value]) => {
-          return Object.values(value)
-            .flat()
-            .filter((relation) => {
-              return relation.inwardIssue === payload.fromKey && relation.outwardIssue === payload.toKey;
-            });
-        })
-        .flat();
+      const targetRelations = getTargetRelations(state, payload);
 
       targetRelations.forEach((relation) => {
         if (state.draft[relation.inwardIssue]) {
@@ -123,7 +127,11 @@ const slice = createSlice({
     });
 
     builder.addCase(removeRelationError, (state, { payload }) => {
-      deleteRelationFromDraft(state, payload.relationId);
+      const targetRelations = getTargetRelations(state, payload);
+
+      targetRelations.forEach((v) => {
+        deleteRelationFromDraft(state, v.id);
+      });
     });
 
     builder.addCase(removeRelationSucceeded, (state, { payload }) => {

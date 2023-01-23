@@ -203,8 +203,9 @@ fn request_to_get_simplest_issue_with_subtasks() {
         project: "project".to_string(),
         condition: None,
     };
-    let result = load_issue(&request, url);
+    let mut result = load_issue(&request, url);
 
+    result.sort_by(|o1, o2| o1.key.cmp(&o2.key).reverse());
     // verify
     assert_eq!(result.len(), 2);
     assert_eq!(result[0].key, "test");

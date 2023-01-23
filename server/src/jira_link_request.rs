@@ -56,3 +56,29 @@ pub fn create_link(
         None
     }
 }
+
+// load all sprints from Jira API
+fn request_delete_link(id: &str, url: &impl JiraUrl) -> Result<Response<Body>, Error> {
+    build_partial_request(&format!("/rest/api/3/issueLink/{}", id), url)
+        .body(())?
+        .send()
+}
+
+// create link between two issues
+pub fn delete_link(id: &str, url: &impl JiraUrl) -> Option<JiraIssueLink> {
+    if let Ok(res) = request_delete_link(id, url) {
+        let status = res.status();
+
+        match status {
+            StatusCode::OK | StatusCode::NO_CONTENT => {
+                let location = res.headers().get("location").unwrap();
+                Some(JiraIssueLink {
+                    id: location.to_str().unwrap().to_string(),
+                })
+            }
+            _ => None,
+        }
+    } else {
+        None
+    }
+}

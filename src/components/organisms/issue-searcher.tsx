@@ -139,7 +139,11 @@ export const IssueSearcher: React.FC<Props> = (props) => {
           </button>
         </span>
       </div>
-      <ul className={classNames(Styles.issueList(issueList.length > 0))} data-testid={gen("issue-list")}>
+      <ul
+        className={classNames(Styles.issueList(issueList.length > 0 && status === "Searching"))}
+        aria-hidden={issueList.length > 0 && status === "Searching"}
+        data-testid={gen("issue-list")}
+      >
         {issueList}
       </ul>
     </div>

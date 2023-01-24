@@ -34,9 +34,11 @@ const Styles = {
     "overflow-hidden",
   ),
   header: classes("h-8", "text-secondary1-500", "flex", "text-lg", "items-center", "flex-none"),
-  main: classes("flex-auto", "p-2", "h-full", "overflow-hidden"),
+  main: classes("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
   issueList: classes("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
   skeleton: classes("flex-auto", "p-2", "h-full", "animate-pulse", "bg-lightgray"),
+  appender: classes("flex", "mb-2"),
+  appenderButton: classes("flex", "flex-row", "items-center"),
 };
 
 const kindToTitle = (kind: RelationKind) => {
@@ -88,36 +90,44 @@ const IssueAppender: React.FC<{ testid: string; dispatch: AppDispatch; issueKey:
     }
   };
 
-  const handleSelect = () => {};
+  const handleSelect = (key: string) => {
+    setTerm("");
+    setSearching(false);
+    dispatch(searchIssue(""));
+
+    if (kind === "inward") {
+      dispatch(addRelation({ fromKey: key, toKey: issueKey }));
+    } else {
+      dispatch(addRelation({ fromKey: issueKey, toKey: key }));
+    }
+  };
 
   return (
-    <div ref={parentElement}>
+    <div ref={parentElement} className={classNames(Styles.appender)}>
       {searching ? (
-        <>
-          <Input
-            value={term}
-            onInput={handleTermInput}
-            onKeypress={handleKeypress}
-            placeholder="Input issue key/summary"
-            testid={gen("issue-term")}
-          />
-          <SuggestionList
-            testid={gen("suggestion-list")}
-            opened={true}
-            suggestions={suggestions}
-            suggestionIdSelected=""
-            parentElement={parentElement.current ?? undefined}
-            onSelect={handleSelect}
-          />
-        </>
+        <Input
+          value={term}
+          onInput={handleTermInput}
+          onKeypress={handleKeypress}
+          placeholder="Input issue key/summary"
+          testid={gen("issue-term")}
+        />
       ) : (
-        <Button schema="primary" testid={gen("add-button")} onClick={() => setSearching(!searching)}>
-          <span>
+        <Button size="full" schema='gray' testid={gen("add-button")} onClick={() => setSearching(!searching)}>
+          <span className={classNames(Styles.appenderButton)}>
             <Icon type="plus" color="gray" />
             Add
           </span>
         </Button>
       )}
+      <SuggestionList
+        testid={gen("suggestion-list")}
+        opened={searching}
+        suggestions={suggestions}
+        suggestionIdSelected=""
+        parentElement={parentElement.current ?? undefined}
+        onSelect={handleSelect}
+      />
     </div>
   );
 };

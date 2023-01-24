@@ -83,7 +83,7 @@ test("show issue are matched with inputted term", async () => {
   await userEvent.click(screen.getByTestId("opener"));
   await userEvent.type(screen.getByTestId("input"), "TES");
 
-  const issues = screen.getAllByTestId("issue");
+  const issues = screen.getAllByTestId("issue/root");
 
   expect(issues).toHaveLength(2);
   expect(issues.some((v) => v.textContent?.includes("TES-10"))).toBeTruthy();
@@ -112,7 +112,7 @@ test("reset after click cancel", async () => {
   await userEvent.type(screen.getByTestId("input"), "TES");
   await userEvent.click(screen.getByTestId("cancel"));
 
-  const issues = screen.queryAllByTestId("issue");
+  const issues = screen.queryAllByTestId("issue/root");
   const term = screen.getByTestId("input") as HTMLInputElement;
 
   expect(issues).toHaveLength(0);
@@ -140,6 +140,6 @@ test("send action when issue click", async () => {
   await userEvent.click(screen.getByTestId("opener"));
   await userEvent.type(screen.getByTestId("input"), "TES-10");
 
-  const issue = screen.getByTestId("issue");
+  const issue = screen.getByTestId("issue/root");
   await userEvent.click(issue);
 });

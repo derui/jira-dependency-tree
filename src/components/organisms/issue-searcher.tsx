@@ -3,7 +3,8 @@ import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Icon } from "../atoms/icon";
-import { isSyncable, selectMatchedIssue } from "@/state/selectors/issues";
+import { Issue } from "../molecules/issue";
+import { isSyncable, selectMatchedIssueModel } from "@/state/selectors/issues";
 import { focusIssueOnSearch, searchIssue } from "@/state/actions";
 
 export type Props = BaseProps;
@@ -69,7 +70,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
   const [term, setTerm] = useState("");
   const [status, setStatus] = useState<Status>("BeforePrepared");
   const syncable = useAppSelector(isSyncable());
-  const matchedIssues = useAppSelector(selectMatchedIssue());
+  const matchedIssues = useAppSelector(selectMatchedIssueModel());
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -102,16 +103,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
   };
 
   const issueList = matchedIssues.map((issue) => (
-    <li
-      key={issue.key}
-      className={classNames(Styles.issue)}
-      data-testid={gen("issue")}
-      data-key={issue.key}
-      onClick={() => handleIssueClick(issue.key)}
-    >
-      <span className={classNames(Styles.issueKey)}>{issue.key}</span>
-      <span className={classNames(Styles.issueSummary)}>{issue.summary}</span>
-    </li>
+    <Issue key={issue.key} issue={issue} onClick={(key) => handleIssueClick(key)} testid={gen("issue")} />
   ));
 
   return (

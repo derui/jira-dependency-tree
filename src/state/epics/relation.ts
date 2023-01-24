@@ -34,11 +34,13 @@ export const relationEpic = (
   addRelationAccepted: (action$, state$) =>
     action$.pipe(
       filter(addRelationAccepted.match),
-      mergeMap((action) => {
+      mergeMap(({ payload }) => {
         const credential = state$.value.apiCredential.credential;
 
         if (!credential) {
-          return of(addRelationError({ relationId: action.payload.relationId }));
+          return of(
+            addRelationError({ relationId: payload.relationId, fromKey: payload.fromKey, toKey: payload.toKey }),
+          );
         }
 
         return registrar
@@ -53,23 +55,23 @@ export const relationEpic = (
                 email: credential.email,
                 user_domain: credential.userDomain,
               },
-              inward_issue: action.payload.fromKey,
-              outward_issue: action.payload.toKey,
+              inward_issue: payload.fromKey,
+              outward_issue: payload.toKey,
             },
           })
           .pipe(
             map((response) =>
               addRelationSucceeded({
-                id: action.payload.relationId,
+                id: payload.relationId,
                 externalId: (response as Record<string, unknown>).id as string,
-                inwardIssue: action.payload.fromKey,
-                outwardIssue: action.payload.toKey,
+                inwardIssue: payload.fromKey,
+                outwardIssue: payload.toKey,
               }),
             ),
             catchError((e) => {
               console.error(e);
 
-              return of(addRelationError(action.payload));
+              return of(addRelationError(payload));
             }),
           );
       }),

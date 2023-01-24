@@ -1,6 +1,7 @@
 import { test, expect } from "vitest";
 import {
   addRelationAccepted,
+  addRelationError,
   addRelationSucceeded,
   deselectIssueInGraph,
   removeRelation,
@@ -44,6 +45,21 @@ test("add relation to draft", () => {
     a: { id: Loading.Loading },
     b: { id: Loading.Loading },
   });
+  expect(state.relations["a"]).toEqual({ id: { id: "id", externalId: "", inwardIssue: "a", outwardIssue: "b" } });
+  expect(state.relations["b"]).toEqual({ id: { id: "id", externalId: "", inwardIssue: "a", outwardIssue: "b" } });
+});
+
+test("remove draft and temporary draft when add relation failed", () => {
+  let state = reducer(
+    getInitialState(),
+    synchronizeIssuesFulfilled([randomIssue({ key: "a", relations: [] }), randomIssue({ key: "b", relations: [] })]),
+  );
+  state = reducer(state, addRelationAccepted({ fromKey: "a", toKey: "b", relationId: "id" }));
+  state = reducer(state, addRelationError({ fromKey: "a", toKey: "b", relationId: "id" }));
+
+  expect(state.draft).toEqual({ a: {}, b: {} });
+  expect(state.relations["a"]).toEqual({});
+  expect(state.relations["b"]).toEqual({});
 });
 
 test("add relation after succeeded", () => {

@@ -95,10 +95,22 @@ const slice = createSlice({
       } else {
         state.draft[payload.toKey] = { [payload.relationId]: Loading.Loading };
       }
+
+      const tempRelation = {
+        id: payload.relationId,
+        externalId: "",
+        inwardIssue: payload.fromKey,
+        outwardIssue: payload.toKey,
+      };
+      state.relations[payload.fromKey][payload.relationId] = tempRelation;
+      state.relations[payload.toKey][payload.relationId] = tempRelation;
     });
 
     builder.addCase(addRelationError, (state, { payload }) => {
       deleteRelationFromDraft(state, payload.relationId);
+
+      delete state.relations[payload.fromKey][payload.relationId];
+      delete state.relations[payload.toKey][payload.relationId];
     });
 
     builder.addCase(addRelationSucceeded, (state, { payload }) => {

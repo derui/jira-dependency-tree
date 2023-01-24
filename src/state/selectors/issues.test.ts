@@ -100,29 +100,30 @@ describe("queryIssueModels", () => {
     const store = createPureStore();
     store.dispatch(submitProjectKey("key"));
 
-    const ret = s.queryIssueModels()(store.getState());
+    const ret = s.selectMatchedIssueModel()(store.getState());
 
-    expect(ret).toEqual([Loading.Loading, undefined]);
+    expect(ret).toEqual([]);
   });
 
   test("can not get issues when project is invalid", () => {
     const store = createPureStore();
     store.dispatch(synchronizeIssuesFulfilled([randomIssue()]));
 
-    const ret = s.queryIssueModels()(store.getState());
+    const ret = s.selectMatchedIssueModel()(store.getState());
 
-    expect(ret).toEqual([Loading.Completed, []]);
+    expect(ret).toEqual([]);
   });
 
   test("get issue model", () => {
-    const issues = [randomIssue({ statusId: "", typeId: "" })];
+    const issues = [randomIssue({ summary: "sum", statusId: "", typeId: "" })];
     const store = createPureStore();
 
     store.dispatch(synchronizeIssuesFulfilled(issues));
     store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(searchIssue("sum"));
 
-    const ret = s.queryIssueModels()(store.getState());
+    const ret = s.selectMatchedIssueModel()(store.getState());
 
-    expect(ret).toEqual([Loading.Completed, [{ key: issues[0].key, summary: issues[0].summary }]]);
+    expect(ret).toEqual([{ key: issues[0].key, summary: issues[0].summary }]);
   });
 });

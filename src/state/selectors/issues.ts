@@ -20,16 +20,16 @@ export const isSyncable = () =>
 
 export const selectMatchedIssue = () => createDraftSafeSelector(selectIssues, (state) => state.matchedIssues);
 
-export const queryIssueModels = () =>
-  createDraftSafeSelector(selectIssues, selectProject, (issueState, projectState) => {
-    if (issueState.loading === Loading.Loading || projectState.loading === Loading.Loading) {
-      return [Loading.Loading, undefined];
+export const selectMatchedIssueModel = () =>
+  createDraftSafeSelector(selectMatchedIssue(), selectProject, (issues, projectState) => {
+    if (projectState.loading === Loading.Loading) {
+      return [];
     }
 
     const project = projectState.project;
     if (!project) {
-      return [Loading.Completed, []];
+      return [];
     }
 
-    return [Loading.Completed, issueState.issues.map((issue) => issueToIssueModel(project, issue))];
+    return issues.map((issue) => issueToIssueModel(project, issue));
   });

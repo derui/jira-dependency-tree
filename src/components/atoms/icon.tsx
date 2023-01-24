@@ -29,6 +29,7 @@ const Icons = {
   "circle-x": "before:[mask:url(/assets/svg/tablar-icons/circle-x.svg)]",
   "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
   x: "before:[mask:url(/assets/svg/tablar-icons/x.svg)]",
+  plus: "before:[mask:url(/assets/svg/tablar-icons/plus.svg)]",
 } as const;
 type Icons = keyof typeof Icons;
 

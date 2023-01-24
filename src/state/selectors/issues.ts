@@ -18,7 +18,7 @@ export const isSyncable = () =>
     state.apiCredential.credential && state.project.project && state.issues.loading !== Loading.Loading ? true : false,
   );
 
-export const selectMatchedIssue = () => createDraftSafeSelector(selectIssues, (state) => state.matchedIssues);
+const selectMatchedIssue = () => createDraftSafeSelector(selectIssues, (state) => state.matchedIssues);
 
 export const selectMatchedIssueModel = () =>
   createDraftSafeSelector(selectMatchedIssue(), selectProject, (issues, projectState) => {

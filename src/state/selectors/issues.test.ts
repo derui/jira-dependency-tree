@@ -76,25 +76,6 @@ test("return request if request setup finished", () => {
   expect(ret).toBe(true);
 });
 
-test("search issues", () => {
-  const fulfilledIssues = [
-    { key: "key", summary: "summary" },
-    { key: "not match", summary: "not match" },
-  ] as Issue[];
-  let state = {
-    issues: issues.reducer(
-      issues.reducer(issues.getInitialState(), synchronizeIssues()),
-      synchronizeIssuesFulfilled(fulfilledIssues),
-    ),
-  } as RootState;
-
-  state = { ...state, issues: issues.reducer(state.issues, searchIssue("ke")) };
-
-  const ret = s.selectMatchedIssue()(state);
-
-  expect(ret).toEqual([{ key: "key", summary: "summary" }]);
-});
-
 describe("queryIssueModels", () => {
   test("loading when project or issue are loading", () => {
     const store = createPureStore();

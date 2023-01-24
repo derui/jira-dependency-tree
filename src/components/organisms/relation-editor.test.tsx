@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { RelationEditor } from "./relation-editor";
 import { createPureStore } from "@/state/store";
 import {
+  searchIssue,
   selectIssueInGraph,
   submitProjectKeyFulfilled,
   synchronizeIssues,
@@ -65,4 +66,48 @@ test("render skeleton", async () => {
   const skeleton = screen.queryByTestId("skeleton");
 
   expect(skeleton).not.toBeNull();
+});
+
+test("show input when button clicked", async () => {
+  const issues = [randomIssue({ key: "key" }), randomIssue({ key: "key2" })];
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(synchronizeIssuesFulfilled(issues));
+  store.dispatch(selectIssueInGraph("key"));
+
+  render(
+    <Provider store={store}>
+      <RelationEditor kind="inward" />
+    </Provider>,
+  );
+
+  const button = screen.getByTestId("appender/add-button/button");
+  await userEvent.click(button);
+
+  const input = screen.queryByTestId("appender/issue-term/input");
+
+  expect(input).not.toBeNull();
+});
+
+test("re-display button after press enter in input", async () => {
+  const issues = [randomIssue({ key: "key" }), randomIssue({ key: "key2" })];
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(synchronizeIssuesFulfilled(issues));
+  store.dispatch(selectIssueInGraph("key"));
+
+  render(
+    <Provider store={store}>
+      <RelationEditor kind="inward" />
+    </Provider>,
+  );
+
+  const button = screen.getByTestId("appender/add-button/button");
+  await userEvent.click(button);
+
+  const input = screen.getByTestId("appender/issue-term/input");
+
+  await userEvent.type(input, "foo{enter}");
+
+  expect(screen.queryByTestId("appender/issue-term/input")).toBeNull();
 });

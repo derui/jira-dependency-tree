@@ -18,10 +18,20 @@ export interface Props extends BaseProps, PropsWithChildren {
 const Styles = {
   dialog: (opened: boolean, aligned: Alignment, margin: Margin) => {
     return {
-      ...classes("bg-white", "absolute", "top-full", "rounded", "shadow-lg", "transition-width", "overflow-hidden"),
-      ...(!opened ? classes("w-0") : classes("w-96")),
-      ...(aligned === "bottomLeft" ? classes("left-0") : {}),
-      ...(aligned === "bottomRight" ? classes("right-0") : {}),
+      ...classes(
+        "z-50",
+        "bg-white",
+        "absolute",
+        "top-full",
+        "rounded",
+        "shadow-lg",
+        "transition-width",
+        "overflow-hidden",
+      ),
+      "w-0": !opened,
+      "w-96": opened,
+      "left-0": aligned === "bottomLeft",
+      "right-0": aligned === "bottomRight",
       ...(margin === "all" ? classes("m-3") : {}),
       ...(margin === "top" ? classes("mt-3") : {}),
       ...(margin === "left" ? classes("ml-3") : {}),

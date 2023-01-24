@@ -77,7 +77,7 @@ export const SuggestionList: React.FC<Props> = ({
 
   return (
     <Dialog
-      aligned='bottomLeft'
+      aligned='bottomRight'
       opened={opened}
       margin='top'
       parentRect={Rect.fromDOMRect(parentElement.getBoundingClientRect())}

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
+import { v4 } from "uuid";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { Setting, SettingArgument } from "./model/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
@@ -23,6 +24,7 @@ import { App } from "./app";
 const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("env", env);
 registrar.register("postJSON", postJSON);
+registrar.register("generateId", () => v4());
 
 const store = createStore(registrar);
 

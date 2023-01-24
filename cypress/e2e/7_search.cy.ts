@@ -29,7 +29,7 @@ describe("load issues", () => {
     cy.testid("issue-searcher/input").should("be.visible").type("task{enter}");
 
     // verify issues
-    cy.testid("issue-searcher/issue").should("be.visible").should("have.length", 5);
+    cy.testid("issue-searcher/issue/root").should("be.visible").should("have.length", 5);
   });
 
   it("Do cancel to close searcher", () => {
@@ -92,7 +92,7 @@ describe("load issues", () => {
     cy.testid("issue-searcher/input").should("be.visible").type("task{enter}");
 
     // move to issue
-    cy.testid("issue-searcher/issue").get('[data-key="TES-51"]').click();
+    cy.testid("issue-searcher/issue/root").get('[data-testid="issue-searcher/issue-list"] > :nth-child(1)').click();
 
     // verify
     cy.get('[data-issue-key="TES-51"]').should("be.visible");

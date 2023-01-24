@@ -59,6 +59,7 @@ const Styles = {
         "right-0",
         "w-96",
         "bg-white",
+        "space-y-2",
       ),
       ...(haveIssues ? classes() : classes("hidden")),
     };

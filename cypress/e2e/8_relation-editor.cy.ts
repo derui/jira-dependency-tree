@@ -87,11 +87,18 @@ describe("edit relation of issue", () => {
     // select issue
     cy.get('[data-issue-key="TES-1"]').click();
 
+    cy.intercept("POST", "http://localhost:3000/delete-link", { statusCode: 404 }).as("err");
+
     // remove issue
     cy.testid("relation-editor/outward-editor/issue/delete").click();
 
     // verify issue
     cy.testid("relation-editor/outward-editor/issue/root-skeleton").should("be.visible");
+
+    cy.wait("@err").then(() => {
+      // verify issue is not loading
+      cy.testid("relation-editor/outward-editor/issue/root").should("have.length", 1);
+    });
   });
 
   it("display inward and outward issues", () => {

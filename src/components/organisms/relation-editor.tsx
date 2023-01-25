@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import classNames from "classnames";
-import { dispatch } from "d3";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Issue } from "../molecules/issue";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -36,7 +35,7 @@ const Styles = {
   header: classes("h-8", "text-secondary1-500", "flex", "text-lg", "items-center", "flex-none"),
   main: classes("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
   issueList: classes("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
-  skeleton: classes("flex-auto", "p-2", "h-full", "animate-pulse", "bg-lightgray"),
+  skeleton: classes("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
   appender: classes("flex", "mb-2"),
   appenderButton: classes("flex", "flex-row", "items-center"),
 };

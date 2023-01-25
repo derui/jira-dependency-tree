@@ -90,7 +90,7 @@ export const relationEpic = (
         }
 
         return registrar
-          .resolve("postJSON")({
+          .resolve("post")({
             url: `${credential.apiBaseUrl}/delete-link`,
             headers: {
               "x-api-key": credential.apiKey,
@@ -105,7 +105,6 @@ export const relationEpic = (
             },
           })
           .pipe(
-            tap(console.log),
             map(() => removeRelationSucceeded({ relationId: target.id })),
             catchError((e) => {
               console.error(e);

@@ -77,7 +77,7 @@ describe("removeRelation", () => {
     const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
 
     testScheduler.run(({ hot, cold, expectObservable }) => {
-      registrar.register("postJSON", () => cold("--a", { a: {} }));
+      registrar.register("post", () => cold<void>("--a", { a: undefined }));
 
       const action$ = hot("-a", { a: removeRelation({ fromKey: "a", toKey: "b" }) });
 
@@ -105,7 +105,7 @@ describe("removeRelation", () => {
     const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
 
     testScheduler.run(({ hot, cold, expectObservable }) => {
-      registrar.register("postJSON", () => cold("--#", {}, ""));
+      registrar.register("post", () => cold<void>("--#", {}, ""));
 
       const action$ = hot("-a", { a: removeRelation({ fromKey: "a", toKey: "b" }) });
 

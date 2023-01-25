@@ -6,14 +6,14 @@ import type { Env } from "./model/env";
 export type Dependencies = {
   env: Env;
   /**
-   * dependency to post JSON to URL
+   * dependency to post JSON to URL and return JSON as response
    */
   postJSON: (param: { url: string; headers: Record<string, string>; body: object }) => Observable<unknown>;
 
   /**
-   *dependency to post JSON as DELETE
+   * dependency to post JSON to URL
    */
-  deleteJSON: (param: { url: string; headers: Record<string, string> }) => Observable<unknown>;
+  post: (param: { url: string; headers: Record<string, string>; body: object }) => Observable<void>;
 
   /**
    * send command to issueGraph

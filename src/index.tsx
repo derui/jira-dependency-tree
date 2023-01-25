@@ -1,17 +1,16 @@
-import React from "react"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import { createRoot } from "react-dom/client";
 import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
-import { Setting, SettingArgument } from "./model/setting";
+import { SettingArgument } from "./model/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
 import { createStore } from "./state/store";
 import { createDependencyRegistrar } from "./util/dependency-registrar";
 import { Dependencies } from "./dependencies";
-import { postJSON } from "./infrastructures/fetch";
+import { post, postJSON } from "./infrastructures/fetch";
 import { changeZoom, deselectIssueInGraph, restoreApiCredential, selectIssueInGraph } from "./state/actions";
 import { queryProject } from "./state/selectors/project";
 import { getGraphLayout } from "./state/selectors/graph-layout";
@@ -24,6 +23,7 @@ import { App } from "./app";
 const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("env", env);
 registrar.register("postJSON", postJSON);
+registrar.register("post", post);
 registrar.register("generateId", () => v4());
 
 const store = createStore(registrar);

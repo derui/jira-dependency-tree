@@ -32,7 +32,7 @@ const Styles = {
   },
   suggestorMain: (opened: boolean) => {
     return {
-      ...classes("flex-col", "top-full", "bg-white", "whitespace-nowrap", "text-base", "w-full"),
+      ...classes("flex-col", "top-full", "bg-white", "whitespace-nowrap", "text-base", "w-full", "max-h-96"),
       ...(!opened ? classes("hidden") : classes("flex")),
     };
   },

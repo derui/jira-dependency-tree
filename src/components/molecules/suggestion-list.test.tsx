@@ -18,7 +18,7 @@ const renderWrapper = (v: React.ReactElement) =>
     },
   });
 
-test("should be able to render", (t) => {
+test("should be able to render", () => {
   const element = document.createElement("div");
 
   renderWrapper(<SuggestionList opened={true} suggestionIdSelected='' suggestions={[]} parentElement={element} />);
@@ -30,7 +30,7 @@ test("should be able to render", (t) => {
   expect(empty).toBeTruthy();
 });
 
-test("do not render when did not pass parent", (t) => {
+test("do not render when did not pass parent", () => {
   renderWrapper(<SuggestionList opened={true} suggestionIdSelected='' suggestions={[]} />);
 
   const root = screen.queryByTestId("root/dialog");
@@ -38,7 +38,7 @@ test("do not render when did not pass parent", (t) => {
   expect(root).toBeFalsy();
 });
 
-test("mark selected suggestion", (t) => {
+test("mark selected suggestion", () => {
   const element = document.createElement("div");
 
   const suggestions: SuggestedItem[] = [{ displayName: "display", value: "value", id: "value" }];
@@ -51,7 +51,7 @@ test("mark selected suggestion", (t) => {
   expect(suggestion.classList.contains("border-l-secondary1-300")).toBe(true);
 });
 
-test("return id when clicked", async (t) => {
+test("return id when clicked", async () => {
   expect.assertions(1);
 
   const element = document.createElement("div");

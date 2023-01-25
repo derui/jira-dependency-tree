@@ -6,7 +6,6 @@ import { Provider } from "react-redux";
 import { RelationEditor } from "./relation-editor";
 import { createPureStore } from "@/state/store";
 import {
-  searchIssue,
   selectIssueInGraph,
   submitProjectKeyFulfilled,
   synchronizeIssues,
@@ -16,9 +15,21 @@ import { randomIssue, randomProject } from "@/mock-data";
 
 afterEach(cleanup);
 
+const renderWrapper = (v: React.ReactElement) =>
+  render(v, {
+    wrapper(props) {
+      return (
+        <>
+          {props.children}
+          <div id='dialog-root' />
+        </>
+      );
+    },
+  });
+
 test("should be able to render", async () => {
   const store = createPureStore();
-  render(
+  renderWrapper(
     <Provider store={store}>
       <RelationEditor kind="inward" />
     </Provider>,
@@ -41,7 +52,7 @@ test("render issues in inward", async () => {
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <RelationEditor kind="inward" />
     </Provider>,
@@ -57,7 +68,7 @@ test("render skeleton", async () => {
   store.dispatch(submitProjectKeyFulfilled(randomProject()));
   store.dispatch(synchronizeIssues());
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <RelationEditor kind="inward" />
     </Provider>,
@@ -75,7 +86,7 @@ test("show input when button clicked", async () => {
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <RelationEditor kind="inward" />
     </Provider>,
@@ -96,7 +107,7 @@ test("re-display button after press enter in input", async () => {
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <RelationEditor kind="inward" />
     </Provider>,
@@ -110,4 +121,34 @@ test("re-display button after press enter in input", async () => {
   await userEvent.type(input, "foo{enter}");
 
   expect(screen.queryByTestId("appender/issue-term/input")).toBeNull();
+});
+
+test("do not display issue in suggestion that are already had relation", async () => {
+  const issues = [
+    randomIssue({ key: "key", relations: [{ id: "id", externalId: "id", inwardIssue: "key", outwardIssue: "key2" }] }),
+    randomIssue({ key: "key2", relations: [{ id: "id", externalId: "id", inwardIssue: "key", outwardIssue: "key2" }] }),
+    randomIssue({ key: "key3" }),
+  ];
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(synchronizeIssuesFulfilled(issues));
+  store.dispatch(selectIssueInGraph("key"));
+
+  renderWrapper(
+    <Provider store={store}>
+      <RelationEditor kind="outward" />
+    </Provider>,
+  );
+
+  const button = screen.getByTestId("appender/add-button/button");
+  await userEvent.click(button);
+
+  const input = screen.getByTestId("appender/issue-term/input");
+
+  await userEvent.type(input, "key");
+
+  const suggestions = screen.getAllByTestId("appender/suggestion-list/suggestion");
+
+  expect(suggestions).toHaveLength(1);
+  expect(suggestions[0].textContent).toContain("key3");
 });

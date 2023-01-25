@@ -7,7 +7,7 @@ import { Button } from "../atoms/button";
 import { Icon } from "../atoms/icon";
 import { Input } from "../atoms/input";
 import { SuggestionList } from "../molecules/suggestion-list";
-import { Loading } from "@/type";
+import { IssueKey, Loading } from "@/type";
 import {
   queryCurrentRelatedIssuesWithKind,
   RelationKind,
@@ -53,19 +53,20 @@ const Skeleton: React.FC<{ testid: string }> = ({ testid }) => {
   return <main className={classNames(Styles.skeleton)} data-testid={testid} />;
 };
 
-const IssueAppender: React.FC<{ testid: string; dispatch: AppDispatch; issueKey: string; kind: RelationKind }> = ({
-  testid,
-  dispatch,
-  issueKey,
-  kind,
-}) => {
+const IssueAppender: React.FC<{
+  testid: string;
+  dispatch: AppDispatch;
+  issueKey: string;
+  kind: RelationKind;
+  relatedIssues: IssueKey[];
+}> = ({ testid, dispatch, issueKey, kind, relatedIssues }) => {
   const gen = generateTestId(testid);
   const parentElement = useRef<HTMLDivElement | null>(null);
   const [searching, setSearching] = useState(false);
   const [term, setTerm] = useState("");
   const allIssues = useAppSelector(selectMatchedIssueModel());
   const suggestions = allIssues
-    .filter((issue) => issue.key !== issueKey)
+    .filter((issue) => issue.key !== issueKey && !relatedIssues.includes(issue.key))
     .map((issue) => {
       return { id: issue.key, value: issue.key, displayName: `${issue.key} ${issue.summary}` };
     });
@@ -136,6 +137,7 @@ export const RelationEditor: React.FC<Props> = (props) => {
   const [loading, relatedIssues = []] = useAppSelector(queryCurrentRelatedIssuesWithKind(props.kind));
   const selectedIssueKey = useAppSelector(selectSelectedIssueKey());
   const dispatch = useAppDispatch();
+  const relatedIssueKeys = relatedIssues.map(([, v]) => v.key);
 
   const handleIssueDeleted = (key: string) => {
     if (!selectedIssueKey) {
@@ -162,7 +164,13 @@ export const RelationEditor: React.FC<Props> = (props) => {
         <Skeleton testid={gen("skeleton")} />
       ) : (
         <main className={classNames(Styles.main)}>
-          <IssueAppender testid={gen("appender")} dispatch={dispatch} issueKey={selectedIssueKey} kind={props.kind} />
+          <IssueAppender
+            testid={gen("appender")}
+            relatedIssues={relatedIssueKeys}
+            dispatch={dispatch}
+            issueKey={selectedIssueKey}
+            kind={props.kind}
+          />
           <ul className={classNames(Styles.issueList)}>{issueList}</ul>
         </main>
       )}

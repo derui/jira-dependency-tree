@@ -37,7 +37,7 @@ test("fulfill relations", () => {
 test("add relation to draft", () => {
   let state = reducer(
     getInitialState(),
-    synchronizeIssuesFulfilled([randomIssue({ key: "a", relations: [] }), randomIssue({ key: "b", relations: [] })]),
+    synchronizeIssuesFulfilled([randomIssue({ key: "a" }), randomIssue({ key: "b" })]),
   );
   state = reducer(state, addRelationAccepted({ fromKey: "a", toKey: "b", relationId: "id" }));
 

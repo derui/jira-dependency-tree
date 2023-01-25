@@ -102,8 +102,18 @@ const slice = createSlice({
         inwardIssue: payload.fromKey,
         outwardIssue: payload.toKey,
       };
-      state.relations[payload.fromKey][payload.relationId] = tempRelation;
-      state.relations[payload.toKey][payload.relationId] = tempRelation;
+
+      if (state.relations[payload.fromKey]) {
+        state.relations[payload.fromKey][payload.relationId] = tempRelation;
+      } else {
+        state.relations[payload.fromKey] = { [payload.relationId]: tempRelation };
+      }
+
+      if (state.relations[payload.fromKey]) {
+        state.relations[payload.toKey][payload.relationId] = tempRelation;
+      } else {
+        state.relations[payload.toKey] = { [payload.relationId]: tempRelation };
+      }
     });
 
     builder.addCase(addRelationError, (state, { payload }) => {

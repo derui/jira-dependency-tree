@@ -12,7 +12,19 @@ export type Props = BaseProps;
 type Status = "Searching" | "Prepared" | "BeforePrepared";
 
 const Styles = {
-  root: classes("flex", "flex-col", "bg-white", "rounded", "px-3", "mr-3", "shadow-md", "max-w-sm", "relative"),
+  root: classes(
+    "flex",
+    "flex-col",
+    "bg-white",
+    "rounded",
+    "px-3",
+    "mr-3",
+    "shadow-md",
+    "max-w-sm",
+    "relative",
+    "flex-none",
+    "h-12",
+  ),
   opener: classes("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
   input: classes("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
   cancel: (status: Status) => {

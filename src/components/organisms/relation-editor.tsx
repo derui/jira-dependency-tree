@@ -82,10 +82,14 @@ const IssueAppender: React.FC<{
       setSearching(false);
       dispatch(searchIssue(""));
 
+      if (!term) {
+        return;
+      }
+
       if (kind === "inward") {
-        dispatch(addRelation({ fromKey: key, toKey: issueKey }));
+        dispatch(addRelation({ fromKey: term, toKey: issueKey }));
       } else {
-        dispatch(addRelation({ fromKey: issueKey, toKey: key }));
+        dispatch(addRelation({ fromKey: issueKey, toKey: term }));
       }
     }
   };
@@ -106,6 +110,7 @@ const IssueAppender: React.FC<{
     <div ref={parentElement} className={classNames(Styles.appender)}>
       {searching ? (
         <Input
+          focus={true}
           value={term}
           onInput={handleTermInput}
           onKeypress={handleKeypress}

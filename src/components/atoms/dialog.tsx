@@ -2,7 +2,6 @@ import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { createPortal } from "react-dom";
 import { BaseProps, classes, generateTestId } from "../helper";
-import { TransitionState, useTransitionControl } from "../hooks";
 import { Rect } from "@/util/basic";
 
 type Alignment = "bottomLeft" | "bottomRight";
@@ -23,13 +22,11 @@ const Styles = {
     opened,
     aligned,
     margin,
-    state,
     initialized,
   }: {
     opened: boolean;
     aligned: Alignment;
     margin: Margin;
-    state?: TransitionState;
     initialized: InitializationStep;
   }) => {
     const base = classes(
@@ -87,7 +84,6 @@ export const Dialog: React.FC<Props> = (props) => {
   const [rect, setRect] = useState(Rect.empty());
   const ref = useRef(document.createElement("div"));
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const [enter, exit, state] = useTransitionControl(200);
   const selector = props.selector ?? "#dialog-root";
 
   useEffect(() => {
@@ -97,6 +93,7 @@ export const Dialog: React.FC<Props> = (props) => {
 
     return () => {
       document.querySelector(selector)?.removeChild(ref.current);
+      setInitialized("YetMount");
     };
   }, []);
 
@@ -105,19 +102,7 @@ export const Dialog: React.FC<Props> = (props) => {
       setRect(Rect.fromDOMRect(rootRef.current.getBoundingClientRect()));
       setInitialized("Recorded");
     }
-
-    return () => {
-      setInitialized("YetMount");
-    };
   }, [initialized]);
-
-  useEffect(() => {
-    if (props.opened) {
-      enter();
-    } else {
-      exit();
-    }
-  }, [props.opened]);
 
   const style = getPositionalStyle(props, rect);
 
@@ -130,7 +115,6 @@ export const Dialog: React.FC<Props> = (props) => {
           opened: props.opened,
           aligned: props.aligned,
           margin: props.margin ?? "none",
-          state,
         }),
       )}
       aria-hidden={!props.opened}

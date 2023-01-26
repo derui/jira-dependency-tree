@@ -64,6 +64,10 @@ export class Rect {
     });
   }
 
+  static empty() {
+    return new Rect({ left: 0, top: 0, bottom: 0, right: 0 });
+  }
+
   get height() {
     return Math.max(this.bottom - this.top, 0);
   }

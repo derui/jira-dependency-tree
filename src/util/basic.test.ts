@@ -64,3 +64,14 @@ test("invalid rect", () => {
   expect(rect.width).toBe(0);
   expect(rect.height).toBe(0);
 });
+
+test("empty rect", () => {
+  const rect = Rect.empty();
+
+  expect(rect.bottom).toBe(0);
+  expect(rect.top).toBe(0);
+  expect(rect.left).toBe(0);
+  expect(rect.right).toBe(0);
+  expect(rect.width).toBe(0);
+  expect(rect.height).toBe(0);
+});

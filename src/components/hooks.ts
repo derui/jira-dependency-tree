@@ -5,30 +5,30 @@ import type { AppDispatch, RootState } from "@/state/store";
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-const State = {
+const TransitionState = {
   Entering: "Entering",
   Entered: "Entered",
   Exiting: "Exiting",
   Exited: "Exited",
-};
+} as const;
 
-type State = typeof State[keyof typeof State];
+export type TransitionState = typeof TransitionState[keyof typeof TransitionState];
 
 const useTransitionState = (duration = 250) => {
-  const [state, setState] = useState<State | undefined>();
+  const [state, setState] = useState<TransitionState | undefined>();
 
   useEffect(() => {
     let timerId: NodeJS.Timeout;
 
-    if (state === State.Entering) {
+    if (state === TransitionState.Entering) {
       timerId = setTimeout(() => {
-        setState(State.Entered);
+        setState(TransitionState.Entered);
       }, duration);
     }
 
-    if (state === State.Exiting) {
+    if (state === TransitionState.Exiting) {
       timerId = setTimeout(() => {
-        setState(State.Exited);
+        setState(TransitionState.Exited);
       }, duration);
     }
 
@@ -44,20 +44,20 @@ type EnterFn = () => void;
 type ExitFn = () => void;
 
 /**
- * transition state
+ * transition state control
  */
-export const useTransition = (duration: number): [EnterFn, ExitFn, State | undefined] => {
+export const useTransitionControl = (duration: number): [EnterFn, ExitFn, TransitionState | undefined] => {
   const [state, setState] = useTransitionState(duration);
 
   const enter = () => {
-    if (state !== State.Exiting) {
-      setState(State.Entering);
+    if (state !== TransitionState.Exiting) {
+      setState(TransitionState.Entering);
     }
   };
 
   const exit = () => {
-    if (state !== State.Entering) {
-      setState(State.Exiting);
+    if (state !== TransitionState.Entering) {
+      setState(TransitionState.Exiting);
     }
   };
 

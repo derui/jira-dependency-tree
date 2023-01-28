@@ -62,7 +62,7 @@ const selectSuggestion = (current: string, suggestions: SuggestedItem[], key: "A
       if (currentSuggestion === -1) {
         return suggestions[0]?.id ?? "";
       } else {
-        const index = Math.max(suggestions.length - 1, currentSuggestion + 1);
+        const index = Math.min(suggestions.length - 1, currentSuggestion + 1);
 
         return suggestions[index]?.id ?? current;
       }
@@ -70,7 +70,7 @@ const selectSuggestion = (current: string, suggestions: SuggestedItem[], key: "A
       if (currentSuggestion === -1) {
         return suggestions[suggestions.length - 1]?.id ?? "";
       } else {
-        const index = Math.min(0, currentSuggestion - 1);
+        const index = Math.max(0, currentSuggestion - 1);
 
         return suggestions[index]?.id ?? current;
       }

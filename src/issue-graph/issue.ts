@@ -14,7 +14,13 @@ const IssueSizes = {
 const buildIssueNode = (container: IssueNode, project: Project, configuration: Configuration) => {
   const measure = makeTextMeasure('13.5px "Noto Sans JP"');
 
-  const node = container.enter().append("svg:g");
+  const node = container
+    .enter()
+    .append("svg:g")
+    .attr("data-issue-key", (d) => d.issueKey)
+    .classed("graph-issue", () => true)
+    .classed("transition-opacity", () => true);
+
   node
     .append("rect")
     .attr("class", (d) => {
@@ -88,7 +94,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   // issue status
   node
     .append("text")
-    .attr("class", "issue-node__status")
+    .attr("class", "issue-node__status p-1")
     .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
     .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
     .attr("filter", (d) => {
@@ -123,28 +129,22 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
 
 export const buildIssueGraph = (
   container: D3Node<SVGSVGElement>,
-  data: LayoutedLeveledIssue[],
   project: Project,
   configuration: Configuration,
-): [IssueNode, Restarter<LayoutedLeveledIssue[]>] => {
-  let issueNode = container
-    .append("svg:g")
-    .selectAll<BaseType, LayoutedLeveledIssue>("g")
-    .data(data, (d) => d.issueKey);
+): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
+  let issueNode = container.append("svg:g").selectAll<BaseType, LayoutedLeveledIssue>("g");
 
   issueNode = buildIssueNode(issueNode, project, configuration);
 
   return [
     issueNode,
     (data) => {
-      issueNode
-        .data(data)
-        .attr("data-issue-key", (d) => d.issueKey)
-        .classed("graph-issue", () => true)
-        .classed("transition-opacity", () => true)
-        .classed("opacity-30", (d) => d.focusing === "unfocused");
+      issueNode = issueNode.data(data, (d) => d.issueKey).classed("opacity-30", (d) => d.focusing === "unfocused");
 
-      buildIssueNode(issueNode, project, configuration);
+      issueNode.exit().remove();
+      issueNode = buildIssueNode(issueNode, project, configuration);
+
+      return issueNode;
     },
   ];
 };

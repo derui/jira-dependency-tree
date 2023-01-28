@@ -61,9 +61,9 @@ export const makeIssueGraphRoot = (issues: Issue[], project: Project, configurat
   // definition for text backgrounds
   svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 
-  makeForceGraph(svg, issues, project, configuration);
+  const restarter = makeForceGraph(svg, issues, project, configuration);
 
-  return svg;
+  return [svg, restarter] as const;
 };
 
 const defineFilters = (defs: d3.Selection<SVGDefsElement, undefined, null, undefined>) => {

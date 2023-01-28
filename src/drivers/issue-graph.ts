@@ -9,6 +9,7 @@ import { filterNull, Rect } from "@/util/basic";
 import { GraphLayout } from "@/issue-graph/type";
 import { getTargetIssuePositionInSVG } from "@/issue-graph/issue";
 import { cubicBezier } from "@/util/bezier";
+import { GraphRestarter } from "@/issue-graph/force-graph";
 
 type AttentionIssueCommand = {
   kind: "AttentionIssue";
@@ -180,9 +181,9 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
 ): (sink: Subject<IssueGraphSink | null>) => IssueGraphSource {
   return (sink$) => {
     let svg: Selection<SVGSVGElement, undefined, null, undefined> | null = null;
+    let restarter: GraphRestarter | null = null;
     let svgSize: DOMRect;
     let prevIssues: Issue[] | null = null;
-    let prevProject: Project | null = null;
     let prevLayout: GraphLayout | null = null;
     const stateReference: IssueGraphState = {
       pan: { x: 0, y: 0 },
@@ -205,35 +206,41 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       },
     });
 
-    const updateIssueGraph = ({ issues, project, graphLayout }: IssueGraphSink) => {
-      svg = makeIssueGraphRoot(issues, project, {
+    const updateIssueGraph = ({ issues, graphLayout }: IssueGraphSink) => {
+      if (!svg || !restarter) return;
+
+      svg.attr("viewBox", makeViewBox(stateReference, svgSize));
+      restarter(issues, {
         ...configuration,
         graphLayout,
         onIssueClick(key) {
           actionStream.next({ kind: "SelectIssue", key });
         },
       });
-      document.querySelector(parentSelector)?.append(svg.node() as Node);
-
-      svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
-      stateReference.pan = { x: -1 * (svgSize.width / 2), y: (-1 * svgSize.height) / 2 };
-
-      svg.attr("viewBox", makeViewBox(stateReference, svgSize));
     };
 
     sink$.pipe(filter(filterNull), distinctUntilChanged()).subscribe({
       next: ({ issues, project, graphLayout }) => {
         if (svg === null) {
-          updateIssueGraph({ issues, project, graphLayout });
-        } else if (prevIssues !== issues || prevProject !== project || prevLayout !== graphLayout) {
-          svg.remove();
+          const [_svg, _restarter] = makeIssueGraphRoot(issues, project, {
+            ...configuration,
+            graphLayout,
+            onIssueClick(key) {
+              actionStream.next({ kind: "SelectIssue", key });
+            },
+          });
+          svg = _svg;
+          restarter = _restarter;
 
+          document.querySelector(parentSelector)?.append(svg.node() as Node);
+          svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
+          stateReference.pan = { x: -1 * (svgSize.width / 2), y: (-1 * svgSize.height) / 2 };
+        } else if (prevIssues !== issues || prevLayout !== graphLayout) {
           updateIssueGraph({ issues, project, graphLayout });
         }
 
         configuration.canvasSize = { width: svgSize.width, height: svgSize.height };
         prevIssues = issues;
-        prevProject = project;
         prevLayout = graphLayout;
       },
     });

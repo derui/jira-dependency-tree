@@ -5,7 +5,15 @@ import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
 import { Issue, selectOutwardIssues } from "@/model/issue";
 import { Project } from "@/model/project";
 import { buildIssueGraph } from "@/issue-graph/issue";
-import { Configuration, D3Node, IssueLink, GraphLayout, LayoutedLeveledIssue } from "@/issue-graph/type";
+import {
+  Configuration,
+  D3Node,
+  IssueLink,
+  GraphLayout,
+  LayoutedLeveledIssue,
+  TreeFrame,
+  LayoutedLeveledIssueUnit,
+} from "@/issue-graph/type";
 import { Position, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
@@ -52,11 +60,6 @@ const getNextPositionBy = (position: Position, layout: LayoutedGraph, nodeSize: 
     case GraphLayout.Vertical:
       return { x: position.x, y: position.y + layout.size.height + nodeSize.height };
   }
-};
-
-type LayoutedLeveledIssueUnit = {
-  issues: LayoutedLeveledIssue[];
-  unitRect: Rect;
 };
 
 const makeLeveledIssues = (
@@ -145,18 +148,14 @@ const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
   }, []);
 };
 
-const buildIssueTreeFrame = (
-  container: D3Node<SVGSVGElement>,
-  layoutedLeveledIssueUnits: LayoutedLeveledIssueUnit[],
-) => {
+const buildIssueTreeFrame = (container: D3Node<SVGSVGElement>): TreeFrame => {
   const FrameSize = {
     padding: 16,
   };
 
-  container
-    .append("svg:g")
-    .selectAll("rect")
-    .data(layoutedLeveledIssueUnits)
+  const frame = container.append("svg:g").selectAll<BaseType, LayoutedLeveledIssueUnit>("rect");
+
+  frame
     .enter()
     .append("rect")
     .attr("width", (d) => d.unitRect.width + FrameSize.padding * 2)
@@ -167,18 +166,22 @@ const buildIssueTreeFrame = (
     .classed("fill-none", () => true)
     .classed("stroke-2", () => true)
     .classed("stroke-lightgray", () => true);
+
+  return frame;
 };
+
+export type GraphRestarter = (issues: Issue[], configuration: Configuration) => void;
 
 export const makeForceGraph = (
   container: D3Node<SVGSVGElement>,
   issues: Issue[],
   project: Project,
   configuration: Configuration,
-): void => {
-  const issueGraph = makeIssueGraph(issues);
-  const leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
-  const leveledIssues = leveledIssueUnits.map(({ issues }) => issues).flat();
-  const linkData = makeLinkData(issueGraph, leveledIssues);
+): GraphRestarter => {
+  let issueGraph = makeIssueGraph(issues);
+  let leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
+  let leveledIssues = leveledIssueUnits.map(({ issues }) => issues).flat();
+  let linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
 
@@ -188,10 +191,11 @@ export const makeForceGraph = (
   let links: d3.Selection<SVGPathElement, IssueLink, BaseType, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
-  const [issueNode, issueNodeRestarter] = buildIssueGraph(container, leveledIssues, project, configuration);
+  const [_issueNode, issueNodeRestarter] = buildIssueGraph(container, project, configuration);
+  let issueNode = _issueNode;
 
   // build frame for issue group
-  buildIssueTreeFrame(container, leveledIssueUnits);
+  let treeFrame = buildIssueTreeFrame(container);
 
   // define ticked event handler
   const ticked = function ticked() {
@@ -226,8 +230,7 @@ export const makeForceGraph = (
     });
   };
 
-  // force between nodes
-  leveledIssueUnits.forEach((issueUnit) => {
+  const makeSimulation = (issueUnit: LayoutedLeveledIssueUnit) => {
     const simulation = d3
       .forceSimulation<LayoutedLeveledIssue>()
       .nodes(issueUnit.issues)
@@ -240,13 +243,19 @@ export const makeForceGraph = (
         "fy",
         d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
       );
+
     // define initial position
     simulation.nodes().forEach((d) => {
       d.x = d.level * (configuration.nodeSize.width * 1.75);
       d.y =
         (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
     });
-  });
+
+    return simulation;
+  };
+
+  // force between nodes
+  let simulations = leveledIssueUnits.map(makeSimulation);
 
   const restart = () => {
     links = links.data(linkData);
@@ -272,7 +281,7 @@ export const makeForceGraph = (
     links = links
       .enter()
       .append("path")
-      .attr("class", "fill-none")
+      .attr("class", "issue-link fill-none")
       .attr("stroke-weight", 1)
       .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
       .classed("stroke-lightgray-alpha", (d) => !d.relatedFocusingIssue && focusingANode)
@@ -286,39 +295,53 @@ export const makeForceGraph = (
       })
       .merge(links);
 
-    issueNodeRestarter(leveledIssues);
+    treeFrame = treeFrame.data(leveledIssueUnits);
+
+    issueNode = issueNodeRestarter(leveledIssues);
+
+    // update links are related clicked issue
+    issueNode.on("click", (event, d) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      focusingANode = true;
+      const focusedIssues = new Set<string>();
+
+      linkData.forEach((link) => {
+        if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
+          link.relatedFocusingIssue = true;
+          focusedIssues.add(link.source.issueKey);
+          focusedIssues.add(link.target.issueKey);
+        } else {
+          link.relatedFocusingIssue = false;
+        }
+      });
+
+      leveledIssues.forEach((issue) => {
+        if (focusedIssues.has(issue.issueKey)) {
+          issue.focusing = "focused";
+        } else {
+          issue.focusing = "unfocused";
+        }
+      });
+
+      configuration.onIssueClick(d.issueKey);
+
+      restart();
+    });
   };
 
-  // update links are related clicked issue
-  issueNode.on("click", (event, d) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const graphRestarter = (issues: Issue[], configuration: Configuration) => {
+    issueGraph = makeIssueGraph(issues);
+    leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
+    leveledIssues = leveledIssueUnits.map(({ issues }) => issues).flat();
+    linkData = makeLinkData(issueGraph, leveledIssues);
 
-    focusingANode = true;
-    const focusedIssues = new Set<string>();
-
-    linkData.forEach((link) => {
-      if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
-        link.relatedFocusingIssue = true;
-        focusedIssues.add(link.source.issueKey);
-        focusedIssues.add(link.target.issueKey);
-      } else {
-        link.relatedFocusingIssue = false;
-      }
-    });
-
-    leveledIssues.forEach((issue) => {
-      if (focusedIssues.has(issue.issueKey)) {
-        issue.focusing = "focused";
-      } else {
-        issue.focusing = "unfocused";
-      }
-    });
-
-    configuration.onIssueClick(d.issueKey);
+    simulations.forEach((v) => v.stop());
+    simulations = leveledIssueUnits.map(makeSimulation);
 
     restart();
-  });
+  };
 
   // reset focusing when click root canvas
   container.on("click", (event) => {
@@ -339,4 +362,6 @@ export const makeForceGraph = (
 
   // call restart to apply a data
   restart();
+
+  return graphRestarter;
 };

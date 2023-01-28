@@ -48,7 +48,7 @@ test("close panel after click close button", async () => {
   );
   store.dispatch(selectIssueInGraph("key"));
 
-  await userEvent.click(screen.getByTestId("close/button"));
+  await userEvent.click(screen.getByTestId("close"));
 
   const panel = await screen.findByTestId("root");
 

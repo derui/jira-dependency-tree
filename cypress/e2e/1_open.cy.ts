@@ -15,8 +15,8 @@ describe("open", () => {
 
     // side toolbar
     cy.testid("side-toolbar/graph-layout").should("not.have.class", "--opened");
-    cy.testid("side-toolbar/horizontal/icon").should("have.data", "active", true);
-    cy.testid("side-toolbar/vertical/icon").should("have.data", "active", false);
+    cy.testid("side-toolbar/horizontal").should("have.data", "active", true);
+    cy.testid("side-toolbar/vertical").should("have.data", "active", false);
 
     // searcher
     cy.testid("issue-searcher/opener").should("be.visible");

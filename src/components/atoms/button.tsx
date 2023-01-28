@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, classes } from "../helper";
 
 type ColorSchema = "primary" | "secondary1" | "gray";
 
@@ -9,7 +9,7 @@ export interface Props extends PropsWithChildren, BaseProps {
   type?: "normal" | "submit";
   size?: "full" | "l" | "m" | "s";
   disabled?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const Styles = {
@@ -71,8 +71,6 @@ const Styles = {
 };
 
 export const Button: React.FC<Props> = (props) => {
-  const gen = generateTestId(props.testid);
-
   const classes = classNames({
     ...Styles.button,
     ...Styles.color(props.schema),
@@ -85,7 +83,7 @@ export const Button: React.FC<Props> = (props) => {
         className={classes}
         type='submit'
         aria-disabled={props.disabled ?? false}
-        data-testid={gen("button")}
+        data-testid={props.testid ?? "button"}
         onClick={props.onClick}
       >
         {props.children}
@@ -97,7 +95,7 @@ export const Button: React.FC<Props> = (props) => {
         className={classes}
         type='button'
         aria-disabled={props.disabled ?? false}
-        data-testid={gen("button")}
+        data-testid={props.testid ?? "button"}
         onClick={props.onClick}
       >
         {props.children}

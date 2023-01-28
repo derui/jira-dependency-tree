@@ -56,7 +56,7 @@ test("get payload when typed", async () => {
   await userEvent.type(email, "email");
   await userEvent.type(token, "token");
 
-  await userEvent.click(screen.getByTestId("submit/button"));
+  await userEvent.click(screen.getByTestId("submit"));
 });
 
 test("do not send payload if canceled", async () => {
@@ -78,5 +78,5 @@ test("do not send payload if canceled", async () => {
   await userEvent.type(email, "email");
   await userEvent.type(token, "token");
 
-  await userEvent.click(screen.getByTestId("cancel/button"));
+  await userEvent.click(screen.getByTestId("cancel"));
 });

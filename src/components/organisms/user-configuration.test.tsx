@@ -41,9 +41,9 @@ test("initial payload is empty", () => {
     },
   );
 
-  const userDomain = screen.getByTestId("form/user-domain/input") as HTMLInputElement;
-  const email = screen.getByTestId("form/email/input") as HTMLInputElement;
-  const token = screen.getByTestId("form/token/input") as HTMLInputElement;
+  const userDomain = screen.getByTestId("form/user-domain") as HTMLInputElement;
+  const email = screen.getByTestId("form/email") as HTMLInputElement;
+  const token = screen.getByTestId("form/token") as HTMLInputElement;
 
   expect(userDomain.value).toBe("");
   expect(email.value).toBe("");
@@ -78,9 +78,9 @@ test("initial payload inputted", () => {
     },
   );
 
-  const userDomain = screen.getByTestId("form/user-domain/input") as HTMLInputElement;
-  const email = screen.getByTestId("form/email/input") as HTMLInputElement;
-  const token = screen.getByTestId("form/token/input") as HTMLInputElement;
+  const userDomain = screen.getByTestId("form/user-domain") as HTMLInputElement;
+  const email = screen.getByTestId("form/email") as HTMLInputElement;
+  const token = screen.getByTestId("form/token") as HTMLInputElement;
 
   expect(userDomain.value).toBe("domain");
   expect(email.value).toBe("email");
@@ -137,14 +137,14 @@ test("hide dialog when submitted", async () => {
   const opener = screen.getByTestId("opener");
   await userEvent.click(opener);
 
-  const userDomain = screen.getByTestId("form/user-domain/input") as HTMLInputElement;
-  const email = screen.getByTestId("form/email/input") as HTMLInputElement;
-  const token = screen.getByTestId("form/token/input") as HTMLInputElement;
+  const userDomain = screen.getByTestId("form/user-domain") as HTMLInputElement;
+  const email = screen.getByTestId("form/email") as HTMLInputElement;
+  const token = screen.getByTestId("form/token") as HTMLInputElement;
   await userEvent.type(userDomain, "domain");
   await userEvent.type(email, "email");
   await userEvent.type(token, "token");
 
-  await userEvent.click(screen.getByTestId("form/submit/button"));
+  await userEvent.click(screen.getByTestId("form/submit"));
 
   const dialog = screen.getByTestId("container/dialog");
 
@@ -173,7 +173,7 @@ test("hide dialog when canceled on form", async () => {
   const opener = screen.getByTestId("opener");
   await userEvent.click(opener);
 
-  await userEvent.click(screen.getByTestId("form/cancel/button"));
+  await userEvent.click(screen.getByTestId("form/cancel"));
 
   const dialog = screen.getByTestId("container/dialog");
 

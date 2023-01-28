@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, classes } from "../helper";
 
 type IconSize = "s" | "m" | "l";
 
@@ -111,8 +111,6 @@ const Styles = {
 };
 
 export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, testid, style }) => {
-  const gen = generateTestId(testid);
-
   const iconClass = {
     ...Styles.iconBase,
     ...Styles.size(size ?? "s"),
@@ -126,7 +124,7 @@ export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, tes
       className={classNames(iconClass)}
       aria-disabled={disabled}
       data-active={active ?? false}
-      data-testid={gen("icon")}
+      data-testid={testid ?? "icon"}
     ></span>
   );
 };

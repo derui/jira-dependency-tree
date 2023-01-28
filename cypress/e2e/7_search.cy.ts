@@ -12,15 +12,15 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term
@@ -43,15 +43,15 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term
@@ -75,15 +75,15 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term

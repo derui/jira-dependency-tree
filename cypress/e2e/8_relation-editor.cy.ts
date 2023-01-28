@@ -12,15 +12,15 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
@@ -43,22 +43,22 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
     cy.get('[data-issue-key="TES-1"]').click();
 
     // close panel
-    cy.testid("relation-editor/close/button").click();
+    cy.testid("relation-editor/close").click();
     cy.testid("relation-editor/root").should("not.be.visible").and("have.attr", "aria-hidden", "true");
   });
 
@@ -73,15 +73,15 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
@@ -112,15 +112,15 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
@@ -143,15 +143,15 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
@@ -176,23 +176,23 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
     cy.get('[data-issue-key="TES-1"]').click();
 
     // click append button and suggestion
-    cy.testid("relation-editor/inward-editor/appender/add-button/button").should("have.text", "Add").click();
-    cy.testid("relation-editor/inward-editor/appender/issue-term/input").should("have.value", "").type("TES");
+    cy.testid("relation-editor/inward-editor/appender/add-button").should("have.text", "Add").click();
+    cy.testid("relation-editor/inward-editor/appender/issue-term").should("have.value", "").type("TES");
 
     cy.intercept("POST", "http://localhost:3000/create-link", { statusCode: 400, delay: 500 }).as("err");
 
@@ -224,23 +224,23 @@ describe("edit relation of issue", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // select issue
     cy.get('[data-issue-key="TES-1"]').click();
 
     // click append button and suggestion
-    cy.testid("relation-editor/inward-editor/appender/add-button/button").should("have.text", "Add").click();
-    cy.testid("relation-editor/inward-editor/appender/issue-term/input").should("have.value", "").type("TES");
+    cy.testid("relation-editor/inward-editor/appender/add-button").should("have.text", "Add").click();
+    cy.testid("relation-editor/inward-editor/appender/issue-term").should("have.value", "").type("TES");
 
     // verify issue suggestion and create link
     cy.testid("relation-editor/inward-editor/appender/suggestion-list/suggestion")

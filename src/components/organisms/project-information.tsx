@@ -121,7 +121,7 @@ export const ProjectInformation: React.FC<Props> = (props) => {
             onClick={handleCancelClick}
             data-testid={gen("cancel")}
           >
-            <Icon type='circle-x' color='gray' size='m' testid={gen("cancel")} />
+            <Icon type='circle-x' color='gray' size='m' />
           </span>
           <span
             role='button'
@@ -129,7 +129,7 @@ export const ProjectInformation: React.FC<Props> = (props) => {
             onClick={handleSubmit}
             data-testid={gen("submit")}
           >
-            <Icon type='circle-check' size='m' color='complement' testid={gen("submit")} />
+            <Icon type='circle-check' size='m' color='complement' />
           </span>
         </span>
       </div>

@@ -16,7 +16,7 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("layout") as HTMLSpanElement;
 
   expect(icon.dataset.active).toBe("false");
 });
@@ -32,9 +32,9 @@ test("active when layouter clicked", async () => {
 
   await userEvent.click(screen.getByTestId("graph-layout"));
 
-  const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
-  const horizontal = screen.getByTestId("horizontal/icon") as HTMLSpanElement;
-  const vertical = screen.getByTestId("vertical/icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("layout") as HTMLSpanElement;
+  const horizontal = screen.getByTestId("horizontal") as HTMLSpanElement;
+  const vertical = screen.getByTestId("vertical") as HTMLSpanElement;
 
   expect(icon.dataset.active).toBe("true");
   expect(horizontal.dataset.active).toBe("true");
@@ -54,9 +54,9 @@ test("change layout when clicked", async () => {
   await userEvent.click(screen.getByTestId("graph-layout"));
   await userEvent.click(screen.getByTestId("vertical-layouter"));
 
-  const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
-  const horizontal = screen.getByTestId("horizontal/icon") as HTMLSpanElement;
-  const vertical = screen.getByTestId("vertical/icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("layout") as HTMLSpanElement;
+  const horizontal = screen.getByTestId("horizontal") as HTMLSpanElement;
+  const vertical = screen.getByTestId("vertical") as HTMLSpanElement;
 
   expect(icon.dataset.active).toBe("true");
   expect(horizontal.dataset.active).toBe("false");
@@ -75,7 +75,7 @@ test("toggle layouter", async () => {
   await userEvent.click(screen.getByTestId("graph-layout"));
   await userEvent.click(screen.getByTestId("graph-layout"));
 
-  const icon = screen.getByTestId("layout/icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("layout") as HTMLSpanElement;
 
   expect(icon.dataset.active).toBe("false");
   expect(screen.getByTestId("layouter").classList.contains("visible")).toBe(false);

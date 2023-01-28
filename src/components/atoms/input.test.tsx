@@ -68,3 +68,13 @@ test("get key of key up", async () => {
 
   await userEvent.type(element, "{Enter}");
 });
+
+test("use testid directly", async () => {
+  render(<Input value="" testid="foo" label="label" />);
+
+  const element = screen.queryByTestId<HTMLInputElement>("foo");
+  const label = screen.queryByTestId("foo/label");
+
+  expect(element).not.toBeNull();
+  expect(label).not.toBeNull();
+});

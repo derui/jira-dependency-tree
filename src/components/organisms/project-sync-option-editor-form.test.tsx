@@ -83,7 +83,7 @@ test("change to epic", async () => {
   );
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "epic");
-  await userEvent.type(screen.getByTestId("epic-input/input"), "A-B");
+  await userEvent.type(screen.getByTestId("epic-input"), "A-B");
 
   const submit = screen.getByTestId("submit");
   await userEvent.click(submit);
@@ -106,7 +106,7 @@ test("show button when it is not editing", async () => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  const button = screen.queryByTestId("open-suggestion/button");
+  const button = screen.queryByTestId("open-suggestion");
 
   expect(button).not.toBeNull();
 });
@@ -123,10 +123,10 @@ test("show term input when open-suggestion clicked", async () => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  const button = screen.getByTestId("open-suggestion/button");
+  const button = screen.getByTestId("open-suggestion");
   await userEvent.click(button);
 
-  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+  const input = screen.getByTestId("sprint") as HTMLInputElement;
 
   expect(input.value).toBe("");
 });
@@ -143,12 +143,12 @@ test("show button again when type enter in term", async () => {
 
   await userEvent.selectOptions(screen.getByTestId("condition-type"), "sprint");
 
-  await userEvent.click(screen.getByTestId("open-suggestion/button"));
+  await userEvent.click(screen.getByTestId("open-suggestion"));
 
-  const input = screen.getByTestId("sprint/input") as HTMLInputElement;
+  const input = screen.getByTestId("sprint") as HTMLInputElement;
   await userEvent.type(input, "{enter}");
 
-  const button = screen.getByTestId("open-suggestion/button");
+  const button = screen.getByTestId("open-suggestion");
 
   expect(button.textContent).toBe("Click to select sprint");
 });

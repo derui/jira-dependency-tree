@@ -92,10 +92,10 @@ test("show input when button clicked", async () => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("appender/add-button/button");
+  const button = screen.getByTestId("appender/add-button");
   await userEvent.click(button);
 
-  const input = screen.queryByTestId("appender/issue-term/input");
+  const input = screen.queryByTestId("appender/issue-term");
 
   expect(input).not.toBeNull();
 });
@@ -113,14 +113,14 @@ test("re-display button after press enter in input", async () => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("appender/add-button/button");
+  const button = screen.getByTestId("appender/add-button");
   await userEvent.click(button);
 
-  const input = screen.getByTestId("appender/issue-term/input");
+  const input = screen.getByTestId("appender/issue-term");
 
   await userEvent.type(input, "foo{enter}");
 
-  expect(screen.queryByTestId("appender/issue-term/input")).toBeNull();
+  expect(screen.queryByTestId("appender/issue-term")).toBeNull();
 });
 
 test("do not display issue in suggestion that are already had relation", async () => {
@@ -140,10 +140,10 @@ test("do not display issue in suggestion that are already had relation", async (
     </Provider>,
   );
 
-  const button = screen.getByTestId("appender/add-button/button");
+  const button = screen.getByTestId("appender/add-button");
   await userEvent.click(button);
 
-  const input = screen.getByTestId("appender/issue-term/input");
+  const input = screen.getByTestId("appender/issue-term");
 
   await userEvent.type(input, "key");
 

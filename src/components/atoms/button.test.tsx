@@ -56,3 +56,11 @@ test("change disabled", () => {
 
   expect(element.getAttribute("aria-disabled")).toBeTruthy();
 });
+
+test("use given testid directly", () => {
+  render(<Button schema="primary" testid="foo" />);
+
+  const element = screen.queryByTestId<HTMLButtonElement>("foo");
+
+  expect(element).not.toBeNull();
+});

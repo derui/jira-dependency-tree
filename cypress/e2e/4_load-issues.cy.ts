@@ -12,21 +12,21 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain/").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
-    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
-    cy.testid("project-sync-option-editor/form/sprint/input").type("te");
+    cy.testid("project-sync-option-editor/form/open-suggestion").click();
+    cy.testid("project-sync-option-editor/form/sprint").type("te");
 
     // verify suggestions
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
@@ -35,7 +35,7 @@ describe("load issues", () => {
       .should("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
-    cy.testid("project-sync-option-editor/form/sprint/input").clear().type("5").wait(500);
+    cy.testid("project-sync-option-editor/form/sprint").clear().type("5").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 1)
       .should("contain.text", "TES スプリント 5");
@@ -51,27 +51,27 @@ describe("load issues", () => {
     });
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
-    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
-    cy.testid("project-sync-option-editor/form/sprint/input").type("te");
+    cy.testid("project-sync-option-editor/form/open-suggestion").click();
+    cy.testid("project-sync-option-editor/form/sprint").type("te");
 
     // click suggenstion
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion").contains("TES スプリント 5").click();
 
     // verify clicked suggestion
-    cy.testid("project-sync-option-editor/form/open-suggestion/button").should("contain.text", "TES スプリント 5");
+    cy.testid("project-sync-option-editor/form/open-suggestion").should("contain.text", "TES スプリント 5");
 
     // Click apply
     cy.testid("project-sync-option-editor/form/submit").click();
@@ -90,20 +90,20 @@ describe("load issues", () => {
     });
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // enter epic
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("epic");
-    cy.testid("project-sync-option-editor/form/epic-input/input").type("ABC-352");
+    cy.testid("project-sync-option-editor/form/epic-input").type("ABC-352");
 
     // Click apply
     cy.testid("project-sync-option-editor/form/submit").click();
@@ -133,21 +133,21 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
-    cy.testid("project-sync-option-editor/form/open-suggestion/button").click();
-    cy.testid("project-sync-option-editor/form/sprint/input").type("te");
+    cy.testid("project-sync-option-editor/form/open-suggestion").click();
+    cy.testid("project-sync-option-editor/form/sprint").type("te");
 
     // verify suggestions
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
@@ -156,14 +156,14 @@ describe("load issues", () => {
       .and("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
-    cy.testid("project-sync-option-editor/form/sprint/input").clear().type("FAR").wait(500);
+    cy.testid("project-sync-option-editor/form/sprint").clear().type("FAR").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 2)
       .and("contain.text", "FAR 7")
       .and("contain.text", "FAR 8");
 
     // having old suggestion
-    cy.testid("project-sync-option-editor/form/sprint/input").clear().type("5").wait(500);
+    cy.testid("project-sync-option-editor/form/sprint").clear().type("5").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 1)
       .and("contain.text", "TES スプリント 5");

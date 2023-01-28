@@ -54,7 +54,7 @@ test("reset when click cancel button", async () => {
   );
 
   await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("key/input"), "key");
+  await userEvent.type(screen.getByTestId("key"), "key");
   await userEvent.click(screen.getByTestId("cancel"));
 
   const span = screen.queryByText("Click here");
@@ -74,7 +74,7 @@ test("send key and loading state", async () => {
   );
 
   await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("key/input"), "key");
+  await userEvent.type(screen.getByTestId("key"), "key");
   await userEvent.click(screen.getByTestId("submit"));
 
   const skeleton = screen.queryByTestId("skeleton");
@@ -94,7 +94,7 @@ test("show project name ", async () => {
   );
 
   await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("key/input"), "key");
+  await userEvent.type(screen.getByTestId("key"), "key");
   await userEvent.click(screen.getByTestId("submit"));
 
   store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));

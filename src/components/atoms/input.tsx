@@ -75,7 +75,7 @@ export const Input: React.FC<Props> = ({ placeholder, label, focus, onInput, onK
       type='text'
       placeholder={placeholder}
       value={value}
-      data-testid={gen("input")}
+      data-testid={props.testid ?? "input"}
       onChange={handleInput}
       onKeyUp={handleKeypress}
     />

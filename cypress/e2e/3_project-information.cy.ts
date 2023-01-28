@@ -9,9 +9,9 @@ describe("project-information", () => {
     cy.testid("project-information/nameEditor").should("have.attr", "aria-hidden", "false");
 
     // assert input
-    cy.testid("project-information/key/input").should("have.attr", "placeholder").and("include", "Project Key");
-    cy.testid("project-information/key/input").type("KEY").should("have.value", "KEY");
-    cy.testid("project-information/cancel/icon").click();
+    cy.testid("project-information/key").should("have.attr", "placeholder").and("include", "Project Key");
+    cy.testid("project-information/key").type("KEY").should("have.value", "KEY");
+    cy.testid("project-information/cancel").click();
 
     // Apply and check after.
     cy.testid("project-information/nameEditor").should("have.attr", "aria-hidden", "true");
@@ -33,15 +33,15 @@ describe("project-information", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // load project and issues
     cy.testid("project-information/name").should("contain", "Testing Project");
@@ -55,15 +55,15 @@ describe("project-information", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/input").type("domain").should("have.value", "domain");
-    cy.testid("user-configuration/form/email/input").type("email").should("have.value", "email");
-    cy.testid("user-configuration/form/token/input").type("token").should("have.value", "token");
-    cy.testid("user-configuration/form/submit/button").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key/input").type("KEY");
-    cy.testid("project-information/submit/icon").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
 
     // load project and issues
     cy.testid("project-information/skeleton").should("be.visible");

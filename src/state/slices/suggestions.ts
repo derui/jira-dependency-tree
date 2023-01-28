@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { requestSuggestion, requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
+import { requestSuggestionAccepted, requestSuggestionFulfilled } from "../actions";
 import { mergeSuggestion, Suggestion } from "@/model/suggestion";
 import { Loading, SuggestionKind } from "@/type";
 

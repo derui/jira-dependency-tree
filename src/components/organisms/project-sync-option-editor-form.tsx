@@ -7,7 +7,7 @@ import { Suggestor } from "../molecules/suggestor";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
 import { querySuggestion } from "@/state/selectors/suggestion";
-import { Loading, SuggestionKind } from "@/type";
+import { SuggestionKind } from "@/type";
 import { SuggestedItem } from "@/model/suggestion";
 import {
   changeConditionToEpic,
@@ -60,7 +60,7 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   const gen = generateTestId(props.testid);
   const sprintTermElement = useRef<HTMLDivElement | null>(null);
   const [editing, setEditing] = useState<boolean>(false);
-  const [loading, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint));
+  const [, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint));
   const [selectedSuggestion, setSelectedSuggestion] = useState<SuggestedItem | undefined>(undefined);
 
   const dispatch = useAppDispatch();

@@ -5,8 +5,7 @@ import { Issue } from "../molecules/issue";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
 import { Icon } from "../atoms/icon";
-import { Input } from "../atoms/input";
-import { SuggestionList } from "../molecules/suggestion-list";
+import { Suggestor } from "../molecules/suggestor";
 import { IssueKey, Loading } from "@/type";
 import {
   queryCurrentRelatedIssuesWithKind,
@@ -63,7 +62,6 @@ const IssueAppender: React.FC<{
   const gen = generateTestId(testid);
   const parentElement = useRef<HTMLDivElement | null>(null);
   const [searching, setSearching] = useState(false);
-  const [term, setTerm] = useState("");
   const allIssues = useAppSelector(selectMatchedIssueModel());
   const suggestions = allIssues
     .filter((issue) => issue.key !== issueKey && !relatedIssues.includes(issue.key))
@@ -71,31 +69,7 @@ const IssueAppender: React.FC<{
       return { id: issue.key, value: issue.key, displayName: `${issue.key} ${issue.summary}` };
     });
 
-  const handleTermInput = (term: string) => {
-    setTerm(term);
-    dispatch(searchIssue(term));
-  };
-
-  const handleKeypress = (key: string) => {
-    if (key === "Enter") {
-      setTerm("");
-      setSearching(false);
-      dispatch(searchIssue(""));
-
-      if (!term) {
-        return;
-      }
-
-      if (kind === "inward") {
-        dispatch(addRelation({ fromKey: term, toKey: issueKey }));
-      } else {
-        dispatch(addRelation({ fromKey: issueKey, toKey: term }));
-      }
-    }
-  };
-
   const handleSelect = (key: string) => {
-    setTerm("");
     setSearching(false);
     dispatch(searchIssue(""));
 
@@ -109,13 +83,13 @@ const IssueAppender: React.FC<{
   return (
     <div ref={parentElement} className={classNames(Styles.appender)}>
       {searching ? (
-        <Input
-          focus={true}
-          value={term}
-          onInput={handleTermInput}
-          onKeypress={handleKeypress}
+        <Suggestor
+          focusOnInit={true}
+          testid={gen("suggestion-list")}
+          suggestions={suggestions}
           placeholder="Input issue key/summary"
-          testid={gen("issue-term")}
+          onConfirmed={handleSelect}
+          onEmptySuggestion={(term) => dispatch(searchIssue(term))}
         />
       ) : (
         <Button size="full" schema='gray' testid={gen("add-button")} onClick={() => setSearching(!searching)}>
@@ -125,14 +99,6 @@ const IssueAppender: React.FC<{
           </span>
         </Button>
       )}
-      <SuggestionList
-        testid={gen("suggestion-list")}
-        opened={searching}
-        suggestions={suggestions}
-        suggestionIdSelected=""
-        parentElement={parentElement.current ?? undefined}
-        onSelect={handleSelect}
-      />
     </div>
   );
 };

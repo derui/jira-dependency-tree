@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
 import { Icon } from "../atoms/icon";
-import { SuggestionList } from "../molecules/suggestion-list";
+import { Suggestor } from "../molecules/suggestor";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
 import { querySuggestion } from "@/state/selectors/suggestion";
@@ -59,75 +59,40 @@ const Styles = {
 const SprintCondition = (props: Props, conditionType: ConditionType, onFinished: (cond: SuggestedItem) => void) => {
   const gen = generateTestId(props.testid);
   const sprintTermElement = useRef<HTMLDivElement | null>(null);
-  const [term, setTerm] = useState("");
-  const [selectedSuggestionId, setSelectedSuggestionId] = useState<string | undefined>(undefined);
   const [editing, setEditing] = useState<boolean>(false);
-  const [loading, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint, term));
+  const [loading, suggestions] = useAppSelector(querySuggestion(SuggestionKind.Sprint));
+  const [selectedSuggestion, setSelectedSuggestion] = useState<SuggestedItem | undefined>(undefined);
+
   const dispatch = useAppDispatch();
 
-  const selectedIssue = (suggestions ?? []).find((v) => v.id === selectedSuggestionId);
-
-  const handleInput = (term: string) => {
-    setTerm(term);
-
-    if (suggestions && suggestions.length === 0) {
-      dispatch(requestSuggestion({ kind: SuggestionKind.Sprint, term }));
-    }
-  };
-
-  const handleKeypress = (key: string) => {
-    if (key === "Enter") {
-      setEditing(false);
-
-      const selected = suggestions?.find((v) => v.id === selectedSuggestionId);
-
-      if (!selected) {
-        return;
-      }
-
-      onFinished(selected);
-    }
-  };
-
-  const handleSuggestionSelect = (id: string) => {
+  const handleConfirmed = (value: string) => {
     setEditing(false);
-    setSelectedSuggestionId(id);
 
-    const selected = suggestions?.find((v) => v.id === id);
+    const selected = suggestions?.find((v) => v.value === value);
     if (!selected) {
       return;
     }
 
     onFinished(selected);
+    setSelectedSuggestion(selected);
   };
 
-  const input = () => (
-    <Input
-      placeholder="term"
-      value={""}
-      focus={true}
-      testid={gen("sprint")}
-      onInput={handleInput}
-      onKeypress={handleKeypress}
-    />
-  );
   const button = () => (
     <Button testid={gen("open-suggestion")} size='full' onClick={() => setEditing(true)} schema={"gray"}>
-      {selectedIssue ? selectedIssue.displayName : "Click to select sprint"}
+      {selectedSuggestion ? selectedSuggestion.displayName : "Click to select sprint"}
     </Button>
   );
 
   return (
     <div ref={sprintTermElement} className={classNames(Styles.sprintSuggestor(conditionType === ConditionType.Sprint))}>
-      {editing ? input() : button()}
+      {!editing ? button() : null}
       {loading === Loading.Loading ? null : (
-        <SuggestionList
-          opened={editing}
+        <Suggestor
+          focusOnInit={true}
           suggestions={suggestions}
           testid={gen("suggested-sprint")}
-          parentElement={sprintTermElement.current ?? undefined}
-          suggestionIdSelected={selectedSuggestionId || ""}
-          onSelect={handleSuggestionSelect}
+          onConfirmed={handleConfirmed}
+          onEmptySuggestion={(term) => dispatch(requestSuggestion({ kind: SuggestionKind.Sprint, term }))}
         />
       )}
     </div>

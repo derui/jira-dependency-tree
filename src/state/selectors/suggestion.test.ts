@@ -11,7 +11,7 @@ test("get empty suggestion", () => {
     suggestions: getInitialState(),
   } as RootState;
 
-  expect(s.querySuggestion(SuggestionKind.Sprint, "")(state)).toEqual([Loading.Completed, []]);
+  expect(s.querySuggestion(SuggestionKind.Sprint)(state)).toEqual([Loading.Completed, []]);
 });
 
 test("get target kind of selection", () => {
@@ -30,9 +30,12 @@ test("get target kind of selection", () => {
     ),
   } as RootState;
 
-  expect(s.querySuggestion(SuggestionKind.Sprint, "var")(state)).toEqual([
+  expect(s.querySuggestion(SuggestionKind.Sprint)(state)).toEqual([
     Loading.Completed,
-    [{ displayName: "Var", value: "foo", id: "foo" }],
+    [
+      { displayName: "Var", value: "foo", id: "foo" },
+      { displayName: "foo", value: "bar", id: "bar" },
+    ],
   ]);
 });
 
@@ -41,5 +44,5 @@ test("loading", () => {
     suggestions: reducer(getInitialState(), requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "var" })),
   } as RootState;
 
-  expect(s.querySuggestion(SuggestionKind.Sprint, "var")(state)).toEqual([Loading.Loading, undefined]);
+  expect(s.querySuggestion(SuggestionKind.Sprint)(state)).toEqual([Loading.Loading, undefined]);
 });

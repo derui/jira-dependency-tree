@@ -126,7 +126,7 @@ test("show term input when open-suggestion clicked", async () => {
   const button = screen.getByTestId("open-suggestion");
   await userEvent.click(button);
 
-  const input = screen.getByTestId("sprint") as HTMLInputElement;
+  const input = screen.getByTestId("suggested-sprint/term") as HTMLInputElement;
 
   expect(input.value).toBe("");
 });
@@ -145,8 +145,8 @@ test("show button again when type enter in term", async () => {
 
   await userEvent.click(screen.getByTestId("open-suggestion"));
 
-  const input = screen.getByTestId("sprint") as HTMLInputElement;
-  await userEvent.type(input, "{enter}");
+  const input = screen.getByTestId("suggested-sprint/term") as HTMLInputElement;
+  await userEvent.type(input, "key{enter}");
 
   const button = screen.getByTestId("open-suggestion");
 

@@ -26,7 +26,7 @@ describe("load issues", () => {
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
     cy.testid("project-sync-option-editor/form/open-suggestion").click();
-    cy.testid("project-sync-option-editor/form/sprint").type("te");
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").type("te");
 
     // verify suggestions
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
@@ -35,7 +35,7 @@ describe("load issues", () => {
       .should("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
-    cy.testid("project-sync-option-editor/form/sprint").clear().type("5").wait(500);
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").clear().type("5").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 1)
       .should("contain.text", "TES スプリント 5");
@@ -65,7 +65,7 @@ describe("load issues", () => {
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
     cy.testid("project-sync-option-editor/form/open-suggestion").click();
-    cy.testid("project-sync-option-editor/form/sprint").type("te");
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").type("te");
 
     // click suggenstion
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion").contains("TES スプリント 5").click();
@@ -147,7 +147,7 @@ describe("load issues", () => {
     cy.testid("project-sync-option-editor/opener").click();
     cy.testid("project-sync-option-editor/form/condition-type").select("sprint");
     cy.testid("project-sync-option-editor/form/open-suggestion").click();
-    cy.testid("project-sync-option-editor/form/sprint").type("te");
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").type("te");
 
     // verify suggestions
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
@@ -156,14 +156,14 @@ describe("load issues", () => {
       .and("contain.text", "TES スプリント 6");
 
     // change suggestions with debounce
-    cy.testid("project-sync-option-editor/form/sprint").clear().type("FAR").wait(500);
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").clear().type("FAR").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 2)
       .and("contain.text", "FAR 7")
       .and("contain.text", "FAR 8");
 
     // having old suggestion
-    cy.testid("project-sync-option-editor/form/sprint").clear().type("5").wait(500);
+    cy.testid("project-sync-option-editor/form/suggested-sprint/term").clear().type("5").wait(500);
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 1)
       .and("contain.text", "TES スプリント 5");

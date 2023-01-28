@@ -192,7 +192,7 @@ describe("edit relation of issue", () => {
 
     // click append button and suggestion
     cy.testid("relation-editor/inward-editor/appender/add-button").should("have.text", "Add").click();
-    cy.testid("relation-editor/inward-editor/appender/issue-term").should("have.value", "").type("TES");
+    cy.testid("relation-editor/inward-editor/appender/suggestion-list/term").should("have.value", "").type("TES");
 
     cy.intercept("POST", "http://localhost:3000/create-link", { statusCode: 400, delay: 500 }).as("err");
 
@@ -240,7 +240,7 @@ describe("edit relation of issue", () => {
 
     // click append button and suggestion
     cy.testid("relation-editor/inward-editor/appender/add-button").should("have.text", "Add").click();
-    cy.testid("relation-editor/inward-editor/appender/issue-term").should("have.value", "").type("TES");
+    cy.testid("relation-editor/inward-editor/appender/suggestion-list/term").should("have.value", "").type("TES");
 
     // verify issue suggestion and create link
     cy.testid("relation-editor/inward-editor/appender/suggestion-list/suggestion")

@@ -86,10 +86,10 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   return (
     <div ref={sprintTermElement} className={classNames(Styles.sprintSuggestor(conditionType === ConditionType.Sprint))}>
       {!editing ? button() : null}
-      {loading === Loading.Loading ? null : (
+      {!editing ? null : (
         <Suggestor
           focusOnInit={true}
-          suggestions={suggestions}
+          suggestions={suggestions ?? []}
           testid={gen("suggested-sprint")}
           onConfirmed={handleConfirmed}
           onEmptySuggestion={(term) => dispatch(requestSuggestion({ kind: SuggestionKind.Sprint, term }))}

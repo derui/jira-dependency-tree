@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Dialog } from "../atoms/dialog";
@@ -77,17 +77,21 @@ const selectSuggestion = (current: string, suggestions: SuggestedItem[], key: "A
   }
 };
 
-export const Suggestor: React.FC<Props> = ({ focusOnInit, onConfirmed, onEmptySuggestion, suggestions, ...props }) => {
+export const Suggestor: React.FC<Props> = ({ focusOnInit, onConfirmed, onEmptySuggestion, ...props }) => {
   const [selectedId, setSelectedId] = useState("");
   const [term, setTerm] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState(suggestions);
+  const [filteredSuggestions, setFilteredSuggestions] = useState(props.suggestions);
   const gen = generateTestId(props.testid);
   const ref = useRef<HTMLSpanElement | null>(null);
   const opened = ref.current && term !== "" ? true : false;
 
+  useEffect(() => {
+    setFilteredSuggestions(filterSuggestions(props.suggestions, term));
+  }, [props.suggestions]);
+
   const handleClick = (value: string) => {
     setTerm("");
-    setFilteredSuggestions(suggestions);
+    setFilteredSuggestions(props.suggestions);
 
     if (onConfirmed) {
       onConfirmed(value);
@@ -95,7 +99,7 @@ export const Suggestor: React.FC<Props> = ({ focusOnInit, onConfirmed, onEmptySu
   };
 
   const handleTermInput = (term: string) => {
-    const _filteredSuggestions = filterSuggestions(suggestions, term);
+    const _filteredSuggestions = filterSuggestions(props.suggestions, term);
 
     setTerm(term);
     setFilteredSuggestions(_filteredSuggestions);

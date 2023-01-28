@@ -5,7 +5,7 @@ import { ZoomSlider } from "./zoom-slider";
 
 afterEach(cleanup);
 
-test("should be able to render", (t) => {
+test("should be able to render", () => {
   render(<ZoomSlider zoom={100} />);
 
   const element = screen.getByTestId("current-zoom");
@@ -13,7 +13,7 @@ test("should be able to render", (t) => {
   expect(element.textContent).toBe("100%");
 });
 
-test("do not print decimal point", (t) => {
+test("do not print decimal point", () => {
   render(<ZoomSlider zoom={100.8} />);
 
   const element = screen.getByTestId("current-zoom");

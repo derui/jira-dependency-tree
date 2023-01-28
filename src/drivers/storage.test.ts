@@ -12,7 +12,7 @@ beforeAll(() => {
   };
 });
 
-test("do not fluid value if storage has not data", async (t) => {
+test("do not fluid value if storage has not data", async () => {
   await new Promise<void>((resolve, reject) => {
     const driver = makeStorageDriver("key", mock);
 
@@ -45,7 +45,7 @@ test("fluid value if storage has data", async () => {
   });
 });
 
-test("save data ", async (t) => {
+test("save data ", async () => {
   await new Promise<void>((resolve) => {
     const setItem = sinon.fake();
     mock = {

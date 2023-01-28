@@ -24,12 +24,12 @@ const env = {
 };
 registrar.register("env", env);
 
-test("do not request when did not credential setupeed", async (t) => {
+test("do not request when did not credential setupeed", async () => {
   const testScheduler = new TestScheduler((a, b) => {
     expect(a).toEqual(b);
   });
 
-  testScheduler.run(({ cold, hot, expectObservable: expect }) => {
+  testScheduler.run(({ hot, expectObservable: expect }) => {
     const store = createPureStore();
 
     const epics = epic.suggestionEpic(registrar);

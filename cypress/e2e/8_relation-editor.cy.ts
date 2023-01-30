@@ -30,6 +30,10 @@ describe("edit relation of issue", () => {
     cy.testid("relation-editor/root").should("have.attr", "aria-hidden", "false").and("be.visible");
     cy.testid("relation-editor/inward-editor/issue").should("have.length", 0);
     cy.testid("relation-editor/outward-editor/issue/root").should("have.length", 1).and("contain.text", "TES-2");
+
+    // verify issue link focusing
+    cy.get(".issue-link.z-10").should("have.length", 1);
+    cy.get(".issue-link").should("have.length", 2);
   });
 
   it("close panel", () => {

@@ -265,6 +265,7 @@ export const makeForceGraph = (
     links
       .classed("stroke-primary-100", (d) => !!d.relatedFocusingIssue)
       .classed("stroke-lightgray-alpha", (d) => !d.relatedFocusingIssue && focusingANode)
+      .classed("z-10", (d) => !!d.relatedFocusingIssue)
       .classed("stroke-darkgray", () => !focusingANode)
       .attr("marker-end", (d) => {
         if (d.relatedFocusingIssue) {

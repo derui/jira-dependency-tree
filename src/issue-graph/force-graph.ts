@@ -186,6 +186,7 @@ export const makeForceGraph = (
   const curve = d3.line().curve(d3.curveBasis);
 
   let focusingANode = false;
+  let doNotPreventFocusingANode: "startDragging" | "shouldPrevent" | "notDragging" = "notDragging";
 
   // make link between issues
   let links: d3.Selection<SVGPathElement, IssueLink, BaseType, undefined> = container.append("svg:g").selectAll("path");
@@ -343,9 +344,23 @@ export const makeForceGraph = (
     restart();
   };
 
+  container.on("mousedown", () => {
+    doNotPreventFocusingANode = "startDragging";
+  });
+  container.on("mousemove", () => {
+    if (doNotPreventFocusingANode === "startDragging") {
+      doNotPreventFocusingANode = "shouldPrevent";
+    }
+  });
+
   // reset focusing when click root canvas
   container.on("click", (event) => {
     event.stopPropagation();
+
+    if (doNotPreventFocusingANode === "shouldPrevent") {
+      doNotPreventFocusingANode = "notDragging";
+      return;
+    }
 
     focusingANode = false;
 

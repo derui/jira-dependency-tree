@@ -13,6 +13,8 @@ This project provides web-app to display dependency tree of issues in JIRA with 
   - In specified Epic
 - Zoom/Pan on canvas
 - Search issue and view it in application
+- Edit relations of an issue
+  - add/remove relation inward/outward of the issue
 
 ** Motivation
 We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.
@@ -28,12 +30,14 @@ This feature that display issue dependency is one of the most pain point of JIRA
 JIRA Dependency Tree has frontend and server.
 
 - Frontend
-  - Built on [[https://cycle.js.org][cycle.js]] framework
+  - Built on React.js and redux-observable
   - Built and bundled by [[https://vitejs.dev/][vite]]
   - Built denedency graph by [[https://d3js.org][D3.js]]
 - Test
   - Using [[https://docs.cypress.io/][Cypress]] to run test on browser
   - Using [[https://mswjs.io/][msw]] to mock server response
+  - Using vitejs to run unit test
+  - Using testing-library to test component without browser
 - Server
   - Built on [[https://www.rust-lang.org/][Rust]]
   - Using framework for AWS Lambda
@@ -91,10 +95,10 @@ Developer do not have personal machine of macOS. We think this application might
 ** Run CI
 #+begin_src shell
   # Run all CI with headless browser
-  $ pnpm run ci:run
+  $ pnpm run it:run
 
   # Run CI with cypress. To use developing test, debugging
-  $ pnpm run ci:serve
+  $ pnpm run it:serve
 #+end_src
 
 ** Publish

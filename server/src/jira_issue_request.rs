@@ -242,7 +242,6 @@ pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraI
 
     if !keys.is_empty() {
         let jql = format!("key IN ({})", keys.join(","));
-        println!("{}", jql);
 
         // load issues do not fully-loaded
         // re-define to avoid borrow-checker

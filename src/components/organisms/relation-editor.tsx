@@ -13,7 +13,7 @@ import {
   selectSelectedIssueKey,
 } from "@/state/selectors/relation-editor";
 import { selectMatchedIssueModel } from "@/state/selectors/issues";
-import { addRelation, removeRelation, searchIssue } from "@/state/actions";
+import { addRelation, attentionIssue, removeRelation, searchIssue } from "@/state/actions";
 import { AppDispatch } from "@/state/store";
 
 export interface Props extends BaseProps {
@@ -123,7 +123,14 @@ export const RelationEditor: React.FC<Props> = (props) => {
   };
 
   const issueList = relatedIssues.map(([loading, issue]) => (
-    <Issue key={issue.key} loading={loading} issue={issue} onDelete={handleIssueDeleted} testid={gen("issue")} />
+    <Issue
+      key={issue.key}
+      loading={loading}
+      issue={issue}
+      onClick={(key) => dispatch(attentionIssue(key))}
+      onDelete={handleIssueDeleted}
+      testid={gen("issue")}
+    />
   ));
 
   return (

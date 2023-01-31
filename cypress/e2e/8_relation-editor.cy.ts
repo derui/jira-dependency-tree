@@ -258,4 +258,34 @@ describe("edit relation of issue", () => {
     cy.testid("relation-editor/inward-editor/issue/root").should("have.length", 1).and("contain.text", "TES-2");
     cy.get(".issue-link").should("have.length", 1);
   });
+
+  it("attention issue when clicked it in editor", () => {
+    cy.visit("/");
+
+    cy.mockAPI({
+      "http://localhost:3000/load-issues": post(["relation-editor/issues"]),
+      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
+    });
+
+    // Input credentials
+    cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
+
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
+    cy.testid("sync-issue-button/root").click();
+
+    // select issue
+    cy.get('[data-issue-key="TES-2"]').click();
+
+    // verify
+    cy.testid("relation-editor/outward-editor/issue/root").first().click();
+    cy.get('[data-issue-key="TES-3"]').should("be.visible");
+  });
 });

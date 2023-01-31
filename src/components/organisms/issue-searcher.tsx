@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { Icon } from "../atoms/icon";
 import { Issue } from "../molecules/issue";
 import { isSyncable, selectMatchedIssueModel } from "@/state/selectors/issues";
-import { focusIssueOnSearch, searchIssue } from "@/state/actions";
+import { attentionIssue, searchIssue } from "@/state/actions";
 
 export type Props = BaseProps;
 
@@ -112,7 +112,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
   };
 
   const handleIssueClick = (key: string) => {
-    dispatch(focusIssueOnSearch(key));
+    dispatch(attentionIssue(key));
   };
 
   const issueList = matchedIssues.map((issue) => (

@@ -53,8 +53,8 @@ export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; s
 export const requestSuggestionError = createAction<string>("requestSuggestionError");
 
 // actions for issue graph
-export const focusIssueOnSearch = createAction<string>("focusIssueOnSearch");
-export const focusIssueOnSearchFulfilled = createAction("focusIssueOnSearchFulfilled");
+export const attentionIssue = createAction<string>("attentionIssue");
+export const attentionIssueFulfilled = createAction("attentionIssueFulfilled");
 
 export const changeZoom = createAction<number>("changeZoom");
 

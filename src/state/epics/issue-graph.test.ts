@@ -2,7 +2,7 @@ import { test, expect } from "vitest";
 import { TestScheduler } from "rxjs/testing";
 import { StateObservable } from "redux-observable";
 import { NEVER } from "rxjs";
-import { focusIssueOnSearch, focusIssueOnSearchFulfilled } from "../actions";
+import { attentionIssue, attentionIssueFulfilled } from "../actions";
 import { Dependencies } from "../../dependencies";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { RootState } from "../store";
@@ -19,11 +19,11 @@ test("send command to issue graph", async () => {
   const scheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
 
   scheduler.run(({ hot, expectObservable }) => {
-    const action$ = hot("-a", { a: focusIssueOnSearch("key") });
+    const action$ = hot("-a", { a: attentionIssue("key") });
     const state$ = new StateObservable(NEVER, {} as RootState);
 
     const ret$ = epic.issueGraphEpic(registrar).sendIssueFocusingAction(action$, state$, null);
 
-    expectObservable(ret$).toBe("-a", { a: focusIssueOnSearchFulfilled() });
+    expectObservable(ret$).toBe("-a", { a: attentionIssueFulfilled() });
   });
 });

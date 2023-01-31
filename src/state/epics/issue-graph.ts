@@ -2,7 +2,7 @@ import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
 import { filter, map } from "rxjs/operators";
 import type { RootState } from "../store";
-import { focusIssueOnSearch, focusIssueOnSearchFulfilled } from "../actions";
+import { attentionIssue, attentionIssueFulfilled } from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -13,10 +13,10 @@ export const issueGraphEpic = (
 ): Record<Epics, Epic<Action, Action, RootState>> => ({
   sendIssueFocusingAction: (action$) =>
     action$.pipe(
-      filter(focusIssueOnSearch.match),
+      filter(attentionIssue.match),
       map(({ payload }) => {
         registrar.resolve("sendCommandTo")({ kind: "AttentionIssue", key: payload });
       }),
-      map(() => focusIssueOnSearchFulfilled()),
+      map(() => attentionIssueFulfilled()),
     ),
 });

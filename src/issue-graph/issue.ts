@@ -17,6 +17,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   const node = container
     .enter()
     .append("svg:g")
+    .merge(container)
     .attr("data-issue-key", (d) => d.issueKey)
     .classed("graph-issue", () => true)
     .classed("transition-opacity", () => true);

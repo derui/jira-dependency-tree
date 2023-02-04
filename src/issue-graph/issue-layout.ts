@@ -1,21 +1,34 @@
 import { DirectedGraph } from "@/depgraph/main";
 import { Position, Size } from "@/type";
 import { LayoutedLeveledVertex } from "@/issue-graph/type";
+import { fromDirectedGraph, UndirectedGraph } from "@/depgraph/undirected";
+import { Vertex } from "@/depgraph/type";
 
-// get subgraphs from a graph that contains whole issues
-const getSubgraphs = (graph: DirectedGraph): DirectedGraph[] => {
-  return graph.levelAt(0).reduce<DirectedGraph[]>((graphs, vertex) => {
-    const [subgraph] = graph.subgraphOf(vertex);
+const getGroups = (graph: DirectedGraph): UndirectedGraph[] => {
+  const undirected = fromDirectedGraph(graph);
 
-    if (!graphs.some((g) => g.intersect(subgraph))) {
-      graphs.push(subgraph);
-      return graphs;
+  const roots = graph.levelAt(0);
+
+  const groups = roots.reduce<UndirectedGraph[]>((accum, vertex) => {
+    if (accum.some((g) => g.vertices.includes(vertex))) {
+      return accum;
     }
 
-    return graphs.map((g) => {
-      return g.merge(subgraph) ?? g;
-    });
+    accum.push(undirected.subgraphOf(vertex));
+    return accum;
   }, []);
+
+  return groups;
+};
+// get subgraphs from a graph that contains whole issues
+const getSubgraphs = (graph: DirectedGraph): Record<Vertex, DirectedGraph> => {
+  return graph.levelAt(0).reduce<Record<Vertex, DirectedGraph>>((graphs, vertex) => {
+    const [subgraph] = graph.subgraphOf(vertex);
+
+    graphs[vertex] = subgraph;
+
+    return graphs;
+  }, {});
 };
 
 // layout of a graph.
@@ -45,53 +58,69 @@ const calculateY = (level: number, nodeSize: Size): number => {
   return level * nodeSize.height + betweenY * level;
 };
 
-const layoutGraph = (graph: DirectedGraph, nodeSize: Size): LayoutedGraph => {
-  const verticesSize = graph.vertices.length;
-  let largestLevel = [0, 0];
-  const leveledVertices: (string[] | undefined)[] = [];
+const layoutGraph = (graphs: Record<Vertex, DirectedGraph>, nodeSize: Size): LayoutedGraph => {
+  const layoutedVertices: Record<Vertex, Position> = {};
+  const roots = Object.entries(graphs).sort(([, g1], [, g2]) => g2.maxDepth() - g1.maxDepth());
 
-  for (let level = 0; level < verticesSize; level++) {
-    const vertices = graph.levelAt(level);
+  let levelOfGraph = 0;
 
-    if (vertices.length > largestLevel[1]) {
-      largestLevel = [level, vertices.length];
-    }
+  for (const [root, graph] of roots) {
+    const depth = graph.maxDepth();
+    let largestCountOfVertexInLevel = 1;
 
-    if (vertices.length) {
-      leveledVertices[level] = vertices;
-    }
-  }
+    layoutedVertices[root] = { x: 0, y: levelOfGraph };
 
-  const sizeOfGraph: Size = {
-    height: calculateHeight(largestLevel[1], nodeSize),
-    width: calculateWidth(leveledVertices.length, nodeSize),
-  };
-  const layoutedVertices = leveledVertices
-    .map((vertices, level) => {
-      if (!vertices) {
-        return [];
+    for (let level = 1; level < depth; level++) {
+      const vertices = graph.levelAt(level);
+
+      if (vertices.length === 0) {
+        break;
       }
 
-      return vertices.map((vertex, index) => {
-        return {
-          vertex,
-          level,
-          indexInLevel: index,
-          baseX: calculateX(level, nodeSize),
-          baseY: calculateY(index, nodeSize),
-        };
+      let countVertexInLevel = 0;
+      vertices.forEach((vertex) => {
+        const alreadyLayouted = layoutedVertices[vertex];
+        if (alreadyLayouted && alreadyLayouted.x >= level) {
+          return;
+        }
+
+        layoutedVertices[vertex] = { x: level, y: levelOfGraph + countVertexInLevel };
+        countVertexInLevel++;
       });
-    })
-    .flat();
+
+      if (largestCountOfVertexInLevel < countVertexInLevel) {
+        largestCountOfVertexInLevel = countVertexInLevel;
+      }
+    }
+
+    levelOfGraph += largestCountOfVertexInLevel;
+  }
+
+  const layoutCauculated = Object.entries(layoutedVertices).map(([vertex, position]) => {
+    return {
+      vertex,
+      level: position.x,
+      indexInLevel: position.y,
+      baseX: calculateX(position.x, nodeSize),
+      baseY: calculateY(position.y, nodeSize),
+    };
+  });
+
+  const largestLevel = Object.values(layoutedVertices).reduce((a, b) => (a.x > b.x ? a : b)).x;
+  const largestLevelInIndex = Object.values(layoutedVertices).reduce((a, b) => (a.y > b.y ? a : b)).y;
+  const sizeOfGraph: Size = {
+    height: calculateHeight(largestLevelInIndex + 1, nodeSize),
+    width: calculateWidth(largestLevel + 1, nodeSize),
+  };
 
   return {
     center: { x: sizeOfGraph.width / 2, y: sizeOfGraph.height / 2 },
     size: sizeOfGraph,
-    vertices: layoutedVertices,
+    vertices: layoutCauculated,
   };
 };
 
-const layoutOrphanGraphs = (graphs: DirectedGraph[], nodeSize: Size): LayoutedGraph => {
+const layoutOrphanGraphs = (graphs: UndirectedGraph[], nodeSize: Size): LayoutedGraph => {
   const countPerLine = 6;
   let copiedGraphs = Array.from(graphs);
   const graphLines = [];
@@ -129,13 +158,17 @@ const layoutOrphanGraphs = (graphs: DirectedGraph[], nodeSize: Size): LayoutedGr
 };
 
 export const calculateLayouts = (graph: DirectedGraph, nodeSize: Size) => {
+  const groups = getGroups(graph);
   const subgraphs = getSubgraphs(graph);
 
-  const orphanGraphs = subgraphs.filter((g) => g.vertices.length === 1);
-  const otherGraphs = subgraphs.filter((g) => g.vertices.length > 1);
+  const orphanGraphs = groups.filter((g) => g.vertices.length === 1);
+  const otherGraphs = groups.filter((g) => g.vertices.length > 1);
 
   const layoutedOrphanGraph = layoutOrphanGraphs(orphanGraphs, nodeSize);
-  const layoutedGraphs = otherGraphs.map((g) => layoutGraph(g, nodeSize));
+  const layoutedGraphs = otherGraphs.map((g) => {
+    const _subgraphs = Object.entries(subgraphs).filter(([k]) => g.vertices.includes(k));
+    return layoutGraph(Object.fromEntries(_subgraphs), nodeSize);
+  });
 
   return {
     graphs: layoutedGraphs,

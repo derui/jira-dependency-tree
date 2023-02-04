@@ -104,7 +104,6 @@ test("should merge graphs intersected each other", () => {
   const graph = emptyDirectedGraph()
     .addVertices(["a", "b", "c", "d", "e"])
     .directTo("a", "b")
-    .directTo("a", "c")
     .directTo("b", "c")
     .directTo("d", "e")
     .directTo("d", "c");
@@ -122,4 +121,31 @@ test("should merge graphs intersected each other", () => {
   expect(vertices[2]).toEqual({ vertex: "c", level: 2, indexInLevel: 0, baseX: 35, baseY: 0 });
   expect(vertices[3]).toEqual({ vertex: "d", level: 0, indexInLevel: 1, baseX: 0, baseY: 15 });
   expect(vertices[4]).toEqual({ vertex: "e", level: 1, indexInLevel: 1, baseX: 17.5, baseY: 15 });
+});
+
+test("should layout to avoid intersection as much as possible", () => {
+  // arrange
+  const graph = emptyDirectedGraph()
+    .addVertices(["a", "b", "c", "d", "e"])
+    .directTo("a", "b")
+    .directTo("a", "c")
+    .directTo("d", "e")
+    .directTo("d", "c");
+
+  // do
+  const { graphs: ret } = calculateLayouts(graph, { width: 10, height: 10 });
+
+  // verify
+  expect(ret).toHaveLength(1);
+  expect(ret[0].size).toEqual({ height: 40, width: 27.5 });
+
+  expect(ret[0].vertices).toEqual(
+    expect.arrayContaining([
+      { vertex: "a", level: 0, indexInLevel: 0, baseX: 0, baseY: 0 },
+      { vertex: "b", level: 1, indexInLevel: 0, baseX: 17.5, baseY: 0 },
+      { vertex: "c", level: 1, indexInLevel: 1, baseX: 17.5, baseY: 15 },
+      { vertex: "d", level: 0, indexInLevel: 2, baseX: 0, baseY: 30 },
+      { vertex: "e", level: 1, indexInLevel: 2, baseX: 17.5, baseY: 30 },
+    ]),
+  );
 });

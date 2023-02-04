@@ -1,12 +1,6 @@
 import deepEqual from "fast-deep-equal";
+import type { AdjacentMatrix, Edge, Vertex } from "./type";
 import { constraint, difference } from "@/util/basic";
-
-type Edge = [string, string];
-type Vertex = string;
-
-interface AdjacentMatrix {
-  [k: Vertex]: Set<Vertex>;
-}
 
 type NotHaveCycle = { kind: "NotHaveCycle" };
 interface Cycle {
@@ -62,7 +56,7 @@ export type Graph = {
   readonly vertices: Vertex[];
 };
 
-const addVertex = function addVertex(vertices: Vertex[], label: string) {
+const addVertex = (vertices: Vertex[], label: string) => {
   if (vertices.includes(label)) {
     return vertices;
   }
@@ -71,7 +65,7 @@ const addVertex = function addVertex(vertices: Vertex[], label: string) {
   return vertices;
 };
 
-const addVertices = function addVertex(vertices: Vertex[], newVertices: Vertex[]) {
+const addVertices = (vertices: Vertex[], newVertices: Vertex[]) => {
   const current = new Set(vertices);
 
   for (const v of newVertices) {
@@ -81,7 +75,7 @@ const addVertices = function addVertex(vertices: Vertex[], newVertices: Vertex[]
   return Array.from(current);
 };
 
-const makeAdjacentMatrix = function makeAdjacentMatrix(edges: Edge[], vertices: Vertex[]) {
+const makeAdjacentMatrix = (edges: Edge[], vertices: Vertex[]) => {
   const mat = vertices.reduce<AdjacentMatrix>((accum, vertex) => {
     accum[vertex] = new Set();
     return accum;
@@ -94,7 +88,7 @@ const makeAdjacentMatrix = function makeAdjacentMatrix(edges: Edge[], vertices: 
   return mat;
 };
 
-const findRoots = function findRoots(mat: AdjacentMatrix) {
+const findRoots = (mat: AdjacentMatrix) => {
   const adjacents = new Set(
     Object.values(mat).reduce<Vertex[]>((accum, vertices) => {
       return accum.concat(Array.from(vertices));
@@ -161,7 +155,7 @@ const dfs = (mat: AdjacentMatrix, root: Vertex, work: (node: Vertex, depth: numb
   return recursiveDfs(mat, root, 0, null);
 };
 
-const largestLevelOf = function largestLevelOf(mat: AdjacentMatrix, target: Vertex) {
+const largestLevelOf = (mat: AdjacentMatrix, target: Vertex) => {
   let largestLevel = 0;
 
   findRoots(mat).forEach((root) => {
@@ -175,7 +169,7 @@ const largestLevelOf = function largestLevelOf(mat: AdjacentMatrix, target: Vert
   return largestLevel;
 };
 
-const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
+const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
   const adjMatrix = makeAdjacentMatrix(edges, vertices);
 
   return {
@@ -302,6 +296,6 @@ const makeGraph = function makeGraph(edges: Edge[], vertices: Vertex[]): Graph {
   };
 };
 
-export const emptyGraph = function emptyGraph(): Graph {
+export const emptyGraph = (): Graph => {
   return makeGraph([], []);
 };

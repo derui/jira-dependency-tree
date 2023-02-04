@@ -1,4 +1,5 @@
 import { AdjacentMatrix, Edge, Vertex } from "./type";
+import { Graph } from "./main";
 import { constraint } from "@/util/basic";
 
 /**
@@ -183,4 +184,11 @@ const makeGraph = (vertices: Vertex[], edges: Edge[]): UndirectedGraph => {
 
 export const emptyUndirectedGraph = () => {
   return makeGraph([], []);
+};
+
+/**
+ * make undirected graph from directed graph
+ */
+export const fromDirectedGraph = (graph: Graph): UndirectedGraph => {
+  return makeGraph(graph.vertices, graph.edges);
 };

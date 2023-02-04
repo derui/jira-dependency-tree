@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
-import { emptyUndirectedGraph } from "./undirected";
+import { emptyGraph } from "./main";
+import { emptyUndirectedGraph, fromDirectedGraph } from "./undirected";
 
 test("create empty graph", () => {
   const graph = emptyUndirectedGraph();
@@ -68,10 +69,28 @@ test("get subgraph with other root", () => {
     .edge("a", "d")
     .subgraphOf("b");
 
-  expect(graph.vertices).contain("a").and.contain("b").contain("c").contain("d").contain("e").and.lengthOf(5);
+  expect(graph.vertices).toEqual(expect.arrayContaining(["a", "b", "c", "d", "e"]));
   expect(graph.edges).toHaveLength(4);
-  expect(graph.edges).toContainEqual(["a", "b"]);
-  expect(graph.edges).toContainEqual(["b", "c"]);
-  expect(graph.edges).toContainEqual(["a", "d"]);
-  expect(graph.edges).toContainEqual(["d", "e"]);
+  expect(graph.edges).toEqual(
+    expect.arrayContaining([
+      ["a", "b"],
+      ["b", "c"],
+      ["a", "d"],
+      ["d", "e"],
+    ]),
+  );
+});
+
+test("make undirected graph with directed graph ", () => {
+  const directed = emptyGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("c", "d");
+  const undirected = fromDirectedGraph(directed);
+
+  expect(undirected.vertices).toEqual(expect.arrayContaining(["a", "b", "c", "d"]));
+  expect(undirected.edges).toEqual(
+    expect.arrayContaining([
+      ["a", "b"],
+      ["c", "d"],
+    ]),
+  );
+  expect(undirected.edges).toHaveLength(2);
 });

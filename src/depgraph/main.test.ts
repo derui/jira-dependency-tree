@@ -212,63 +212,6 @@ test("get subgraph from given inter-graph vertex", () => {
   expect(subgraph.adjacent("c")).toEqual([]);
 });
 
-test("can detect intersection between two graphs", () => {
-  // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"]);
-
-  const graph2 = emptyDirectedGraph().addVertices(["b", "d", "c"]).directTo("b", "d").directTo("c", "b");
-
-  // do
-
-  // verify
-  expect(graph1.intersect(graph2)).toBe(true);
-  expect(graph2.intersect(graph1)).toBe(true);
-});
-
-test("do not intersect if not found any same edges", () => {
-  // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"]);
-
-  const graph2 = emptyDirectedGraph().addVertices(["d", "c", "e", "f"]).directTo("c", "f").directTo("c", "e");
-
-  // do
-
-  // verify
-  expect(graph1.intersect(graph2)).toBe(false);
-  expect(graph2.intersect(graph1)).toBe(false);
-});
-
-test("merge between graphs that are intesected each other", () => {
-  // arrange
-  const graph1 = diagrams(["a > b > c", "b > d > c"]);
-
-  const graph2 = emptyDirectedGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
-
-  // do
-  const merged = graph1.merge(graph2);
-
-  // verify
-  expect(merged?.edges).toHaveLength(5);
-  expect(merged?.vertices).toHaveLength(5);
-  expect(merged?.adjacent("a")).toEqual(["b"]);
-  expect(merged?.adjacent("b")).toEqual(["c", "d"]);
-  expect(merged?.adjacent("d")).toEqual(["c"]);
-  expect(merged?.adjacent("c")).toEqual([]);
-  expect(merged?.adjacent("e")).toEqual(["b"]);
-});
-
-test("merge return same graph if merged same graph", () => {
-  // arrange
-  const graph = diagrams(["a > b > c", "b > d > c"]);
-
-  // do
-  const merged = graph.merge(graph);
-
-  // verify
-  expect(merged?.edges).toEqual(graph.edges);
-  expect(merged?.vertices).toEqual(graph.vertices);
-});
-
 test("detect cycle to get subgraph", () => {
   // arrange
   const graph = diagrams(["a > b > c > d > b > e"]);
@@ -309,23 +252,6 @@ test("remove direction", () => {
 
   // verify
   expect(newGraph.adjacent("b")).toEqual([]);
-});
-
-test("merge graphs have subgraph", () => {
-  // arrange
-  const graph1 = diagrams(["a > b > c > b"]);
-  const graph2 = diagrams(["c > d > e"]);
-
-  // do
-  const ret = graph1.merge(graph2);
-
-  // verify
-  expect(ret?.vertices).toHaveLength(5);
-  expect(ret?.adjacent("a")).toEqual(["b"]);
-  expect(ret?.adjacent("b")).toEqual(["c"]);
-  expect(ret?.adjacent("c")).toEqual(["b", "d"]);
-  expect(ret?.adjacent("d")).toEqual(["e"]);
-  expect(ret?.adjacent("e")).toEqual([]);
 });
 
 test("union with empty graphs", () => {
@@ -372,4 +298,28 @@ test("union edges when each graphs have same edge", () => {
   expect(ret.edges.some(([e1, e2]) => e1 === "a" && e2 === "b")).toBeTruthy();
   expect(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "c")).toBeTruthy();
   expect(ret.edges.some(([e1, e2]) => e1 === "b" && e2 === "d")).toBeTruthy();
+});
+
+test("depth of empty graph should be 0", () => {
+  const depth = emptyDirectedGraph().maxDepth();
+
+  expect(depth).toBe(0);
+});
+
+test("graph does not have any edge is 1", () => {
+  const depth = emptyDirectedGraph().addVertex("a").maxDepth();
+
+  expect(depth).toBe(1);
+});
+
+test("get max depth with some graphs", () => {
+  const depth = diagrams(["a > b > c", "a > c"]).maxDepth();
+
+  expect(depth).toBe(3);
+});
+
+test("get max depth with branching graphs", () => {
+  const depth = diagrams(["a > b > c", "d > c"]).maxDepth();
+
+  expect(depth).toBe(3);
 });

@@ -41,11 +41,10 @@ export interface DirectedGraph {
   // Get subgraph that has the root is given vertex
   subgraphOf(vertex: Vertex): [DirectedGraph, CycleDetection];
 
-  // Return result that given graph is intersected
-  intersect(graph: DirectedGraph): boolean;
-
-  // Return new graph is merged with graph. If given graph is not intersected with this, return null.
-  merge(graph: DirectedGraph): DirectedGraph | null;
+  /**
+   * depth of current graph
+   */
+  maxDepth(): number;
 
   /**
    * The union of the other graph. Return new graph.
@@ -226,35 +225,6 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): DirectedGraph => {
       return [subgraph, cycle];
     },
 
-    intersect(graph: DirectedGraph) {
-      for (const edgeThis of this.edges) {
-        for (const edgeOther of graph.edges) {
-          if (deepEqual(edgeThis, edgeOther) || edgeThis[0] === edgeOther[0] || edgeThis[1] === edgeOther[1]) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    },
-
-    merge(graph: DirectedGraph) {
-      if (!this.intersect(graph)) {
-        return null;
-      }
-
-      const edges = Array.from(this.edges);
-      const vertices = new Set([...this.vertices, ...graph.vertices]);
-
-      for (const edge of graph.edges) {
-        if (edges.every((e) => !deepEqual(e, edge))) {
-          edges.push(edge);
-        }
-      }
-
-      return makeGraph(edges, Array.from(vertices));
-    },
-
     union(graph) {
       const edges = Array.from(this.edges);
       const vertices = new Set([...this.vertices, ...graph.vertices]);
@@ -284,6 +254,26 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): DirectedGraph => {
       const set = new Set(adjMatrix[vertex] ?? []);
 
       return Array.from(set).sort();
+    },
+
+    maxDepth() {
+      const roots = this.levelAt(0);
+
+      if (roots.length === 0) {
+        return 0;
+      }
+
+      let maxDepth = 0;
+
+      for (const root of roots) {
+        dfs(adjMatrix, root, (_node, depth) => {
+          if (maxDepth <= depth) {
+            maxDepth = depth + 1;
+          }
+        });
+      }
+
+      return maxDepth;
     },
 
     get edges() {

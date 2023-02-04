@@ -361,8 +361,15 @@ export const makeForceGraph = (
 
     issueNode = issueNodeRestarter(leveledIssues);
 
-    // update links are related clicked issue
     issueNode.on("click", (event, d) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      configuration.onIssueClick(d.issueKey);
+    });
+
+    // update links are related clicked issue
+    issueNode.on("mouseenter", (event, d) => {
       event.preventDefault();
       event.stopPropagation();
 
@@ -387,7 +394,28 @@ export const makeForceGraph = (
         }
       });
 
-      configuration.onIssueClick(d.issueKey);
+      restart();
+    });
+
+    // reset focusing when click root canvas
+    issueNode.on("mouseleave", (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+
+      if (doNotPreventFocusingANode === "shouldPrevent") {
+        doNotPreventFocusingANode = "notDragging";
+        return;
+      }
+
+      focusingANode = false;
+
+      linkData.forEach((link) => {
+        link.relatedFocusingIssue = false;
+      });
+
+      leveledIssues.forEach((issue) => {
+        issue.focusing = "initial";
+      });
 
       restart();
     });
@@ -418,28 +446,6 @@ export const makeForceGraph = (
     if (doNotPreventFocusingANode === "startDragging") {
       doNotPreventFocusingANode = "shouldPrevent";
     }
-  });
-
-  // reset focusing when click root canvas
-  container.on("click", (event) => {
-    event.stopPropagation();
-
-    if (doNotPreventFocusingANode === "shouldPrevent") {
-      doNotPreventFocusingANode = "notDragging";
-      return;
-    }
-
-    focusingANode = false;
-
-    linkData.forEach((link) => {
-      link.relatedFocusingIssue = false;
-    });
-
-    leveledIssues.forEach((issue) => {
-      issue.focusing = "initial";
-    });
-
-    restart();
   });
 
   // call restart to apply a data

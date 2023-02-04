@@ -68,7 +68,7 @@ const makeLeveledIssues = (
   issues: Issue[],
   nodeSize: Size,
   direction: GraphLayout,
-): LayoutedLeveledIssueUnit[] => {
+): { units: LayoutedLeveledIssueUnit[]; orphan?: LayoutedLeveledIssueUnit } => {
   const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.key, issue);
     return accum;
@@ -112,18 +112,21 @@ const makeLeveledIssues = (
       };
     });
 
-    leveledIssueUnits.push({
-      issues: layoutedIssues,
-      unitRect: new Rect({
-        top: 0,
-        left: -1 * (orphans.size.width + nodeSize.width * 2),
-        right: -1 * nodeSize.width * 2,
-        bottom: orphans.size.height,
-      }),
-    });
+    return {
+      units: leveledIssueUnits,
+      orphan: {
+        issues: layoutedIssues,
+        unitRect: new Rect({
+          top: 0,
+          left: -1 * (orphans.size.width + nodeSize.width * 2),
+          right: -1 * nodeSize.width * 2,
+          bottom: orphans.size.height,
+        }),
+      },
+    };
   }
 
-  return leveledIssueUnits;
+  return { units: leveledIssueUnits };
 };
 
 const makeLinkData = (graph: DirectedGraph, issues: LayoutedLeveledIssue[]) => {
@@ -171,6 +174,34 @@ const buildIssueTreeFrame = (container: D3Node<SVGSVGElement>): TreeFrame => {
   return frame;
 };
 
+const makeOrphanUnitSimulation = (
+  issueUnit: LayoutedLeveledIssueUnit,
+  configuration: Configuration,
+  ticked: () => void,
+) => {
+  const simulation = d3
+    .forceSimulation<LayoutedLeveledIssue>()
+    .nodes(issueUnit.issues)
+    .on("tick", ticked)
+    .force(
+      "fx",
+      d3.forceX<LayoutedLeveledIssue>().x((d) => d.baseX),
+    )
+    .force("charge", d3.forceManyBody().strength(-100))
+    .force(
+      "collision",
+      d3.forceCollide().radius(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2),
+    );
+
+  // define initial position
+  simulation.nodes().forEach((d) => {
+    d.x = d.level * (configuration.nodeSize.width * 1.75);
+    d.y = (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
+  });
+
+  return simulation;
+};
+
 export type GraphRestarter = (issues: Issue[], configuration: Configuration) => void;
 
 export const makeForceGraph = (
@@ -181,7 +212,10 @@ export const makeForceGraph = (
 ): GraphRestarter => {
   let issueGraph = makeIssueGraph(issues);
   let leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
-  let leveledIssues = leveledIssueUnits.map(({ issues }) => issues).flat();
+  let leveledIssues = leveledIssueUnits.units
+    .map(({ issues }) => issues)
+    .flat()
+    .concat(leveledIssueUnits.orphan?.issues ?? []);
   let linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
@@ -233,13 +267,15 @@ export const makeForceGraph = (
   };
 
   const makeSimulation = (issueUnit: LayoutedLeveledIssueUnit, links: IssueLink[]) => {
-    const linkForForce = links.map((link) => {
-      return {
-        source: issueUnit.issues.findIndex((v) => v.issueKey === link.source.issueKey),
+    const linkForForce = links
+      .map((link) => {
+        return {
+          source: issueUnit.issues.findIndex((v) => v.issueKey === link.source.issueKey),
 
-        target: issueUnit.issues.findIndex((v) => v.issueKey === link.target.issueKey),
-      };
-    });
+          target: issueUnit.issues.findIndex((v) => v.issueKey === link.target.issueKey),
+        };
+      })
+      .filter((link) => link.source !== -1 && link.target !== -1);
 
     const simulation = d3
       .forceSimulation<LayoutedLeveledIssue>()
@@ -277,7 +313,10 @@ export const makeForceGraph = (
   };
 
   // force between nodes
-  let simulations = leveledIssueUnits.map((unit) => makeSimulation(unit, linkData));
+  let simulations = leveledIssueUnits.units.map((unit) => makeSimulation(unit, linkData));
+  if (leveledIssueUnits.orphan) {
+    simulations.push(makeOrphanUnitSimulation(leveledIssueUnits.orphan, configuration, ticked));
+  }
 
   const restart = () => {
     links = links.data(linkData);
@@ -318,7 +357,7 @@ export const makeForceGraph = (
       })
       .merge(links);
 
-    treeFrame = treeFrame.data(leveledIssueUnits);
+    treeFrame = treeFrame.data(leveledIssueUnits.units);
 
     issueNode = issueNodeRestarter(leveledIssues);
 
@@ -357,11 +396,17 @@ export const makeForceGraph = (
   const graphRestarter = (issues: Issue[], configuration: Configuration) => {
     issueGraph = makeIssueGraph(issues);
     leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
-    leveledIssues = leveledIssueUnits.map(({ issues }) => issues).flat();
+    leveledIssues = leveledIssueUnits.units
+      .map(({ issues }) => issues)
+      .flat()
+      .concat(leveledIssueUnits.orphan?.issues ?? []);
     linkData = makeLinkData(issueGraph, leveledIssues);
 
     simulations.forEach((v) => v.stop());
-    simulations = leveledIssueUnits.map((unit) => makeSimulation(unit, linkData));
+    simulations = leveledIssueUnits.units.map((unit) => makeSimulation(unit, linkData));
+    if (leveledIssueUnits.orphan) {
+      simulations.push(makeOrphanUnitSimulation(leveledIssueUnits.orphan, configuration, ticked));
+    }
 
     restart();
   };

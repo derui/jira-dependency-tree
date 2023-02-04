@@ -1,3 +1,4 @@
+import { config } from "process";
 import * as d3 from "d3";
 import { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
@@ -201,16 +202,16 @@ export const makeForceGraph = (
   // define ticked event handler
   const ticked = function ticked() {
     issueNode.attr("transform", (d) => {
-      return `translate(${d.x},${d.y})`;
+      return `translate(${d.baseX},${d.y})`;
     });
 
     // link draw right-most center to left-most center of next issue.
     links.attr("d", (d) => {
       /* eslint-disable @typescript-eslint/no-non-null-assertion */
-      const startX = d.source.x! + configuration.nodeSize.width;
+      const startX = d.source.baseX! + configuration.nodeSize.width;
       const startY = d.source.y! + configuration.nodeSize.height / 2;
       const endY = d.target.y! + configuration.nodeSize.height / 2;
-      const betweenDistanceX = d.target.x! - startX;
+      const betweenDistanceX = d.target.baseX! - startX;
       const betweenDistanceY = Math.abs(startY - endY);
 
       let yAxis = -1;
@@ -223,7 +224,7 @@ export const makeForceGraph = (
         [startX + betweenDistanceX * 0.3, startY],
         [startX + betweenDistanceX * 0.5, endY + yAxis * betweenDistanceY * 0.5],
         [startX + betweenDistanceX * 0.7, endY],
-        [d.target.x!, endY],
+        [d.target.baseX!, endY],
       ];
 
       /* eslint-enable @typescript-eslint/no-non-null-assertion */
@@ -231,7 +232,15 @@ export const makeForceGraph = (
     });
   };
 
-  const makeSimulation = (issueUnit: LayoutedLeveledIssueUnit) => {
+  const makeSimulation = (issueUnit: LayoutedLeveledIssueUnit, links: IssueLink[]) => {
+    const linkForForce = links.map((link) => {
+      return {
+        source: issueUnit.issues.findIndex((v) => v.issueKey === link.source.issueKey),
+
+        target: issueUnit.issues.findIndex((v) => v.issueKey === link.target.issueKey),
+      };
+    });
+
     const simulation = d3
       .forceSimulation<LayoutedLeveledIssue>()
       .nodes(issueUnit.issues)
@@ -243,6 +252,18 @@ export const makeForceGraph = (
       .force(
         "fy",
         d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
+      )
+      .force("charge", d3.forceManyBody().strength(-100))
+      .force(
+        "collision",
+        d3.forceCollide().radius(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2),
+      )
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .links(linkForForce)
+          .distance(Math.max(configuration.nodeSize.height, configuration.nodeSize.width)),
       );
 
     // define initial position
@@ -256,7 +277,7 @@ export const makeForceGraph = (
   };
 
   // force between nodes
-  let simulations = leveledIssueUnits.map(makeSimulation);
+  let simulations = leveledIssueUnits.map((unit) => makeSimulation(unit, linkData));
 
   const restart = () => {
     links = links.data(linkData);
@@ -340,7 +361,7 @@ export const makeForceGraph = (
     linkData = makeLinkData(issueGraph, leveledIssues);
 
     simulations.forEach((v) => v.stop());
-    simulations = leveledIssueUnits.map(makeSimulation);
+    simulations = leveledIssueUnits.map((unit) => makeSimulation(unit, linkData));
 
     restart();
   };

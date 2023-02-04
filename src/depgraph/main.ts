@@ -17,44 +17,44 @@ export type ContainCycle = {
 };
 export type CycleDetection = NotHaveCycle | ContainCycle;
 
-export type Graph = {
+export interface DirectedGraph {
   // add vertex labelled by [label]
-  addVertex(label: Vertex): Graph;
+  addVertex(label: Vertex): DirectedGraph;
 
   // add some vertices at once
-  addVertices(label: Vertex[]): Graph;
+  addVertices(label: Vertex[]): DirectedGraph;
 
   // get vertices at level
   levelAt(level: number): Vertex[];
 
   // add edge that is directed [from] to [to]
-  directTo(from: Vertex, to: Vertex): Graph;
+  directTo(from: Vertex, to: Vertex): DirectedGraph;
 
   /**
    * remove direction from [from] to [to].
    */
-  removeDirection(from: Vertex, to: Vertex): Graph;
+  removeDirection(from: Vertex, to: Vertex): DirectedGraph;
 
   // Get adjacent vertices of [vertex]
   adjacent(vertex: Vertex): Vertex[];
 
   // Get subgraph that has the root is given vertex
-  subgraphOf(vertex: Vertex): [Graph, CycleDetection];
+  subgraphOf(vertex: Vertex): [DirectedGraph, CycleDetection];
 
   // Return result that given graph is intersected
-  intersect(graph: Graph): boolean;
+  intersect(graph: DirectedGraph): boolean;
 
   // Return new graph is merged with graph. If given graph is not intersected with this, return null.
-  merge(graph: Graph): Graph | null;
+  merge(graph: DirectedGraph): DirectedGraph | null;
 
   /**
    * The union of the other graph. Return new graph.
    */
-  union(graph: Graph): Graph;
+  union(graph: DirectedGraph): DirectedGraph;
 
   readonly edges: Edge[];
   readonly vertices: Vertex[];
-};
+}
 
 const addVertex = (vertices: Vertex[], label: string) => {
   if (vertices.includes(label)) {
@@ -169,7 +169,7 @@ const largestLevelOf = (mat: AdjacentMatrix, target: Vertex) => {
   return largestLevel;
 };
 
-const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
+const makeGraph = (edges: Edge[], vertices: Vertex[]): DirectedGraph => {
   const adjMatrix = makeAdjacentMatrix(edges, vertices);
 
   return {
@@ -210,8 +210,8 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
       return Array.from(nodesAtLevel);
     },
 
-    subgraphOf(subRoot: Vertex): [Graph, CycleDetection] {
-      let subgraph = emptyGraph();
+    subgraphOf(subRoot: Vertex): [DirectedGraph, CycleDetection] {
+      let subgraph = emptyDirectedGraph();
 
       const cycle = dfs(adjMatrix, subRoot, (node) => {
         subgraph = subgraph.addVertex(node);
@@ -226,7 +226,7 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
       return [subgraph, cycle];
     },
 
-    intersect(graph: Graph) {
+    intersect(graph: DirectedGraph) {
       for (const edgeThis of this.edges) {
         for (const edgeOther of graph.edges) {
           if (deepEqual(edgeThis, edgeOther) || edgeThis[0] === edgeOther[0] || edgeThis[1] === edgeOther[1]) {
@@ -238,7 +238,7 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
       return false;
     },
 
-    merge(graph: Graph) {
+    merge(graph: DirectedGraph) {
       if (!this.intersect(graph)) {
         return null;
       }
@@ -296,6 +296,6 @@ const makeGraph = (edges: Edge[], vertices: Vertex[]): Graph => {
   };
 };
 
-export const emptyGraph = (): Graph => {
+export const emptyDirectedGraph = (): DirectedGraph => {
   return makeGraph([], []);
 };

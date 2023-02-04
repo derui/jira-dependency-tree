@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
-import { CycleDetection, emptyGraph, Graph } from "@/depgraph/main";
+import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/depgraph/main";
 import { Issue, selectOutwardIssues } from "@/model/issue";
 import { Project } from "@/model/project";
 import { buildIssueGraph } from "@/issue-graph/issue";
@@ -17,7 +17,7 @@ import {
 import { Position, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
-const correctSubgraph = (subgraph: Graph, cycle: CycleDetection) => {
+const correctSubgraph = (subgraph: DirectedGraph, cycle: CycleDetection) => {
   if (cycle.kind === "NotHaveCycle") {
     return subgraph;
   } else {
@@ -33,7 +33,7 @@ const correctSubgraph = (subgraph: Graph, cycle: CycleDetection) => {
   }
 };
 
-const removeCycle = (graph: Graph) => {
+const removeCycle = (graph: DirectedGraph) => {
   return graph.vertices.reduce((g, vertex) => {
     if (g.vertices.includes(vertex)) {
       return g;
@@ -41,14 +41,14 @@ const removeCycle = (graph: Graph) => {
     const [subgraph, cycle] = graph.subgraphOf(vertex);
 
     return g.union(correctSubgraph(subgraph, cycle));
-  }, emptyGraph());
+  }, emptyDirectedGraph());
 };
 
 const makeIssueGraph = (issues: Issue[]) => {
   const issueGraph = issues.reduce((graph, issue) => {
     const edited = graph.addVertex(issue.key);
     return selectOutwardIssues(issue).reduce((graph, key) => graph.directTo(issue.key, key), edited);
-  }, emptyGraph());
+  }, emptyDirectedGraph());
 
   return removeCycle(issueGraph);
 };
@@ -63,7 +63,7 @@ const getNextPositionBy = (position: Position, layout: LayoutedGraph, nodeSize: 
 };
 
 const makeLeveledIssues = (
-  graph: Graph,
+  graph: DirectedGraph,
   issues: Issue[],
   nodeSize: Size,
   direction: GraphLayout,
@@ -125,7 +125,7 @@ const makeLeveledIssues = (
   return leveledIssueUnits;
 };
 
-const makeLinkData = (graph: Graph, issues: LayoutedLeveledIssue[]) => {
+const makeLinkData = (graph: DirectedGraph, issues: LayoutedLeveledIssue[]) => {
   const issueMap = issues.reduce((accum, issue) => {
     accum.set(issue.issueKey, issue);
     return accum;

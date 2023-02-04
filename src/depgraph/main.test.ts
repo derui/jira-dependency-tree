@@ -1,8 +1,8 @@
 import { test, expect } from "vitest";
 
-import { ContainCycle, emptyGraph, Graph } from "@/depgraph/main";
+import { ContainCycle, emptyDirectedGraph, DirectedGraph } from "@/depgraph/main";
 
-const diagrams = (diagrams: string[]): Graph => {
+const diagrams = (diagrams: string[]): DirectedGraph => {
   const vertexDirections = diagrams.map((diagram) => diagram.split(/>/).map((v) => v.trim()));
 
   if (!(vertexDirections.length > 0 && vertexDirections.every((v) => v.length > 1))) {
@@ -10,7 +10,7 @@ const diagrams = (diagrams: string[]): Graph => {
   }
 
   const vertices = new Set(vertexDirections.flat());
-  let graph = emptyGraph();
+  let graph = emptyDirectedGraph();
 
   graph = graph.addVertices([...vertices]);
 
@@ -27,7 +27,7 @@ test("make empty depgraph", () => {
   // arrange
 
   // do
-  const graph = emptyGraph();
+  const graph = emptyDirectedGraph();
 
   // verify
   expect(graph.edges).toHaveLength(0);
@@ -38,7 +38,7 @@ test("add a vertex to graph", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertex("a");
+  const graph = emptyDirectedGraph().addVertex("a");
 
   // verify
   expect(graph.edges).toHaveLength(0);
@@ -50,7 +50,7 @@ test("can not add same vertex twice", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertex("a").addVertex("a");
+  const graph = emptyDirectedGraph().addVertex("a").addVertex("a");
 
   // verify
   expect(graph.edges).toHaveLength(0);
@@ -61,7 +61,7 @@ test("add adjacent between two vertices", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertex("a").addVertex("b").directTo("a", "b");
+  const graph = emptyDirectedGraph().addVertex("a").addVertex("b").directTo("a", "b");
 
   // verify
   expect(graph.edges).toHaveLength(1);
@@ -73,7 +73,7 @@ test("can not accept empty or blank vertex", () => {
   // arrange
 
   // do
-  const graph = emptyGraph();
+  const graph = emptyDirectedGraph();
 
   // verify
   expect(() => graph.addVertex("")).toThrow();
@@ -84,7 +84,7 @@ test("level must be greater equal 0", () => {
   // arrange
 
   // do
-  const graph = emptyGraph();
+  const graph = emptyDirectedGraph();
 
   // verify
   expect(() => graph.levelAt(-1)).toThrow();
@@ -94,7 +94,7 @@ test("level get from multiple root", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertex("a").addVertex("b").addVertex("c").directTo("a", "b");
+  const graph = emptyDirectedGraph().addVertex("a").addVertex("b").addVertex("c").directTo("a", "b");
 
   // verify
   expect(graph.edges).toHaveLength(1);
@@ -108,7 +108,7 @@ test("should be largest level ", () => {
   // arrange
 
   // do
-  const graph = emptyGraph()
+  const graph = emptyDirectedGraph()
     .addVertices(["a", "b", "c", "d"])
     .directTo("a", "d")
     .directTo("b", "d")
@@ -126,7 +126,11 @@ test("level get from multiple edges", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("b", "c").directTo("d", "c");
+  const graph = emptyDirectedGraph()
+    .addVertices(["a", "b", "c", "d"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("d", "c");
 
   // verify
   expect(graph.edges).toHaveLength(3);
@@ -155,7 +159,7 @@ test("ignore empty or blank vertices when add multiple vertices to graph at once
   // arrange
 
   // do
-  const graph = emptyGraph().addVertices(["    ", "", "c", "d"]);
+  const graph = emptyDirectedGraph().addVertices(["    ", "", "c", "d"]);
 
   // verify
   expect(graph.edges).toHaveLength(0);
@@ -166,7 +170,7 @@ test("ignore vertex that is not included in graph", () => {
   // arrange
 
   // do
-  const graph = emptyGraph().addVertices(["c", "d"]);
+  const graph = emptyDirectedGraph().addVertices(["c", "d"]);
 
   // verify
   expect(graph.adjacent("e")).toEqual([]);
@@ -212,7 +216,7 @@ test("can detect intersection between two graphs", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
-  const graph2 = emptyGraph().addVertices(["b", "d", "c"]).directTo("b", "d").directTo("c", "b");
+  const graph2 = emptyDirectedGraph().addVertices(["b", "d", "c"]).directTo("b", "d").directTo("c", "b");
 
   // do
 
@@ -225,7 +229,7 @@ test("do not intersect if not found any same edges", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
-  const graph2 = emptyGraph().addVertices(["d", "c", "e", "f"]).directTo("c", "f").directTo("c", "e");
+  const graph2 = emptyDirectedGraph().addVertices(["d", "c", "e", "f"]).directTo("c", "f").directTo("c", "e");
 
   // do
 
@@ -238,7 +242,7 @@ test("merge between graphs that are intesected each other", () => {
   // arrange
   const graph1 = diagrams(["a > b > c", "b > d > c"]);
 
-  const graph2 = emptyGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
+  const graph2 = emptyDirectedGraph().addVertices(["b", "d", "e"]).directTo("b", "d").directTo("e", "b");
 
   // do
   const merged = graph1.merge(graph2);
@@ -325,8 +329,8 @@ test("merge graphs have subgraph", () => {
 });
 
 test("union with empty graphs", () => {
-  const g1 = emptyGraph();
-  const g2 = emptyGraph();
+  const g1 = emptyDirectedGraph();
+  const g2 = emptyDirectedGraph();
 
   const ret = g1.union(g2);
 
@@ -335,8 +339,8 @@ test("union with empty graphs", () => {
 });
 
 test("union with each graphs", () => {
-  const g1 = emptyGraph().addVertices(["a", "b"]);
-  const g2 = emptyGraph().addVertices(["c", "b"]);
+  const g1 = emptyDirectedGraph().addVertices(["a", "b"]);
+  const g2 = emptyDirectedGraph().addVertices(["c", "b"]);
 
   const ret = g1.union(g2);
 

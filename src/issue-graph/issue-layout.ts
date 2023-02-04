@@ -1,10 +1,10 @@
-import { Graph } from "@/depgraph/main";
+import { DirectedGraph } from "@/depgraph/main";
 import { Position, Size } from "@/type";
 import { LayoutedLeveledVertex } from "@/issue-graph/type";
 
 // get subgraphs from a graph that contains whole issues
-const getSubgraphs = (graph: Graph): Graph[] => {
-  return graph.levelAt(0).reduce<Graph[]>((graphs, vertex) => {
+const getSubgraphs = (graph: DirectedGraph): DirectedGraph[] => {
+  return graph.levelAt(0).reduce<DirectedGraph[]>((graphs, vertex) => {
     const [subgraph] = graph.subgraphOf(vertex);
 
     if (!graphs.some((g) => g.intersect(subgraph))) {
@@ -45,7 +45,7 @@ const calculateY = (level: number, nodeSize: Size): number => {
   return level * nodeSize.height + betweenY * level;
 };
 
-const layoutGraph = (graph: Graph, nodeSize: Size): LayoutedGraph => {
+const layoutGraph = (graph: DirectedGraph, nodeSize: Size): LayoutedGraph => {
   const verticesSize = graph.vertices.length;
   let largestLevel = [0, 0];
   const leveledVertices: (string[] | undefined)[] = [];
@@ -91,7 +91,7 @@ const layoutGraph = (graph: Graph, nodeSize: Size): LayoutedGraph => {
   };
 };
 
-const layoutOrphanGraphs = (graphs: Graph[], nodeSize: Size): LayoutedGraph => {
+const layoutOrphanGraphs = (graphs: DirectedGraph[], nodeSize: Size): LayoutedGraph => {
   const countPerLine = 6;
   let copiedGraphs = Array.from(graphs);
   const graphLines = [];
@@ -128,7 +128,7 @@ const layoutOrphanGraphs = (graphs: Graph[], nodeSize: Size): LayoutedGraph => {
   };
 };
 
-export const calculateLayouts = (graph: Graph, nodeSize: Size) => {
+export const calculateLayouts = (graph: DirectedGraph, nodeSize: Size) => {
   const subgraphs = getSubgraphs(graph);
 
   const orphanGraphs = subgraphs.filter((g) => g.vertices.length === 1);

@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { emptyGraph } from "./main";
+import { emptyDirectedGraph } from "./main";
 import { emptyUndirectedGraph, fromDirectedGraph } from "./undirected";
 
 test("create empty graph", () => {
@@ -82,7 +82,7 @@ test("get subgraph with other root", () => {
 });
 
 test("make undirected graph with directed graph ", () => {
-  const directed = emptyGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("c", "d");
+  const directed = emptyDirectedGraph().addVertices(["a", "b", "c", "d"]).directTo("a", "b").directTo("c", "d");
   const undirected = fromDirectedGraph(directed);
 
   expect(undirected.vertices).toEqual(expect.arrayContaining(["a", "b", "c", "d"]));

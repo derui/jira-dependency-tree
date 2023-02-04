@@ -1,11 +1,11 @@
 import { test, expect } from "vitest";
 
-import { emptyGraph } from "@/depgraph/main";
+import { emptyDirectedGraph } from "@/depgraph/main";
 import { calculateLayouts } from "@/issue-graph/issue-layout";
 
 test("do not layout if given graph is empty", () => {
   // arrange
-  const graph = emptyGraph();
+  const graph = emptyDirectedGraph();
 
   // do
   const { graphs, orphans } = calculateLayouts(graph, { width: 10, height: 10 });
@@ -17,7 +17,7 @@ test("do not layout if given graph is empty", () => {
 
 test("layout orphan graphs", () => {
   // arrange
-  const graph = emptyGraph().addVertices(["a", "b", "c"]);
+  const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]);
 
   // do
   const { orphans: ret } = calculateLayouts(graph, { width: 10, height: 10 });
@@ -33,7 +33,7 @@ test("layout orphan graphs", () => {
 
 test("layout orphan graphs with multi lines", () => {
   // arrange
-  const graph = emptyGraph().addVertices(["a", "b", "c", "d", "e", "f", "g"]);
+  const graph = emptyDirectedGraph().addVertices(["a", "b", "c", "d", "e", "f", "g"]);
 
   // do
   const { orphans: ret } = calculateLayouts(graph, { width: 10, height: 10 });
@@ -53,7 +53,11 @@ test("layout orphan graphs with multi lines", () => {
 
 test("layout subgraph", () => {
   // arrange
-  const graph = emptyGraph().addVertices(["a", "b", "c"]).directTo("a", "b").directTo("a", "c").directTo("b", "c");
+  const graph = emptyDirectedGraph()
+    .addVertices(["a", "b", "c"])
+    .directTo("a", "b")
+    .directTo("a", "c")
+    .directTo("b", "c");
 
   // do
   const { graphs: ret } = calculateLayouts(graph, { width: 10, height: 10 });
@@ -70,7 +74,7 @@ test("layout subgraph", () => {
 
 test("layout subgraphs", () => {
   // arrange
-  const graph = emptyGraph()
+  const graph = emptyDirectedGraph()
     .addVertices(["a", "b", "c", "d", "e"])
     .directTo("a", "b")
     .directTo("a", "c")
@@ -97,7 +101,7 @@ test("layout subgraphs", () => {
 
 test("should merge graphs intersected each other", () => {
   // arrange
-  const graph = emptyGraph()
+  const graph = emptyDirectedGraph()
     .addVertices(["a", "b", "c", "d", "e"])
     .directTo("a", "b")
     .directTo("a", "c")

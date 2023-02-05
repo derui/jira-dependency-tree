@@ -112,7 +112,7 @@ describe("load issues", () => {
     cy.testid("project-sync-option-editor/opener").should("contain.text", "ABC-352");
   });
 
-  it.only("show new suggestions if it do not find any suggestion", () => {
+  it("show new suggestions if it do not find any suggestion", () => {
     cy.visit("/");
 
     cy.mockAPI({

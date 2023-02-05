@@ -17,7 +17,6 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   const node = container
     .enter()
     .append("svg:g")
-    .merge(container)
     .attr("data-issue-key", (d) => d.issueKey)
     .classed("graph-issue", () => true)
     .classed("transition-opacity", () => true);
@@ -135,14 +134,14 @@ export const buildIssueGraph = (
 ): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
   let issueNode = container.append("svg:g").selectAll<BaseType, LayoutedLeveledIssue>("g");
 
-  issueNode = buildIssueNode(issueNode, project, configuration);
-
   return [
     issueNode,
     (data) => {
+      // update existing issues
       issueNode = issueNode.data(data, (d) => d.issueKey).classed("opacity-30", (d) => d.focusing === "unfocused");
 
       issueNode.exit().remove();
+
       issueNode = buildIssueNode(issueNode, project, configuration);
 
       return issueNode;

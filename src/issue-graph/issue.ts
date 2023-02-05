@@ -1,4 +1,4 @@
-import { BaseType, Selection } from "d3";
+import * as d3 from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Project } from "@/model/project";
 import { Position, StatusCategory } from "@/type";
@@ -132,7 +132,7 @@ export const buildIssueGraph = (
   project: Project,
   configuration: Configuration,
 ): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
-  let issueNode = container.append("svg:g").selectAll<BaseType, LayoutedLeveledIssue>("g");
+  let issueNode = container.append("svg:g").selectAll<d3.BaseType, LayoutedLeveledIssue>("g");
 
   return [
     issueNode,
@@ -148,7 +148,7 @@ export const buildIssueGraph = (
     },
   ];
 };
-type SVG = Selection<SVGSVGElement, undefined, null, undefined> | null;
+type SVG = d3.Selection<SVGSVGElement, undefined, null, undefined> | null;
 
 /**
  * support function to get graph issue from SVG

@@ -12,7 +12,7 @@ describe("load issues", () => {
 
     // Input credentials
     cy.testid("user-configuration/opener").click();
-    cy.testid("user-configuration/form/user-domain/").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
     cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
     cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
     cy.testid("user-configuration/form/submit").click();
@@ -167,5 +167,35 @@ describe("load issues", () => {
     cy.testid("project-sync-option-editor/form/suggested-sprint/suggestion")
       .should("have.length", 1)
       .and("contain.text", "TES スプリント 5");
+  });
+
+  it("display the tooltip with focusing an issue", () => {
+    cy.visit("/");
+
+    cy.mockAPI({
+      "http://localhost:3000/load-issues": post(["basic/tooltip"]),
+      "http://localhost:3000/load-project": post(["basic/project"]),
+    });
+
+    // Input credentials
+    cy.testid("user-configuration/opener").click();
+    cy.testid("user-configuration/form/user-domain").type("domain").should("have.value", "domain");
+    cy.testid("user-configuration/form/email").type("email").should("have.value", "email");
+    cy.testid("user-configuration/form/token").type("token").should("have.value", "token");
+    cy.testid("user-configuration/form/submit").click();
+
+    // input project name
+    cy.testid("project-information/name").click();
+    cy.testid("project-information/key").type("KEY");
+    cy.testid("project-information/submit").click();
+    cy.testid("sync-issue-button/root").click();
+
+    // display a tooltip
+    cy.get('[data-issue-key="TES-1"]').should("be.visible").trigger("mouseenter");
+    cy.get(".issue-summary-tooltip")
+      .should("be.visible")
+      .and("contain.text", "Long summary can not display in issue node");
+    cy.get('[data-issue-key="TES-1"]').trigger("mouseleave");
+    cy.get(".issue-summary-tooltip").should("not.be.visible");
   });
 });

@@ -1,7 +1,7 @@
-import { config } from "process";
 import * as d3 from "d3";
-import { BaseType } from "d3";
+import type { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
+import { buildTooltip } from "./tooltip";
 import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/depgraph/main";
 import { Issue, selectOutwardIssues } from "@/model/issue";
 import { Project } from "@/model/project";
@@ -219,6 +219,7 @@ export const makeForceGraph = (
   let linkData = makeLinkData(issueGraph, leveledIssues);
 
   const curve = d3.line().curve(d3.curveBasis);
+  const tooltip = buildTooltip();
 
   let focusingANode = false;
   let doNotPreventFocusingANode: "startDragging" | "shouldPrevent" | "notDragging" = "notDragging";
@@ -363,62 +364,63 @@ export const makeForceGraph = (
 
     issueNode.on("click", (event, d) => {
       event.preventDefault();
-      event.stopPropagation();
 
       configuration.onIssueClick(d.issueKey);
     });
 
     // update links are related clicked issue
-    issueNode.on("mouseenter", (event, d) => {
-      event.preventDefault();
-      event.stopPropagation();
+    issueNode
+      .on("mouseenter", (event, d) => {
+        event.preventDefault();
 
-      focusingANode = true;
-      const focusedIssues = new Set<string>();
+        focusingANode = true;
+        const focusedIssues = new Set<string>();
 
-      linkData.forEach((link) => {
-        if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
-          link.relatedFocusingIssue = true;
-          focusedIssues.add(link.source.issueKey);
-          focusedIssues.add(link.target.issueKey);
-        } else {
+        linkData.forEach((link) => {
+          if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {
+            link.relatedFocusingIssue = true;
+            focusedIssues.add(link.source.issueKey);
+            focusedIssues.add(link.target.issueKey);
+          } else {
+            link.relatedFocusingIssue = false;
+          }
+        });
+
+        leveledIssues.forEach((issue) => {
+          if (focusedIssues.has(issue.issueKey)) {
+            issue.focusing = "focused";
+          } else {
+            issue.focusing = "unfocused";
+          }
+        });
+
+        tooltip.show(event.target, d.issue);
+
+        restart();
+      })
+      // reset focusing when click root canvas
+      .on("mouseleave", (event) => {
+        event.preventDefault();
+
+        if (doNotPreventFocusingANode === "shouldPrevent") {
+          doNotPreventFocusingANode = "notDragging";
+          return;
+        }
+
+        focusingANode = false;
+
+        linkData.forEach((link) => {
           link.relatedFocusingIssue = false;
-        }
+        });
+
+        leveledIssues.forEach((issue) => {
+          issue.focusing = "initial";
+        });
+
+        tooltip.hide();
+
+        restart();
       });
-
-      leveledIssues.forEach((issue) => {
-        if (focusedIssues.has(issue.issueKey)) {
-          issue.focusing = "focused";
-        } else {
-          issue.focusing = "unfocused";
-        }
-      });
-
-      restart();
-    });
-
-    // reset focusing when click root canvas
-    issueNode.on("mouseleave", (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-
-      if (doNotPreventFocusingANode === "shouldPrevent") {
-        doNotPreventFocusingANode = "notDragging";
-        return;
-      }
-
-      focusingANode = false;
-
-      linkData.forEach((link) => {
-        link.relatedFocusingIssue = false;
-      });
-
-      leveledIssues.forEach((issue) => {
-        issue.focusing = "initial";
-      });
-
-      restart();
-    });
   };
 
   const graphRestarter = (issues: Issue[], configuration: Configuration) => {

@@ -44,6 +44,22 @@ module.exports = {
       'overlay': 'overlay'
     },
     extend: {
+      keyframes: {
+        'fade-in': {
+          '0%': {opacity: 0, visibility: 'hidden'},
+          '50%': {opacity: 0.5, visibility: 'visible'},
+          '100%': {opacity: 1, visibility: 'visible'},
+        },
+        'fade-out': {
+          '0%': {opacity: 1, visibility: 'visible'},
+          '50%': {opacity: 0.5, visibility: 'visible'},
+          '100%': {opacity: 0, visibility: 'hidden'},
+        }
+      },
+      animation: {
+        'fade-in': 'fade-in 0.25s ease-in-out 1',
+        'fade-out': 'fade-out 0.25s ease-in-out 1',
+      },
       transitionProperty: {
         'outline': 'outline',
         'width': 'width',

@@ -283,15 +283,17 @@ export const makeForceGraph = (
       .nodes(issueUnit.issues)
       .on("tick", ticked)
       .force(
-        "fx",
-        d3.forceX<LayoutedLeveledIssue>().x((d) => d.baseX),
-      )
-      .force(
         "fy",
         d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
       )
       .force("collide", d3.forceCollide(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2))
-      .force("link", d3.forceLink().links(linkForForce).distance(configuration.nodeSize.width));
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .links(linkForForce)
+          .distance(configuration.nodeSize.width / 2),
+      );
 
     // define initial position
     simulation.nodes().forEach((d) => {

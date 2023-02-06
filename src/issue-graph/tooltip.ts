@@ -19,20 +19,35 @@ const commonClasses = [
 
 export const buildTooltip = (): { show: Visible; hide: Invisible } => {
   const tooltip = d3.select("body").append("div").attr("class", "issue-summary-tooltip absolute invisible");
+  let timer: NodeJS.Timeout | undefined = undefined;
 
   return {
     show: (element, issue) => {
       const rect = element.getBoundingClientRect();
 
-      tooltip
-        .attr("class", () => {
-          return commonClasses.concat(["visible", "animate-fade-in"]).join(" ");
-        })
-        .html(issue?.summary ?? "")
-        .style("top", `${rect.bottom + 16}px`)
-        .style("left", `${rect.left}px`);
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      timer = setTimeout(() => {
+        tooltip
+          .attr("class", () => {
+            return commonClasses.concat(["visible", "animate-fade-in"]).join(" ");
+          })
+          .html(issue?.summary ?? "")
+          .style("top", `${rect.bottom + 16}px`)
+          .style("left", `${rect.left}px`);
+
+        timer = undefined;
+      }, 500);
     },
     hide: () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+        return;
+      }
+
       tooltip.attr("class", () => {
         return commonClasses.concat(["invisible", "animate-fade-out"]).join(" ");
       });

@@ -57,8 +57,8 @@ module.exports = {
         }
       },
       animation: {
-        'fade-in': 'fade-in 0.25s ease-in-out 1',
-        'fade-out': 'fade-out 0.25s ease-in-out 1',
+        'fade-in': 'fade-in 0.1s ease-in-out 1',
+        'fade-out': 'fade-out 0.1s ease-in-out 1',
       },
       transitionProperty: {
         'outline': 'outline',

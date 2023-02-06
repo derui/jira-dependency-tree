@@ -14,6 +14,7 @@ const commonClasses = [
   "whitespace-wrap",
   "text-sm",
   "p-2",
+  "max-w-xs",
 ];
 
 export const buildTooltip = (): { show: Visible; hide: Invisible } => {
@@ -28,7 +29,6 @@ export const buildTooltip = (): { show: Visible; hide: Invisible } => {
           return commonClasses.concat(["visible", "animate-fade-in"]).join(" ");
         })
         .html(issue?.summary ?? "")
-        .style("width", `${rect.width}px`)
         .style("top", `${rect.bottom + 16}px`)
         .style("left", `${rect.left}px`);
     },

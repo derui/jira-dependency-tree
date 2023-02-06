@@ -271,33 +271,30 @@ export const makeForceGraph = (
     const linkForForce = links
       .map((link) => {
         return {
-          source: issueUnit.issues.findIndex((v) => v.issueKey === link.source.issueKey),
-
-          target: issueUnit.issues.findIndex((v) => v.issueKey === link.target.issueKey),
+          source: link.source.issueKey,
+          target: link.target.issueKey,
         };
       })
-      .filter((link) => link.source !== -1 && link.target !== -1);
+      .filter(({ source, target }) => issueUnit.issues.some((v) => v.issueKey === source || v.issueKey === target));
 
     const simulation = d3
       .forceSimulation<LayoutedLeveledIssue>()
       .nodes(issueUnit.issues)
       .on("tick", ticked)
-      .force(
-        "fy",
-        d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
-      )
       .force("collide", d3.forceCollide(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2))
+      .force("center", d3.forceCenter(issueUnit.unitRect.left, issueUnit.unitRect.top))
       .force(
         "link",
         d3
           .forceLink()
           .links(linkForForce)
-          .distance(configuration.nodeSize.width / 2),
+          .id((d) => (d as LayoutedLeveledIssue).issueKey)
+          .distance(configuration.nodeSize.width * 0.75),
       );
 
     // define initial position
     simulation.nodes().forEach((d) => {
-      d.x = d.level * (configuration.nodeSize.width * 1.75);
+      d.fx = d.level * (configuration.nodeSize.width * 1.75);
       d.y =
         (d.level % 2) * (configuration.nodeSize.height + 25) * (configuration.nodeSize.height + 25) * d.indexInLevel;
     });

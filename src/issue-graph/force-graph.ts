@@ -290,18 +290,8 @@ export const makeForceGraph = (
         "fy",
         d3.forceY<LayoutedLeveledIssue>().y((d) => d.baseY),
       )
-      .force("charge", d3.forceManyBody().strength(-100))
-      .force(
-        "collision",
-        d3.forceCollide().radius(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2),
-      )
-      .force(
-        "link",
-        d3
-          .forceLink()
-          .links(linkForForce)
-          .distance(Math.max(configuration.nodeSize.height, configuration.nodeSize.width)),
-      );
+      .force("collide", d3.forceCollide(Math.max(configuration.nodeSize.height, configuration.nodeSize.width) / 2))
+      .force("link", d3.forceLink().links(linkForForce).distance(configuration.nodeSize.width));
 
     // define initial position
     simulation.nodes().forEach((d) => {

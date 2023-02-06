@@ -91,3 +91,23 @@ test("show delete button", async () => {
 
   await userEvent.click(button);
 });
+
+test("do not propagate after click delete", async () => {
+  expect.assertions(1);
+
+  const issue = { key: "key", summary: "summary of issue" };
+
+  render(
+    <Issue
+      issue={issue}
+      onClick={() => expect.fail()}
+      onDelete={(key) => {
+        expect(key).toBe("key");
+      }}
+    />,
+  );
+
+  const deleteButton = screen.getByTestId("delete");
+
+  await userEvent.click(deleteButton);
+});

@@ -104,9 +104,16 @@ const IssueStatusDisplay: React.FC<{ value: IssueStatus | undefined; testid: str
   );
 };
 
-const DeleteButton: React.FC<{ onDelete: () => void; testid: string }> = ({ onDelete, testid }) => {
+const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onClick, testid }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    onClick();
+  };
+
   return (
-    <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={onDelete}>
+    <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={handleClick}>
       <Icon color="primary" type="x" size="s" />
     </button>
   );
@@ -116,9 +123,18 @@ export const Issue: React.FC<Props> = (props) => {
   const gen = generateTestId(props.testid);
   const { issue, onClick, loading, onDelete } = props;
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
     if (onClick) {
+      e.preventDefault();
+      e.stopPropagation();
+
       onClick(issue.key);
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(issue.key);
     }
   };
 
@@ -146,7 +162,7 @@ export const Issue: React.FC<Props> = (props) => {
         <IssueStatusDisplay value={issue.issueStatus} testid={gen("status")} />
       </span>
 
-      {onDelete ? <DeleteButton onDelete={() => onDelete(issue.key)} testid={gen("delete")} /> : null}
+      {onDelete ? <DeleteButton onClick={handleDelete} testid={gen("delete")} /> : null}
     </li>
   );
 };

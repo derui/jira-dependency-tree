@@ -75,7 +75,7 @@ const Styles = {
     "border",
     "border-transparent",
     "hover:border-lightgray",
-    "right-2",
+    "right-1",
     "top-1",
     "transition",
     "items-center",

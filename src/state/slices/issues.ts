@@ -46,7 +46,7 @@ const slice = createSlice({
       const target = state.projectionTarget;
       switch (target.kind) {
         case "Root":
-          state.issues = action.payload;
+          state.issues = action.payload.filter((issue) => issue.parentIssue === undefined);
           break;
         case "InsideIssue":
           state.issues = action.payload.filter((issue) => issue.parentIssue === target.issueKey);
@@ -115,7 +115,7 @@ const slice = createSlice({
     });
 
     builder.addCase(narrowExpandedIssue, (state) => {
-      state.issues = state._originalIssues;
+      state.issues = state._originalIssues.filter((issue) => issue.parentIssue === undefined);
       state.projectionTarget = { kind: "Root" };
     });
   },

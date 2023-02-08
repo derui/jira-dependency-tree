@@ -232,6 +232,6 @@ test("restore projection target", () => {
   ret = reducer(ret, expandIssue("key3"));
   ret = reducer(ret, narrowExpandedIssue());
 
-  expect(ret.issues).toEqual(expect.arrayContaining(issues));
-  expect(ret.issues).toHaveLength(3);
+  expect(ret.issues).toEqual(expect.arrayContaining(issues.slice(1)));
+  expect(ret.issues).toHaveLength(2);
 });

@@ -3,7 +3,7 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
-import { SuggestionKind } from "@/type";
+import { IssueKey, SuggestionKind } from "@/type";
 
 type ApiCredentialPayload = {
   token: string;
@@ -57,6 +57,9 @@ export const attentionIssue = createAction<string>("attentionIssue");
 export const attentionIssueFulfilled = createAction("attentionIssueFulfilled");
 
 export const changeZoom = createAction<number>("changeZoom");
+
+export const expandIssue = createAction<IssueKey>("expandIssue");
+export const narrowExpandedIssue = createAction("narrowExpandedIssue");
 
 // actions for relation edit
 export const selectIssueInGraph = createAction<string>("selectIssueInGraph");

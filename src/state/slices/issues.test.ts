@@ -1,6 +1,8 @@
 import { test, expect } from "vitest";
 import {
   addRelationSucceeded,
+  expandIssue,
+  narrowExpandedIssue,
   removeRelationSucceeded,
   searchIssue,
   synchronizeIssues,
@@ -12,7 +14,13 @@ import { Issue } from "@/model/issue";
 import { randomIssue } from "@/mock-data";
 
 test("initial state", () => {
-  expect(getInitialState()).toEqual({ issues: [], loading: Loading.Completed, matchedIssues: [] });
+  expect(getInitialState()).toEqual({
+    issues: [],
+    loading: Loading.Completed,
+    matchedIssues: [],
+    _originalIssues: [],
+    projectionTarget: { kind: "Root" },
+  });
 });
 
 test("loading", () => {
@@ -36,6 +44,34 @@ test("loaded issues", () => {
 
   expect(ret.issues.length).toBe(1);
   expect(ret.issues[0]).toEqual(issue);
+  expect(ret.loading).toBe(Loading.Completed);
+});
+
+test("loaded issues with other projection target", () => {
+  const issue = {
+    key: "key",
+    summary: "summary",
+    description: "description",
+    statusId: "",
+    typeId: "",
+    selfUrl: "",
+    relations: [],
+    parentIssue: "key2",
+  };
+  const issue2 = {
+    key: "key2",
+    summary: "summary",
+    description: "description",
+    statusId: "",
+    typeId: "",
+    selfUrl: "",
+    relations: [],
+  };
+  let ret = reducer(getInitialState(), expandIssue("key2"));
+  ret = reducer(ret, synchronizeIssuesFulfilled([issue, issue2]));
+
+  expect(ret.issues).toHaveLength(1);
+  expect(ret.issues).toEqual(expect.arrayContaining([issue]));
   expect(ret.loading).toBe(Loading.Completed);
 });
 
@@ -171,4 +207,31 @@ test("remove relation if it exists", () => {
 
   expect(map.get("key1")?.relations).toEqual([]);
   expect(map.get("key2")?.relations).toEqual([]);
+});
+
+test("projection target is parent issue", () => {
+  const issues: Issue[] = [
+    randomIssue({ key: "key1", parentIssue: "key3" }),
+    randomIssue({ key: "key2" }),
+    randomIssue({ key: "key3" }),
+  ];
+  let ret = reducer(getInitialState(), synchronizeIssuesFulfilled(issues));
+  ret = reducer(ret, expandIssue("key3"));
+
+  expect(ret.issues).toEqual(expect.arrayContaining([issues[0]]));
+  expect(ret.issues).toHaveLength(1);
+});
+
+test("restore projection target", () => {
+  const issues: Issue[] = [
+    randomIssue({ key: "key1", parentIssue: "key3" }),
+    randomIssue({ key: "key2" }),
+    randomIssue({ key: "key3" }),
+  ];
+  let ret = reducer(getInitialState(), synchronizeIssuesFulfilled(issues));
+  ret = reducer(ret, expandIssue("key3"));
+  ret = reducer(ret, narrowExpandedIssue());
+
+  expect(ret.issues).toEqual(expect.arrayContaining(issues));
+  expect(ret.issues).toHaveLength(3);
 });

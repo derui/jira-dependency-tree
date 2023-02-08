@@ -1,25 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   addRelationSucceeded,
+  expandIssue,
+  narrowExpandedIssue,
   removeRelationSucceeded,
   searchIssue,
   synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "../actions";
 import { Issue } from "@/model/issue";
-import { Loading } from "@/type";
+import { IssueKey, Loading } from "@/type";
 import { filterEmptyString } from "@/util/basic";
+
+type ProjectionTarget = { kind: "Root" } | { kind: "InsideIssue"; issueKey: IssueKey };
 
 interface IssuesState {
   issues: Issue[];
   loading: Loading;
   matchedIssues: Issue[];
+  projectionTarget: ProjectionTarget;
+  _originalIssues: Issue[];
 }
 
 const initialState = {
   issues: [],
   loading: "Completed",
   matchedIssues: [],
+  projectionTarget: { kind: "Root" },
+  _originalIssues: [],
 } as IssuesState satisfies IssuesState;
 
 const slice = createSlice({
@@ -32,8 +40,18 @@ const slice = createSlice({
     });
 
     builder.addCase(synchronizeIssuesFulfilled, (state, action) => {
-      state.issues = action.payload;
+      state._originalIssues = action.payload;
       state.loading = "Completed";
+
+      const target = state.projectionTarget;
+      switch (target.kind) {
+        case "Root":
+          state.issues = action.payload;
+          break;
+        case "InsideIssue":
+          state.issues = action.payload.filter((issue) => issue.parentIssue === target.issueKey);
+          break;
+      }
     });
 
     builder.addCase(searchIssue, (state, { payload }) => {
@@ -89,6 +107,16 @@ const slice = createSlice({
           issue.relations.splice(index, 1);
         }
       });
+    });
+
+    builder.addCase(expandIssue, (state, { payload }) => {
+      state.projectionTarget = { kind: "InsideIssue", issueKey: payload };
+      state.issues = state._originalIssues.filter((issue) => issue.parentIssue === payload);
+    });
+
+    builder.addCase(narrowExpandedIssue, (state) => {
+      state.issues = state._originalIssues;
+      state.projectionTarget = { kind: "Root" };
     });
   },
 });

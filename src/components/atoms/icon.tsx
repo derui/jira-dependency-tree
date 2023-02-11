@@ -76,7 +76,12 @@ const Colors = {
 
 const Styles = {
   type: (type: Icons) => {
-    return classes(Icons[type], "before:[mask-size:cover]", "before:[mask-repeat:round]");
+    return classes(
+      Icons[type],
+      "before:[mask-size:cover]",
+      "before:[mask-repeat:no-repeat]",
+      "before:[mask-position:center]",
+    );
   },
 
   iconBase: classes(
@@ -97,11 +102,11 @@ const Styles = {
   size: (size: IconSize) => {
     switch (size) {
       case "l":
-        return classes("w-7", "h-7");
+        return classes("w-7", "h-7", "before:w-7", "before:h-7");
       case "m":
-        return classes("w-6", "h-6");
+        return classes("w-6", "h-6", "before:w-6", "before:h-6");
       case "s":
-        return classes("w-5", "h-5");
+        return classes("w-5", "h-5", "before:w-5", "before:h-5");
     }
   },
 

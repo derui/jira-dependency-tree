@@ -74,6 +74,7 @@ test("get issues from response", () => {
           selfUrl: "",
           statusId: "",
           typeId: "",
+          subIssues: [],
         },
       ]),
     });
@@ -137,6 +138,7 @@ test("apply relations", () => {
           selfUrl: "",
           statusId: "",
           typeId: "",
+          subIssues: ["a", "b"],
         },
         {
           key: "a",
@@ -147,6 +149,7 @@ test("apply relations", () => {
           statusId: "",
           typeId: "",
           parentIssue: "key",
+          subIssues: [],
         },
         {
           key: "b",
@@ -157,6 +160,7 @@ test("apply relations", () => {
           statusId: "",
           typeId: "",
           parentIssue: "key",
+          subIssues: [],
         },
       ]),
     });

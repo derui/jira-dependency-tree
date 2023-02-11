@@ -25,5 +25,9 @@ describe("load issues", () => {
 
     // change suggestions with debounce
     cy.get(".graph-issue").should("exist").should("have.length", 3);
+    cy.get(".graph-issue__sub-issue-notification")
+      .should("be.visible")
+      .should("contain.text", "have 1 sub issues")
+      .should("contain.text", "have 2 sub issues");
   });
 });

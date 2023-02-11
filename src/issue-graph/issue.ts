@@ -9,6 +9,32 @@ const IssueSizes = {
   paddingY: 4,
   textHeight: 20,
   iconSize: 16,
+  subIssueNotificationHeight: 28,
+  subIssueHighlightHeight: 20,
+} as const;
+
+const IssuePositions = {
+  Key: {
+    x: IssueSizes.paddingX,
+    y: IssueSizes.paddingY,
+  },
+  Link: {
+    x: (configuration: Configuration) =>
+      configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2,
+    y: IssueSizes.paddingY * 2,
+  },
+  Summary: {
+    x: IssueSizes.paddingX,
+    y: IssueSizes.paddingY + IssueSizes.textHeight,
+  },
+  Status: {
+    x: IssueSizes.paddingX + IssueSizes.paddingX / 2,
+    y: IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2,
+  },
+  SubIssueNotification: {
+    x: 0,
+    y: IssueSizes.paddingY * 5 + IssueSizes.textHeight * 3,
+  },
 } as const;
 
 const buildIssueNode = (container: IssueNode, project: Project, configuration: Configuration) => {
@@ -24,13 +50,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   node
     .append("rect")
     .attr("class", (d) => {
-      const classes = [
-        "stroke-darkgray",
-        "fill-white",
-        "transition-stroke",
-        "hover:stroke-secondry-500",
-        "hover:stroke-2",
-      ];
+      const classes = ["stroke-secondary1-400", "fill-white", "transition-stroke", "hover:stroke-secondary1-500"];
 
       if (!d.issue) {
         classes.push("stroke-primary-400");
@@ -40,14 +60,20 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
     })
     .attr("stroke-size", 1)
     .attr("width", configuration.nodeSize.width)
-    .attr("height", configuration.nodeSize.height)
+    .attr("height", (d) => {
+      if (d.subIssues.length > 0) {
+        return configuration.nodeSize.height + IssueSizes.subIssueNotificationHeight;
+      }
+
+      return configuration.nodeSize.height;
+    })
     .attr("rx", 4.0)
     .attr("ry", 4.0);
 
   // issue key
   node
     .append("text")
-    .attr("class", "issue-key")
+    .attr("class", "issue-key fill-secondary1-500")
     .attr("y", IssueSizes.paddingY)
     .attr("x", IssueSizes.paddingX)
     .text((d) => d.issueKey);
@@ -69,8 +95,11 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
     .attr("width", IssueSizes.iconSize)
     .attr("height", IssueSizes.iconSize)
     .attr("xlink:href", "/assets/svg/tablar-icons/door-exit.svg")
-    .on("click", (_, d) => {
+    .on("click", (e, d) => {
       if (d.issue) {
+        e.preventDefault();
+        e.stopPropagation();
+
         const url = new URL(d.issue.selfUrl);
         window.open(`${url.origin}/browse/${d.issueKey}`, "_blank");
       }
@@ -80,7 +109,7 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
   node
     .append("text")
-    .attr("class", "issue-summary")
+    .attr("class", "issue-summary fill-secondary1-500")
     .attr("y", IssueSizes.paddingY + IssueSizes.textHeight)
     .attr("x", IssueSizes.paddingX)
     .text((d) => {
@@ -122,6 +151,55 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
 
       const status = project.statuses[d.issue.statusId];
       return status?.name ?? "";
+    });
+
+  // sub issue notification
+  const subIssueNotification = node
+    .append("svg:g")
+    .classed("hidden", (d) => d.subIssues.length === 0)
+    .attr("class", () => {
+      return [
+        "graph-issue__sub-issue-notification",
+        "transition-fill",
+        "fill-transparent",
+        "hover:fill-secondary2-200",
+        "cursor-pointer",
+      ].join(" ");
+    })
+    .attr("transform", `translate(${IssuePositions.SubIssueNotification.x}, ${IssuePositions.SubIssueNotification.y})`);
+
+  const path = `
+M 0,0
+h${configuration.nodeSize.width}
+z
+`;
+
+  subIssueNotification
+    .append("path")
+    .classed("stroke-secondary1-300", (d) => d.subIssues.length > 0)
+    .attr("d", path);
+
+  subIssueNotification
+    .append("rect")
+    .attr("class", "stroke-transparent")
+    .attr("height", IssueSizes.subIssueHighlightHeight)
+    .attr("width", configuration.nodeSize.width - IssueSizes.paddingX * 2)
+    .attr("x", IssueSizes.paddingX)
+    .attr("y", IssueSizes.paddingY);
+
+  subIssueNotification
+    .append("text")
+    .attr("class", "fill-secondary1-500")
+    .attr("text-anchor", "middle")
+    .attr("width", configuration.nodeSize.width - 2)
+    .attr("x", (configuration.nodeSize.width - 2) / 2)
+    .attr("y", IssueSizes.paddingY)
+    .text((d) => {
+      if (d.subIssues.length === 0) {
+        return "";
+      }
+
+      return `have ${d.subIssues.length} sub issues`;
     });
 
   return node.merge(container);

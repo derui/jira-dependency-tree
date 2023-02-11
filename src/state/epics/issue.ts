@@ -7,6 +7,7 @@ import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Issue } from "@/model/issue";
+import { IssueKey } from "@/type";
 
 type IssueEpic = "synchronizeIssues";
 
@@ -79,6 +80,7 @@ const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
         ...v,
         externalId: v.id,
       })),
+      subIssues: [] as IssueKey[],
     } as Issue;
   });
 
@@ -93,6 +95,11 @@ const mergeTasks = (issues: Issue[], subtasks: { parent: string; subtask: string
 
     if (subtaskRelatedIssue) {
       subtaskRelatedIssue.parentIssue = parent;
+    }
+
+    const _parent = map.get(parent);
+    if (_parent) {
+      _parent.subIssues.push(subtask);
     }
   }
 

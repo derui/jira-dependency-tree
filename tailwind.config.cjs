@@ -65,6 +65,7 @@ module.exports = {
         'width': 'width',
         'height': 'height',
         'stroke': 'stroke, stroke-width',
+        'fill': 'fill',
       },
       gridTemplateColumns: {
         'top-toolbar': 'min-content 1fr min-content min-content',

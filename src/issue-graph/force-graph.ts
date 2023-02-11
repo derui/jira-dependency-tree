@@ -69,10 +69,7 @@ const makeLeveledIssues = (
   nodeSize: Size,
   direction: GraphLayout,
 ): { units: LayoutedLeveledIssueUnit[]; orphan?: LayoutedLeveledIssueUnit } => {
-  const issueMap = issues.reduce((accum, issue) => {
-    accum.set(issue.key, issue);
-    return accum;
-  }, new Map<string, Issue>());
+  const issueMap = new Map<string, Issue>(issues.map((v) => [v.key, v]));
 
   const { graphs, orphans } = calculateLayouts(graph, nodeSize);
   let basePosition: Position = { x: 0, y: 0 };
@@ -83,6 +80,7 @@ const makeLeveledIssues = (
       return {
         issueKey: vertex,
         issue: issueMap.get(vertex),
+        subIssues: issueMap.get(vertex)?.subIssues ?? [],
         ...rest,
         baseX: x + basePosition.x,
         baseY: y + basePosition.y,
@@ -106,6 +104,7 @@ const makeLeveledIssues = (
       return {
         issueKey: vertex,
         issue: issueMap.get(vertex),
+        subIssues: issueMap.get(vertex)?.subIssues ?? [],
         ...rest,
         baseX: x - orphans.size.width - nodeSize.width * 2,
         baseY: y,
@@ -363,7 +362,7 @@ export const makeForceGraph = (
         event.preventDefault();
 
         focusingANode = true;
-        const focusedIssues = new Set<string>();
+        const focusedIssues = new Set<string>([d.issueKey]);
 
         linkData.forEach((link) => {
           if (link.source.issueKey === d.issueKey || link.target.issueKey === d.issueKey) {

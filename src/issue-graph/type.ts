@@ -1,6 +1,6 @@
 import { BaseType, Selection, SimulationNodeDatum } from "d3";
 import { Issue } from "@/model/issue";
-import { Size } from "@/type";
+import { IssueKey, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
 // The type of common node object in issue graph
@@ -13,20 +13,21 @@ export type IssueNode = Selection<BaseType, LayoutedLeveledIssue, BaseType, unde
 export type TreeFrame = Selection<BaseType, LayoutedLeveledIssueUnit, BaseType, undefined>;
 
 export interface LayoutedLeveledVertex {
-  vertex: string;
-  level: number;
-  indexInLevel: number;
-  baseX: number;
-  baseY: number;
+  readonly vertex: string;
+  readonly level: number;
+  readonly indexInLevel: number;
+  readonly baseX: number;
+  readonly baseY: number;
 }
 
 export interface LayoutedLeveledIssue extends SimulationNodeDatum {
-  issueKey: string;
-  issue: Issue | undefined;
-  level: number;
-  indexInLevel: number;
-  baseX: number;
-  baseY: number;
+  readonly issueKey: string;
+  readonly issue: Issue | undefined;
+  readonly subIssues: IssueKey[];
+  readonly level: number;
+  readonly indexInLevel: number;
+  readonly baseX: number;
+  readonly baseY: number;
   focusing?: "focused" | "unfocused" | "initial";
 }
 
@@ -36,8 +37,8 @@ export type LayoutedLeveledIssueUnit = {
 };
 
 export interface IssueLink {
-  source: LayoutedLeveledIssue;
-  target: LayoutedLeveledIssue;
+  readonly source: LayoutedLeveledIssue;
+  readonly target: LayoutedLeveledIssue;
   relatedFocusingIssue?: boolean;
 }
 

@@ -16,21 +16,21 @@ export interface Props extends BaseProps {
 }
 
 const Icons = {
-  "chevron-down": "before:[mask:url(/assets/svg/tablar-icons/chevron-down.svg)]",
-  "door-exit": "before:[mask:url(/assets/svg/tablar-icons/door-exit.svg)]",
-  "layout-2": "before:[mask:url(/assets/svg/tablar-icons/layout-2.svg)]",
-  "layout-distribute-horizontal": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-horizontal.svg)]",
-  "layout-distribute-vertical": "before:[mask:url(/assets/svg/tablar-icons/layout-distribute-vertical.svg)]",
-  refresh: "before:[mask:url(/assets/svg/tablar-icons/refresh.svg)]",
-  search: "before:[mask:url(/assets/svg/tablar-icons/search.svg)]",
-  settings: "before:[mask:url(/assets/svg/tablar-icons/settings.svg)]",
-  "square-check": "before:[mask:url(/assets/svg/tablar-icons/square-check.svg)]",
-  square: "before:[mask:url(/assets/svg/tablar-icons/square.svg)]",
-  "circle-x": "before:[mask:url(/assets/svg/tablar-icons/circle-x.svg)]",
-  "circle-check": "before:[mask:url(/assets/svg/tablar-icons/circle-check.svg)]",
-  x: "before:[mask:url(/assets/svg/tablar-icons/x.svg)]",
-  plus: "before:[mask:url(/assets/svg/tablar-icons/plus.svg)]",
-  "arrow-back": "before:[mask:url(/assets/svg/tablar-icons/arrow-back.svg)]",
+  "chevron-down": "before:[mask-image:url(/assets/svg/tablar-icons/chevron-down.svg)]",
+  "door-exit": "before:[mask-image:url(/assets/svg/tablar-icons/door-exit.svg)]",
+  "layout-2": "before:[mask-image:url(/assets/svg/tablar-icons/layout-2.svg)]",
+  "layout-distribute-horizontal": "before:[mask-image:url(/assets/svg/tablar-icons/layout-distribute-horizontal.svg)]",
+  "layout-distribute-vertical": "before:[mask-image:url(/assets/svg/tablar-icons/layout-distribute-vertical.svg)]",
+  refresh: "before:[mask-image:url(/assets/svg/tablar-icons/refresh.svg)]",
+  search: "before:[mask-image:url(/assets/svg/tablar-icons/search.svg)]",
+  settings: "before:[mask-image:url(/assets/svg/tablar-icons/settings.svg)]",
+  "square-check": "before:[mask-image:url(/assets/svg/tablar-icons/square-check.svg)]",
+  square: "before:[mask-image:url(/assets/svg/tablar-icons/square.svg)]",
+  "circle-x": "before:[mask-image:url(/assets/svg/tablar-icons/circle-x.svg)]",
+  "circle-check": "before:[mask-image:url(/assets/svg/tablar-icons/circle-check.svg)]",
+  x: "before:[mask-image:url(/assets/svg/tablar-icons/x.svg)]",
+  plus: "before:[mask-image:url(/assets/svg/tablar-icons/plus.svg)]",
+  "arrow-back": "before:[mask-image:url(/assets/svg/tablar-icons/arrow-back.svg)]",
 } as const;
 type Icons = keyof typeof Icons;
 
@@ -92,11 +92,7 @@ const Styles = {
     "items-center",
     "justify-center",
     "rounded",
-    "before:content-['']",
     "before:inline-block",
-    "before:flex-none",
-    "before:w-full",
-    "before:h-full",
     "before:transition-colors",
   ),
 

@@ -129,7 +129,7 @@ export const IssueSearcher: React.FC<Props> = (props) => {
             aria-disabled={status === "BeforePrepared"}
             onClick={handleOpenerClicked}
           >
-            <Icon type='search' color='complement' active={status === "Searching"} />
+            <Icon size='m' type='search' color='complement' active={status === "Searching"} />
           </button>
         </span>
         <span

@@ -1,5 +1,6 @@
 import { test, expect, describe } from "vitest";
 import {
+  expandIssue,
   searchIssue,
   submitProjectKey,
   submitProjectKeyFulfilled,
@@ -106,5 +107,28 @@ describe("queryIssueModels", () => {
     const ret = s.selectMatchedIssueModel()(store.getState());
 
     expect(ret).toEqual([{ key: issues[0].key, summary: issues[0].summary }]);
+  });
+});
+
+describe("select issue that is current projection target", () => {
+  test("return undefined when no projection target", () => {
+    const store = createPureStore();
+    store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
+
+    const ret = s.selectProjectionTargetIssue()(store.getState());
+
+    expect(ret).toBeUndefined();
+  });
+
+  test("return issue target projected", () => {
+    const issues = [randomIssue({ key: "key" })];
+    const store = createPureStore();
+
+    store.dispatch(synchronizeIssuesFulfilled(issues));
+    store.dispatch(expandIssue("key"));
+
+    const ret = s.selectProjectionTargetIssue()(store.getState());
+
+    expect(ret).toEqual(issues[0]);
   });
 });

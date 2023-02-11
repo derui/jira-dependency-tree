@@ -33,3 +33,14 @@ export const selectMatchedIssueModel = () =>
 
     return issues.map((issue) => issueToIssueModel(project, issue));
   });
+
+export const selectProjectionTargetIssue = () =>
+  createDraftSafeSelector(selectIssues, (state) => {
+    switch (state.projectionTarget.kind) {
+      case "InsideIssue":
+        const issueKey = state.projectionTarget.issueKey;
+        return state._originalIssues.find((issue) => issue.key === issueKey);
+      case "Root":
+        return undefined;
+    }
+  });

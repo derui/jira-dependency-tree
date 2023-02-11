@@ -156,14 +156,14 @@ const buildIssueNode = (container: IssueNode, project: Project, configuration: C
   // sub issue notification
   const subIssueNotification = node
     .append("svg:g")
-    .classed("hidden", (d) => d.subIssues.length === 0)
-    .attr("class", () => {
+    .attr("class", (d) => {
       return [
         "graph-issue__sub-issue-notification",
         "transition-fill",
         "fill-transparent",
         "hover:fill-secondary2-200",
         "cursor-pointer",
+        d.subIssues.length > 0 ? "" : "hidden",
       ].join(" ");
     })
     .attr("transform", `translate(${IssuePositions.SubIssueNotification.x}, ${IssuePositions.SubIssueNotification.y})`);

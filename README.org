@@ -15,6 +15,10 @@ This project provides web-app to display dependency tree of issues in JIRA with 
 - Search issue and view it in application
 - Edit relations of an issue
   - add/remove relation inward/outward of the issue
+- Expand/Narrow issue/subtasks
+  - Default graph doesn't display subtasks
+  - Display subtasks when notification of a parent issue clicked
+  - All operation targets are restricted in subtasks of parent issue
 
 ** Motivation
 We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.

@@ -1,7 +1,7 @@
 import type React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
-import { IssueGraphLayouter } from "./issue-graph-layouter";
+import { IssueGraphLayouter } from "../organisms/issue-graph-layouter";
 
 export type Props = BaseProps;
 

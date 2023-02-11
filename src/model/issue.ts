@@ -1,4 +1,4 @@
-import { IssueRelationExternalId, IssueRelationId, IssueStatusId, IssueTypeId } from "@/type";
+import { IssueKey, IssueRelationExternalId, IssueRelationId, IssueStatusId, IssueTypeId } from "@/type";
 
 export interface Relation {
   id: IssueRelationId;
@@ -12,7 +12,7 @@ export interface Relation {
 }
 
 export interface Issue {
-  key: string;
+  key: IssueKey;
   summary: string;
   description: string;
   statusId: IssueStatusId;
@@ -20,6 +20,7 @@ export interface Issue {
   selfUrl: string;
   relations: Relation[];
   parentIssue?: string;
+  subIssues: IssueKey[];
 }
 
 /**

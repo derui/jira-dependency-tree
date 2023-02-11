@@ -62,5 +62,6 @@ export const randomIssue = (issue: Partial<Issue> = {}): Issue => {
     statusId: issue.statusId ?? faker.datatype.uuid(),
     typeId: issue.typeId ?? faker.datatype.uuid(),
     parentIssue: issue.parentIssue,
+    subIssues: issue.subIssues ?? [],
   };
 };

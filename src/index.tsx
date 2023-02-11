@@ -11,7 +11,13 @@ import { createStore } from "./state/store";
 import { createDependencyRegistrar } from "./util/dependency-registrar";
 import { Dependencies } from "./dependencies";
 import { post, postJSON } from "./infrastructures/fetch";
-import { changeZoom, deselectIssueInGraph, restoreApiCredential, selectIssueInGraph } from "./state/actions";
+import {
+  changeZoom,
+  deselectIssueInGraph,
+  expandIssue,
+  restoreApiCredential,
+  selectIssueInGraph,
+} from "./state/actions";
 import { queryProject } from "./state/selectors/project";
 import { getGraphLayout } from "./state/selectors/graph-layout";
 import { queryIssues } from "./state/selectors/issues";
@@ -100,6 +106,9 @@ issueGraphSource.action$.subscribe((action) => {
     case "SelectIssue":
       store.dispatch(deselectIssueInGraph());
       store.dispatch(selectIssueInGraph(action.key));
+      break;
+    case "ExpandSelectedIssue":
+      store.dispatch(expandIssue(action.key));
       break;
   }
 });

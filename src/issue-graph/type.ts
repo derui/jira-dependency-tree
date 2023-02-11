@@ -2,6 +2,7 @@ import { BaseType, Selection, SimulationNodeDatum } from "d3";
 import { Issue } from "@/model/issue";
 import { IssueKey, Size } from "@/type";
 import { Rect } from "@/util/basic";
+import { IssueGraphAction } from "@/drivers/issue-graph";
 
 // The type of common node object in issue graph
 export type D3Node<T extends BaseType = BaseType, V = undefined> = Selection<T, V, null, undefined>;
@@ -42,6 +43,18 @@ export interface IssueLink {
   relatedFocusingIssue?: boolean;
 }
 
+type SelectIssueAction = {
+  kind: "SelectIssue";
+  key: string;
+};
+
+type ExpandSelectedIssueAction = {
+  kind: "ExpandSelectedIssue";
+  key: string;
+};
+
+export type IssueGraphAction = SelectIssueAction | ExpandSelectedIssueAction;
+
 export interface Configuration {
   nodeSize: Size;
 
@@ -49,7 +62,7 @@ export interface Configuration {
 
   graphLayout: GraphLayout;
 
-  onIssueClick: (key: string) => void;
+  dispatchAction: (action: IssueGraphAction) => void;
 }
 
 export const GraphLayout = Object.freeze({

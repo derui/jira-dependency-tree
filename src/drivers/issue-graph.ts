@@ -6,7 +6,7 @@ import { Project } from "@/model/project";
 import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Position, Size } from "@/type";
 import { filterNull, Rect } from "@/util/basic";
-import { GraphLayout } from "@/issue-graph/type";
+import { GraphLayout, IssueGraphAction } from "@/issue-graph/type";
 import { getTargetIssuePositionInSVG } from "@/issue-graph/issue";
 import { cubicBezier } from "@/util/bezier";
 import { GraphRestarter } from "@/issue-graph/force-graph";
@@ -17,13 +17,6 @@ type AttentionIssueCommand = {
 };
 
 export type IssueGraphCommand = AttentionIssueCommand;
-
-type SelectIssueAction = {
-  kind: "SelectIssue";
-  key: string;
-};
-
-export type IssueGraphAction = SelectIssueAction;
 
 interface IssueGraphState {
   pan: Position;
@@ -213,8 +206,8 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       restarter(issues, {
         ...configuration,
         graphLayout,
-        onIssueClick(key) {
-          actionStream.next({ kind: "SelectIssue", key });
+        dispatchAction(action) {
+          actionStream.next(action);
         },
       });
     };
@@ -225,8 +218,8 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
           const [_svg, _restarter] = makeIssueGraphRoot(issues, project, {
             ...configuration,
             graphLayout,
-            onIssueClick(key) {
-              actionStream.next({ kind: "SelectIssue", key });
+            dispatchAction(action) {
+              actionStream.next(action);
             },
           });
           svg = _svg;

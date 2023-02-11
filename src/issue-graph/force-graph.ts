@@ -352,9 +352,19 @@ export const makeForceGraph = (
 
     issueNode.on("click", (event, d) => {
       event.preventDefault();
+      event.stopPropagation();
 
-      configuration.onIssueClick(d.issueKey);
+      configuration.dispatchAction({ kind: "SelectIssue", key: d.issueKey });
     });
+
+    issueNode
+      .selectAll<d3.BaseType, LayoutedLeveledIssue>(".graph-issue__sub-issue-notification")
+      .on("click", (event, d) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        configuration.dispatchAction({ kind: "ExpandSelectedIssue", key: d.issueKey });
+      });
 
     // update links are related clicked issue
     issueNode

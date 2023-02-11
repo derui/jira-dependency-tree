@@ -1,9 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import { Icon } from "../atoms/icon";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { Dialog } from "../atoms/dialog";
 import { GraphLayout } from "@/issue-graph/type";
 import { getGraphLayout } from "@/state/selectors/graph-layout";
 import { changeToHorizontalLayout, changeToVerticalLayout } from "@/state/actions";
@@ -11,19 +10,7 @@ import { changeToHorizontalLayout, changeToVerticalLayout } from "@/state/action
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes(
-    "absolute",
-    "flex",
-    "left-4",
-    "top-half",
-    "bg-white",
-    "rounded",
-    "list-none",
-    "top-1/2",
-    "shadow-md",
-    "z-10",
-  ),
-  graphLayout: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-3", "rounded"),
+  graphLayout: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-2"),
   graphLayouter: (opened: boolean) => {
     return {
       ...classes(
@@ -38,12 +25,13 @@ const Styles = {
         "shadow-lg",
         "transition-opacity",
         "opacity-0",
+        "px-1",
       ),
       ...(opened ? classes("opacity-100", "visible") : {}),
       ...(!opened ? classes("invisible") : {}),
     };
   },
-  iconButton: classes("flex-none", "bg-white", "p-3", "cursor-pointer", "rounded"),
+  iconButton: classes("flex-none", "bg-white", "p-2", "cursor-pointer", "rounded"),
 };
 
 export const IssueGraphLayouter: React.FC<Props> = (props) => {

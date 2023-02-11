@@ -9,19 +9,7 @@ import { narrowExpandedIssue } from "@/state/actions";
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes(
-    "absolute",
-    "flex",
-    "left-4",
-    "top-half",
-    "bg-white",
-    "rounded",
-    "list-none",
-    "top-1/2",
-    "shadow-md",
-    "z-10",
-  ),
-  unroller: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-3", "rounded"),
+  unroller: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-2"),
 };
 
 export const GraphUnroller: React.FC<Props> = (props) => {
@@ -45,6 +33,7 @@ export const GraphUnroller: React.FC<Props> = (props) => {
         size='m'
         color='secondary1'
         active={projectionTarget !== undefined}
+        disabled={projectionTarget === undefined}
         testid={gen("icon")}
       ></Icon>
     </li>

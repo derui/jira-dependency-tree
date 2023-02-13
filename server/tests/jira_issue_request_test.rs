@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
@@ -6,6 +6,7 @@ use jira_issue_loader::{
     jira_url::{JiraAuhtorization, JiraUrl},
     IssueLoadingRequest, IssueSearchCondition,
 };
+use serde_json::json;
 
 struct TestRequest<'a> {
     server: &'a MockServer,
@@ -288,4 +289,59 @@ fn request_to_search_with_epic() {
 
     // verify
     mock.assert();
+}
+
+#[test]
+fn request_recursive() {
+    // arrange
+    let server = httpmock::MockServer::start();
+    let mock = server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .json_body_partial("{\"startAt\": 0}");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("fixtures/issue.json"));
+    });
+
+    server.mock(|when, then| {
+        when.method(Method::POST)
+            .path("/rest/api/3/search")
+            .header("content-type", "application/json")
+            .header("authorization", "foo")
+            .json_body_partial("{\"startAt\": 50}");
+
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(include_str!("fixtures/issue_one.json"));
+    });
+
+    // do
+    let url = TestRequest { server: &server };
+    let request = IssueLoadingRequest {
+        authorization: JiraAuhtorization {
+            email: "email".to_string(),
+            jira_token: "token".to_string(),
+            user_domain: "domain".to_string(),
+        },
+        project: "project".to_string(),
+        condition: Some(Default::default()),
+    };
+    let ret = load_issue(&request, url);
+    let keys = ret
+        .into_iter()
+        .map(|v| v.key.clone())
+        .collect::<HashSet<String>>();
+    let expected = (0..51)
+        .into_iter()
+        .map(|v| format!("test{}", v))
+        .collect::<HashSet<String>>();
+
+    // verify
+    mock.assert();
+    assert_eq!(keys.len(), 51);
+    assert_eq!(keys.difference(&expected).count(), 0);
 }

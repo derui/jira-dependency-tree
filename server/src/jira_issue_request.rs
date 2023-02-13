@@ -203,11 +203,13 @@ where
                     (*callback)(v);
                 });
 
-                if total_size <= current_total || total_size <= 50 {
-                    break;
-                }
+                let new_total = current_total + got_issues.len();
 
-                total = Some(current_total + got_issues.len());
+                if total_size <= new_total {
+                    total = None;
+                } else {
+                    total = Some(new_total);
+                }
             }
         }
     }
@@ -235,13 +237,13 @@ pub fn load_issue(request: &IssueLoadingRequest, url: impl JiraUrl) -> Vec<JiraI
     load_issue_recursive(&jql, &url, &mut callback).unwrap_or(());
 
     let binding = HashSet::from_iter(loaded_issues.keys().into_iter().map(|v| v.to_string()));
-    let not_full_loaded_keys = issue_keys.difference(&binding);
-    let keys = not_full_loaded_keys
+    let not_full_loaded_keys = issue_keys
+        .difference(&binding)
         .map(|v| v.to_string())
         .collect::<Vec<String>>();
 
-    if !keys.is_empty() {
-        let jql = format!("key IN ({})", keys.join(","));
+    if !not_full_loaded_keys.is_empty() {
+        let jql = format!("key IN ({})", not_full_loaded_keys.join(","));
 
         // load issues do not fully-loaded
         // re-define to avoid borrow-checker

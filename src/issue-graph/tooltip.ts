@@ -14,19 +14,22 @@ const commonClasses = [
   "whitespace-wrap",
   "text-sm",
   "p-2",
-  "max-w-xs",
+  "w-60",
 ];
 
 export const buildTooltip = (): { show: Visible; hide: Invisible } => {
-  const tooltip = d3.select("body").append("div").attr("class", "issue-summary-tooltip absolute invisible");
+  const tooltip = d3.select("#dialog-root").append("div").attr("class", "issue-summary-tooltip absolute invisible");
   let timer: NodeJS.Timeout | undefined = undefined;
 
   return {
     show: (element, issue) => {
       const rect = element.getBoundingClientRect();
-
       if (timer) {
         clearTimeout(timer);
+      }
+
+      if (!issue?.summary) {
+        return;
       }
 
       timer = setTimeout(() => {

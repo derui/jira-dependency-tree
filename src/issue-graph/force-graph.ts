@@ -350,17 +350,9 @@ export const makeForceGraph = (
 
     issueNode = issueNodeRestarter(leveledIssues);
 
-    issueNode.on("click", (event, d) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      configuration.dispatchAction({ kind: "SelectIssue", key: d.issueKey });
-    });
-
     issueNode
       .selectAll<d3.BaseType, LayoutedLeveledIssue>(".graph-issue__sub-issue-notification")
       .on("click", (event, d) => {
-        event.preventDefault();
         event.stopPropagation();
 
         configuration.dispatchAction({ kind: "ExpandSelectedIssue", key: d.issueKey });
@@ -368,9 +360,12 @@ export const makeForceGraph = (
 
     // update links are related clicked issue
     issueNode
-      .on("mouseenter", (event, d) => {
-        event.preventDefault();
+      .on("click", (event, d) => {
+        event.stopPropagation();
 
+        configuration.dispatchAction({ kind: "SelectIssue", key: d.issueKey });
+      })
+      .on("mouseenter", (event, d) => {
         focusingANode = true;
         const focusedIssues = new Set<string>([d.issueKey]);
 
@@ -397,12 +392,9 @@ export const makeForceGraph = (
         restart();
       })
       // reset focusing when click root canvas
-      .on("mouseleave", (event) => {
-        event.preventDefault();
-
+      .on("mouseleave", () => {
         if (doNotPreventFocusingANode === "shouldPrevent") {
           doNotPreventFocusingANode = "notDragging";
-          return;
         }
 
         focusingANode = false;

@@ -45,7 +45,6 @@ export const buildTooltip = (): { show: Visible; hide: Invisible } => {
       if (timer) {
         clearTimeout(timer);
         timer = undefined;
-        return;
       }
 
       tooltip.attr("class", () => {

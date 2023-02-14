@@ -108,9 +108,17 @@ fn load_issue_types(
         .unwrap_or_default())
 }
 
-fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>, Box<dyn Error>> {
+fn load_statuses_paginate(
+    project_id: u64,
+    url: &impl JiraUrl,
+    start_at: usize,
+    fetch_size: usize,
+) -> Result<(Vec<JiraStatus>, usize), Box<dyn Error>> {
     let mut body = build_partial_request(
-        &format!("/rest/api/3/statuses/search?projectId={}", project_id),
+        &format!(
+            "/rest/api/3/statuses/search?projectId={}&startAt={}&maxResults={}",
+            project_id, start_at, fetch_size
+        ),
         url,
     )
     .body(())?
@@ -119,7 +127,7 @@ fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>,
     let json: Value = body.json()?;
     let values = &json["values"];
 
-    Ok(values
+    let statuses = values
         .as_array()
         .map(|vec| {
             vec.iter()
@@ -135,7 +143,33 @@ fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>,
                 })
                 .collect()
         })
-        .unwrap_or_default())
+        .unwrap_or_default();
+
+    let result = json["maxResults"]
+        .as_i64()
+        .map(|v| v as usize)
+        .unwrap_or_default();
+
+    Ok((statuses, result))
+}
+
+fn load_statuses(project_id: u64, url: &impl JiraUrl) -> Result<Vec<JiraStatus>, Box<dyn Error>> {
+    const FETCH_SIZE: usize = 200;
+    let mut ret: Vec<JiraStatus> = vec![];
+    let mut loaded_size = Some(0);
+
+    while let Some(size) = loaded_size {
+        let (mut statuses, result) = load_statuses_paginate(project_id, url, size, FETCH_SIZE)?;
+        ret.append(&mut statuses);
+
+        if (ret.len() as i64) - (result as i64) >= 0 {
+            loaded_size = None
+        } else {
+            loaded_size = Some(ret.len());
+        }
+    }
+
+    Ok(ret)
 }
 
 // load all issues from Jira API

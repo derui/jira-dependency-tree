@@ -6,7 +6,6 @@ use jira_issue_loader::{
     jira_url::{JiraAuhtorization, JiraUrl},
     IssueLoadingRequest, IssueSearchCondition,
 };
-use serde_json::json;
 
 struct TestRequest<'a> {
     server: &'a MockServer,

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
-import { Icon } from "../atoms/icon";
-import { Input } from "../atoms/input";
 import { useAppDispatch, useAppSelector } from "../hooks";
+import { Dialog } from "../atoms/dialog";
+import { ProjectInformationEditor } from "../molecules/project-information-editor";
 import { queryProject } from "@/state/selectors/project";
 import { Loading } from "@/type";
 import { submitProjectKey } from "@/state/actions";
@@ -65,15 +65,6 @@ const Styles = {
     };
   },
   skeleton: classes("bg-lightgray", "rounded", "h-8", "py-2", "px-2", "w-full"),
-  // editor styles
-  keyEditor: (editing: boolean) => {
-    return {
-      ...classes("bg-white", "flex", "flex-col", "mx-3"),
-      ...(!editing ? classes("hidden") : {}),
-    };
-  },
-  keyEditorButtonGroup: classes("bg-white", "flex", "justify-end", "mt-2"),
-  keyEditorButton: classes("first:ml-0", "last:mr-0", "mx-2", "cursor-pointer"),
 };
 
 export const ProjectInformation: React.FC<Props> = (props) => {
@@ -82,22 +73,24 @@ export const ProjectInformation: React.FC<Props> = (props) => {
   const [key, setKey] = useState("");
   const [_loading, project] = useAppSelector(queryProject());
   const dispatch = useAppDispatch();
+  const ref = useRef<HTMLDivElement | null>(null);
   const loading = _loading === Loading.Loading;
 
-  const handleCancelClick = () => {
+  const handleSubmit = (payload: { projectKey: string } | undefined) => {
     setOpened(false);
-    setKey("");
-  };
 
-  const handleSubmit = () => {
-    setOpened(false);
-    dispatch(submitProjectKey(key));
+    if (!payload) {
+      setKey("");
+      return;
+    }
+
+    dispatch(submitProjectKey(payload.projectKey));
   };
 
   const showMarker = Boolean(!project && !opened && !loading);
 
   return (
-    <div className={classNames(Styles.root(opened))} data-testid={gen("main")}>
+    <div ref={ref} className={classNames(Styles.root(opened))} data-testid={gen("main")}>
       <span className={classNames(Styles.marker(showMarker))} aria-hidden={!showMarker} data-testid={gen("marker")}>
         <span className={classNames(Styles.markerPing)}></span>
         <span className={classNames(Styles.markerInner)}></span>
@@ -105,34 +98,22 @@ export const ProjectInformation: React.FC<Props> = (props) => {
       <span
         className={classNames(Styles.name(opened, !project, loading))}
         data-testid={gen("name")}
-        onClick={() => setOpened(true)}
+        onClick={() => setOpened(!opened)}
       >
         {project?.name ?? "Click here"}
       </span>
       <span className={classNames(Styles.skeletonRoot(loading))} data-testid={gen("skeleton")}>
         <span className={classNames(Styles.skeleton)}></span>
       </span>
-      <div className={classNames(Styles.keyEditor(opened))} aria-hidden={!opened} data-testid={gen("nameEditor")}>
-        <Input focus={true} value={key} placeholder='Project Key' testid={gen("key")} onInput={(v) => setKey(v)} />
-        <span className={classNames(Styles.keyEditorButtonGroup)}>
-          <span
-            role='button'
-            className={classNames(Styles.keyEditorButton)}
-            onClick={handleCancelClick}
-            data-testid={gen("cancel")}
-          >
-            <Icon type='circle-x' color='gray' size='m' />
-          </span>
-          <span
-            role='button'
-            className={classNames(Styles.keyEditorButton)}
-            onClick={handleSubmit}
-            data-testid={gen("submit")}
-          >
-            <Icon type='circle-check' size='m' color='complement' />
-          </span>
-        </span>
-      </div>
+      <Dialog
+        opened={opened}
+        aligned='bottomLeft'
+        parentRect={ref.current?.getBoundingClientRect()}
+        margin='left-top'
+        testid={gen("container")}
+      >
+        <ProjectInformationEditor testid={gen("form")} initialPayload={{ projectKey: key }} onEndEdit={handleSubmit} />
+      </Dialog>
     </div>
   );
 };

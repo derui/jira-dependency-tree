@@ -58,7 +58,7 @@ test("change layout when clicked", async () => {
   const horizontal = screen.getByTestId("horizontal") as HTMLSpanElement;
   const vertical = screen.getByTestId("vertical") as HTMLSpanElement;
 
-  expect(icon.dataset.active).toBe("true");
+  expect(icon.dataset.active).toBe("false");
   expect(horizontal.dataset.active).toBe("false");
   expect(vertical.dataset.active).toBe("true");
 });

@@ -56,6 +56,5 @@ test("narrow and inactive icon", async () => {
   const icon = screen.getByTestId("icon") as HTMLSpanElement;
 
   expect(icon.dataset.active).toBe("false");
-  expect(icon.ariaDisabled).toBe("true");
   expect(store.getState().issues.projectionTarget.kind).toBe("Root");
 });

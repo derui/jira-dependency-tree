@@ -11,22 +11,16 @@ import { submitProjectKey } from "@/state/actions";
 export type Props = BaseProps;
 
 const Styles = {
-  root: (editing: boolean) => {
-    return {
-      ...classes(
-        "relative",
-        "flex",
-        "flex-auto",
-        "h-12",
-        "items-center",
-        "transition-all",
-        "border-b",
-        "border-b-transparent",
-      ),
-      ...(!editing ? classes("hover:border-secondary1-400") : {}),
-      ...(editing ? classes("h-24") : {}),
-    };
-  },
+  root: classes(
+    "relative",
+    "flex",
+    "flex-auto",
+    "h-12",
+    "items-center",
+    "transition-all",
+    "border-b",
+    "border-b-transparent",
+  ),
   marker: (show: boolean) => {
     return {
       ...classes("flex", "w-2", "h-2", "left-0", "top-2", "absolute"),
@@ -36,7 +30,7 @@ const Styles = {
   },
   markerPing: classes("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
   markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
-  name: (editing: boolean, needEditing: boolean, loading: boolean) => {
+  name: (needEditing: boolean, loading: boolean) => {
     return {
       ...classes(
         "w-full",
@@ -54,7 +48,7 @@ const Styles = {
       ),
       ...(!needEditing ? classes("text-secondary2-400", "hover:text-secondary2-400") : {}),
       ...(needEditing ? classes("text-gray", "hover:text-darkgray") : {}),
-      ...(editing || loading ? classes("hidden") : {}),
+      hidden: loading,
     };
   },
   // skeleton styles
@@ -90,13 +84,13 @@ export const ProjectInformation: React.FC<Props> = (props) => {
   const showMarker = Boolean(!project && !opened && !loading);
 
   return (
-    <div ref={ref} className={classNames(Styles.root(opened))} data-testid={gen("main")}>
+    <div ref={ref} className={classNames(Styles.root)} data-testid={gen("main")}>
       <span className={classNames(Styles.marker(showMarker))} aria-hidden={!showMarker} data-testid={gen("marker")}>
         <span className={classNames(Styles.markerPing)}></span>
         <span className={classNames(Styles.markerInner)}></span>
       </span>
       <span
-        className={classNames(Styles.name(opened, !project, loading))}
+        className={classNames(Styles.name(!project, loading))}
         data-testid={gen("name")}
         onClick={() => setOpened(!opened)}
       >
@@ -109,7 +103,7 @@ export const ProjectInformation: React.FC<Props> = (props) => {
         opened={opened}
         aligned='bottomLeft'
         parentRect={ref.current?.getBoundingClientRect()}
-        margin='left-top'
+        margin='top'
         testid={gen("container")}
       >
         <ProjectInformationEditor testid={gen("form")} initialPayload={{ projectKey: key }} onEndEdit={handleSubmit} />

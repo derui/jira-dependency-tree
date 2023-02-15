@@ -13,7 +13,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  form: classes("flex", "flex-col", "pb-0", "pt-4"),
+  form: classes("flex", "flex-col", "pb-0", "pt-4", "pl-2", "pr-2", "pb-4"),
 
   // editor styles
   keyEditorButtonGroup: classes("bg-white", "flex", "justify-end", "mt-2"),
@@ -46,7 +46,7 @@ export const ProjectInformationEditor: React.FC<Props> = ({ initialPayload, onEn
   };
 
   return (
-    <form className={classNames(Styles.form)} method='dialog' data-testid={gen("dialog")} onSubmit={handleSubmit}>
+    <form className={classNames(Styles.form)} method='dialog' data-testid={gen("main")} onSubmit={handleSubmit}>
       <Input
         focus={true}
         value={obj.projectKey || ""}

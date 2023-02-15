@@ -19,8 +19,8 @@ describe("load issues", () => {
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key").type("KEY");
-    cy.testid("project-information/submit").click();
+    cy.testid("project-information/form/key").type("KEY");
+    cy.testid("project-information/form/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term
@@ -50,8 +50,8 @@ describe("load issues", () => {
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key").type("KEY");
-    cy.testid("project-information/submit").click();
+    cy.testid("project-information/form/key").type("KEY");
+    cy.testid("project-information/form/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term
@@ -82,8 +82,8 @@ describe("load issues", () => {
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key").type("KEY");
-    cy.testid("project-information/submit").click();
+    cy.testid("project-information/form/key").type("KEY");
+    cy.testid("project-information/form/submit").click();
     cy.testid("sync-issue-button/root").click();
 
     // open and input issue searching term

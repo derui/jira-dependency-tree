@@ -6,15 +6,15 @@ describe("project-information", () => {
 
     // open editor
     cy.testid("project-information/name").click();
-    cy.testid("project-information/nameEditor").should("have.attr", "aria-hidden", "false");
+    cy.testid("project-information/container/dialog").should("have.attr", "aria-hidden", "false");
 
     // assert input
-    cy.testid("project-information/key").should("have.attr", "placeholder").and("include", "Project Key");
-    cy.testid("project-information/key").type("KEY").should("have.value", "KEY");
-    cy.testid("project-information/cancel").click();
+    cy.testid("project-information/form/key").should("have.attr", "placeholder").and("include", "Project Key");
+    cy.testid("project-information/form/key").type("KEY").should("have.value", "KEY");
+    cy.testid("project-information/form/cancel").click();
 
     // Apply and check after.
-    cy.testid("project-information/nameEditor").should("have.attr", "aria-hidden", "true");
+    cy.testid("project-information/container/dialog").should("have.attr", "aria-hidden", "true");
     cy.testid("project-information/name").should("contain.text", "Click here");
     cy.testid("project-information/marker").should("be.visible");
 
@@ -40,8 +40,8 @@ describe("project-information", () => {
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key").type("KEY");
-    cy.testid("project-information/submit").click();
+    cy.testid("project-information/form/key").type("KEY");
+    cy.testid("project-information/form/submit").click();
 
     // load project and issues
     cy.testid("project-information/name").should("contain", "Testing Project");
@@ -62,8 +62,8 @@ describe("project-information", () => {
 
     // input project name
     cy.testid("project-information/name").click();
-    cy.testid("project-information/key").type("KEY");
-    cy.testid("project-information/submit").click();
+    cy.testid("project-information/form/key").type("KEY");
+    cy.testid("project-information/form/submit").click();
 
     // load project and issues
     cy.testid("project-information/skeleton").should("be.visible");

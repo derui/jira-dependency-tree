@@ -7,7 +7,7 @@ describe("open", () => {
     cy.testid("user-configuration/marker").should("have.attr", "aria-hidden", "false");
     cy.testid("project-information/marker").should("have.attr", "aria-hidden", "false");
     cy.testid("project-information/main").and("contain.text", "Click here");
-    cy.testid("project-information/nameEditor").should("not.have.class", "--opened");
+    cy.testid("project-information/container/dialog").should("not.be.visible");
     cy.testid("zoom-slider/current-zoom").should("contain.text", "100%");
     cy.testid("project-sync-option-editor/opener")
       .should("contain.text", "Current Sprint")

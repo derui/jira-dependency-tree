@@ -7,8 +7,8 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classes("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white", "z-10"),
-  currentZoom: classes("inline-block", "text-center"),
+  root: classes("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white", "z-10", "w-20", "text-center"),
+  currentZoom: classes("inline-block", "text-center", "w-full"),
 };
 
 export const ZoomSlider: React.FC<Props> = ({ zoom, testid }) => {

@@ -49,6 +49,7 @@ const Styles = {
 
     return {
       ...base,
+      invisible: !opened,
       "w-0": !opened,
       "w-96": opened,
       "right-3": aligned === "bottomRight",

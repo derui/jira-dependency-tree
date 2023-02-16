@@ -48,7 +48,7 @@ const upsertIssueNode = (
   const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
 
   const node = container
-    .selectAll<BaseType, LayoutedLeveledIssue>("g")
+    .selectAll<BaseType, LayoutedLeveledIssue>("g.graph-issue")
     .data(data, (d) => d.issueKey)
     .join(
       (enter) => {
@@ -82,6 +82,7 @@ const upsertIssueNode = (
           })
           .attr("rx", 4.0)
           .attr("ry", 4.0);
+
         // issue key
         root
           .append("text")
@@ -89,6 +90,8 @@ const upsertIssueNode = (
           .attr("y", IssueSizes.paddingY)
           .attr("x", IssueSizes.paddingX)
           .text((d) => d.issueKey);
+
+        // issue image link
         root
           .append("svg:image")
           .attr("class", (d) => {
@@ -128,6 +131,7 @@ const upsertIssueNode = (
 
             return "";
           });
+
         // issue status
         root
           .append("text")
@@ -160,9 +164,10 @@ const upsertIssueNode = (
             const status = project.statuses[d.issue.statusId];
             return status?.name ?? "";
           });
-        // usb issue notification
-        const notification = root.append("g");
-        notification
+
+        // sub issue notification
+        const notification = root
+          .append("svg:g")
           .attr("class", (d) => {
             return [
               "graph-issue__sub-issue-notification",
@@ -173,10 +178,13 @@ const upsertIssueNode = (
               d.subIssues.length > 0 ? "" : "hidden",
             ].join(" ");
           })
+          .attr("x", IssuePositions.SubIssueNotification.x)
+          .attr("y", IssuePositions.SubIssueNotification.y)
           .attr(
             "transform",
             `translate(${IssuePositions.SubIssueNotification.x}, ${IssuePositions.SubIssueNotification.y})`,
           );
+
         const path = `
 M 0,0
 h${configuration.nodeSize.width}
@@ -253,6 +261,9 @@ z
 
         return update;
       },
+      (exit) => {
+        exit.remove();
+      },
     );
 
   return node;
@@ -264,15 +275,15 @@ export const buildIssueGraph = (
   configuration: Configuration,
 ): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
   const issueNodeContainer = container.append("svg:g");
-  let issueNode = issueNodeContainer.selectAll<d3.BaseType, LayoutedLeveledIssue>("g");
+  const issueNode = issueNodeContainer.selectAll<d3.BaseType, LayoutedLeveledIssue>("g.graph-issue");
 
   return [
     issueNode,
     (data) => {
       // update existing issues
-      issueNode = upsertIssueNode(issueNodeContainer, project, configuration, data);
+      upsertIssueNode(issueNodeContainer, project, configuration, data);
 
-      return issueNodeContainer.selectAll("g");
+      return issueNodeContainer.selectAll("g.graph-issue");
     },
   ];
 };

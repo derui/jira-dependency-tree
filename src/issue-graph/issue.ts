@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { BaseType } from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Project } from "@/model/project";
 import { Position, StatusCategory } from "@/type";
@@ -37,172 +38,224 @@ const IssuePositions = {
   },
 } as const;
 
-const buildIssueNode = (container: IssueNode, project: Project, configuration: Configuration) => {
+const upsertIssueNode = (
+  container: IssueNode,
+  project: Project,
+  configuration: Configuration,
+  data: LayoutedLeveledIssue[],
+) => {
   const measure = makeTextMeasure('13.5px "Noto Sans JP"');
+  const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
 
   const node = container
-    .enter()
-    .append("svg:g")
-    .attr("data-issue-key", (d) => d.issueKey)
-    .classed("graph-issue", () => true)
-    .classed("transition-opacity", () => true);
+    .selectAll<BaseType, LayoutedLeveledIssue>("g")
+    .data(data, (d) => d.issueKey)
+    .join(
+      (enter) => {
+        const root = enter.append("svg:g");
+        root
+          .attr("data-issue-key", (d) => d.issueKey)
+          .classed("graph-issue", () => true)
+          .classed("opacity-30", (d) => d.focusing === "unfocused")
+          .classed("transition-opacity", () => true);
 
-  node
-    .append("rect")
-    .attr("class", (d) => {
-      const classes = ["stroke-secondary1-400", "fill-white", "transition-stroke", "hover:stroke-secondary1-500"];
+        // outer border of issue
+        root
+          .append("rect")
+          .attr("class", (d) => {
+            const classes = ["stroke-secondary1-400", "fill-white", "transition-stroke", "hover:stroke-secondary1-500"];
 
-      if (!d.issue) {
-        classes.push("stroke-primary-400");
-      }
+            if (!d.issue) {
+              classes.push("stroke-primary-400");
+            }
 
-      return classes.join(" ");
-    })
-    .attr("stroke-size", 1)
-    .attr("width", configuration.nodeSize.width)
-    .attr("height", (d) => {
-      if (d.subIssues.length > 0) {
-        return configuration.nodeSize.height + IssueSizes.subIssueNotificationHeight;
-      }
+            return classes.join(" ");
+          })
+          .attr("stroke-size", 1)
+          .attr("width", configuration.nodeSize.width)
+          .attr("height", (d) => {
+            if (d.subIssues.length > 0) {
+              return configuration.nodeSize.height + IssueSizes.subIssueNotificationHeight;
+            }
 
-      return configuration.nodeSize.height;
-    })
-    .attr("rx", 4.0)
-    .attr("ry", 4.0);
+            return configuration.nodeSize.height;
+          })
+          .attr("rx", 4.0)
+          .attr("ry", 4.0);
+        // issue key
+        root
+          .append("text")
+          .attr("class", "issue-key fill-secondary1-500")
+          .attr("y", IssueSizes.paddingY)
+          .attr("x", IssueSizes.paddingX)
+          .text((d) => d.issueKey);
+        root
+          .append("svg:image")
+          .attr("class", (d) => {
+            const classes = ["cursor-pointer"];
 
-  // issue key
-  node
-    .append("text")
-    .attr("class", "issue-key fill-secondary1-500")
-    .attr("y", IssueSizes.paddingY)
-    .attr("x", IssueSizes.paddingX)
-    .text((d) => d.issueKey);
+            if (!d.issue) {
+              classes.push("hidden");
+            }
 
-  // issue link
-  node
-    .append("svg:image")
-    .attr("class", (d) => {
-      const classes = ["cursor-pointer"];
+            return classes.join(" ");
+          })
+          .attr("y", IssueSizes.paddingY * 2)
+          .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
+          .attr("width", IssueSizes.iconSize)
+          .attr("height", IssueSizes.iconSize)
+          .attr("xlink:href", "/assets/svg/tablar-icons/door-exit.svg")
+          .on("click", (e, d) => {
+            if (d.issue) {
+              e.preventDefault();
+              e.stopPropagation();
 
-      if (!d.issue) {
-        classes.push("hidden");
-      }
+              const url = new URL(d.issue.selfUrl);
+              window.open(`${url.origin}/browse/${d.issueKey}`, "_blank");
+            }
+          });
 
-      return classes.join(" ");
-    })
-    .attr("y", IssueSizes.paddingY * 2)
-    .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
-    .attr("width", IssueSizes.iconSize)
-    .attr("height", IssueSizes.iconSize)
-    .attr("xlink:href", "/assets/svg/tablar-icons/door-exit.svg")
-    .on("click", (e, d) => {
-      if (d.issue) {
-        e.preventDefault();
-        e.stopPropagation();
+        // issue summary
+        root
+          .append("text")
+          .attr("class", "issue-summary fill-secondary1-500")
+          .attr("y", IssueSizes.paddingY + IssueSizes.textHeight)
+          .attr("x", IssueSizes.paddingX)
+          .text((d) => {
+            if (d.issue) {
+              return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
+            }
 
-        const url = new URL(d.issue.selfUrl);
-        window.open(`${url.origin}/browse/${d.issueKey}`, "_blank");
-      }
-    });
+            return "";
+          });
+        // issue status
+        root
+          .append("text")
+          .attr("class", "issue-node__status p-1")
+          .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
+          .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
+          .attr("filter", (d) => {
+            if (!d.issue) return null;
 
-  // issue summary
-  const issueWidth = configuration.nodeSize.width - IssueSizes.paddingX * 2;
-  node
-    .append("text")
-    .attr("class", "issue-summary fill-secondary1-500")
-    .attr("y", IssueSizes.paddingY + IssueSizes.textHeight)
-    .attr("x", IssueSizes.paddingX)
-    .text((d) => {
-      if (d.issue) {
-        return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
-      }
+            const status = project.statuses[d.issue.statusId];
+            switch (status?.statusCategory) {
+              case StatusCategory.TODO:
+                return "url(#todo-bg)";
+              case StatusCategory.IN_PROGRESS:
+                // secondary-1-1
+                return "url(#in-progress-bg)";
+              case StatusCategory.DONE:
+                return "url(#done-bg)";
+              default:
+                break;
+            }
 
-      return "";
-    });
+            return null;
+          })
+          .text((d) => {
+            if (!d.issue) {
+              return "";
+            }
 
-  // issue status
-  node
-    .append("text")
-    .attr("class", "issue-node__status p-1")
-    .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
-    .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
-    .attr("filter", (d) => {
-      if (!d.issue) return null;
-
-      const status = project.statuses[d.issue.statusId];
-      switch (status?.statusCategory) {
-        case StatusCategory.TODO:
-          return "url(#todo-bg)";
-        case StatusCategory.IN_PROGRESS:
-          // secondary-1-1
-          return "url(#in-progress-bg)";
-        case StatusCategory.DONE:
-          return "url(#done-bg)";
-        default:
-          break;
-      }
-
-      return null;
-    })
-    .text((d) => {
-      if (!d.issue) {
-        return "";
-      }
-
-      const status = project.statuses[d.issue.statusId];
-      return status?.name ?? "";
-    });
-
-  // sub issue notification
-  const subIssueNotification = node
-    .append("svg:g")
-    .attr("class", (d) => {
-      return [
-        "graph-issue__sub-issue-notification",
-        "transition-fill",
-        "fill-transparent",
-        "hover:fill-secondary2-200",
-        "cursor-pointer",
-        d.subIssues.length > 0 ? "" : "hidden",
-      ].join(" ");
-    })
-    .attr("transform", `translate(${IssuePositions.SubIssueNotification.x}, ${IssuePositions.SubIssueNotification.y})`);
-
-  const path = `
+            const status = project.statuses[d.issue.statusId];
+            return status?.name ?? "";
+          });
+        // usb issue notification
+        const notification = root.append("g");
+        notification
+          .attr("class", (d) => {
+            return [
+              "graph-issue__sub-issue-notification",
+              "transition-fill",
+              "fill-transparent",
+              "hover:fill-secondary2-200",
+              "cursor-pointer",
+              d.subIssues.length > 0 ? "" : "hidden",
+            ].join(" ");
+          })
+          .attr(
+            "transform",
+            `translate(${IssuePositions.SubIssueNotification.x}, ${IssuePositions.SubIssueNotification.y})`,
+          );
+        const path = `
 M 0,0
 h${configuration.nodeSize.width}
 z
 `;
 
-  subIssueNotification
-    .append("path")
-    .classed("stroke-secondary1-300", (d) => d.subIssues.length > 0)
-    .attr("d", path);
+        notification
+          .append("path")
+          .classed("stroke-secondary1-300", (d) => d.subIssues.length > 0)
+          .attr("d", path);
 
-  subIssueNotification
-    .append("rect")
-    .attr("class", "stroke-transparent")
-    .attr("height", IssueSizes.subIssueHighlightHeight)
-    .attr("width", configuration.nodeSize.width - IssueSizes.paddingX * 2)
-    .attr("x", IssueSizes.paddingX)
-    .attr("y", IssueSizes.paddingY);
+        notification
+          .append("rect")
+          .attr("class", "stroke-transparent")
+          .attr("height", IssueSizes.subIssueHighlightHeight)
+          .attr("width", configuration.nodeSize.width - IssueSizes.paddingX * 2)
+          .attr("x", IssueSizes.paddingX)
+          .attr("y", IssueSizes.paddingY);
 
-  subIssueNotification
-    .append("text")
-    .attr("class", "fill-secondary1-500")
-    .attr("text-anchor", "middle")
-    .attr("width", configuration.nodeSize.width - 2)
-    .attr("x", (configuration.nodeSize.width - 2) / 2)
-    .attr("y", IssueSizes.paddingY)
-    .text((d) => {
-      if (d.subIssues.length === 0) {
-        return "";
-      }
+        notification
+          .append("text")
+          .attr("class", "fill-secondary1-500")
+          .attr("text-anchor", "middle")
+          .attr("width", configuration.nodeSize.width - 2)
+          .attr("x", (configuration.nodeSize.width - 2) / 2)
+          .attr("y", IssueSizes.paddingY)
+          .text((d) => {
+            if (d.subIssues.length === 0) {
+              return "";
+            }
 
-      return `have ${d.subIssues.length} sub issues`;
-    });
+            return `have ${d.subIssues.length} sub issues`;
+          });
 
-  return node.merge(container);
+        return root;
+      },
+      (update) => {
+        update.classed("opacity-30", (d) => d.focusing === "unfocused");
+        update.select("text.issue-summary").text((d) => {
+          if (d.issue) {
+            return measure.chopTextIncludedWidthOf(d.issue.summary, issueWidth);
+          }
+
+          return "";
+        });
+        update
+          .select("text.issue-node__status")
+          .attr("filter", (d) => {
+            if (!d.issue) return null;
+
+            const status = project.statuses[d.issue.statusId];
+            switch (status?.statusCategory) {
+              case StatusCategory.TODO:
+                return "url(#todo-bg)";
+              case StatusCategory.IN_PROGRESS:
+                // secondary-1-1
+                return "url(#in-progress-bg)";
+              case StatusCategory.DONE:
+                return "url(#done-bg)";
+              default:
+                break;
+            }
+
+            return null;
+          })
+          .text((d) => {
+            if (!d.issue) {
+              return "";
+            }
+
+            const status = project.statuses[d.issue.statusId];
+            return status?.name ?? "";
+          });
+
+        return update;
+      },
+    );
+
+  return node;
 };
 
 export const buildIssueGraph = (
@@ -210,19 +263,16 @@ export const buildIssueGraph = (
   project: Project,
   configuration: Configuration,
 ): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
-  let issueNode = container.append("svg:g").selectAll<d3.BaseType, LayoutedLeveledIssue>("g");
+  const issueNodeContainer = container.append("svg:g");
+  let issueNode = issueNodeContainer.selectAll<d3.BaseType, LayoutedLeveledIssue>("g");
 
   return [
     issueNode,
     (data) => {
       // update existing issues
-      issueNode = issueNode.data(data, (d) => d.issueKey).classed("opacity-30", (d) => d.focusing === "unfocused");
+      issueNode = upsertIssueNode(issueNodeContainer, project, configuration, data);
 
-      issueNode.exit().remove();
-
-      issueNode = buildIssueNode(issueNode, project, configuration);
-
-      return issueNode;
+      return issueNodeContainer.selectAll("g");
     },
   ];
 };

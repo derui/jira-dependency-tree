@@ -16,6 +16,7 @@ const Styles = {
     "flex",
     "flex-auto",
     "h-12",
+    "px-3",
     "items-center",
     "transition-all",
     "border-b",
@@ -23,7 +24,7 @@ const Styles = {
   ),
   marker: (show: boolean) => {
     return {
-      ...classes("flex", "w-2", "h-2", "left-0", "top-2", "absolute"),
+      ...classes("flex", "w-2", "h-2", "left-2", "top-2", "absolute"),
       ...(!show ? classes("invisible") : {}),
       ...(show ? classes("visible") : {}),
     };

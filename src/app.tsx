@@ -20,7 +20,6 @@ const Styles = {
   projectToolbar: classes(
     "relative",
     "bg-white",
-    "px-3",
     "shadow-md",
     "gap-2",
     "grid",

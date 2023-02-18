@@ -168,6 +168,7 @@ test("allow relation to add when inward or outward issue not found in issue", ()
     selfUrl: "",
     typeId: "",
     relations: [{ id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" }],
+    subIssues: [],
   });
 });
 

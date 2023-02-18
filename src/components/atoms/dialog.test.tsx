@@ -42,3 +42,16 @@ test("calculate top by rect", () => {
 
   expect(child.style.top).toBe("calc(10px)");
 });
+
+test("calculate right by rect", () => {
+  const rect = new Rect({ bottom: 10, right: 10, left: 0, top: 5 });
+  render(
+    <Dialog selector='body' parentRect={rect} opened={true} aligned='bottomRight'>
+      abc
+    </Dialog>,
+  );
+
+  const child = screen.getByTestId("dialog");
+
+  expect(child.style.right).toBe("-10px");
+});

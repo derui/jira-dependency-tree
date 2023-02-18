@@ -52,7 +52,6 @@ const Styles = {
       invisible: !opened,
       "w-0": !opened,
       "w-96": opened,
-      "right-3": aligned === "bottomRight",
       ...(margin === "all" ? classes("m-3") : {}),
       ...(margin === "top" ? classes("mt-3") : {}),
       ...(margin === "left" ? classes("ml-3") : {}),
@@ -63,7 +62,7 @@ const Styles = {
   },
 };
 
-const getPositionalStyle = (props: Props, rootRect: Rect) => {
+const getPositionalStyle = (props: Props) => {
   if (!props.parentRect) {
     return {};
   }
@@ -74,7 +73,7 @@ const getPositionalStyle = (props: Props, rootRect: Rect) => {
     case "bottomRight":
       return {
         top: `calc(${props.parentRect.top + props.parentRect.height}px)`,
-        left: `calc(${props.parentRect.left}px + ${props.parentRect.width - rootRect.width}px)`,
+        right: `-${props.parentRect.right}px`,
       };
   }
 };
@@ -82,7 +81,6 @@ const getPositionalStyle = (props: Props, rootRect: Rect) => {
 export const Dialog: React.FC<Props> = (props) => {
   const gen = generateTestId(props.testid);
   const [initialized, setInitialized] = useState<InitializationStep>("YetMount");
-  const [rect, setRect] = useState(Rect.empty());
   const ref = useRef(document.createElement("div"));
   const rootRef = useRef<HTMLDivElement | null>(null);
   const selector = props.selector ?? "#dialog-root";
@@ -100,12 +98,11 @@ export const Dialog: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (initialized === "Mounted" && rootRef.current) {
-      setRect(Rect.fromDOMRect(rootRef.current.getBoundingClientRect()));
       setInitialized("Recorded");
     }
   }, [initialized]);
 
-  const style = getPositionalStyle(props, rect);
+  const style = getPositionalStyle(props);
 
   const container = (
     <div

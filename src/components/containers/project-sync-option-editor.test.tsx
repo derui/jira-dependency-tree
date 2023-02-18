@@ -32,8 +32,10 @@ test("should be able to render", async () => {
   );
 
   const dialog = screen.getByTestId("form-dialog/dialog");
+  const button = screen.getByTestId("opener");
 
   expect(dialog.getAttribute("aria-hidden")).toBe("true");
+  expect(button.getAttribute("disabled")).toBe("");
 });
 
 test("open dialog when opener clicked", async () => {
@@ -58,7 +60,10 @@ test("open dialog when opener clicked", async () => {
   await userEvent.click(screen.getByTestId("opener"));
 
   const dialog = screen.getByTestId("form-dialog/dialog");
+  const button = screen.getByTestId("opener") as HTMLButtonElement;
 
+  expect(button.disabled).toBe(false);
+  expect(button.classList.contains("bg-secondary1-200")).toBe(true);
   expect(dialog.getAttribute("aria-hidden")).toBe("false");
 });
 
@@ -85,6 +90,38 @@ test("close dialog after finished to edit search condition", async () => {
   await userEvent.click(screen.getByTestId("form/cancel"));
 
   const dialog = screen.getByTestId("form-dialog/dialog");
+  const button = screen.getByTestId("opener") as HTMLButtonElement;
 
+  expect(button.disabled).toBe(false);
+  expect(button.classList.contains("bg-secondary1-200")).toBe(false);
   expect(dialog.getAttribute("aria-hidden")).toBe("true");
+});
+
+test("show current value in button", async () => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
+  store.dispatch(
+    submitApiCredentialFulfilled({
+      apiBaseUrl: "url",
+      apiKey: "key",
+      email: "email",
+      token: "token",
+      userDomain: "domain",
+    }),
+  );
+
+  wrappedRender(
+    <Provider store={store}>
+      <ProjectSyncOptionEditor />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("opener"));
+  await userEvent.click(screen.getByTestId("form/cancel"));
+
+  const button = screen.getByTestId("opener") as HTMLButtonElement;
+
+  expect(button.disabled).toBe(false);
+  expect(button.classList.contains("bg-secondary1-200")).toBe(false);
+  expect(button.textContent).toContain("Current Sprint");
 });

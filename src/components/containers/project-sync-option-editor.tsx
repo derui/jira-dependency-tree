@@ -19,7 +19,6 @@ const Styles = {
         "px-3",
         "py-1",
         "border",
-        "bg-white",
         "rounded",
         "transition-colors",
         "cursor-pointer",
@@ -28,10 +27,16 @@ const Styles = {
         "text-sm",
       ),
 
-      ...(opened ? classes("text-white", "bg-secondary1-200", "border-secondary1-500") : classes("bg-white")),
-      ...(disabled
-        ? classes("text-lightgray", "border-lightgray")
-        : classes("border-gray", "hover:text-white", "hover:bg-secondary1-200", "hover:border-secondary1-500")),
+      ...(opened
+        ? classes("text-white", "bg-secondary1-200", "border-secondary1-500")
+        : classes(
+            "bg-white",
+
+            "hover:text-white",
+            "hover:bg-secondary1-200",
+            "hover:border-secondary1-500",
+          )),
+      ...(disabled ? classes("text-lightgray", "border-lightgray") : {}),
     };
   },
 };

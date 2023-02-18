@@ -2,7 +2,6 @@ import { BaseType, Selection, SimulationNodeDatum } from "d3";
 import { Issue } from "@/model/issue";
 import { IssueKey, Size } from "@/type";
 import { Rect } from "@/util/basic";
-import { IssueGraphAction } from "@/drivers/issue-graph";
 
 // The type of common node object in issue graph
 export type D3Node<T extends BaseType = BaseType, V = undefined> = Selection<T, V, null, undefined>;

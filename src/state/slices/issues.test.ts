@@ -39,6 +39,7 @@ test("loaded issues", () => {
     typeId: "",
     selfUrl: "",
     relations: [],
+    subIssues: [],
   };
   const ret = reducer(getInitialState(), synchronizeIssuesFulfilled([issue]));
 
@@ -57,6 +58,7 @@ test("loaded issues with other projection target", () => {
     selfUrl: "",
     relations: [],
     parentIssue: "key2",
+    subIssues: [],
   };
   const issue2 = {
     key: "key2",
@@ -66,6 +68,7 @@ test("loaded issues with other projection target", () => {
     typeId: "",
     selfUrl: "",
     relations: [],
+    subIssues: ["key"],
   };
   let ret = reducer(getInitialState(), expandIssue("key2"));
   ret = reducer(ret, synchronizeIssuesFulfilled([issue, issue2]));
@@ -85,6 +88,7 @@ test("get issue matched", () => {
       typeId: "",
       selfUrl: "",
       relations: [],
+      subIssues: [],
     },
     { key: "not match", summary: "not match" } as Issue satisfies Issue,
   ];
@@ -105,6 +109,7 @@ test("empty matched issues if term is empty", () => {
       typeId: "",
       selfUrl: "",
       relations: [],
+      subIssues: [],
     },
     { key: "not match", summary: "not match" } as Issue satisfies Issue,
   ];

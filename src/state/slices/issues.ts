@@ -81,6 +81,7 @@ const slice = createSlice({
           selfUrl: "",
           typeId: "",
           relations: [{ ...payload }],
+          subIssues: [],
         });
       }
 
@@ -95,6 +96,7 @@ const slice = createSlice({
           selfUrl: "",
           typeId: "",
           relations: [{ ...payload }],
+          subIssues: [],
         });
       }
     });

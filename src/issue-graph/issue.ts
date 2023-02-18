@@ -39,7 +39,7 @@ const IssuePositions = {
 } as const;
 
 const upsertIssueNode = (
-  container: IssueNode,
+  container: d3.Selection<d3.BaseType, undefined, d3.BaseType, undefined>,
   project: Project,
   configuration: Configuration,
   data: LayoutedLeveledIssue[],

@@ -175,7 +175,7 @@ test("should be get event when error happened", () => {
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
     const registrar = createDependencyRegistrar<Dependencies>();
     registrar.register("postJSON", () => {
-      return cold("--a", undefined, new Error("e"));
+      return cold("--#", undefined, new Error("e"));
     });
 
     const store = createPureStore();

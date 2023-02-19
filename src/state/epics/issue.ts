@@ -1,6 +1,6 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, filter, map, switchMap } from "rxjs/operators";
+import { catchError, filter, map, startWith, switchMap } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
 import { synchronizeIssues, synchronizeIssuesFulfilled } from "../actions";
@@ -48,12 +48,12 @@ export const issueEpic = (
             .pipe(
               map((response) => mapResponse(response as { [k: string]: unknown }[])),
               map((issues) => synchronizeIssuesFulfilled(issues)),
-              catchError((e) => {
-                console.error(e);
-
-                return of(synchronizeIssuesFulfilled([]));
-              }),
             );
+        }),
+        catchError((e, source) => {
+          console.error(e);
+
+          return source.pipe(startWith(synchronizeIssuesFulfilled([])));
         }),
       ),
   };

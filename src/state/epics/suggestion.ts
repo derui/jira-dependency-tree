@@ -1,6 +1,6 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, debounceTime, filter, map, switchMap } from "rxjs/operators";
+import { catchError, debounceTime, filter, map, startWith, switchMap, tap } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
 import {
@@ -50,10 +50,10 @@ export const suggestionEpic = (
             map((suggestion) => requestSuggestionFulfilled({ kind: action.payload.kind, suggestion })),
           );
       }),
-      catchError((e) => {
+      catchError((e, source) => {
         console.error(e);
 
-        return of(requestSuggestionError("Have error"));
+        return source.pipe(startWith(requestSuggestionError("Have error")));
       }),
     ),
   acceptSuggestion: (action$) =>

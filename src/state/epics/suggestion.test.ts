@@ -8,6 +8,7 @@ import { createPureStore } from "../store";
 import {
   requestSuggestion,
   requestSuggestionAccepted,
+  requestSuggestionError,
   requestSuggestionFulfilled,
   submitApiCredentialFulfilled,
   submitProjectKeyFulfilled,
@@ -17,19 +18,13 @@ import { SuggestionKind } from "@/type";
 import { randomCredential, randomProject } from "@/mock-data";
 import { suggestionFactory } from "@/model/suggestion";
 
-const registrar = createDependencyRegistrar<Dependencies>();
-const env = {
-  apiBaseUrl: "http://base.url",
-  apiKey: "key",
-};
-registrar.register("env", env);
-
 test("do not request when did not credential setupeed", async () => {
   const testScheduler = new TestScheduler((a, b) => {
     expect(a).toEqual(b);
   });
 
   testScheduler.run(({ hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
     const store = createPureStore();
 
     const epics = epic.suggestionEpic(registrar);
@@ -54,6 +49,7 @@ test("send request when setupped", async () => {
   });
 
   testScheduler.run(({ cold, hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
     registrar.register("postJSON", () => {
       return cold("--a", {
         a: {
@@ -99,6 +95,7 @@ test("return accepted event", async () => {
   });
 
   testScheduler.run(({ hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
     store.dispatch(submitProjectKeyFulfilled(randomProject()));
@@ -118,6 +115,38 @@ test("return accepted event", async () => {
         kind: SuggestionKind.Sprint,
         term: "term",
       }),
+    });
+  });
+});
+
+test("return error when API send error", async () => {
+  const testScheduler = new TestScheduler((a, b) => {
+    expect(a).toEqual(b);
+  });
+
+  testScheduler.run(({ hot, cold, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
+
+    const store = createPureStore();
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+
+    registrar.register("postJSON", () => {
+      return cold("--#", undefined, new Error("have error"));
+    });
+
+    const epics = epic.suggestionEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: requestSuggestionAccepted({ kind: SuggestionKind.Sprint, term: "should error" }),
+    });
+
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.getSuggestion(action$, state$, null);
+
+    expect(ret$).toBe(`---a`, {
+      a: requestSuggestionError("Have error"),
     });
   });
 });

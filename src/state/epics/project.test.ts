@@ -110,3 +110,29 @@ test("submit api credential", async () => {
     });
   });
 });
+
+test("get error when API returns error", async () => {
+  const registrar = createDependencyRegistrar<Dependencies>();
+
+  const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  testScheduler.run(({ hot, cold, expectObservable: expect }) => {
+    registrar.register("postJSON", () => {
+      return cold("--#", undefined, new Error("error"));
+    });
+    const epics = epic.projectEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: submitProjectKey("key"),
+    });
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.loadProject(action$, state$, null);
+
+    expect(ret$).toBe("---a", {
+      a: submitProjectKeyError(),
+    });
+  });
+});

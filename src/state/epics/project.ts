@@ -1,6 +1,6 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, filter, switchMap, map } from "rxjs/operators";
+import { catchError, filter, switchMap, map, startWith } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
 import {
@@ -49,10 +49,10 @@ export const projectEpic = (
             map((project) => submitProjectKeyFulfilled(project)),
           );
       }),
-      catchError((e) => {
+      catchError((e, source) => {
         console.error(e);
 
-        return of(submitProjectKeyError());
+        return source.pipe(startWith(submitProjectKeyError()));
       }),
     ),
 

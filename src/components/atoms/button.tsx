@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from "react";
 import classNames from "classnames";
 import { BaseProps, classes } from "../helper";
 
-type ColorSchema = "primary" | "secondary1" | "gray";
+type ColorSchema = "primary" | "gray";
 
 export interface Props extends PropsWithChildren, BaseProps {
   schema: ColorSchema;
@@ -48,24 +48,16 @@ const Styles = {
 
   color: (schema: ColorSchema) => {
     switch (schema) {
-      case "secondary1":
-        return classes(
-          "border-secondary1-100",
-          "bg-secondary1-200",
-          "color-white",
-          "hover:bg-secondary1-300",
-          "active:bg-secondary1-400",
-        );
       case "primary":
         return classes(
-          "border-primary-100",
-          "bg-primary-200",
-          "color-white",
-          "hover:bg-primary-300",
-          "active:bg-primary-400",
+          "border-secondary2-300",
+          "bg-secondary2-200/60",
+          "text-secondary1-400",
+          "hover:bg-secondary2-200",
+          "active:bg-secondary2-300",
         );
       case "gray":
-        return classes("border-gray", "bg-white", "color-black", "hover:bg-lightgray", "active:bg-gray");
+        return classes("border-gray", "bg-white", "text-black", "hover:bg-lightgray/50", "active:bg-gray/50");
     }
   },
 };

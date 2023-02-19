@@ -42,7 +42,7 @@ test("should emit click event", async () => {
 });
 
 test("change color schema", () => {
-  render(<Button schema="secondary1" type="submit" onClick={() => {}} />);
+  render(<Button schema="primary" type="submit" onClick={() => {}} />);
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 

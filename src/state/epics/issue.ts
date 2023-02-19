@@ -48,12 +48,12 @@ export const issueEpic = (
             .pipe(
               map((response) => mapResponse(response as { [k: string]: unknown }[])),
               map((issues) => synchronizeIssuesFulfilled(issues)),
-            );
-        }),
-        catchError((e) => {
-          console.error(e);
+              catchError((e) => {
+                console.error(e);
 
-          return of(synchronizeIssuesFulfilled([]));
+                return of(synchronizeIssuesFulfilled([]));
+              }),
+            );
         }),
       ),
   };

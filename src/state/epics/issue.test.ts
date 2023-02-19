@@ -166,3 +166,34 @@ test("apply relations", () => {
     });
   });
 });
+
+test("should be get event when error happened", () => {
+  const testScheduler = new TestScheduler((a, b) => {
+    expect(a).toEqual(b);
+  });
+
+  testScheduler.run(({ cold, hot, expectObservable: expect }) => {
+    const registrar = createDependencyRegistrar<Dependencies>();
+    registrar.register("postJSON", () => {
+      return cold("--a", undefined, new Error("e"));
+    });
+
+    const store = createPureStore();
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+
+    const epics = epic.issueEpic(registrar);
+
+    const action$ = hot("-a", {
+      a: synchronizeIssues(),
+    });
+
+    const state$ = new StateObservable(NEVER, store.getState());
+
+    const ret$ = epics.synchronizeIssues(action$, state$, null);
+
+    expect(ret$).toBe("---a", {
+      a: synchronizeIssuesFulfilled([]),
+    });
+  });
+});

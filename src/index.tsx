@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { v4 } from "uuid";
+import { install } from "@twind/core";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { SettingArgument } from "./model/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
@@ -23,6 +24,7 @@ import { getGraphLayout } from "./state/selectors/graph-layout";
 import { queryIssues } from "./state/selectors/issues";
 import { getApiCrednetial } from "./state/selectors/api-credential";
 import { App } from "./app";
+import config from "./twind.config.cjs";
 
 // wiring depencencies
 
@@ -138,6 +140,8 @@ if (process.env.CI === "ci") {
 
   worker.start();
 }
+
+install(config, process.env.NODE_ENV === "production");
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById("root")!);

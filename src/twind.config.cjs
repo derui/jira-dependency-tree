@@ -1,5 +1,9 @@
+import {defineConfig} from '@twind/core'
+import presetAutoprefix from '@twind/preset-autoprefix';
+import presetTailwind from '@twind/preset-tailwind';
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default defineConfig({
   content: ['./src/**/*.tsx', './src/*.tsx', './src/**/*.ts'],
   theme: {
     colors: {
@@ -73,5 +77,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
-}
+  presets: [presetAutoprefix(), presetTailwind()]
+});

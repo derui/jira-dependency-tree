@@ -42,7 +42,8 @@ export default defineConfig({
       'darkgray-alpha': "rgb(0 0 0 / 60%)",
       'gray-alpha': "rgb(0 0 0 / 40%)",
       'lightgray-alpha': "rgb(0 0 0 / 10%)",
-      white: '#FFF'
+      white: '#FFF',
+      black: '#000'
     },
     overflow: {
       'overlay': 'overlay'

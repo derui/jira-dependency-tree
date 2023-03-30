@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import classNames from "classnames";
-import { BaseProps, classes } from "../helper";
+import { BaseProps } from "../helper";
 
 type ColorSchema = "primary" | "gray";
 
@@ -13,7 +13,7 @@ export interface Props extends PropsWithChildren, BaseProps {
 }
 
 const Styles = {
-  button: classes(
+  button: classNames(
     "flex-none",
     "self-end",
     "px-3",
@@ -33,42 +33,37 @@ const Styles = {
   ),
 
   width: (size: Props["size"]) => {
-    switch (size) {
-      case "full":
-        return classes("w-full");
-      case "l":
-        return classes("w-40");
-      case "s":
-        return classes("w-12");
-      case "m":
-      default:
-        return classes("w-20");
-    }
+    return classNames({
+      "w-full": size === "full",
+      "w-40": size === "l",
+      "w-12": size === "s",
+      "w-20": size === "m",
+    });
   },
 
   color: (schema: ColorSchema) => {
-    switch (schema) {
-      case "primary":
-        return classes(
-          "border-secondary2-300",
-          "bg-secondary2-200/60",
-          "text-secondary1-400",
-          "hover:bg-secondary2-200",
-          "active:bg-secondary2-300",
-        );
-      case "gray":
-        return classes("border-gray", "bg-white", "text-black", "hover:bg-lightgray/50", "active:bg-gray/50");
-    }
+    return classNames(
+      {
+        "border-secondary2-300": schema === "primary",
+        "bg-secondary2-200/60": schema === "primary",
+        "text-secondary1-400": schema === "primary",
+        "hover:bg-secondary2-200": schema === "primary",
+        "active:bg-secondary2-300": schema === "primary",
+      },
+      {
+        "border-gray": schema === "gray",
+        "bg-white": schema === "gray",
+        "text-black": schema === "gray",
+        "hover:bg-lightgray/50": schema === "gray",
+        "active:bg-gray/50": schema === "gray",
+      },
+    );
   },
 };
 
 // eslint-disable-next-line func-style
 export function Button(props: Props) {
-  const classes = classNames({
-    ...Styles.button,
-    ...Styles.color(props.schema),
-    ...Styles.width(props.size),
-  });
+  const classes = classNames(Styles.button, Styles.color(props.schema), Styles.width(props.size));
 
   if (props.type === "submit") {
     return (

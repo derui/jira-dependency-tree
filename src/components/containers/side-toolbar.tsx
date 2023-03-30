@@ -1,4 +1,3 @@
-import type React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { IssueGraphLayouter } from "../organisms/issue-graph-layouter";
@@ -12,7 +11,7 @@ const Styles = {
     "flex",
     "flex-col",
     "left-4",
-    "top-half",
+    "top-1/2",
     "bg-white",
     "rounded",
     "list-none",
@@ -24,7 +23,8 @@ const Styles = {
   divider: classes("mx-1", "border-t", "border-t-lightgray"),
 };
 
-export const SideToolbar: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function SideToolbar(props: Props) {
   const gen = generateTestId(props.testid);
 
   return (
@@ -34,4 +34,4 @@ export const SideToolbar: React.FC<Props> = (props) => {
       <GraphUnroller testid={gen("graph-unroller")} />
     </ul>
   );
-};
+}

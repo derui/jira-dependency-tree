@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { createPortal } from "react-dom";
 import { BaseProps, classes, generateTestId } from "../helper";
@@ -20,12 +20,10 @@ type InitializationStep = "YetMount" | "Mounted" | "Recorded";
 const Styles = {
   dialog: ({
     opened,
-    aligned,
     margin,
     initialized,
   }: {
     opened: boolean;
-    aligned: Alignment;
     margin: Margin;
     initialized: InitializationStep;
   }) => {
@@ -78,7 +76,8 @@ const getPositionalStyle = (props: Props) => {
   }
 };
 
-export const Dialog: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function Dialog(props: Props) {
   const gen = generateTestId(props.testid);
   const [initialized, setInitialized] = useState<InitializationStep>("YetMount");
   const ref = useRef(document.createElement("div"));
@@ -111,7 +110,6 @@ export const Dialog: React.FC<Props> = (props) => {
         Styles.dialog({
           initialized,
           opened: props.opened,
-          aligned: props.aligned,
           margin: props.margin ?? "none",
         }),
       )}
@@ -123,4 +121,4 @@ export const Dialog: React.FC<Props> = (props) => {
     </div>
   );
   return createPortal(container, ref.current);
-};
+}

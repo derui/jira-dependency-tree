@@ -1,4 +1,3 @@
-import React from "react";
 import classNames from "classnames";
 import { BaseProps, classes } from "../helper";
 
@@ -112,7 +111,8 @@ const Styles = {
   },
 };
 
-export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, testid, style }) => {
+// eslint-disable-next-line func-style
+export function Icon({ size, type, color, disabled, active, testid, style }: Props) {
   const iconClass = {
     ...Styles.iconBase,
     ...Styles.size(size ?? "s"),
@@ -129,4 +129,4 @@ export const Icon: React.FC<Props> = ({ size, type, color, disabled, active, tes
       data-testid={testid ?? "icon"}
     ></span>
   );
-};
+}

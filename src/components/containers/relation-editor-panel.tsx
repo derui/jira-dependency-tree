@@ -53,7 +53,8 @@ const Styles = {
   main: classes("flex-auto", "overflow-hidden"),
 };
 
-export const RelationEditorPanel: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function RelationEditorPanel(props: Props) {
   const gen = generateTestId(props.testid);
   const opened = useAppSelector(getRelationEditorOpened());
   const selectedKey = useAppSelector(selectSelectedIssueKey());
@@ -77,4 +78,4 @@ export const RelationEditorPanel: React.FC<Props> = (props) => {
       </main>
     </div>
   );
-};
+}

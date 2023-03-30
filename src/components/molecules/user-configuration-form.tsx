@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
@@ -22,7 +22,8 @@ const canSubmit = (obj: Partial<Payload>) => {
   return filterEmptyString(obj.email) && filterEmptyString(obj.token) && filterEmptyString(obj.userDomain);
 };
 
-export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEdit, ...props }) => {
+// eslint-disable-next-line func-style
+export function UserConfigurationForm({ initialPayload, onEndEdit, ...props }: Props) {
   const gen = generateTestId(props.testid);
   const [obj, setObj] = useState({ ...initialPayload });
   const allowSubmit = canSubmit(obj);
@@ -82,4 +83,4 @@ export const UserConfigurationForm: React.FC<Props> = ({ initialPayload, onEndEd
       </div>
     </form>
   );
-};
+}

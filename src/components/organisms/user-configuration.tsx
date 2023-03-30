@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Icon } from "../atoms/icon";
@@ -43,7 +43,8 @@ const Styles = {
   markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
 };
 
-export const UserConfiguration: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function UserConfiguration(props: Props) {
   const gen = generateTestId(props.testid);
   const ref = useRef<HTMLDivElement>(null);
   const [opened, setOpened] = useState(false);
@@ -84,4 +85,4 @@ export const UserConfiguration: React.FC<Props> = (props) => {
       </Dialog>
     </div>
   );
-};
+}

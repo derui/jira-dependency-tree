@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -78,7 +78,8 @@ const Styles = {
   },
 };
 
-export const IssueSearcher: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function IssueSearcher(props: Props) {
   const gen = generateTestId(props.testid);
   const [term, setTerm] = useState("");
   const [status, setStatus] = useState<Status>("BeforePrepared");
@@ -161,4 +162,4 @@ export const IssueSearcher: React.FC<Props> = (props) => {
       </ul>
     </div>
   );
-};
+}

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 import classNames from "classnames";
 import { BaseProps, classes } from "../helper";
 
@@ -27,7 +27,7 @@ const Styles = {
     "whitespace-nowrap",
     "overflow-hidden",
     "text-ellipsis",
-    "disabled:color-gray",
+    "disabled:text-gray",
     "disabled:bg-lightgray",
     "disabled:border-gray",
   ),
@@ -62,7 +62,8 @@ const Styles = {
   },
 };
 
-export const Button: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function Button(props: Props) {
   const classes = classNames({
     ...Styles.button,
     ...Styles.color(props.schema),
@@ -94,4 +95,4 @@ export const Button: React.FC<Props> = (props) => {
       </button>
     );
   }
-};
+}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classNames from "classnames";
 import { Dialog } from "../atoms/dialog";
 import { BaseProps, classes, generateTestId } from "../helper";
@@ -51,7 +51,8 @@ const currentConditionName = (condition: SearchCondition | undefined) => {
   return "Current Sprint";
 };
 
-export const ProjectSyncOptionEditor: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function ProjectSyncOptionEditor(props: Props) {
   const gen = generateTestId(props.testid);
   const [opened, setOpened] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -83,4 +84,4 @@ export const ProjectSyncOptionEditor: React.FC<Props> = (props) => {
       </Dialog>
     </div>
   );
-};
+}

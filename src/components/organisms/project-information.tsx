@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -43,7 +43,6 @@ const Styles = {
         "border-b-1",
         "border-b-transparent",
         "transition-colors",
-        "transition-border",
         "leading-6",
         "pl-2",
       ),
@@ -62,7 +61,8 @@ const Styles = {
   skeleton: classes("bg-lightgray", "rounded", "h-8", "py-2", "px-2", "w-full"),
 };
 
-export const ProjectInformation: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function ProjectInformation(props: Props) {
   const gen = generateTestId(props.testid);
   const [opened, setOpened] = useState(false);
   const [key, setKey] = useState("");
@@ -111,4 +111,4 @@ export const ProjectInformation: React.FC<Props> = (props) => {
       </Dialog>
     </div>
   );
-};
+}

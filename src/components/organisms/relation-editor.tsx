@@ -103,7 +103,8 @@ const IssueAppender: React.FC<{
   );
 };
 
-export const RelationEditor: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
   const [loading, relatedIssues = []] = useAppSelector(queryCurrentRelatedIssuesWithKind(props.kind));
   const selectedIssueKey = useAppSelector(selectSelectedIssueKey());
@@ -154,4 +155,4 @@ export const RelationEditor: React.FC<Props> = (props) => {
       )}
     </div>
   );
-};
+}

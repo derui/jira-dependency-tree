@@ -12,7 +12,8 @@ const Styles = {
   unroller: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-2"),
 };
 
-export const GraphUnroller: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function GraphUnroller(props: Props) {
   const gen = generateTestId(props.testid);
   const projectionTarget = useAppSelector(selectProjectionTargetIssue());
   const dispatch = useAppDispatch();
@@ -38,4 +39,4 @@ export const GraphUnroller: React.FC<Props> = (props) => {
       ></Icon>
     </li>
   );
-};
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import { Icon } from "../atoms/icon";
 import { BaseProps, classes, generateTestId } from "../helper";
@@ -21,7 +21,6 @@ const Styles = {
         "top-0",
         "bg-white",
         "rounded",
-        "transition-left",
         "shadow-lg",
         "transition-opacity",
         "opacity-0",
@@ -34,7 +33,8 @@ const Styles = {
   iconButton: classes("flex-none", "bg-white", "p-2", "cursor-pointer", "rounded"),
 };
 
-export const IssueGraphLayouter: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function IssueGraphLayouter(props: Props) {
   const gen = generateTestId(props.testid);
   const [opened, setOpened] = useState(false);
   const layout = useAppSelector(getGraphLayout());
@@ -73,4 +73,4 @@ export const IssueGraphLayouter: React.FC<Props> = (props) => {
       </div>
     </li>
   );
-};
+}

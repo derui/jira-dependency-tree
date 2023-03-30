@@ -119,7 +119,8 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
   );
 };
 
-export const Issue: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function Issue(props: Props) {
   const gen = generateTestId(props.testid);
   const { issue, onClick, loading, onDelete } = props;
 
@@ -165,4 +166,4 @@ export const Issue: React.FC<Props> = (props) => {
       {onDelete ? <DeleteButton onClick={handleDelete} testid={gen("delete")} /> : null}
     </li>
   );
-};
+}

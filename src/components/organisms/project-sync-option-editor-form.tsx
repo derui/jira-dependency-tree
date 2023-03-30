@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
@@ -35,7 +35,7 @@ const Styles = {
     "border-b-secondary1-200",
     "text-secondary1-500",
     "text-lg",
-    "text-bold",
+    "font-bold",
     "p-3",
     "whitespace-nowrap",
   ),
@@ -99,7 +99,8 @@ const SprintCondition = (props: Props, conditionType: ConditionType, onFinished:
   );
 };
 
-export const ProjectSyncOptionEditorForm: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function ProjectSyncOptionEditorForm(props: Props) {
   const gen = generateTestId(props.testid);
   const [conditionType, setConditionType] = useState<ConditionType>(ConditionType.Default);
   const [epic, setEpic] = useState<string>("");
@@ -172,4 +173,4 @@ export const ProjectSyncOptionEditorForm: React.FC<Props> = (props) => {
       </div>
     </div>
   );
-};
+}

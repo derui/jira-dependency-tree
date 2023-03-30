@@ -1,4 +1,3 @@
-import React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 
@@ -11,7 +10,8 @@ const Styles = {
   currentZoom: classes("inline-block", "text-center", "w-full"),
 };
 
-export const ZoomSlider: React.FC<Props> = ({ zoom, testid }) => {
+// eslint-disable-next-line func-style
+export function ZoomSlider({ zoom, testid }: Props) {
   const gen = generateTestId(testid);
 
   return (
@@ -19,4 +19,4 @@ export const ZoomSlider: React.FC<Props> = ({ zoom, testid }) => {
       <span className={classNames(Styles.currentZoom)} data-testid={gen("current-zoom")}>{`${Math.round(zoom)}%`}</span>
     </div>
   );
-};
+}

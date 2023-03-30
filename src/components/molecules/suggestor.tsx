@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Dialog } from "../atoms/dialog";
@@ -77,7 +77,8 @@ const selectSuggestion = (current: string, suggestions: SuggestedItem[], key: "A
   }
 };
 
-export const Suggestor: React.FC<Props> = ({ focusOnInit, onConfirmed, onEmptySuggestion, ...props }) => {
+// eslint-disable-next-line func-style
+export function Suggestor({ focusOnInit, onConfirmed, onEmptySuggestion, ...props }: Props) {
   const [selectedId, setSelectedId] = useState("");
   const [term, setTerm] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState(props.suggestions);
@@ -175,4 +176,4 @@ export const Suggestor: React.FC<Props> = ({ focusOnInit, onConfirmed, onEmptySu
       </Dialog>
     </span>
   );
-};
+}

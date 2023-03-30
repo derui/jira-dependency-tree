@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type React from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 
@@ -43,10 +44,11 @@ const Styles = {
   ),
 };
 
-export const Input: React.FC<Props> = ({ placeholder, label, focus, onInput, onKeypress, ...props }) => {
+// eslint-disable-next-line func-style
+export function Input({ placeholder, label, focus, onInput, onKeypress, ...props }: Props) {
   const gen = generateTestId(props.testid);
 
-  const [value, setValue] = React.useState(props.value);
+  const [value, setValue] = useState(props.value);
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
 
@@ -93,4 +95,4 @@ export const Input: React.FC<Props> = ({ placeholder, label, focus, onInput, onK
   } else {
     return input;
   }
-};
+}

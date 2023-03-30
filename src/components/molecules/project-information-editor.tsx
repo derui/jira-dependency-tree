@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
@@ -24,7 +24,8 @@ const canSubmit = (obj: Partial<Payload>) => {
   return filterEmptyString(obj.projectKey);
 };
 
-export const ProjectInformationEditor: React.FC<Props> = ({ initialPayload, onEndEdit, ...props }) => {
+// eslint-disable-next-line func-style
+export function ProjectInformationEditor({ initialPayload, onEndEdit, ...props }: Props) {
   const gen = generateTestId(props.testid);
   const [obj, setObj] = useState({ ...initialPayload });
   const allowSubmit = canSubmit(obj);
@@ -75,4 +76,4 @@ export const ProjectInformationEditor: React.FC<Props> = ({ initialPayload, onEn
       </span>
     </form>
   );
-};
+}

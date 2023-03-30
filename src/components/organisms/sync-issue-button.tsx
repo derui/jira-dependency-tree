@@ -1,4 +1,3 @@
-import React from "react";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
 import { BaseProps, classes, generateTestId } from "../helper";
@@ -22,7 +21,8 @@ const Styles = {
   },
 };
 
-export const SyncIssueButton: React.FC<Props> = (props) => {
+// eslint-disable-next-line func-style
+export function SyncIssueButton(props: Props) {
   const gen = generateTestId(props.testid);
   const syncable = useAppSelector(isSyncable());
   const [loading] = useAppSelector(queryIssues());
@@ -49,4 +49,4 @@ export const SyncIssueButton: React.FC<Props> = (props) => {
       </button>
     </div>
   );
-};
+}

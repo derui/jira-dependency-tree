@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { Issue } from "../molecules/issue";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
-import { Icon } from "../atoms/icon";
 import { Suggestor } from "../molecules/suggestor";
+import { iconize } from "../atoms/iconize";
 import { IssueKey, Loading } from "@/type";
 import {
   queryCurrentRelatedIssuesWithKind,
@@ -21,7 +21,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classes(
+  root: classNames(
     "h-1/2",
     "flex",
     "flex-col",
@@ -31,12 +31,12 @@ const Styles = {
     "first-of-type:border-b-secondary2-400",
     "overflow-hidden",
   ),
-  header: classes("h-8", "text-secondary1-500", "flex", "text-lg", "items-center", "flex-none"),
-  main: classes("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
-  issueList: classes("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
-  skeleton: classes("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
-  appender: classes("flex", "mb-2"),
-  appenderButton: classes("flex", "flex-row", "items-center"),
+  header: classNames("h-8", "text-secondary1-500", "flex", "text-lg", "items-center", "flex-none"),
+  main: classNames("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
+  issueList: classNames("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
+  skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
+  appender: classNames("flex", "mb-2"),
+  appenderButton: classNames("flex", "flex-row", "items-center", iconize({ type: "plus", color: "gray" })),
 };
 
 const kindToTitle = (kind: RelationKind) => {
@@ -48,17 +48,23 @@ const kindToTitle = (kind: RelationKind) => {
   }
 };
 
-const Skeleton: React.FC<{ testid: string }> = ({ testid }) => {
+const Skeleton = function Skeleton({ testid }: { testid: string }) {
   return <main className={classNames(Styles.skeleton)} data-testid={testid} />;
 };
 
-const IssueAppender: React.FC<{
+const IssueAppender = function IssueAppender({
+  testid,
+  dispatch,
+  issueKey,
+  kind,
+  relatedIssues,
+}: {
   testid: string;
   dispatch: AppDispatch;
   issueKey: string;
   kind: RelationKind;
   relatedIssues: IssueKey[];
-}> = ({ testid, dispatch, issueKey, kind, relatedIssues }) => {
+}) {
   const gen = generateTestId(testid);
   const parentElement = useRef<HTMLDivElement | null>(null);
   const [searching, setSearching] = useState(false);
@@ -93,10 +99,7 @@ const IssueAppender: React.FC<{
         />
       ) : (
         <Button size="full" schema='gray' testid={gen("add-button")} onClick={() => setSearching(!searching)}>
-          <span className={classNames(Styles.appenderButton)}>
-            <Icon type="plus" color="gray" />
-            Add
-          </span>
+          <span className={Styles.appenderButton}> Add </span>
         </Button>
       )}
     </div>

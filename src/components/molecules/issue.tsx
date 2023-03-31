@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
-import { Icon } from "../atoms/icon";
+import { BaseProps, generateTestId } from "../helper";
+import { iconize } from "../atoms/iconize";
 import { IssueStatus, IssueType, Loading, StatusCategory } from "@/type";
 import { stringToColour } from "@/util/color";
 import { IssueModel } from "@/view-models/issue";
@@ -15,7 +15,7 @@ export interface Props extends BaseProps {
 
 const Styles = {
   root: (clickable: boolean) => {
-    const base = classes(
+    return classNames(
       "rounded",
       "flex",
       "flex-col",
@@ -26,29 +26,24 @@ const Styles = {
       "border-lightgray",
       "relative",
       "transition",
+      {
+        "cursor-pointer": clickable,
+      },
     );
-
-    return {
-      ...base,
-      "cursor-pointer": clickable,
-    };
   },
-  summary: classes("text-sm", "mb-2"),
-  information: classes("flex", "flex-row", "items-center", "space-x-2", "w-full"),
-  issueType: classes("w-3", "h-3", "inline-block", "overflow-hidden"),
+  summary: classNames("text-sm", "mb-2"),
+  information: classNames("flex", "flex-row", "items-center", "space-x-2", "w-full"),
+  issueType: classNames("w-3", "h-3", "inline-block", "overflow-hidden"),
   issueStatus: (category?: StatusCategory) => {
-    const base = classes("inline-block", "px-2", "py-1", "text-sm");
-
-    return {
-      ...base,
+    return classNames("inline-block", "px-2", "py-1", "text-sm", {
       "bg-complement-200": category === "DONE",
       "bg-secondary1-200": category === "IN_PROGRESS",
       "text-white": category === "IN_PROGRESS",
       "bg-lightgray": category === "TODO",
-    };
+    });
   },
-  key: classes("mx-3"),
-  skeletonRoot: classes(
+  key: classNames("mx-3"),
+  skeletonRoot: classNames(
     "animate-pulse",
     "flex",
     "h-12",
@@ -62,11 +57,11 @@ const Styles = {
     "flex-col",
     "space-y-2",
   ),
-  skeletonSummary: classes("w-full", "h-6", "bg-lightgray", "flex-auto"),
-  skeletonType: classes("w-3", "h-3", "bg-lightgray", "flex-none"),
-  skeletonKey: classes("w-16", "h-3", "bg-lightgray", "flex-none"),
-  skeletonStatus: classes("w-8", "h-3", "bg-lightgray", "flex-none"),
-  deleteButton: classes(
+  skeletonSummary: classNames("w-full", "h-6", "bg-lightgray", "flex-auto"),
+  skeletonType: classNames("w-3", "h-3", "bg-lightgray", "flex-none"),
+  skeletonKey: classNames("w-16", "h-3", "bg-lightgray", "flex-none"),
+  skeletonStatus: classNames("w-8", "h-3", "bg-lightgray", "flex-none"),
+  deleteButton: classNames(
     "rounded",
     "flex",
     "absolute",
@@ -79,16 +74,18 @@ const Styles = {
     "top-1",
     "transition",
     "items-center",
+    iconize({ type: "x", color: "primary", size: "s" }),
   ),
 };
 
-const IssueKeyDisplay: React.FC<{ value: string; testid: string }> = ({ value, testid }) => {
+// eslint-disable-next-line func-style
+function IssueKeyDisplay({ value, testid }: { value: string; testid: string }) {
   return (
     <span className={classNames(Styles.key)} data-testid={testid}>
       {value}
     </span>
   );
-};
+}
 
 const IssueTypeDisplay: React.FC<{ value: IssueType | undefined; testid: string }> = ({ value, testid }) => {
   const backgroundColor = value ? stringToColour(value.name) : "lightgray";
@@ -112,11 +109,7 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
     onClick();
   };
 
-  return (
-    <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={handleClick}>
-      <Icon color="primary" type="x" size="s" />
-    </button>
-  );
+  return <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={handleClick}></button>;
 };
 
 // eslint-disable-next-line func-style

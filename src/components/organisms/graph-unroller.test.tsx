@@ -18,7 +18,7 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const icon = screen.getByTestId("icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("unroller");
 
   expect(icon.dataset.active).toBe("false");
 });
@@ -34,7 +34,7 @@ test("should active icon when graph expanding", () => {
     </Provider>,
   );
 
-  const icon = screen.getByTestId("icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("unroller");
 
   expect(icon.dataset.active).toBe("true");
 });
@@ -53,7 +53,7 @@ test("narrow and inactive icon", async () => {
   const button = screen.getByTestId("unroller");
   await userEvent.click(button);
 
-  const icon = screen.getByTestId("icon") as HTMLSpanElement;
+  const icon = screen.getByTestId("unroller");
 
   expect(icon.dataset.active).toBe("false");
   expect(store.getState().issues.projectionTarget.kind).toBe("Root");

@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
-import { Icon } from "../atoms/icon";
 import { Suggestor } from "../molecules/suggestor";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
+import { iconize } from "../atoms/iconize";
 import { querySuggestion } from "@/state/selectors/suggestion";
 import { SuggestionKind } from "@/type";
 import { SuggestedItem } from "@/model/suggestion";
@@ -29,8 +29,8 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  searchConditionEditorContainer: classes("flex", "flex-col", "top-full", "bg-white", "w-full"),
-  header: classes(
+  searchConditionEditorContainer: classNames("flex", "flex-col", "top-full", "bg-white", "w-full"),
+  header: classNames(
     "border-b-2",
     "border-b-secondary1-200",
     "text-secondary1-500",
@@ -39,20 +39,29 @@ const Styles = {
     "p-3",
     "whitespace-nowrap",
   ),
-  selection: classes("flex-auto", "p-2"),
-  baseForm: classes("flex", "flex-row", "p-3", "items-center"),
-  controlButton: classes("flex-none", "first:ml-0", "last:mr-0", "mx-1", "cursor-pointer"),
+  selection: classNames("flex-auto", "p-2"),
+  baseForm: classNames("flex", "flex-row", "p-3", "items-center"),
+  controlButtonCancel: classNames(
+    "flex-none",
+    "first:ml-0",
+    "last:mr-0",
+    "mx-1",
+    "cursor-pointer",
+    iconize({ type: "circle-x", color: "gray", size: "m" }),
+  ),
+  controlButtonSubmit: classNames(
+    "flex-none",
+    "first:ml-0",
+    "last:mr-0",
+    "mx-1",
+    "cursor-pointer",
+    iconize({ type: "circle-check", color: "complement", size: "m" }),
+  ),
   sprintSuggestor: (opened: boolean) => {
-    return {
-      ...classes("p-2", "pt-0"),
-      ...(!opened ? classes("hidden") : {}),
-    };
+    return classNames("p-2", "pt-0", { hidden: !opened });
   },
   epicInput: (opened: boolean) => {
-    return {
-      ...classes("p-2", "pt-0"),
-      ...(!opened ? classes("hidden") : {}),
-    };
+    return classNames("p-2", "pt-0", { hidden: !opened });
   },
 };
 
@@ -148,20 +157,16 @@ export function ProjectSyncOptionEditorForm(props: Props) {
         </select>
         <span
           role='button'
-          className={classNames(Styles.controlButton)}
+          className={Styles.controlButtonCancel}
           data-testid={gen("cancel")}
           onClick={() => handleCancel()}
-        >
-          <Icon type='circle-x' color='gray' size='m' />
-        </span>
+        ></span>
         <span
           role='button'
-          className={classNames(Styles.controlButton)}
+          className={Styles.controlButtonSubmit}
           data-testid={gen("submit")}
           onClick={() => handleSubmit()}
-        >
-          <Icon type='circle-check' color='complement' size='m' />
-        </span>
+        ></span>
       </div>
       {sprintCondition}
       <div

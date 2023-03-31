@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { Icon } from "../atoms/icon";
 import { Issue } from "../molecules/issue";
+import { iconize } from "../atoms/iconize";
 import { isSyncable, selectMatchedIssueModel } from "@/state/selectors/issues";
 import { attentionIssue, searchIssue } from "@/state/actions";
 
@@ -12,7 +12,7 @@ export type Props = BaseProps;
 type Status = "Searching" | "Prepared" | "BeforePrepared";
 
 const Styles = {
-  root: classes(
+  root: classNames(
     "flex",
     "flex-col",
     "bg-white",
@@ -25,22 +25,19 @@ const Styles = {
     "flex-none",
     "h-12",
   ),
-  opener: classes("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
-  input: classes("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
+  opener: classNames("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
+  input: classNames("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
   cancel: (status: Status) => {
-    return {
-      ...classes("flex-none", "w-6", "h-6", "flex"),
-      ...(status === "Searching" ? classes() : classes("hidden")),
-    };
+    return classNames("flex-none", "w-6", "h-6", "flex", { hidden: status !== "Searching" });
   },
   inputWrapper: (status: Status) => {
-    return {
-      ...classes("flex-1", "overflow-hidden", "transition-width"),
-      ...(status === "Searching" ? classes("w-64") : classes("w-0")),
-    };
+    return classNames("flex-1", "overflow-hidden", "transition-width", {
+      "w-64": status === "Searching",
+      "w-0": status !== "Searching",
+    });
   },
-  searcher: classes("h-12", "flex", "items-center", "justify-center"),
-  issue: classes(
+  searcher: classNames("h-12", "flex", "items-center", "justify-center"),
+  issue: classNames(
     "flex",
     "flex-col",
     "align-center",
@@ -54,28 +51,30 @@ const Styles = {
     "hover:text-secondary1-300",
     "hover:bg-secondary1-200/10",
   ),
-  issueKey: classes("text-gray", "flex-none"),
-  issueSummary: classes("font-sm", "flex-none", "w-full", "overflow-hidden", "text-ellipsis", "whitespace-nowrap"),
+  issueKey: classNames("text-gray", "flex-none"),
+  issueSummary: classNames("font-sm", "flex-none", "w-full", "overflow-hidden", "text-ellipsis", "whitespace-nowrap"),
   issueList: (haveIssues: boolean) => {
-    return {
-      ...classes(
-        "max-h-64",
-        "overflow-y-auto",
-        "shadow-lg",
-        "p-2",
-        "mt-2",
-        "flex",
-        "flex-col",
-        "absolute",
-        "top-12",
-        "right-0",
-        "w-96",
-        "bg-white",
-        "space-y-2",
-      ),
-      ...(haveIssues ? classes() : classes("hidden")),
-    };
+    return classNames(
+      "max-h-64",
+      "overflow-y-auto",
+      "shadow-lg",
+      "p-2",
+      "mt-2",
+      "flex",
+      "flex-col",
+      "absolute",
+      "top-12",
+      "right-0",
+      "w-96",
+      "bg-white",
+      "space-y-2",
+      {
+        hidden: !haveIssues,
+      },
+    );
   },
+  searchButton: (searching: boolean) => classNames(iconize({ type: "search", color: "complement", active: searching })),
+  cancelButton: (active: boolean) => classNames(iconize({ type: "x", color: "primary", active })),
 };
 
 // eslint-disable-next-line func-style
@@ -121,25 +120,24 @@ export function IssueSearcher(props: Props) {
   ));
 
   return (
-    <div className={classNames(Styles.root)} data-testid={gen("root")}>
-      <div className={classNames(Styles.searcher)}>
-        <span className={classNames(Styles.opener)}>
+    <div className={Styles.root} data-testid={gen("root")}>
+      <div className={Styles.searcher}>
+        <span className={Styles.opener}>
           <button
             type='button'
+            className={Styles.searchButton(status === "Searching")}
             data-testid={gen("opener")}
             aria-disabled={status === "BeforePrepared"}
             onClick={handleOpenerClicked}
-          >
-            <Icon size='m' type='search' color='complement' active={status === "Searching"} />
-          </button>
+          ></button>
         </span>
         <span
-          className={classNames(Styles.inputWrapper(status))}
+          className={Styles.inputWrapper(status)}
           aria-hidden={status !== "Searching"}
           data-testid={gen("input-wrapper")}
         >
           <input
-            className={classNames(Styles.input)}
+            className={Styles.input}
             type='text'
             placeholder='Search Term'
             value={term}
@@ -147,10 +145,12 @@ export function IssueSearcher(props: Props) {
             data-testid={gen("input")}
           />
         </span>
-        <span className={classNames(Styles.cancel(status))}>
-          <button data-testid={gen("cancel")} onClick={handleCancelClicked}>
-            <Icon type='x' color='primary' active={!!term} />
-          </button>
+        <span className={Styles.cancel(status)}>
+          <button
+            className={Styles.cancelButton(!!term)}
+            data-testid={gen("cancel")}
+            onClick={handleCancelClicked}
+          ></button>
         </span>
       </div>
       <ul

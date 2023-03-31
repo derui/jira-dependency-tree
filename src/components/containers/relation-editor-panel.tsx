@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import { Button } from "../atoms/button";
-import { Icon } from "../atoms/icon";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { RelationEditor } from "../organisms/relation-editor";
+import { iconize } from "../atoms/iconize";
 import { getRelationEditorOpened, selectSelectedIssueKey } from "@/state/selectors/relation-editor";
 import { deselectIssueInGraph } from "@/state/actions";
 
@@ -11,7 +11,7 @@ export type Props = BaseProps;
 
 const Styles = {
   root: (opened: boolean) => {
-    const base = classes(
+    return classNames(
       "absolute",
       "top-0",
       "right-0",
@@ -25,15 +25,13 @@ const Styles = {
       "grid-rows-3",
       "grid-cols-1",
       "overflow-hidden",
+      {
+        "w-0": !opened,
+        "w-80": opened,
+      },
     );
-
-    return {
-      ...base,
-      "w-0": !opened,
-      "w-80": opened,
-    };
   },
-  header: classes(
+  header: classNames(
     "w-full",
     "h-16",
     "px-2",
@@ -47,10 +45,10 @@ const Styles = {
     "border-b",
     "border-b-secondary2-400",
   ),
-  headerText: classes("text-xl", "h-full", "items-center", "flex"),
-  headerKey: classes("text-base"),
-  headerButtonContainer: classes("flex", "top-3", "right-2"),
-  main: classes("flex-auto", "overflow-hidden"),
+  headerText: classNames("text-xl", "h-full", "items-center", "flex"),
+  headerKey: classNames("text-base"),
+  headerButtonContainer: classNames("flex", "top-3", "right-2"),
+  main: classNames("flex-auto", "overflow-hidden"),
 };
 
 // eslint-disable-next-line func-style
@@ -68,7 +66,7 @@ export function RelationEditorPanel(props: Props) {
         </h4>
         <span className={classNames(Styles.headerButtonContainer)}>
           <Button size='s' onClick={() => dispatch(deselectIssueInGraph())} testid={gen("close")} schema='gray'>
-            <Icon type='x' size='s' color='gray'></Icon>
+            <span className={iconize({ type: "x", size: "s", color: "gray" })}></span>
           </Button>
         </span>
       </header>

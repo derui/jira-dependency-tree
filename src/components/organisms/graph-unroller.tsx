@@ -1,15 +1,26 @@
 import type React from "react";
 import classNames from "classnames";
-import { Icon } from "../atoms/icon";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
+import { iconize } from "../atoms/iconize";
 import { selectProjectionTargetIssue } from "@/state/selectors/issues";
 import { narrowExpandedIssue } from "@/state/actions";
 
 export type Props = BaseProps;
 
 const Styles = {
-  unroller: classes("relative", "flex-none", "bg-white", "transition-colors", "cursor-pointer", "p-2"),
+  unroller: (active: boolean) =>
+    classNames(
+      "relative",
+      "flex-none",
+      "bg-white",
+      "transition-colors",
+      "cursor-pointer",
+      "p-2",
+      "w-10",
+      "h-10",
+      iconize({ type: "arrow-back", color: "secondary1", active, disabled: !active }),
+    ),
 };
 
 // eslint-disable-next-line func-style
@@ -26,17 +37,14 @@ export function GraphUnroller(props: Props) {
       dispatch(narrowExpandedIssue());
     }
   };
+  const active = projectionTarget !== undefined;
 
   return (
-    <li className={classNames(Styles.unroller)} data-testid={gen("unroller")} onClick={handleClick}>
-      <Icon
-        type='arrow-back'
-        size='m'
-        color='secondary1'
-        active={projectionTarget !== undefined}
-        disabled={projectionTarget === undefined}
-        testid={gen("icon")}
-      ></Icon>
-    </li>
+    <li
+      className={Styles.unroller(active)}
+      data-testid={gen("unroller")}
+      onClick={handleClick}
+      data-active={active}
+    ></li>
   );
 }

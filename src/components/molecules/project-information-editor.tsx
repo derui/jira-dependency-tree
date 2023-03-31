@@ -1,8 +1,8 @@
 import { useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
-import { Icon } from "../atoms/icon";
+import { iconize } from "../atoms/iconize";
 import { filterEmptyString } from "@/util/basic";
 
 type Payload = { projectKey: string };
@@ -13,11 +13,24 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  form: classes("flex", "flex-col", "pb-0", "pt-4", "pl-2", "pr-2", "pb-4"),
+  form: classNames("flex", "flex-col", "pb-0", "pt-4", "pl-2", "pr-2", "pb-4"),
 
   // editor styles
-  keyEditorButtonGroup: classes("bg-white", "flex", "justify-end", "mt-2"),
-  keyEditorButton: classes("first:ml-0", "last:mr-0", "mx-2", "cursor-pointer"),
+  keyEditorButtonGroup: classNames("bg-white", "flex", "justify-end", "mt-2"),
+  keyEditorButtonCancel: classNames(
+    "first:ml-0",
+    "last:mr-0",
+    "mx-2",
+    "cursor-pointer",
+    iconize({ type: "circle-x", color: "gray" }),
+  ),
+  keyEditorButtonSubmit: classNames(
+    "first:ml-0",
+    "last:mr-0",
+    "mx-2",
+    "cursor-pointer",
+    iconize({ type: "circle-check", color: "complement" }),
+  ),
 };
 
 const canSubmit = (obj: Partial<Payload>) => {
@@ -47,7 +60,7 @@ export function ProjectInformationEditor({ initialPayload, onEndEdit, ...props }
   };
 
   return (
-    <form className={classNames(Styles.form)} method='dialog' data-testid={gen("main")} onSubmit={handleSubmit}>
+    <form className={Styles.form} method='dialog' data-testid={gen("main")} onSubmit={handleSubmit}>
       <Input
         focus={true}
         value={obj.projectKey || ""}
@@ -55,24 +68,20 @@ export function ProjectInformationEditor({ initialPayload, onEndEdit, ...props }
         testid={gen("key")}
         onInput={update("projectKey")}
       />
-      <span className={classNames(Styles.keyEditorButtonGroup)}>
+      <span className={Styles.keyEditorButtonGroup}>
         <span
           role='button'
-          className={classNames(Styles.keyEditorButton)}
+          className={Styles.keyEditorButtonCancel}
           onClick={handleCancel}
           data-testid={gen("cancel")}
-        >
-          <Icon type='circle-x' color='gray' size='m' />
-        </span>
+        ></span>
         <span
           role='button'
           aria-disabled={!allowSubmit}
-          className={classNames(Styles.keyEditorButton)}
+          className={Styles.keyEditorButtonSubmit}
           onClick={handleSubmit}
           data-testid={gen("submit")}
-        >
-          <Icon type='circle-check' size='m' color='complement' />
-        </span>
+        ></span>
       </span>
     </form>
   );

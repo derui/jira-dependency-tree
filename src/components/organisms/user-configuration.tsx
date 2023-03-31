@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, classes, generateTestId } from "../helper";
-import { Icon } from "../atoms/icon";
 import { UserConfigurationForm, Props as UserConfigurationFormProps } from "../molecules/user-configuration-form";
 import { Dialog } from "../atoms/dialog";
 import { useAppDispatch, useAppSelector } from "../hooks";
+import { iconize } from "../atoms/iconize";
 import { submitApiCredential } from "@/state/actions";
 import { FirstArg } from "@/util/type-tool";
 import { getApiCrednetial } from "@/state/selectors/api-credential";
@@ -62,7 +62,11 @@ export function UserConfiguration(props: Props) {
   return (
     <div ref={ref} className={classNames(Styles.root)}>
       <div className={classNames(Styles.toolbar)}>
-        <button className={classNames(Styles.opener())} data-testid={gen("opener")} onClick={() => setOpened(!opened)}>
+        <button
+          className={classNames(Styles.opener(), iconize({ type: "settings", color: "complement", size: "l" }))}
+          data-testid={gen("opener")}
+          onClick={() => setOpened(!opened)}
+        >
           <span
             className={classNames(Styles.marker(!setupFinished))}
             aria-hidden={setupFinished}
@@ -71,7 +75,6 @@ export function UserConfiguration(props: Props) {
             <span className={classNames(Styles.markerPing)}></span>
             <span className={classNames(Styles.markerInner)}></span>
           </span>
-          <Icon size='l' type='settings' color='complement' />
         </button>
       </div>
       <Dialog

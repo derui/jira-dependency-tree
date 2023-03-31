@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import classNames from "classnames";
 import { Dialog } from "../atoms/dialog";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { useAppSelector } from "../hooks";
 import { ProjectSyncOptionEditorForm } from "../organisms/project-sync-option-editor-form";
 import { SearchCondition } from "@/model/event";
@@ -11,33 +11,35 @@ import { Rect } from "@/util/basic";
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes("relative", "w-full", "flex", "items-center", "justify-center"),
+  root: classNames("relative", "w-full", "flex", "items-center", "justify-center"),
   opener: (opened: boolean, disabled: boolean) => {
-    return {
-      ...classes(
-        "inline-flex",
-        "px-3",
-        "py-1",
-        "border",
-        "rounded",
-        "transition-colors",
-        "cursor-pointer",
-        "items-center",
-        "whitespace-nowrap",
-        "text-sm",
-      ),
-
-      ...(opened
-        ? classes("text-white", "bg-secondary1-200", "border-secondary1-500")
-        : classes(
-            "bg-white",
-
-            "hover:text-white",
-            "hover:bg-secondary1-200",
-            "hover:border-secondary1-500",
-          )),
-      ...(disabled ? classes("text-lightgray", "border-lightgray") : {}),
-    };
+    return classNames(
+      "inline-flex",
+      "px-3",
+      "py-1",
+      "border",
+      "rounded",
+      "transition-colors",
+      "cursor-pointer",
+      "items-center",
+      "whitespace-nowrap",
+      "text-sm",
+      {
+        "text-white": opened,
+        "bg-secondary1-200": opened,
+        "border-secondary1-500": opened,
+      },
+      {
+        "bg-white": !opened,
+        "hover:text-white": !opened,
+        "hover:bg-secondary1-200": !opened,
+        "hover:border-secondary1-500": !opened,
+      },
+      {
+        "text-lightgray": disabled,
+        "border-lightgray": disabled,
+      },
+    );
   },
 };
 
@@ -63,7 +65,7 @@ export function ProjectSyncOptionEditor(props: Props) {
   return (
     <div ref={ref} className={classNames(Styles.root)}>
       <button
-        className={classNames(Styles.opener(opened, disabled))}
+        className={Styles.opener(opened, disabled)}
         disabled={disabled}
         data-testid={gen("opener")}
         onClick={() => {

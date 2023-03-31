@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { useAppSelector } from "../hooks";
-import { Icon } from "../atoms/icon";
+import { iconize } from "../atoms/iconize";
 import { isSyncable, queryIssues } from "@/state/selectors/issues";
 import { Loading } from "@/type";
 import { synchronizeIssues } from "@/state/actions";
@@ -10,14 +10,11 @@ import { synchronizeIssues } from "@/state/actions";
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes("flex", "justify-center", "relative", "w-12"),
-  main: () => {
-    return {
-      ...classes("outline-none", "bg-white", "inline-block", "rounded", "cursor-pointer"),
-    };
-  },
-  icon: (syncing: boolean) => {
-    return syncing ? classes("animate-spin") : {};
+  root: classNames("flex", "justify-center", "relative", "w-12", "items-center"),
+  icon: (syncing: boolean, syncable: boolean) => {
+    return classNames("w-8", "h-8", iconize({ type: "refresh", size: "l", color: "complement", disabled: !syncable }), {
+      "animate-spin": syncing,
+    });
   },
 };
 
@@ -29,24 +26,16 @@ export function SyncIssueButton(props: Props) {
   const dispatch = useDispatch();
 
   return (
-    <div className={classNames(Styles.root)} data-testid={gen("root")}>
+    <div className={Styles.root} data-testid={gen("root")}>
       <button
+        className={Styles.icon(loading === Loading.Loading, syncable)}
         disabled={!syncable}
         aria-disabled={!syncable}
         data-testid={gen("button")}
         onClick={() => {
           dispatch(synchronizeIssues());
         }}
-      >
-        <Icon
-          type='refresh'
-          testid={gen("sync")}
-          size='l'
-          style={Styles.icon(loading === Loading.Loading)}
-          color="complement"
-          disabled={!syncable}
-        ></Icon>
-      </button>
+      ></button>
     </div>
   );
 }

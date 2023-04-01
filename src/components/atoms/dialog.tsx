@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { createPortal } from "react-dom";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { Rect } from "@/util/basic";
 
 type Alignment = "bottomLeft" | "bottomRight";
@@ -27,7 +27,7 @@ const Styles = {
     margin: Margin;
     initialized: InitializationStep;
   }) => {
-    const base = classes(
+    const base = [
       "z-50",
       "bg-white",
       "absolute",
@@ -36,27 +36,21 @@ const Styles = {
       "shadow-lg",
       "transition-width",
       "overflow-hidden",
-    );
+    ];
 
     if (initialized !== "Recorded") {
-      return {
-        ...base,
-        ...classes("w-96", "left-[-9999px]"),
-      };
+      return classNames(base, "w-96", "left-[-9999px]");
     }
 
-    return {
-      ...base,
+    return classNames(base, {
       invisible: !opened,
       "w-0": !opened,
       "w-96": opened,
-      ...(margin === "all" ? classes("m-3") : {}),
-      ...(margin === "top" ? classes("mt-3") : {}),
-      ...(margin === "left" ? classes("ml-3") : {}),
-      ...(margin === "left-top" ? classes("mt-3", "ml-3") : {}),
-      ...(margin === "right-top" ? classes("mt-3", "mr-3") : {}),
-      ...(margin === "right" ? classes("mr-3") : {}),
-    };
+      "m-3": margin === "all",
+      "mt-3": margin === "top" || margin === "left-top" || margin === "right-top",
+      "ml-3": margin === "left" || margin === "left-top",
+      "mr-3": margin === "right" || margin === "right-top",
+    });
   },
 };
 

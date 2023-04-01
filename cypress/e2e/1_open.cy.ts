@@ -15,9 +15,9 @@ describe("open", () => {
 
     // side toolbar
     cy.testid("side-toolbar/graph-layouter/graph-layout").should("not.have.class", "--opened");
-    cy.testid("side-toolbar/graph-layouter/horizontal").should("have.data", "active", true);
-    cy.testid("side-toolbar/graph-layouter/vertical").should("have.data", "active", false);
-    cy.testid("side-toolbar/graph-unroller/icon").should("have.attr", "aria-disabled", "true");
+    cy.testid("side-toolbar/graph-layouter/horizontal-layouter").should("have.data", "active", true);
+    cy.testid("side-toolbar/graph-layouter/vertical-layouter").should("have.data", "active", false);
+    cy.testid("side-toolbar/graph-unroller/unroller").should("have.attr", "aria-disabled", "true");
 
     // searcher
     cy.testid("issue-searcher/opener").should("be.visible");

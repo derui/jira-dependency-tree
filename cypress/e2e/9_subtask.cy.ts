@@ -58,12 +58,12 @@ describe("load issues", () => {
 
     cy.get(".graph-issue").should("be.visible").should("have.length", 1);
     cy.get('[data-issue-key="TES-6"]').should("be.visible").should("contain.text", "subtask3");
-    cy.testid("side-toolbar/graph-unroller/icon").should("have.attr", "aria-disabled", "false");
+    cy.testid("side-toolbar/graph-unroller/unroller").should("have.attr", "aria-disabled", "false");
 
     // restore root when unroller clicked
     cy.testid("side-toolbar/graph-unroller/unroller").click();
     cy.get(".graph-issue").should("be.visible").should("have.length", 3);
-    cy.testid("side-toolbar/graph-unroller/icon").should("have.attr", "aria-disabled", "true");
+    cy.testid("side-toolbar/graph-unroller/unroller").should("have.attr", "aria-disabled", "true");
   });
 
   it("search only issues in projected issue", () => {

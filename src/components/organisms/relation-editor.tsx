@@ -36,7 +36,7 @@ const Styles = {
   issueList: classNames("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
   appender: classNames("flex", "mb-2"),
-  appenderButton: classNames("flex", "flex-row", "items-center", iconize({ type: "plus", color: "gray" })),
+  appenderButton: classNames("flex", "flex-row", "items-center", "w-full", iconize({ type: "plus", color: "gray" })),
 };
 
 const kindToTitle = (kind: RelationKind) => {
@@ -99,7 +99,7 @@ const IssueAppender = function IssueAppender({
         />
       ) : (
         <Button size="full" schema='gray' testid={gen("add-button")} onClick={() => setSearching(!searching)}>
-          <span className={Styles.appenderButton}> Add </span>
+          <span className={Styles.appenderButton}>Add</span>
         </Button>
       )}
     </div>

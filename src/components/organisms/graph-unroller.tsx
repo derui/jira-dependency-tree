@@ -44,6 +44,7 @@ export function GraphUnroller(props: Props) {
       className={Styles.unroller(active)}
       data-testid={gen("unroller")}
       onClick={handleClick}
+      aria-disabled={!active}
       data-active={active}
     ></li>
   );

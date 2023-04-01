@@ -1,6 +1,6 @@
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
-import { catchError, debounceTime, filter, map, startWith, switchMap, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, map, startWith, switchMap } from "rxjs/operators";
 import { of } from "rxjs";
 import type { RootState } from "../store";
 import {
@@ -14,6 +14,12 @@ import { DependencyRegistrar } from "@/util/dependency-registrar";
 import { Suggestion, suggestionFactory } from "@/model/suggestion";
 
 type Epics = "acceptSuggestion" | "getSuggestion";
+
+const mapResponse = function mapResponse(body: Record<string, unknown>): Suggestion {
+  return suggestionFactory({
+    suggestions: body.sprints as { value: string; displayName: string }[],
+  });
+};
 
 export const suggestionEpic = (
   registrar: DependencyRegistrar<Dependencies>,
@@ -63,9 +69,3 @@ export const suggestionEpic = (
       map(({ payload }) => requestSuggestionAccepted(payload)),
     ),
 });
-
-const mapResponse = function mapResponse(body: Record<string, unknown>): Suggestion {
-  return suggestionFactory({
-    suggestions: body.sprints as { value: string; displayName: string }[],
-  });
-};

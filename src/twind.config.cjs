@@ -4,6 +4,7 @@ import presetTailwind from '@twind/preset-tailwind';
 
 /** @type {import('tailwindcss').Config} */
 export default defineConfig({
+  hash: false,
   content: ['./src/**/*.tsx', './src/*.tsx', './src/**/*.ts'],
   theme: {
     colors: {

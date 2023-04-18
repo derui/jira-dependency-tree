@@ -1,4 +1,4 @@
-import produce from "immer";
+import { produce } from "immer";
 import { Env } from "./env";
 import { ApiCredential } from "./event";
 import { Size } from "@/type";

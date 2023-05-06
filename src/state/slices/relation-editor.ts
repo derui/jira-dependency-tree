@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { WritableDraft } from "immer/dist/internal";
 import {
   addRelationAccepted,
   addRelationError,
@@ -32,13 +31,13 @@ const initialState = {
   relations: {},
 } as RelationEditorState satisfies RelationEditorState;
 
-const deleteRelationFromDraft = (state: WritableDraft<RelationEditorState>, id: IssueRelationId) => {
+const deleteRelationFromDraft = (state: RelationEditorState, id: IssueRelationId) => {
   Object.values(state.draft).forEach((v) => {
     delete v[id];
   });
 };
 
-const getTargetRelations = (state: WritableDraft<RelationEditorState>, target: { fromKey: string; toKey: string }) => {
+const getTargetRelations = (state: RelationEditorState, target: { fromKey: string; toKey: string }) => {
   return Object.entries(state.relations)
     .map(([, value]) => {
       return Object.values(value)

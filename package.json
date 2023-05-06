@@ -11,7 +11,6 @@
     "start": "concurrently --handle-input \"pnpm:copy-assets\" \"pnpm:start:*\"",
     "build:bundle": "NODE_ENV=production vite build",
     "build": "pnpm run build:bundle && pnpm pnpm run copy-assets",
-    "lint:css": "stylelint --config stylelint.config.cjs 'assets/css/**/*.css'",
     "lint:ts": "eslint --cache --cache-location=node_modules/.cache/eslint src/",
     "lint": "conc \"pnpm:lint:*\"",
     "copy-assets": "cp -r assets/svg/ dist/assets/",

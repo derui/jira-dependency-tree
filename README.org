@@ -24,7 +24,7 @@ This project provides web-app to display dependency tree of issues in JIRA with 
 We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.
 
 #+begin_quote
-This feature that display issue dependency is one of the most pain point of JIRA Roatmap I think.
+This feature that display issue dependency is one of the most pain point of JIRA Roadmap I think.
 #+end_quote
 
 ** Images
@@ -40,10 +40,10 @@ JIRA Dependency Tree has frontend and server.
 - Test
   - Using [[https://docs.cypress.io/][Cypress]] to run test on browser
   - Using [[https://mswjs.io/][msw]] to mock server response
-  - Using vitejs to run unit test
+  - Using vitest to run unit test
   - Using testing-library to test component without browser
 - Server
-  - Built on [[https://www.rust-lang.org/][Rust]]
+  - Built with [[https://www.rust-lang.org/][Rust]]
   - Using framework for AWS Lambda
 - Infrastructure
   - Run on AWS Lambda and API Gateway
@@ -55,7 +55,7 @@ This application uses JIRA API Token that user generated owned by them. But give
 * Development
 
 #+begin_quote
-Developer do not have personal machine of macOS. We think this application might run on macOS no problem.
+Some developers does not have personal macOS. We think this application might run on macOS without problem.
 #+end_quote
 
 ** Prerequirement
@@ -66,6 +66,7 @@ Developer do not have personal machine of macOS. We think this application might
   - Install via AWS SAM
 - pnpm
   - install ~npm install -g pnpm~
+  - or, other installation process that you used
 - Rust
   - We recommend to use rustup to setup Rust.
 - AWS CLI Setup

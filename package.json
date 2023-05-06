@@ -17,7 +17,7 @@
     "copy-assets": "cp -r assets/svg/ dist/assets/",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "it:serve": "conc \"msw init dist\" \"pnpm:start:css\" \"pnpm:ci\" \"pnpm:cypress:open\"",
+    "it:serve": "conc \"msw init dist\" \"pnpm:ci\" \"pnpm:cypress:open\"",
     "it:run": "msw init dist && conc -k true \"pnpm:ci\" \"cypress run --browser chromium\"",
     "cypress:open": "cypress open",
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
@@ -74,7 +74,7 @@
     "rome": "^12.0.0",
     "sinon": "^15.0.4",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.0.4",
+    "typescript": "^4.9.5",
     "vite": "^4.3.5",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.31.0"

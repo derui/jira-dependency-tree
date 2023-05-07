@@ -22,7 +22,8 @@
     "deploy:preview": "firebase hosting:channel:deploy preview_name",
     "deploy:production": "firebase deploy",
     "publish:preview": "pnpm run build && pnpm run deploy:preview",
-    "publish:production": "pnpm run build && pnpm run deploy:production"
+    "publish:production": "pnpm run build && pnpm run deploy:production",
+    "storybook": "storybook dev -p 6006"
   },
   "author": "derui",
   "license": "MIT",
@@ -45,6 +46,10 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "@storybook/addon-controls": "^7.0.9",
+    "@storybook/cli": "^7.0.9",
+    "@storybook/react": "^7.0.9",
+    "@storybook/react-vite": "^7.0.9",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
@@ -72,6 +77,7 @@
     "prettier": "^2.8.8",
     "rome": "^12.0.0",
     "sinon": "^15.0.4",
+    "storybook": "^7.0.9",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.5",
     "vite": "^4.3.5",

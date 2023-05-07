@@ -41,11 +41,11 @@ const Styles = {
       ...(!opened ? classes("invisible") : {}),
     };
   },
-  iconButton: (layout: GraphLayout) =>
+  iconButton: (layout: GraphLayout, active: boolean) =>
     classNames(
       "flex-none",
       "bg-white",
-      "p-2",
+      "m-2",
       "cursor-pointer",
       "rounded",
       {
@@ -53,7 +53,7 @@ const Styles = {
           type: "layout-distribute-horizontal",
           size: "m",
           color: "secondary1",
-          active: layout === GraphLayout.Horizontal,
+          active: active,
         })]: layout === GraphLayout.Horizontal,
       },
       {
@@ -61,7 +61,7 @@ const Styles = {
           type: "layout-distribute-vertical",
           size: "m",
           color: "secondary1",
-          active: layout === GraphLayout.Vertical,
+          active: active,
         })]: layout === GraphLayout.Vertical,
       },
     ),
@@ -74,6 +74,9 @@ export function IssueGraphLayouter(props: Props) {
   const layout = useAppSelector(getGraphLayout());
   const dispatch = useAppDispatch();
 
+  const horizontalActive = layout === GraphLayout.Horizontal;
+  const verticalActive = layout === GraphLayout.Vertical;
+
   return (
     <li
       className={Styles.graphLayout(opened)}
@@ -83,16 +86,16 @@ export function IssueGraphLayouter(props: Props) {
     >
       <div className={classNames(Styles.graphLayouter(opened))} data-testid={gen("layouter")}>
         <span
-          className={Styles.iconButton(layout)}
+          className={Styles.iconButton(GraphLayout.Horizontal, horizontalActive)}
           onClick={() => dispatch(changeToHorizontalLayout())}
           data-testid={gen("horizontal-layouter")}
-          data-active={layout === GraphLayout.Horizontal}
+          data-active={horizontalActive}
         ></span>
         <span
-          className={Styles.iconButton(layout)}
+          className={Styles.iconButton(GraphLayout.Vertical, verticalActive)}
           onClick={() => dispatch(changeToVerticalLayout())}
           data-testid={gen("vertical-layouter")}
-          data-active={layout === GraphLayout.Vertical}
+          data-active={verticalActive}
         ></span>
       </div>
     </li>

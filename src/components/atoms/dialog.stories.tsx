@@ -11,9 +11,10 @@ const meta = {
     margin: { control: "select", options: ["all", "left"] },
     aligned: { control: "select", options: ["bottomLeft", "bottomRight"], defaultValue: "bottomLeft" },
     parentRect: {
+      control: "object",
       defaultValue: new Rect({ bottom: 10, top: 0, left: 10, right: 20 }),
     },
-    selector: { control: "string" },
+    selector: { control: { type: "text" } },
   },
 } satisfies Meta<typeof Dialog>;
 
@@ -22,8 +23,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
+    aligned: "bottomLeft",
+    opened: false,
     parentRect: new Rect({ bottom: 10, top: 0, left: 10, right: 20 }),
   },
+
   render(args) {
     return (
       <>

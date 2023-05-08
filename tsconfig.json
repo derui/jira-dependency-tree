@@ -22,7 +22,7 @@
     "incremental": true,
     "baseUrl": ".",
     "outDir": "generated",
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "@storybook/addon-controls"],
     "paths": {
       "@/*": ["src/*"]
     }

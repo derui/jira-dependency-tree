@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 import classNames from "classnames";
 import { BaseProps } from "../helper";
 
-type ColorSchema = "primary" | "gray";
+type ColorSchema = "primary" | "gray" | "secondary1" | "secondary2";
 
 export interface Props extends PropsWithChildren, BaseProps {
   schema: ColorSchema;
@@ -11,6 +11,32 @@ export interface Props extends PropsWithChildren, BaseProps {
   disabled?: boolean;
   onClick?: () => void;
 }
+
+const ColorSchema: Record<ColorSchema, string> = {
+  gray: classNames("border-gray", "bg-white", "text-black", "hover:bg-lightgray/50", "active:bg-gray/50"),
+  primary: classNames(
+    "border-primary-300",
+    "bg-primary-200/60",
+    "text-primary-400",
+    "hover:bg-primary-200",
+    "active:bg-primary-300",
+  ),
+  secondary1: classNames(
+    "border-secondary1-300",
+    "bg-secondary1-200/40",
+    "text-secondary1-400",
+    "hover:bg-secondary1-200/60",
+    "active:bg-secondary1-300/80",
+  ),
+
+  secondary2: classNames(
+    "border-secondary2-300",
+    "bg-secondary2-200",
+    "text-secondary2-400",
+    "hover:bg-secondary2-200",
+    "active:bg-secondary2-300",
+  ),
+} as const;
 
 const Styles = {
   button: classNames(
@@ -41,24 +67,7 @@ const Styles = {
     });
   },
 
-  color: (schema: ColorSchema) => {
-    return classNames(
-      {
-        "border-secondary2-300": schema === "primary",
-        "bg-secondary2-200/60": schema === "primary",
-        "text-secondary1-400": schema === "primary",
-        "hover:bg-secondary2-200": schema === "primary",
-        "active:bg-secondary2-300": schema === "primary",
-      },
-      {
-        "border-gray": schema === "gray",
-        "bg-white": schema === "gray",
-        "text-black": schema === "gray",
-        "hover:bg-lightgray/50": schema === "gray",
-        "active:bg-gray/50": schema === "gray",
-      },
-    );
-  },
+  color: (schema: ColorSchema) => ColorSchema[schema],
 };
 
 // eslint-disable-next-line func-style

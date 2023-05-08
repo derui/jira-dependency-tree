@@ -31,8 +31,8 @@ const Colors = {
         "before:bg-primary-300": active,
       },
       {
-        "before:hover:bg-primary-300": !active,
-        "before:active:bg-primary-500": !active,
+        "hover:before:bg-primary-300": !active,
+        "active:before:bg-primary-500": !active,
       },
     );
   },
@@ -43,8 +43,8 @@ const Colors = {
         "before:bg-secondary1-200": active,
       },
       {
-        "before:hover:bg-secondary1-200": !active,
-        "before:active:bg-secondary1-500": !active,
+        "hover:before:bg-secondary1-200": !active,
+        "active:before:bg-secondary1-500": !active,
       },
     );
   },
@@ -55,8 +55,8 @@ const Colors = {
         "before:bg-secondary2-200": active,
       },
       {
-        "before:hover:bg-secondary2-200": !active,
-        "before:active:bg-secondary2-500": !active,
+        "hover:before:bg-secondary2-200": !active,
+        "active:before:bg-secondary2-500": !active,
       },
     );
   },
@@ -67,8 +67,8 @@ const Colors = {
         "before:bg-complement-200": active,
       },
       {
-        "before:hover:bg-complement-200": !active,
-        "before:active:bg-complement-500": !active,
+        "hover:before:bg-complement-200": !active,
+        "active:before:bg-complement-500": !active,
       },
     );
   },
@@ -79,8 +79,8 @@ const Colors = {
         "bg-darkgray": active,
       },
       {
-        "before:hover:bg-darkgray": !active,
-        "before:active:bg-black": !active,
+        "hover:before:bg-darkgray": !active,
+        "active:before:bg-black": !active,
       },
     );
   },

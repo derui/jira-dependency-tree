@@ -9,7 +9,7 @@ type Payload = { projectKey: string };
 
 export interface Props extends BaseProps {
   initialPayload?: Payload;
-  onEndEdit: (event: Payload | undefined) => void;
+  onEndEdit?: (event: Payload | undefined) => void;
 }
 
 const Styles = {
@@ -50,11 +50,13 @@ export function ProjectInformationEditor({ initialPayload, onEndEdit, ...props }
   };
 
   const handleCancel = () => {
-    onEndEdit(undefined);
+    if (onEndEdit) {
+      onEndEdit(undefined);
+    }
   };
 
   const handleSubmit = () => {
-    if (filterEmptyString(obj.projectKey)) {
+    if (filterEmptyString(obj.projectKey) && onEndEdit) {
       onEndEdit({ projectKey: obj.projectKey });
     }
   };

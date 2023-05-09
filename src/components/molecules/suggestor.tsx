@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { Dialog } from "../atoms/dialog";
 import { Input } from "../atoms/input";
 import { SuggestedItem } from "@/model/suggestion";
@@ -15,39 +15,40 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classes("flex"),
-  suggestorLabel: classes("flex", "flex-auto", "cursor-pointer", "items-center"),
-  suggestions: classes("flex", "flex-col", "list-none"),
+  root: classNames("flex"),
+  suggestorLabel: classNames("flex", "flex-auto", "cursor-pointer", "items-center"),
+  suggestions: classNames("flex", "flex-col", "list-none"),
   suggestionNode: (selected: boolean) => {
-    return {
-      ...classes(
-        "flex-none",
-        "px-4",
-        "py-3",
-        "border-l-2",
-        "border-l-transparent",
-        "cursor-pointer",
-        "hover:bg-secondary1-200",
-      ),
-      ...(selected ? classes("border-l-secondary1-300") : {}),
-    };
+    return classNames(
+      "flex-none",
+      "px-4",
+      "py-3",
+      "border-l-2",
+      "border-l-transparent",
+      "cursor-pointer",
+      "hover:bg-secondary1-200",
+      {
+        "border-l-secondary1-300": selected,
+      },
+    );
   },
   suggestorMain: (opened: boolean) => {
-    return {
-      ...classes(
-        "flex-col",
-        "top-full",
-        "bg-white",
-        "whitespace-nowrap",
-        "text-base",
-        "w-full",
-        "max-h-96",
-        "overflow-y-auto",
-      ),
-      ...(!opened ? classes("hidden") : classes("flex")),
-    };
+    return classNames(
+      "flex-col",
+      "top-full",
+      "bg-white",
+      "whitespace-nowrap",
+      "text-base",
+      "w-full",
+      "max-h-96",
+      "overflow-y-auto",
+      {
+        hidden: !opened,
+        flex: opened,
+      },
+    );
   },
-  empty: classes("text-lightgray", "flex-none", "px-4", "py-3"),
+  empty: classNames("text-lightgray", "flex-none", "px-4", "py-3"),
 };
 
 const filterSuggestions = (suggestions: SuggestedItem[], term: string) => {

@@ -26,7 +26,7 @@ const Styles = {
       "border-l-2",
       "border-l-transparent",
       "cursor-pointer",
-      "hover:bg-secondary1-200",
+      "hover:bg-secondary1-200/50",
       {
         "border-l-secondary1-300": selected,
       },

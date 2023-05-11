@@ -20,10 +20,10 @@ const Styles = {
     "px-3",
     "mr-3",
     "shadow-md",
-    "max-w-sm",
     "relative",
     "flex-none",
     "h-12",
+    "max-w-fit",
   ),
   opener: classNames("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
   input: classNames("flex-[1_1_60%]", "w-full", "outline-none", "pl-2"),
@@ -32,7 +32,7 @@ const Styles = {
   },
   inputWrapper: (status: Status) => {
     return classNames("flex-1", "overflow-hidden", "transition-width", {
-      "w-64": status === "Searching",
+      "w-72": status === "Searching",
       "w-0": status !== "Searching",
     });
   },
@@ -64,7 +64,7 @@ const Styles = {
       "flex-col",
       "absolute",
       "top-12",
-      "right-0",
+      "left-0",
       "w-96",
       "bg-white",
       "space-y-2",

@@ -12,7 +12,7 @@ import { getApiCrednetial } from "@/state/selectors/api-credential";
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes("flex", "relative"),
+  root: classes("inline-block", "relative"),
   toolbar: classes(
     "flex",
     "relative",

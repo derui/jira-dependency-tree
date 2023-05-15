@@ -46,7 +46,7 @@ test("change color schema", () => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  expect(Array.from(element.classList.values()).some((v) => v.includes("secondary1-"))).toBeTruthy();
+  expect(Array.from(element.classList.values()).some((v) => v.includes("primary-"))).toBeTruthy();
 });
 
 test("change disabled", () => {

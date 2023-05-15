@@ -103,15 +103,15 @@ const makePanZoomStream = (selector: string, reference: IssueGraphState): Observ
   const wheel$ = fromEvent(element, "wheel");
   const rect = element.getBoundingClientRect();
 
-  reference.pan = { x: -1 * (rect.width / 2), y: (-1 * rect.height) / 2 };
+  reference.pan = { x: (-1 * rect.width) / 2, y: (-1 * rect.height) / 2 };
   reference.zoomPercentage = 100;
 
   return new Observable<IssueGraphState>((subscriber) => {
     const dragListener = makeDragListener(mousemove$, mouseup$, (delta) => {
       const { pan, zoomPercentage: zoom } = reference;
-      reference.pan = { x: pan.x + delta.x * (100 / zoom), y: pan.y + delta.y * (100 / zoom) };
+      reference.pan = { x: pan.x + (delta.x * (100 / zoom)) / 2, y: pan.y + (delta.y * (100 / zoom)) / 2 };
 
-      subscriber.next({ pan, zoomPercentage: zoom });
+      subscriber.next({ pan: reference.pan, zoomPercentage: zoom });
     });
 
     const wheelListener = makeWheelListener((delta) => {

@@ -4,7 +4,7 @@ use isahc::{ReadResponseExt, RequestExt};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::{jira_project_request::build_partial_request, jira_url::JiraUrl};
+use crate::{jira_projects_request::build_partial_request, jira_url::JiraUrl};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]

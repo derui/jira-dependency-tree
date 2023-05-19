@@ -30,6 +30,10 @@ export class CdkStack extends cdk.Stack {
     project.addMethod("POST", integration, { apiKeyRequired: true });
     project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
+    const projects = restApi.root.addResource("load-projects");
+    projects.addMethod("POST", integration, { apiKeyRequired: true });
+    projects.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+
     const suggestions = restApi.root.addResource("get-suggestions");
     suggestions.addMethod("POST", integration, { apiKeyRequired: true });
     suggestions.addMethod("OPTIONS", integration, { apiKeyRequired: false });

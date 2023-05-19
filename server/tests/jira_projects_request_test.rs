@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 
-use httpmock::{Method, MockServer, Then};
+use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     jira_projects_request::{load_projects, JiraSimpleProject},
     jira_url::JiraUrl,
 };
 use serde_json::json;
-use tracing_subscriber::fmt::format;
 
 struct TestRequest<'a> {
     server: &'a MockServer,

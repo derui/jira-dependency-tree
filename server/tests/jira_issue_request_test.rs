@@ -330,10 +330,7 @@ fn request_recursive() {
         condition: Some(Default::default()),
     };
     let ret = load_issue(&request, url);
-    let keys = ret
-        .into_iter()
-        .map(|v| v.key.clone())
-        .collect::<HashSet<String>>();
+    let keys = ret.into_iter().map(|v| v.key).collect::<HashSet<String>>();
     let expected = (0..=50)
         .into_iter()
         .map(|v| format!("test{}", v))

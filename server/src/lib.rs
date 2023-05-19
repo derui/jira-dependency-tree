@@ -57,34 +57,34 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     let preflight = preflight();
 
     match event.uri().path() {
-        "/prod/load-issues" => match event.method() {
-            &Method::POST => execute_load_issue(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/load-issues" => match *event.method() {
+            Method::POST => execute_load_issue(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/get-project" => match event.method() {
-            &Method::POST => execute_get_project(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-project" => match *event.method() {
+            Method::POST => execute_get_project(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/get-projects" => match event.method() {
-            &Method::POST => execute_load_projects(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-projects" => match *event.method() {
+            Method::POST => execute_load_projects(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/get-suggestions" => match event.method() {
-            &Method::POST => execute_get_suggestions(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-suggestions" => match *event.method() {
+            Method::POST => execute_get_suggestions(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/create-link" => match event.method() {
-            &Method::POST => execute_create_link(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/create-link" => match *event.method() {
+            Method::POST => execute_create_link(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/delete-link" => match event.method() {
-            &Method::POST => execute_delete_link(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/delete-link" => match *event.method() {
+            Method::POST => execute_delete_link(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
         _ => unmatch,
@@ -146,7 +146,7 @@ async fn execute_load_projects(event: &Request) -> Result<Response<Body>, Error>
         _ => Err("Invalid body type"),
     }?;
 
-    let projects = jira_projects_request::load_projects(json.authorization.clone());
+    let projects = jira_projects_request::load_projects(json.authorization);
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
@@ -254,7 +254,7 @@ fn preflight() -> Result<Response<Body>, Error> {
     let origin = include_str!(".origin-release").trim();
 
     Ok(builder
-        .header("Access-Control-Allow-Origin", origin.clone())
+        .header("Access-Control-Allow-Origin", origin)
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .header("Access-Control-Allow-Headers", "content-type,x-api-key")
         .body(Body::Text(json.to_string()))?)

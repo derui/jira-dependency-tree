@@ -20,11 +20,12 @@ const Icons = {
   x: "before:[mask-image:url(/assets/svg/tablar-icons/x.svg)]",
   plus: "before:[mask-image:url(/assets/svg/tablar-icons/plus.svg)]",
   "arrow-back": "before:[mask-image:url(/assets/svg/tablar-icons/arrow-back.svg)]",
+  pencil: "before:[mask-image:url(/assets/svg/tablar-icons/pencil.svg)]",
 } as const;
 type Icons = keyof typeof Icons;
 
 const Colors = {
-  primary(active: boolean) {
+  primary(active: boolean, group?: string) {
     return classNames(
       "before:bg-darkgray",
       {
@@ -34,9 +35,13 @@ const Colors = {
         "hover:before:bg-primary-300": !active,
         "active:before:bg-primary-500": !active,
       },
+      {
+        [`${group}-hover:before:bg-primary-300`]: !active && group,
+        [`${group}-active:before:bg-primary-500`]: !active && group,
+      },
     );
   },
-  secondary1(active: boolean) {
+  secondary1(active: boolean, group?: string) {
     return classNames(
       "before:bg-darkgray",
       {
@@ -46,9 +51,13 @@ const Colors = {
         "hover:before:bg-secondary1-200": !active,
         "active:before:bg-secondary1-500": !active,
       },
+      {
+        [`${group}-hover:before:bg-secondary1-200`]: !active && group,
+        [`${group}-active:before:bg-secondary1-500`]: !active && group,
+      },
     );
   },
-  secondary2(active: boolean) {
+  secondary2(active: boolean, group?: string) {
     return classNames(
       "before:bg-darkgray",
       {
@@ -58,9 +67,13 @@ const Colors = {
         "hover:before:bg-secondary2-200": !active,
         "active:before:bg-secondary2-500": !active,
       },
+      {
+        [`${group}-hover:before:bg-secondary2-200`]: !active && group,
+        [`${group}-active:before:bg-secondary2-500`]: !active && group,
+      },
     );
   },
-  complement(active: boolean) {
+  complement(active: boolean, group?: string) {
     return classNames(
       "before:bg-darkgray",
       {
@@ -70,9 +83,13 @@ const Colors = {
         "hover:before:bg-complement-200": !active,
         "active:before:bg-complement-500": !active,
       },
+      {
+        [`${group}-hover:before:bg-complement-200`]: !active && group,
+        [`${group}-active:before:bg-complement-500`]: !active && group,
+      },
     );
   },
-  gray(active: boolean) {
+  gray(active: boolean, group?: string) {
     return classNames(
       "before:bg-gray",
       {
@@ -81,6 +98,10 @@ const Colors = {
       {
         "hover:before:bg-darkgray": !active,
         "active:before:bg-black": !active,
+      },
+      {
+        [`${group}-hover:before:bg-darkgray`]: !active && group,
+        [`${group}-active:before:bg-black`]: !active && group,
       },
     );
   },
@@ -118,8 +139,8 @@ const Styles = {
     }
   },
 
-  color: (color: Color, disabled: boolean, active: boolean) => {
-    return disabled ? classNames("before:bg-lightgray") : Colors[color](active);
+  color: (color: Color, disabled: boolean, active: boolean, group?: string) => {
+    return disabled ? classNames("before:bg-lightgray") : Colors[color](active, group);
   },
 };
 
@@ -130,6 +151,7 @@ export interface IconizeConfig {
   style?: Record<string, boolean>;
   disabled?: boolean;
   active?: boolean;
+  group?: string;
 }
 
 /**
@@ -140,6 +162,6 @@ export const iconize = function iconize(config: IconizeConfig) {
     Styles.iconBase,
     Styles.type(config.type),
     Styles.size(config.size ?? "s"),
-    Styles.color(config.color ?? "primary", config.disabled ?? false, config.active ?? false),
+    Styles.color(config.color ?? "primary", config.disabled ?? false, config.active ?? false, config.group),
   );
 };

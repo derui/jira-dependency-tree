@@ -6,7 +6,7 @@ import { ProjectInformationEditor } from "./project-information-editor";
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  render(<ProjectInformationEditor onEndEdit={() => {}} />);
+  render(<ProjectInformationEditor onSelectProject={() => {}} />);
 
   const key = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
 
@@ -14,7 +14,7 @@ test("should be able to render", () => {
 });
 
 test("set initial payload as initial value", () => {
-  render(<ProjectInformationEditor initialPayload={{ projectKey: "KEY" }} onEndEdit={() => {}} />);
+  render(<ProjectInformationEditor initialPayload={{ projectKey: "KEY" }} onSelectProject={() => {}} />);
 
   const key = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
 
@@ -26,7 +26,7 @@ test("get payload when typed", async () => {
 
   render(
     <ProjectInformationEditor
-      onEndEdit={(obj) => {
+      onSelectProject={(obj) => {
         expect(obj?.projectKey).toBe("KEY");
       }}
     />,
@@ -44,7 +44,7 @@ test("do not send payload if canceled", async () => {
 
   render(
     <ProjectInformationEditor
-      onEndEdit={(obj) => {
+      onSelectProject={(obj) => {
         expect(obj).toBeUndefined();
       }}
     />,

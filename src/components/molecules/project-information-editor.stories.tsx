@@ -5,18 +5,12 @@ const meta = {
   title: "Molecules/Project Information Editor",
   component: ProjectInformationEditor,
   tags: ["autodocs"],
-  argTypes: {
-    initialPayload: { control: "object" },
-  },
+  argTypes: {},
 } satisfies Meta<typeof ProjectInformationEditor>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    initialPayload: {
-      projectKey: "key",
-    },
-  },
+  args: {},
 };

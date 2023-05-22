@@ -28,13 +28,13 @@ const Styles = {
   input: classes(
     "w-full",
     "flex-[1_1_60%]",
-    "px-4",
-    "py-3",
+    "px-3",
+    "py-2",
     "border",
     "border-lightgray",
     "outline-1",
     "outline-lightgray",
-    "bg-lightgray",
+    "bg-lightgray/50",
     "rounded",
     "transition-outline",
     "transition-colors",
@@ -74,7 +74,7 @@ export function Input({ placeholder, label, focus, onInput, onKeypress, ...props
     <input
       ref={ref}
       className={classNames(Styles.input)}
-      type='text'
+      type="text"
       placeholder={placeholder}
       value={value}
       data-testid={props.testid ?? "input"}

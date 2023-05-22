@@ -17,7 +17,7 @@ const renderWrapper = (node: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='dialog-root' />
+          <div id="dialog-root" />
         </>
       );
     },
@@ -32,8 +32,8 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const span = screen.queryByText("Click here");
-  const marker = screen.getByTestId("marker");
+  const span = screen.queryByText("Select project");
+  const marker = screen.getByTestId("top/marker");
 
   expect(span).not.toBeNull();
   expect(marker.getAttribute("aria-hidden")).toEqual("false");
@@ -48,35 +48,16 @@ test("show editor if name clicked", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByText("Click here"));
+  await userEvent.click(screen.getByTestId("top/editButton"));
 
-  const dialog = screen.getByTestId("container/dialog");
+  const element = screen.queryByTestId("editor/main");
 
-  expect(dialog.getAttribute("aria-hidden")).toBe("false");
-});
-
-test("send key and loading state", async () => {
-  const store = createPureStore();
-
-  renderWrapper(
-    <Provider store={store}>
-      <ProjectInformation />
-    </Provider>,
-  );
-
-  await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("form/key"), "key");
-  await userEvent.click(screen.getByTestId("form/submit"));
-
-  const skeleton = screen.queryByTestId("skeleton");
-  const dialog = screen.getByTestId("container/dialog");
-
-  expect(skeleton?.classList?.contains("hidden"), "skeleton").toBeFalsy();
-  expect(dialog.getAttribute("aria-hidden")).toBe("true");
+  expect(element).not.toBeNull();
 });
 
 test("show project name ", async () => {
   const store = createPureStore();
+  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
 
   renderWrapper(
     <Provider store={store}>
@@ -84,13 +65,7 @@ test("show project name ", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("form/key"), "key");
-  await userEvent.click(screen.getByTestId("form/submit"));
+  const name = await screen.findByText("key | project name");
 
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
-
-  const name = await screen.findByText("project name");
-
-  expect(name.textContent).toEqual("project name");
+  expect(name.textContent).toMatch("key | project name");
 });

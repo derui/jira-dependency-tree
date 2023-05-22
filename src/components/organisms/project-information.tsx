@@ -4,6 +4,7 @@ import { BaseProps, classes, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { Dialog } from "../atoms/dialog";
 import { ProjectInformationEditor } from "../molecules/project-information-editor";
+import { ProjectEditorTop } from "../molecules/project-editor-top";
 import { queryProject } from "@/state/selectors/project";
 import { Loading } from "@/type";
 import { submitProjectKey } from "@/state/actions";
@@ -64,51 +65,49 @@ const Styles = {
 // eslint-disable-next-line func-style
 export function ProjectInformation(props: Props) {
   const gen = generateTestId(props.testid);
-  const [opened, setOpened] = useState(false);
-  const [key, setKey] = useState("");
   const [_loading, project] = useAppSelector(queryProject());
+  const [editing, setEditing] = useState(false);
   const dispatch = useAppDispatch();
   const ref = useRef<HTMLDivElement | null>(null);
   const loading = _loading === Loading.Loading;
 
-  const handleSubmit = (payload: { projectKey: string } | undefined) => {
-    setOpened(false);
-
+  const handleSelectProject = (payload: string | null) => {
     if (!payload) {
-      setKey("");
       return;
     }
 
-    dispatch(submitProjectKey(payload.projectKey));
+    setEditing(false);
+    dispatch(submitProjectKey(payload));
   };
 
-  const showMarker = Boolean(!project && !opened && !loading);
+  const handleCancel = () => {
+    setEditing(false);
+  };
+
+  const handleRequireEdit = () => {
+    setEditing(true);
+  };
 
   return (
     <div ref={ref} className={classNames(Styles.root)} data-testid={gen("main")}>
-      <span className={classNames(Styles.marker(showMarker))} aria-hidden={!showMarker} data-testid={gen("marker")}>
-        <span className={classNames(Styles.markerPing)}></span>
-        <span className={classNames(Styles.markerInner)}></span>
-      </span>
-      <span
-        className={classNames(Styles.name(!project, loading))}
-        data-testid={gen("name")}
-        onClick={() => setOpened(!opened)}
-      >
-        {project?.name ?? "Click here"}
-      </span>
+      {!editing ? (
+        <ProjectEditorTop
+          name={project?.name}
+          projectKey={project?.key}
+          onRequireEdit={handleRequireEdit}
+          testid={gen("top")}
+        />
+      ) : null}
       <span className={classNames(Styles.skeletonRoot(loading))} data-testid={gen("skeleton")}>
         <span className={classNames(Styles.skeleton)}></span>
       </span>
-      <Dialog
-        opened={opened}
-        aligned='bottomLeft'
-        parentRect={ref.current?.getBoundingClientRect()}
-        margin='top'
-        testid={gen("container")}
-      >
-        <ProjectInformationEditor testid={gen("form")} initialPayload={{ projectKey: key }} onEndEdit={handleSubmit} />
-      </Dialog>
+      {editing ? (
+        <ProjectInformationEditor
+          testid={gen("editor")}
+          onSelectProject={handleSelectProject}
+          onCancel={handleCancel}
+        />
+      ) : null}
     </div>
   );
 }

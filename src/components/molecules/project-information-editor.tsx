@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
@@ -8,7 +8,8 @@ import { SuggestedItem } from "@/model/suggestion";
 
 export interface Props extends BaseProps {
   suggestions?: SuggestedItem[];
-  onSelectProject?: (event: string | undefined) => void;
+  onSelectProject?: (event: string | null) => void;
+  onCancel?: () => void;
 }
 
 const Styles = {
@@ -59,42 +60,73 @@ function ProjectSuggestor(props: {
   };
 
   const button = () => (
-    <Button testid={gen("open-suggestion")} size="full" onClick={handleOpenSuggestion} schema={"gray"}>
+    <Button testid={gen("open")} size="full" onClick={handleOpenSuggestion} schema={"gray"}>
       {props.currentKey || "Click to select project"}
     </Button>
   );
+
+  if (props.suggestions.length === 0) {
+    return (
+      <div className={Styles.suggestor.main}>
+        <span>No project to select</span>
+      </div>
+    );
+  }
 
   return (
     <div ref={sprintTermElement} className={Styles.suggestor.main}>
       {!editing ? button() : null}
       {!editing ? null : (
-        <Suggestor focusOnInit={true} suggestions={[]} testid={gen("suggestor")} onConfirmed={handleConfirmed} />
+        <Suggestor
+          focusOnInit={true}
+          suggestions={props.suggestions}
+          testid={gen("main")}
+          onConfirmed={handleConfirmed}
+        />
       )}
     </div>
   );
 }
 
 // eslint-disable-next-line func-style
-export function ProjectInformationEditor({ onSelectProject, ...props }: Props) {
+export function ProjectInformationEditor({ onSelectProject, onCancel, ...props }: Props) {
   const gen = generateTestId(props.testid);
   const suggestions = props.suggestions ?? [];
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleCancel = () => {
-    if (onSelectProject) {
-      onSelectProject(undefined);
+    if (onCancel) {
+      onCancel();
     }
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e: FormEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (onSelectProject && selectedId) {
+      onSelectProject(selectedId);
+    }
+  };
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+  };
+  const disabled = suggestions.length === 0;
 
   return (
     <form className={Styles.form} method="dialog" data-testid={gen("main")} onSubmit={handleSubmit}>
-      <ProjectSuggestor suggestions={suggestions} currentKey={""} testid={gen("suggestor")} onSelect={() => {}} />
+      <ProjectSuggestor suggestions={suggestions} currentKey={""} testid={gen("suggestor")} onSelect={handleSelect} />
       <span className={Styles.suggestor.buttonGroup.container}>
         <button className={Styles.suggestor.buttonGroup.button} onClick={handleCancel} data-testid={gen("cancel")}>
           <span className={Styles.suggestor.buttonGroup.cancel} />
         </button>
-        <button className={Styles.suggestor.buttonGroup.button} onClick={handleSubmit} data-testid={gen("submit")}>
+        <button
+          className={Styles.suggestor.buttonGroup.button}
+          disabled={disabled}
+          aria-disabled={disabled}
+          onClick={handleSubmit}
+          data-testid={gen("submit")}
+        >
           <span className={Styles.suggestor.buttonGroup.submit} />
         </button>
       </span>

@@ -81,11 +81,11 @@ const Colors = {
       },
       {
         "hover:before:bg-complement-200": !active,
-        "active:before:bg-complement-500": !active,
+        "active:before:bg-complement-400": !active,
       },
       {
         [`${group}-hover:before:bg-complement-200`]: !active && group,
-        [`${group}-active:before:bg-complement-500`]: !active && group,
+        [`${group}-active:before:bg-complement-400`]: !active && group,
       },
     );
   },
@@ -101,7 +101,7 @@ const Colors = {
       },
       {
         [`${group}-hover:before:bg-darkgray`]: !active && group,
-        [`${group}-active:before:bg-black`]: !active && group,
+        [`active:before:bg-black`]: !active && group,
       },
     );
   },

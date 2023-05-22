@@ -16,14 +16,13 @@ const Styles = {
   form: classNames("flex", "pb-0", "pt-4", "pl-2", "pr-2", "pb-4", "items-center", "justify-center"),
 
   suggestor: {
-    container: classNames(),
+    emptyLabel: classNames("text-gray"),
     main: classNames("w-60"),
     buttonGroup: {
-      container: classNames("bg-white", "flex"),
+      container: classNames("bg-white", "flex", "ml-2"),
       button: classNames(
         "group",
         "rounded",
-        "mx-1",
         "p-2",
         "hover:shadow",
         "active:shadow-md",
@@ -31,8 +30,12 @@ const Styles = {
         "border",
         "border-transparent",
         "hover:border-lightgray",
+        "disabled:hover:border-transparent",
+        "disabled:hover:shadow-none",
+        "disabled:active:shadow-none",
       ),
-      submit: classNames(iconize({ type: "circle-check", color: "complement", group: "group" })),
+      submit: (disabled: boolean) =>
+        classNames(iconize({ type: "circle-check", color: "complement", group: "group", disabled })),
       cancel: classNames(iconize({ type: "circle-x", color: "gray", group: "group" })),
     },
   },
@@ -43,7 +46,7 @@ function ProjectSuggestor(props: {
   testid?: string;
   suggestions: SuggestedItem[];
   onSelect: (id: string) => void;
-  currentKey: string | undefined;
+  selectedId: string | null;
 }) {
   const gen = generateTestId(props.testid);
   const sprintTermElement = useRef<HTMLDivElement | null>(null);
@@ -59,16 +62,18 @@ function ProjectSuggestor(props: {
     setEditing(true);
   };
 
+  const suggestion = props.suggestions.find((v) => v.id === props.selectedId);
+
   const button = () => (
     <Button testid={gen("open")} size="full" onClick={handleOpenSuggestion} schema={"gray"}>
-      {props.currentKey || "Click to select project"}
+      {suggestion?.displayName ?? "Click to select project"}
     </Button>
   );
 
   if (props.suggestions.length === 0) {
     return (
       <div className={Styles.suggestor.main}>
-        <span>No project to select</span>
+        <span className={Styles.suggestor.emptyLabel}>No project to select</span>
       </div>
     );
   }
@@ -115,7 +120,12 @@ export function ProjectInformationEditor({ onSelectProject, onCancel, ...props }
 
   return (
     <form className={Styles.form} method="dialog" data-testid={gen("main")} onSubmit={handleSubmit}>
-      <ProjectSuggestor suggestions={suggestions} currentKey={""} testid={gen("suggestor")} onSelect={handleSelect} />
+      <ProjectSuggestor
+        suggestions={suggestions}
+        selectedId={selectedId}
+        testid={gen("suggestor")}
+        onSelect={handleSelect}
+      />
       <span className={Styles.suggestor.buttonGroup.container}>
         <button className={Styles.suggestor.buttonGroup.button} onClick={handleCancel} data-testid={gen("cancel")}>
           <span className={Styles.suggestor.buttonGroup.cancel} />
@@ -127,7 +137,7 @@ export function ProjectInformationEditor({ onSelectProject, onCancel, ...props }
           onClick={handleSubmit}
           data-testid={gen("submit")}
         >
-          <span className={Styles.suggestor.buttonGroup.submit} />
+          <span className={Styles.suggestor.buttonGroup.submit(disabled)} />
         </button>
       </span>
     </form>

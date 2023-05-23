@@ -1,4 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
+import { SimpleProject } from "./models/simple-project";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
@@ -77,3 +78,12 @@ export const addRelationError = createAction<{ relationId: string; fromKey: stri
 export const removeRelation = createAction<{ fromKey: string; toKey: string }>("removeRelation");
 export const removeRelationSucceeded = createAction<{ relationId: string }>("removeRelationSucceeded");
 export const removeRelationError = createAction<{ fromKey: string; toKey: string }>("removeRelationError");
+
+/**
+ * Actions for projects
+ */
+export const projects = {
+  loadProjects: createAction("projects:loadProjects"),
+  loadProjectsSucceeded: createAction<{ projects: SimpleProject[] }>("projects:loadProjectsSucceeded"),
+  loadProjectsError: createAction<{ reason: string }>("projects:loadProjectsError"),
+} as const;

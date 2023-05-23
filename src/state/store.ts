@@ -13,6 +13,7 @@ import { issueGraphEpic } from "./epics/issue-graph";
 import * as relationEditor from "./slices/relation-editor";
 import { relationEpic } from "./epics/relation";
 import * as projects from "./slices/projects";
+import { projectsEpic } from "./epics/projects";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
 
@@ -42,6 +43,8 @@ const reducers = {
 // eslint-disable-next-line
 export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
   const rootEpics = [
+    ...Object.values(projectsEpic(registrar)),
+
     ...Object.values(relationEpic(registrar)),
 
     ...Object.values(issueGraphEpic(registrar)),

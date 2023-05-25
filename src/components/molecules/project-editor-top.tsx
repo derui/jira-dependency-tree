@@ -3,7 +3,10 @@ import classNames from "classnames";
 import { iconize } from "../atoms/iconize";
 import { BaseProps, generateTestId } from "../helper";
 
+type ProjectTopState = "Loading" | "Editable";
+
 export interface Props extends BaseProps {
+  projectState?: ProjectTopState;
   onRequireEdit?: () => void;
   projectKey?: string;
   name?: string;
@@ -51,26 +54,27 @@ const Styles = {
       },
     ),
   editButton: {
-    root: classNames(
-      "flex",
-      "items-center",
-      "cursor-pointer",
-      "border",
-      "border-transparent",
-      "invisible",
-      "group-hover:visible",
-      "hover:border-complement-300",
-      "hover:shadow",
-      "transition-[shadow_color]",
-      "rounded",
-      "p-1",
-    ),
+    root: (state: ProjectTopState) =>
+      classNames(
+        "flex",
+        "items-center",
+        "cursor-pointer",
+        "border",
+        "border-transparent",
+        "invisible",
+        "hover:border-complement-300",
+        "hover:shadow",
+        "transition-[shadow_color]",
+        "rounded",
+        "p-1",
+        "group-hover:visible",
+      ),
     icon: classNames(iconize({ color: "complement", type: "pencil" })),
   },
 } as const;
 
 // eslint-disable-next-line func-style
-export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid }: Props) {
+export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid, projectState = "Editable" }: Props) {
   const gen = generateTestId(testid);
 
   const handleRequireEdit = (e: MouseEvent) => {
@@ -93,7 +97,11 @@ export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid 
       <span className={Styles.name(showMarker)} data-testid={gen("name")}>
         {formatted ?? "Select project"}
       </span>
-      <span className={Styles.editButton.root} onClick={handleRequireEdit} data-testid={gen("editButton")}>
+      <span
+        className={Styles.editButton.root(projectState)}
+        onClick={handleRequireEdit}
+        data-testid={gen("editButton")}
+      >
         <span className={Styles.editButton.icon} />
       </span>
     </span>

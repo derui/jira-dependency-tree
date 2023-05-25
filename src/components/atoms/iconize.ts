@@ -21,6 +21,7 @@ const Icons = {
   plus: "before:[mask-image:url(/assets/svg/tabler-icons/plus.svg)]",
   "arrow-back": "before:[mask-image:url(/assets/svg/tabler-icons/arrow-back.svg)]",
   pencil: "before:[mask-image:url(/assets/svg/tabler-icons/pencil.svg)]",
+  "loader-2": "before:[mask-image:url(/assets/svg/tabler-icons/loader-2.svg)]",
 } as const;
 type Icons = keyof typeof Icons;
 

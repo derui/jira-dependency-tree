@@ -42,3 +42,11 @@ test("handle event to require edit", async () => {
 
   await userEvent.click(screen.getByTestId("editButton"));
 });
+
+test("do not show edit button", async () => {
+  render(<ProjectEditorTop projectState="Loading" />);
+
+  const element = screen.queryByTestId("editButton");
+
+  expect(element).toBeNull();
+});

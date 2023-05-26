@@ -61,21 +61,26 @@ const Styles = {
         "cursor-pointer",
         "border",
         "border-transparent",
-        "invisible",
-        "hover:border-complement-300",
-        "hover:shadow",
         "transition-[shadow_color]",
         "rounded",
         "p-1",
-        "group-hover:visible",
+        {
+          invisible: state === "Editable",
+          "hover:border-complement-300": state === "Editable",
+          "hover:shadow": state === "Editable",
+          "group-hover:visible": state === "Editable",
+        },
       ),
     icon: classNames(iconize({ color: "complement", type: "pencil" })),
+    loader: classNames(iconize({ color: "complement", type: "loader-2" }), "animate-spin"),
   },
 } as const;
 
 // eslint-disable-next-line func-style
 export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid, projectState = "Editable" }: Props) {
   const gen = generateTestId(testid);
+  const showMarker = Boolean(!key && !name);
+  const formatted = key && name ? `${key} | ${name}` : null;
 
   const handleRequireEdit = (e: MouseEvent) => {
     if (onRequireEdit) {
@@ -85,8 +90,18 @@ export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid,
     }
   };
 
-  const showMarker = Boolean(!key && !name);
-  const formatted = key && name ? `${key} | ${name}` : null;
+  let Iconized = (
+    <button
+      className={Styles.editButton.root(projectState)}
+      onClick={handleRequireEdit}
+      data-testid={gen("editButton")}
+    >
+      <span className={Styles.editButton.icon} />
+    </button>
+  );
+  if (projectState === "Loading") {
+    Iconized = <span className={Styles.editButton.loader} />;
+  }
 
   return (
     <span className={Styles.root} data-testid={gen("root")}>
@@ -97,13 +112,7 @@ export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid,
       <span className={Styles.name(showMarker)} data-testid={gen("name")}>
         {formatted ?? "Select project"}
       </span>
-      <span
-        className={Styles.editButton.root(projectState)}
-        onClick={handleRequireEdit}
-        data-testid={gen("editButton")}
-      >
-        <span className={Styles.editButton.icon} />
-      </span>
+      {Iconized}
     </span>
   );
 }

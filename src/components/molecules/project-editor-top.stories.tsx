@@ -24,3 +24,11 @@ export const HasKeyAndName: Story = {
     projectKey: "TES",
   },
 };
+
+export const Loading: Story = {
+  args: {
+    projectState: "Loading",
+    name: "Name of project",
+    projectKey: "TES",
+  },
+};

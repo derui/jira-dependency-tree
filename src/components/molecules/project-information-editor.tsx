@@ -23,7 +23,7 @@ const Styles = {
       button: classNames(
         "group",
         "rounded",
-        "p-2",
+        "p-1",
         "hover:shadow",
         "active:shadow-md",
         "transition-[shadow_border]",

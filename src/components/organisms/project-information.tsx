@@ -17,7 +17,7 @@ const Styles = {
     "flex",
     "flex-auto",
     "h-12",
-    "px-3",
+    "px-2",
     "items-center",
     "transition-all",
     "border-b",

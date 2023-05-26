@@ -100,7 +100,7 @@ export function ProjectEditorTop({ onRequireEdit, name, projectKey: key, testid,
     </button>
   );
   if (projectState === "Loading") {
-    Iconized = <span className={Styles.editButton.loader} />;
+    Iconized = <span className={Styles.editButton.loader} data-testid={gen("loader")} />;
   }
 
   return (

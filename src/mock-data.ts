@@ -3,15 +3,16 @@ import { ApiCredential } from "./model/event";
 import { Issue } from "./model/issue";
 import { projectFactory } from "./model/project";
 import { StatusCategory } from "./type";
+import { FirstArg } from "./util/type-tool";
 
 /**
  * get random project
  */
-export const randomProject = () => {
+export const randomProject = (arg?: Partial<FirstArg<typeof projectFactory>>) => {
   return projectFactory({
     id: faker.string.uuid(),
-    key: faker.word.verb(),
-    name: faker.person.jobTitle(),
+    key: arg?.key ?? faker.word.verb(),
+    name: arg?.name ?? faker.person.jobTitle(),
     issueTypes: [
       {
         id: faker.string.uuid(),

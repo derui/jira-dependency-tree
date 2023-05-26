@@ -4,7 +4,6 @@ import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { ProjectInformationEditor } from "../molecules/project-information-editor";
 import { ProjectEditorTop } from "../molecules/project-editor-top";
-import { iconize } from "../atoms/iconize";
 import { queryProject } from "@/state/selectors/project";
 import { Loading } from "@/type";
 import { submitProjectKey } from "@/state/actions";
@@ -53,11 +52,18 @@ const Styles = {
     );
   },
   // skeleton styles
-  skeletonRoot: (loading: boolean) => {
-    return classNames("animate-pulse", "flex", "h-12", "w-full", "items-center", { hidden: loading });
-  },
+  skeletonRoot: classNames("animate-pulse", "flex", "h-12", "w-full", "items-center"),
   skeleton: classNames("bg-lightgray", "rounded", "h-8", "py-2", "px-2", "w-full"),
-  spinner: (loading: boolean) => classNames(iconize({ type: "loader-2" }), "animate-spin"),
+};
+
+const toProjectState = function toProjectState(suggestionLoading: Loading) {
+  switch (suggestionLoading) {
+    case "Loading":
+    case "Errored":
+      return "Loading";
+    case "Completed":
+      return "Editable";
+  }
 };
 
 // eslint-disable-next-line func-style
@@ -67,9 +73,8 @@ export function ProjectInformation(props: Props) {
   const [_suggestionLoading, suggestions] = useAppSelector(selectProjectSuggestions);
   const [editing, setEditing] = useState(false);
   const dispatch = useAppDispatch();
-  const ref = useRef<HTMLDivElement | null>(null);
   const loading = _loading === Loading.Loading;
-  const suggestionLoading = _suggestionLoading === Loading.Loading;
+  const projectState = toProjectState(_suggestionLoading);
 
   const handleSelectProject = (payload: string | null) => {
     if (!payload) {
@@ -85,25 +90,30 @@ export function ProjectInformation(props: Props) {
   };
 
   const handleRequireEdit = () => {
-    if (!suggestionLoading) {
-      setEditing(true);
-    }
+    setEditing(true);
   };
 
+  if (loading) {
+    return (
+      <div className={Styles.root} data-testid={gen("main")}>
+        <span className={Styles.skeletonRoot} data-testid={gen("skeleton")}>
+          <span className={Styles.skeleton}></span>
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <div ref={ref} className={Styles.root} data-testid={gen("main")}>
+    <div className={Styles.root} data-testid={gen("main")}>
       {!editing ? (
         <ProjectEditorTop
+          projectState={projectState}
           name={project?.name}
           projectKey={project?.key}
           onRequireEdit={handleRequireEdit}
           testid={gen("top")}
         />
       ) : null}
-      <span className={Styles.spinner(suggestionLoading)} />
-      <span className={Styles.skeletonRoot(loading)} data-testid={gen("skeleton")}>
-        <span className={Styles.skeleton}></span>
-      </span>
       {editing ? (
         <ProjectInformationEditor
           suggestions={suggestions}

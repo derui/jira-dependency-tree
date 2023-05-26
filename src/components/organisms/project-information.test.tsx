@@ -1,13 +1,14 @@
 import { test, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import React from "react";
 import { ProjectInformation } from "./project-information";
 import { createPureStore } from "@/state/store";
-import { submitProjectKeyFulfilled } from "@/state/actions";
+import { projects, submitProjectKey, submitProjectKeyFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
+import { randomProject } from "@/mock-data";
 
 afterEach(cleanup);
 
@@ -68,4 +69,43 @@ test("show project name ", async () => {
   const name = await screen.findByText("key | project name");
 
   expect(name.textContent).toMatch("key | project name");
+});
+
+test("show loading", async () => {
+  const store = createPureStore();
+  store.dispatch(submitProjectKey("key"));
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+
+  const skeleton = screen.queryByTestId("skeleton");
+
+  expect(skeleton).not.toBeNull();
+});
+
+test("select project key on editor", async () => {
+  const store = createPureStore();
+  store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("top/editButton"));
+  await userEvent.click(screen.getByTestId("editor/suggestor/open"));
+  await userEvent.click(screen.getByText(/name/));
+  await userEvent.click(screen.getByTestId("editor/submit"));
+
+  expect(screen.queryByTestId("skeleton")).not.toBeNull();
+
+  act(() => {
+    store.dispatch(submitProjectKeyFulfilled(randomProject({ key: "key", name: "name" })));
+  });
+
+  expect(screen.queryByText("key | name")).not.toBeNull();
 });

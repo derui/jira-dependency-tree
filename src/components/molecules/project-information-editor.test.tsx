@@ -6,53 +6,63 @@ import { ProjectInformationEditor } from "./project-information-editor";
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  render(<ProjectInformationEditor onEndEdit={() => {}} />);
+  render(<ProjectInformationEditor />);
 
-  const key = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
+  const cancel = screen.queryByTestId("cancel");
+  const submit = screen.queryByTestId("cancel");
 
-  expect(key.value).toBe("");
+  expect(cancel).not.toBeNull();
+  expect(submit).not.toBeNull();
 });
 
-test("set initial payload as initial value", () => {
-  render(<ProjectInformationEditor initialPayload={{ projectKey: "KEY" }} onEndEdit={() => {}} />);
+test("can not edit anything when list of suggestion is empty", async () => {
+  render(<ProjectInformationEditor />);
 
-  const key = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
+  const el = screen.queryByText("No project to select");
+  const submit = screen.getByTestId("submit");
 
-  expect(key.value).toBe("KEY");
+  expect(el).not.toBeNull();
+  expect(submit.getAttribute("aria-disabled")).toBe("true");
 });
 
-test("get payload when typed", async () => {
+test("can cancel when list of suggestion is empty", async () => {
   expect.assertions(1);
 
   render(
     <ProjectInformationEditor
-      onEndEdit={(obj) => {
-        expect(obj?.projectKey).toBe("KEY");
+      onCancel={() => {
+        expect(true);
       }}
     />,
   );
-
-  const key = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
-
-  await userEvent.type(key, "KEY");
-
-  await userEvent.click(screen.getByTestId("submit"));
-});
-
-test("do not send payload if canceled", async () => {
-  expect.assertions(1);
-
-  render(
-    <ProjectInformationEditor
-      onEndEdit={(obj) => {
-        expect(obj).toBeUndefined();
-      }}
-    />,
-  );
-
-  const token = screen.getByPlaceholderText("Project Key") as HTMLInputElement;
-
-  await userEvent.type(token, "KEY");
 
   await userEvent.click(screen.getByTestId("cancel"));
+});
+
+test("open suggestor and select", async () => {
+  expect.assertions(1);
+
+  render(
+    <ProjectInformationEditor
+      suggestions={[{ id: "id", value: "id", displayName: "name" }]}
+      onSelectProject={(obj) => {
+        expect(obj).toBe("id");
+      }}
+    />,
+    {
+      wrapper(props) {
+        return (
+          <>
+            {props.children}
+            <div id="dialog-root" />
+          </>
+        );
+      },
+    },
+  );
+
+  await userEvent.click(screen.getByTestId("suggestor/open"));
+  await userEvent.type(screen.getByTestId("suggestor/main/term"), "name");
+  await userEvent.click(screen.getByTestId("suggestor/main/suggestion"));
+  await userEvent.click(screen.getByTestId("submit"));
 });

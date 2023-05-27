@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { ProjectSyncOptionEditorForm } from "./project-sync-option-editor-form";
 import { createPureStore } from "@/state/store";
-import { submitProjectKeyFulfilled } from "@/state/actions";
+import { submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 
 afterEach(cleanup);
@@ -16,7 +16,7 @@ const wrappedRender = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='modal-root' />
+          <div id="modal-root" />
         </>
       );
     },
@@ -74,7 +74,7 @@ test("close when cancel clicked", async () => {
 
 test("change to epic", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
   wrappedRender(
     <Provider store={store}>
@@ -96,7 +96,7 @@ test("change to epic", async () => {
 
 test("show button when it is not editing", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
   wrappedRender(
     <Provider store={store}>
@@ -113,7 +113,7 @@ test("show button when it is not editing", async () => {
 
 test("show term input when open-suggestion clicked", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
   wrappedRender(
     <Provider store={store}>
@@ -133,7 +133,7 @@ test("show term input when open-suggestion clicked", async () => {
 
 test("show button again when type enter in term", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "1", name: "test" })));
 
   wrappedRender(
     <Provider store={store}>

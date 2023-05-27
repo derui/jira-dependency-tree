@@ -1,14 +1,16 @@
 pub mod jira_issue_request;
 pub mod jira_link_request;
 pub mod jira_project_request;
+pub mod jira_projects_request;
 pub mod jira_suggestion_request;
 pub mod jira_url;
 
 use isahc::http::Method;
 use jira_link_request::{create_link, delete_link};
+use jira_projects_request::JiraSimpleProject;
 use jira_url::JiraAuhtorization;
 use lambda_http::{Body, Error, Request, Response};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 #[derive(Deserialize, Default)]
@@ -22,6 +24,11 @@ pub struct IssueLoadingRequest {
     pub authorization: JiraAuhtorization,
     pub project: String,
     pub condition: Option<IssueSearchCondition>,
+}
+
+#[derive(Deserialize)]
+pub struct GetProjectsRequest {
+    pub authorization: JiraAuhtorization,
 }
 
 #[derive(Deserialize)]
@@ -44,35 +51,45 @@ pub struct DeleteLinkRequest {
     pub id: String,
 }
 
+#[derive(Serialize)]
+pub struct ProjectsResponse {
+    values: Vec<JiraSimpleProject>,
+}
+
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let unmatch = not_found();
     let preflight = preflight();
 
     match event.uri().path() {
-        "/prod/load-issues" => match event.method() {
-            &Method::POST => execute_load_issue(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-issues" => match *event.method() {
+            Method::POST => execute_load_issue(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/load-project" => match event.method() {
-            &Method::POST => execute_load_project(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-project" => match *event.method() {
+            Method::POST => execute_get_project(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/get-suggestions" => match event.method() {
-            &Method::POST => execute_get_suggestions(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-projects" => match *event.method() {
+            Method::POST => execute_load_projects(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/create-link" => match event.method() {
-            &Method::POST => execute_create_link(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/get-suggestions" => match *event.method() {
+            Method::POST => execute_get_suggestions(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
-        "/prod/delete-link" => match event.method() {
-            &Method::POST => execute_delete_link(&event).await,
-            &Method::OPTIONS => preflight,
+        "/prod/create-link" => match *event.method() {
+            Method::POST => execute_create_link(&event).await,
+            Method::OPTIONS => preflight,
+            _ => unmatch,
+        },
+        "/prod/delete-link" => match *event.method() {
+            Method::POST => execute_delete_link(&event).await,
+            Method::OPTIONS => preflight,
             _ => unmatch,
         },
         _ => unmatch,
@@ -103,7 +120,7 @@ async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
     Ok(resp)
 }
 
-async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> {
+async fn execute_get_project(event: &Request) -> Result<Response<Body>, Error> {
     let json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
@@ -121,6 +138,30 @@ async fn execute_load_project(event: &Request) -> Result<Response<Body>, Error> 
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .body(
             serde_json::to_string(&project)
+                .expect("unexpected format")
+                .into(),
+        )
+        .map_err(Box::new)?;
+    Ok(resp)
+}
+
+async fn execute_load_projects(event: &Request) -> Result<Response<Body>, Error> {
+    let json: GetProjectsRequest = match event.body() {
+        Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
+        _ => Err("Invalid body type"),
+    }?;
+
+    let projects = jira_projects_request::load_projects(json.authorization);
+
+    // Return something that implements IntoResponse.
+    // It will be serialized to the right response event automatically by the runtime
+    let resp = Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Access-Control-Allow-Method", "POST,OPTIONS")
+        .body(
+            serde_json::to_string(&ProjectsResponse { values: projects })
                 .expect("unexpected format")
                 .into(),
         )
@@ -218,7 +259,7 @@ fn preflight() -> Result<Response<Body>, Error> {
     let origin = include_str!(".origin-release").trim();
 
     Ok(builder
-        .header("Access-Control-Allow-Origin", origin.clone())
+        .header("Access-Control-Allow-Origin", origin)
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .header("Access-Control-Allow-Headers", "content-type,x-api-key")
         .body(Body::Text(json.to_string()))?)

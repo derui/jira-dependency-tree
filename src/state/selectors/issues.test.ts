@@ -2,8 +2,8 @@ import { test, expect, describe } from "vitest";
 import {
   expandIssue,
   searchIssue,
-  submitProjectKey,
-  submitProjectKeyFulfilled,
+  submitProjectId,
+  submitProjectIdFulfilled,
   synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "../actions";
@@ -80,7 +80,7 @@ test("return request if request setup finished", () => {
 describe("queryIssueModels", () => {
   test("loading when project or issue are loading", () => {
     const store = createPureStore();
-    store.dispatch(submitProjectKey("key"));
+    store.dispatch(submitProjectId("key"));
 
     const ret = s.selectMatchedIssueModel()(store.getState());
 
@@ -101,7 +101,7 @@ describe("queryIssueModels", () => {
     const store = createPureStore();
 
     store.dispatch(synchronizeIssuesFulfilled(issues));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(searchIssue("sum"));
 
     const ret = s.selectMatchedIssueModel()(store.getState());

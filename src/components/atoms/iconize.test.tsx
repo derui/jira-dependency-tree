@@ -28,3 +28,9 @@ test("disabled", () => {
 
   expect(ret.includes("before:bg-lightgray")).toBe(true);
 });
+
+test("group", () => {
+  const ret = iconize({ type: "chevron-down", group: "group" });
+
+  expect(ret.includes("group-hover:before:bg-primary-300")).toBe(true);
+});

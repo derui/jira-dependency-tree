@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
 import { createPureStore } from "@/state/store";
-import { submitApiCredentialFulfilled, submitProjectKeyFulfilled } from "@/state/actions";
+import { submitApiCredentialFulfilled, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 import { Loading } from "@/type";
 
@@ -25,7 +25,7 @@ test("initial state is disabled all", () => {
 
 test("do not disable if setup finished", () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",
@@ -48,7 +48,7 @@ test("do not disable if setup finished", () => {
 
 test("dispatch action when click action", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",

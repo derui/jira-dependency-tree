@@ -7,7 +7,7 @@ import { RelationEditor } from "./relation-editor";
 import { createPureStore } from "@/state/store";
 import {
   selectIssueInGraph,
-  submitProjectKeyFulfilled,
+  submitProjectIdFulfilled,
   synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "@/state/actions";
@@ -21,7 +21,7 @@ const renderWrapper = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='dialog-root' />
+          <div id="dialog-root" />
         </>
       );
     },
@@ -48,7 +48,7 @@ test("render issues in inward", async () => {
     randomIssue({ key: "foo", relations: [{ id: "id", externalId: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
   ];
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
@@ -65,7 +65,7 @@ test("render issues in inward", async () => {
 
 test("render skeleton", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(synchronizeIssues());
 
   renderWrapper(
@@ -82,7 +82,7 @@ test("render skeleton", async () => {
 test("show input when button clicked", async () => {
   const issues = [randomIssue({ key: "key" }), randomIssue({ key: "key2" })];
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
@@ -103,7 +103,7 @@ test("show input when button clicked", async () => {
 test("re-display button after press enter in input", async () => {
   const issues = [randomIssue({ key: "key" }), randomIssue({ key: "key2" })];
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 
@@ -130,7 +130,7 @@ test("do not display issue in suggestion that are already had relation", async (
     randomIssue({ key: "key3" }),
   ];
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(randomProject()));
+  store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(synchronizeIssuesFulfilled(issues));
   store.dispatch(selectIssueInGraph("key"));
 

@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { ProjectSyncOptionEditor } from "./project-sync-option-editor";
 import { createPureStore } from "@/state/store";
-import { submitApiCredentialFulfilled, submitProjectKeyFulfilled } from "@/state/actions";
+import { submitApiCredentialFulfilled, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 
 afterEach(cleanup);
@@ -16,7 +16,7 @@ const wrappedRender = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='dialog-root' />
+          <div id="dialog-root" />
         </>
       );
     },
@@ -40,7 +40,7 @@ test("should be able to render", async () => {
 
 test("open dialog when opener clicked", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",
@@ -69,7 +69,7 @@ test("open dialog when opener clicked", async () => {
 
 test("close dialog after finished to edit search condition", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",
@@ -99,7 +99,7 @@ test("close dialog after finished to edit search condition", async () => {
 
 test("show current value in button", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ id: "1", key: "key", name: "name" })));
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",

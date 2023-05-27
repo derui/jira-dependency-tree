@@ -185,7 +185,7 @@ fn request_to_get_all_statuses() {
     // verify
     project_mock.assert();
 
-    let statuses = result.statuses.clone();
+    let statuses = result.statuses;
     let statuses = statuses
         .iter()
         .map(|v| v.name.clone())

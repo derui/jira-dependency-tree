@@ -1,4 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
+import { SimpleProject } from "./models/simple-project";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
@@ -18,9 +19,9 @@ export const restoreApiCredential = createAction<ApiCredential>("restoreApiCrede
 
 // actions for project
 
-export const submitProjectKey = createAction<string>("submitProjectKey");
-export const submitProjectKeyFulfilled = createAction<Project>("submitProjectKeyFulfilled");
-export const submitProjectKeyError = createAction("submitProjectKeyError");
+export const submitProjectId = createAction<string>("submitProjectId");
+export const submitProjectIdFulfilled = createAction<Project>("submitProjectIdFulfilled");
+export const submitProjectIdError = createAction("submitProjectIdError");
 export const changeConditionToEpic = createAction<string>("changeConditionToEpic");
 export const changeConditionToSprint = createAction<{ value: string; displayName: string }>("changeConditionToSprint");
 export const changeDefaultCondition = createAction("changeDefaultCondition");
@@ -77,3 +78,12 @@ export const addRelationError = createAction<{ relationId: string; fromKey: stri
 export const removeRelation = createAction<{ fromKey: string; toKey: string }>("removeRelation");
 export const removeRelationSucceeded = createAction<{ relationId: string }>("removeRelationSucceeded");
 export const removeRelationError = createAction<{ fromKey: string; toKey: string }>("removeRelationError");
+
+/**
+ * Actions for projects
+ */
+export const projects = {
+  loadProjects: createAction("projects:loadProjects"),
+  loadProjectsSucceeded: createAction<{ projects: SimpleProject[] }>("projects:loadProjectsSucceeded"),
+  loadProjectsError: createAction<{ reason: string }>("projects:loadProjectsError"),
+} as const;

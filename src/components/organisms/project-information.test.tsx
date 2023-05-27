@@ -1,13 +1,14 @@
 import { test, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import React from "react";
 import { ProjectInformation } from "./project-information";
 import { createPureStore } from "@/state/store";
-import { submitProjectKeyFulfilled } from "@/state/actions";
+import { projects, submitProjectId, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
+import { randomProject } from "@/mock-data";
 
 afterEach(cleanup);
 
@@ -17,7 +18,7 @@ const renderWrapper = (node: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='dialog-root' />
+          <div id="dialog-root" />
         </>
       );
     },
@@ -32,8 +33,8 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const span = screen.queryByText("Click here");
-  const marker = screen.getByTestId("marker");
+  const span = screen.queryByText("Select project");
+  const marker = screen.getByTestId("top/marker");
 
   expect(span).not.toBeNull();
   expect(marker.getAttribute("aria-hidden")).toEqual("false");
@@ -48,35 +49,20 @@ test("show editor if name clicked", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByText("Click here"));
+  act(() => {
+    store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
+  });
 
-  const dialog = screen.getByTestId("container/dialog");
+  await userEvent.click(screen.getByTestId("top/editButton"));
 
-  expect(dialog.getAttribute("aria-hidden")).toBe("false");
-});
+  const element = screen.queryByTestId("editor/main");
 
-test("send key and loading state", async () => {
-  const store = createPureStore();
-
-  renderWrapper(
-    <Provider store={store}>
-      <ProjectInformation />
-    </Provider>,
-  );
-
-  await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("form/key"), "key");
-  await userEvent.click(screen.getByTestId("form/submit"));
-
-  const skeleton = screen.queryByTestId("skeleton");
-  const dialog = screen.getByTestId("container/dialog");
-
-  expect(skeleton?.classList?.contains("hidden"), "skeleton").toBeFalsy();
-  expect(dialog.getAttribute("aria-hidden")).toBe("true");
+  expect(element).not.toBeNull();
 });
 
 test("show project name ", async () => {
   const store = createPureStore();
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
 
   renderWrapper(
     <Provider store={store}>
@@ -84,13 +70,67 @@ test("show project name ", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByText("Click here"));
-  await userEvent.type(screen.getByTestId("form/key"), "key");
-  await userEvent.click(screen.getByTestId("form/submit"));
+  const name = await screen.findByText("key | project name");
 
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
+  expect(name.textContent).toMatch("key | project name");
+});
 
-  const name = await screen.findByText("project name");
+test("show loading", async () => {
+  const store = createPureStore();
+  store.dispatch(submitProjectId("key"));
 
-  expect(name.textContent).toEqual("project name");
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+
+  const skeleton = screen.queryByTestId("skeleton");
+
+  expect(skeleton).not.toBeNull();
+});
+
+test("select project on editor", async () => {
+  const store = createPureStore();
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+
+  act(() => {
+    store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
+  });
+
+  await userEvent.click(screen.getByTestId("top/editButton"));
+  await userEvent.click(screen.getByTestId("editor/suggestor/open"));
+  await userEvent.click(screen.getByText(/name/));
+  await userEvent.click(screen.getByTestId("editor/submit"));
+
+  expect(screen.queryByTestId("skeleton")).not.toBeNull();
+
+  act(() => {
+    store.dispatch(submitProjectIdFulfilled(randomProject({ id: "id", key: "key", name: "name" })));
+  });
+
+  expect(screen.queryByText("key | name")).not.toBeNull();
+});
+
+test("do not send event on render", async () => {
+  const store = createPureStore();
+  const state = store.getState();
+  store.replaceReducer((_, action) => {
+    if (projects.loadProjects.match(action)) {
+      expect.fail("do not send event on render");
+    }
+
+    return state;
+  });
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
 });

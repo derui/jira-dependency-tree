@@ -3,9 +3,9 @@ import {
   changeConditionToEpic,
   changeConditionToSprint,
   changeDefaultCondition,
-  submitProjectKey,
-  submitProjectKeyError,
-  submitProjectKeyFulfilled,
+  submitProjectId,
+  submitProjectIdError,
+  submitProjectIdFulfilled,
 } from "../actions";
 import { SearchCondition } from "@/model/event";
 import { Project } from "@/model/project";
@@ -27,17 +27,17 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(submitProjectKey, (state) => {
+    builder.addCase(submitProjectId, (state) => {
       state.loading = Loading.Loading;
     });
 
-    builder.addCase(submitProjectKeyFulfilled, (state, action) => {
+    builder.addCase(submitProjectIdFulfilled, (state, action) => {
       state.loading = Loading.Completed;
       state.project = action.payload;
       state.searchCondition = { projectKey: action.payload.key };
     });
 
-    builder.addCase(submitProjectKeyError, (state) => {
+    builder.addCase(submitProjectIdError, (state) => {
       state.loading = Loading.Completed;
     });
 

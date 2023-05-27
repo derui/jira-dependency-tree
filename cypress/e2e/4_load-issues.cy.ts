@@ -5,8 +5,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
@@ -18,9 +19,11 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
@@ -45,8 +48,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
     // Input credentials
@@ -57,9 +61,11 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
@@ -84,8 +90,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
     // Input credentials
@@ -96,9 +103,11 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
 
     // enter epic
     cy.testid("project-sync-option-editor/opener").click();
@@ -116,8 +125,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions", "basic/other-suggestions"], {
         "basic/suggestions": async (req) => {
           const json = await req.clone().json();
@@ -139,9 +149,11 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
 
     // open suggestor
     cy.testid("project-sync-option-editor/opener").click();
@@ -173,8 +185,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/tooltip"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/tooltip"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
     });
 
     // Input credentials
@@ -185,9 +198,12 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
+
     cy.testid("sync-issue-button/root").click();
 
     // display a tooltip
@@ -203,8 +219,9 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/tooltip"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/tooltip"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
+      "http://localhost:3000/get-projects": post(["basic/projects"]),
     });
 
     // Input credentials
@@ -215,9 +232,12 @@ describe("load issues", () => {
     cy.testid("user-configuration/form/submit").click();
 
     // input project name
-    cy.testid("project-information/name").click();
-    cy.testid("project-information/form/key").type("KEY");
-    cy.testid("project-information/form/submit").click();
+    cy.testid("project-information/top/editButton").click({ force: true });
+    cy.testid("project-information/editor/suggestor/open").click();
+    cy.testid("project-information/editor/suggestor/main/term").type("TES");
+    cy.testid("project-information/editor/suggestor/main/suggestion").first().click();
+    cy.testid("project-information/editor/submit").click();
+
     cy.testid("sync-issue-button/root").click();
 
     // display a tooltip

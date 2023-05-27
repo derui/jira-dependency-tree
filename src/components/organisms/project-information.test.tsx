@@ -116,3 +116,21 @@ test("select project on editor", async () => {
 
   expect(screen.queryByText("key | name")).not.toBeNull();
 });
+
+test("do not send event on render", async () => {
+  const store = createPureStore();
+  const state = store.getState();
+  store.replaceReducer((_, action) => {
+    if (projects.loadProjects.match(action)) {
+      expect.fail("do not send event on render");
+    }
+
+    return state;
+  });
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+});

@@ -56,7 +56,11 @@ const Styles = {
   skeleton: classNames("bg-lightgray", "rounded", "h-8", "py-2", "px-2", "w-full"),
 };
 
-const toProjectState = function toProjectState(suggestionLoading: Loading) {
+const toProjectState = function toProjectState(editing: boolean, suggestionLoading: Loading) {
+  if (!editing) {
+    return "Editable";
+  }
+
   switch (suggestionLoading) {
     case "Loading":
     case "Errored":
@@ -74,11 +78,13 @@ export function ProjectInformation(props: Props) {
   const [editing, setEditing] = useState(false);
   const dispatch = useAppDispatch();
   const loading = _loading === Loading.Loading;
-  const projectState = toProjectState(_suggestionLoading);
+  const projectState = toProjectState(editing, _suggestionLoading);
 
   useEffect(() => {
-    dispatch(projects.loadProjects());
-  }, []);
+    if (editing && suggestions.length === 0) {
+      dispatch(projects.loadProjects());
+    }
+  }, [editing]);
 
   const handleSelectProject = (payload: string | null) => {
     if (!payload) {

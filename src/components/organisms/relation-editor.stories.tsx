@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { RelationEditor } from "./relation-editor";
 import { createPureStore } from "@/state/store";
 import { randomIssue, randomProject } from "@/mock-data";
-import { selectIssueInGraph, submitProjectKeyFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
+import { selectIssueInGraph, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
 
 const meta = {
   title: "Organisms/Relation Editor",
@@ -27,7 +27,7 @@ export const Inward: Story = {
       randomIssue({ key: "key", relations: [{ id: "id", externalId: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
       randomIssue({ key: "foo", relations: [{ id: "id", externalId: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
     ];
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled(issues));
     store.dispatch(selectIssueInGraph("key"));
 

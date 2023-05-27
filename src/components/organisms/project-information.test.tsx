@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import React from "react";
 import { ProjectInformation } from "./project-information";
 import { createPureStore } from "@/state/store";
-import { projects, submitProjectKey, submitProjectKeyFulfilled } from "@/state/actions";
+import { projects, submitProjectId, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 import { randomProject } from "@/mock-data";
 
@@ -49,6 +49,10 @@ test("show editor if name clicked", async () => {
     </Provider>,
   );
 
+  act(() => {
+    store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
+  });
+
   await userEvent.click(screen.getByTestId("top/editButton"));
 
   const element = screen.queryByTestId("editor/main");
@@ -58,7 +62,7 @@ test("show editor if name clicked", async () => {
 
 test("show project name ", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKeyFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
+  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "project name" })));
 
   renderWrapper(
     <Provider store={store}>
@@ -73,7 +77,7 @@ test("show project name ", async () => {
 
 test("show loading", async () => {
   const store = createPureStore();
-  store.dispatch(submitProjectKey("key"));
+  store.dispatch(submitProjectId("key"));
 
   renderWrapper(
     <Provider store={store}>
@@ -86,15 +90,18 @@ test("show loading", async () => {
   expect(skeleton).not.toBeNull();
 });
 
-test("select project key on editor", async () => {
+test("select project on editor", async () => {
   const store = createPureStore();
-  store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
 
   renderWrapper(
     <Provider store={store}>
       <ProjectInformation />
     </Provider>,
   );
+
+  act(() => {
+    store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "id", key: "key", name: "name" }] }));
+  });
 
   await userEvent.click(screen.getByTestId("top/editButton"));
   await userEvent.click(screen.getByTestId("editor/suggestor/open"));
@@ -104,7 +111,7 @@ test("select project key on editor", async () => {
   expect(screen.queryByTestId("skeleton")).not.toBeNull();
 
   act(() => {
-    store.dispatch(submitProjectKeyFulfilled(randomProject({ key: "key", name: "name" })));
+    store.dispatch(submitProjectIdFulfilled(randomProject({ id: "id", key: "key", name: "name" })));
   });
 
   expect(screen.queryByText("key | name")).not.toBeNull();

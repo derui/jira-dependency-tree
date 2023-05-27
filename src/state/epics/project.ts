@@ -6,9 +6,9 @@ import type { RootState } from "../store";
 import {
   submitApiCredential,
   submitApiCredentialFulfilled,
-  submitProjectKey,
-  submitProjectKeyError,
-  submitProjectKeyFulfilled,
+  submitProjectId,
+  submitProjectIdError,
+  submitProjectIdFulfilled,
 } from "../actions";
 import type { Dependencies } from "@/dependencies";
 import { DependencyRegistrar } from "@/util/dependency-registrar";
@@ -21,12 +21,18 @@ export const projectEpic = (
 ): Record<Epics, Epic<Action, Action, RootState>> => ({
   loadProject: (action$, state$) =>
     action$.pipe(
-      filter(submitProjectKey.match),
+      filter(submitProjectId.match),
       switchMap(({ payload }) => {
         const credential = state$.value.apiCredential.credential;
+        const projects = state$.value.projects.projects;
 
         if (!credential) {
-          return of(submitProjectKeyError());
+          return of(submitProjectIdError());
+        }
+
+        const targetProject = projects[payload]?.key;
+        if (!targetProject) {
+          return of(submitProjectIdError());
         }
 
         return registrar
@@ -41,18 +47,18 @@ export const projectEpic = (
                 email: credential.email,
                 user_domain: credential.userDomain,
               },
-              project: payload,
+              project: targetProject,
             },
           })
           .pipe(
             map((response) => mapResponse(response as { [k: string]: unknown })),
-            map((project) => submitProjectKeyFulfilled(project)),
+            map((project) => submitProjectIdFulfilled(project)),
           );
       }),
       catchError((e, source) => {
         console.error(e);
 
-        return source.pipe(startWith(submitProjectKeyError()));
+        return source.pipe(startWith(submitProjectIdError()));
       }),
     ),
 

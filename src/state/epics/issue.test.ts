@@ -6,7 +6,7 @@ import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { Dependencies } from "../../dependencies";
 import {
   submitApiCredentialFulfilled,
-  submitProjectKeyFulfilled,
+  submitProjectIdFulfilled,
   synchronizeIssues,
   synchronizeIssuesFulfilled,
 } from "../actions";
@@ -52,7 +52,7 @@ test("get issues from response", () => {
 
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     const epics = epic.issueEpic(registrar);
 
@@ -116,7 +116,7 @@ test("apply relations", () => {
 
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     const epics = epic.issueEpic(registrar);
 
@@ -180,7 +180,7 @@ test("should be get event when error happened", () => {
 
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     const epics = epic.issueEpic(registrar);
 

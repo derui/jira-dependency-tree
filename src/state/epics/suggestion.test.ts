@@ -11,7 +11,7 @@ import {
   requestSuggestionError,
   requestSuggestionFulfilled,
   submitApiCredentialFulfilled,
-  submitProjectKeyFulfilled,
+  submitProjectIdFulfilled,
 } from "../actions";
 import * as epic from "./suggestion";
 import { SuggestionKind } from "@/type";
@@ -63,7 +63,7 @@ test("send request when setupped", async () => {
 
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     const epics = epic.suggestionEpic(registrar);
 
@@ -98,7 +98,7 @@ test("return accepted event", async () => {
     const registrar = createDependencyRegistrar<Dependencies>();
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     const epics = epic.suggestionEpic(registrar);
 
@@ -129,7 +129,7 @@ test("return error when API send error", async () => {
 
     const store = createPureStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-    store.dispatch(submitProjectKeyFulfilled(randomProject()));
+    store.dispatch(submitProjectIdFulfilled(randomProject()));
 
     registrar.register("postJSON", () => {
       return cold("--#", undefined, new Error("have error"));

@@ -6,11 +6,12 @@ import { Dependencies } from "../../dependencies";
 import { createDependencyRegistrar } from "../../util/dependency-registrar";
 import { createPureStore } from "../store";
 import {
+  projects,
   submitApiCredential,
   submitApiCredentialFulfilled,
-  submitProjectKey,
-  submitProjectKeyError,
-  submitProjectKeyFulfilled,
+  submitProjectId as submitProjectId,
+  submitProjectIdError,
+  submitProjectIdFulfilled,
 } from "../actions";
 import * as epic from "./project";
 import { ProjectArgument, projectFactory } from "@/model/project";
@@ -26,14 +27,14 @@ test("get error if credential was not setupeped", async () => {
     const epics = epic.projectEpic(registrar);
 
     const action$ = hot("-a", {
-      a: submitProjectKey("key"),
+      a: submitProjectId("key"),
     });
     const state$ = new StateObservable(NEVER, store.getState());
 
     const ret$ = epics.loadProject(action$, state$, null);
 
     expect(ret$).toBe("-a", {
-      a: submitProjectKeyError(),
+      a: submitProjectIdError(),
     });
   });
 });
@@ -44,6 +45,7 @@ test("get project", async () => {
   const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "foo", key: "bar", name: "name" }] }));
 
   testScheduler.run(({ hot, cold, expectObservable: expect }) => {
     const response = {
@@ -60,14 +62,14 @@ test("get project", async () => {
     const epics = epic.projectEpic(registrar);
 
     const action$ = hot("-a", {
-      a: submitProjectKey("key"),
+      a: submitProjectId("foo"),
     });
     const state$ = new StateObservable(NEVER, store.getState());
 
     const ret$ = epics.loadProject(action$, state$, null);
 
     expect(ret$).toBe("---a", {
-      a: submitProjectKeyFulfilled(
+      a: submitProjectIdFulfilled(
         projectFactory({
           id: response.id,
           key: response.key,
@@ -117,6 +119,7 @@ test("get error when API returns error", async () => {
   const testScheduler = new TestScheduler((a, b) => expect(a).toEqual(b));
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(projects.loadProjectsSucceeded({ projects: [{ id: "foo", key: "bar", name: "name" }] }));
 
   testScheduler.run(({ hot, cold, expectObservable: expect }) => {
     registrar.register("postJSON", () => {
@@ -125,14 +128,14 @@ test("get error when API returns error", async () => {
     const epics = epic.projectEpic(registrar);
 
     const action$ = hot("-a", {
-      a: submitProjectKey("key"),
+      a: submitProjectId("foo"),
     });
     const state$ = new StateObservable(NEVER, store.getState());
 
     const ret$ = epics.loadProject(action$, state$, null);
 
     expect(ret$).toBe("---a", {
-      a: submitProjectKeyError(),
+      a: submitProjectIdError(),
     });
   });
 });

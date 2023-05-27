@@ -6,7 +6,7 @@ import { ProjectInformationEditor } from "../molecules/project-information-edito
 import { ProjectEditorTop } from "../molecules/project-editor-top";
 import { queryProject } from "@/state/selectors/project";
 import { Loading } from "@/type";
-import { projects, submitProjectKey } from "@/state/actions";
+import { projects, submitProjectId } from "@/state/actions";
 import { selectProjectSuggestions } from "@/state/selectors/project-suggestions";
 
 export type Props = BaseProps;
@@ -86,7 +86,7 @@ export function ProjectInformation(props: Props) {
     }
 
     setEditing(false);
-    dispatch(submitProjectKey(payload));
+    dispatch(submitProjectId(payload));
   };
 
   const handleCancel = () => {

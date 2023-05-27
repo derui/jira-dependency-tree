@@ -10,7 +10,7 @@ import { FirstArg } from "./util/type-tool";
  */
 export const randomProject = (arg?: Partial<FirstArg<typeof projectFactory>>) => {
   return projectFactory({
-    id: faker.string.uuid(),
+    id: arg?.id ?? faker.string.uuid(),
     key: arg?.key ?? faker.word.verb(),
     name: arg?.name ?? faker.person.jobTitle(),
     issueTypes: [

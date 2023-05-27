@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { ProjectInformation } from "./project-information";
 import { createPureStore } from "@/state/store";
-import { projects, submitProjectKey } from "@/state/actions";
+import { projects, submitProjectId } from "@/state/actions";
 
 const meta = {
   title: "Organisms/Project Information",
@@ -38,7 +38,7 @@ export const Default: Story = {
 export const Loading: Story = {
   render() {
     const store = createPureStore();
-    store.dispatch(submitProjectKey("key"));
+    store.dispatch(submitProjectId("key"));
 
     return (
       <Provider store={store}>

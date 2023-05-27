@@ -5,8 +5,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
@@ -45,8 +45,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
     // Input credentials
@@ -84,8 +84,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
     // Input credentials
@@ -116,8 +116,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions", "basic/other-suggestions"], {
         "basic/suggestions": async (req) => {
           const json = await req.clone().json();
@@ -173,8 +173,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/tooltip"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/tooltip"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
     });
 
     // Input credentials
@@ -203,8 +203,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["basic/tooltip"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["basic/tooltip"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
     });
 
     // Input credentials

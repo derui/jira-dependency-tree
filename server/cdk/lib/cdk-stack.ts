@@ -22,15 +22,15 @@ export class CdkStack extends cdk.Stack {
       proxy: true,
     });
 
-    const issues = restApi.root.addResource("load-issues");
+    const issues = restApi.root.addResource("get-issues");
     issues.addMethod("POST", integration, { apiKeyRequired: true });
     issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
-    const project = restApi.root.addResource("load-project");
+    const project = restApi.root.addResource("get-project");
     project.addMethod("POST", integration, { apiKeyRequired: true });
     project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
-    const projects = restApi.root.addResource("load-projects");
+    const projects = restApi.root.addResource("get-projects");
     projects.addMethod("POST", integration, { apiKeyRequired: true });
     projects.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 

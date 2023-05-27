@@ -57,7 +57,7 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     let preflight = preflight();
 
     match event.uri().path() {
-        "/prod/load-issues" => match *event.method() {
+        "/prod/get-issues" => match *event.method() {
             Method::POST => execute_load_issue(&event).await,
             Method::OPTIONS => preflight,
             _ => unmatch,

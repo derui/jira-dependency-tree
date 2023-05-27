@@ -5,8 +5,8 @@ describe("issue update", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["update-issue/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["update-issue/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
     });
 
     // Input credentials
@@ -33,7 +33,7 @@ describe("issue update", () => {
 
     // change issue and re-sync
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["update-issue/changed"]),
+      "http://localhost:3000/get-issues": post(["update-issue/changed"]),
     });
     cy.testid("sync-issue-button/root").click();
 

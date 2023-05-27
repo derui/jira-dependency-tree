@@ -28,7 +28,7 @@ export const issueEpic = (
 
           return registrar
             .resolve("postJSON")({
-              url: `${credential.apiBaseUrl}/load-issues`,
+              url: `${credential.apiBaseUrl}/get-issues`,
               headers: {
                 "x-api-key": credential.apiKey,
               },

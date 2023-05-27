@@ -5,8 +5,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["cycle/issues"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["cycle/issues"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
@@ -32,8 +32,8 @@ describe("load issues", () => {
     cy.visit("/");
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["cycle/complex-graph"]),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-issues": post(["cycle/complex-graph"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 
@@ -61,7 +61,7 @@ describe("load issues", () => {
     let count = 0;
 
     cy.mockAPI({
-      "http://localhost:3000/load-issues": post(["cycle/issues", "cycle/complex-graph"], {
+      "http://localhost:3000/get-issues": post(["cycle/issues", "cycle/complex-graph"], {
         "cycle/issues": async () => {
           if (count === 0) {
             count += 1;
@@ -73,7 +73,7 @@ describe("load issues", () => {
           return count > 0;
         },
       }),
-      "http://localhost:3000/load-project": post(["basic/project"]),
+      "http://localhost:3000/get-project": post(["basic/project"]),
       "http://localhost:3000/get-suggestions": post(["basic/suggestions"]),
     });
 

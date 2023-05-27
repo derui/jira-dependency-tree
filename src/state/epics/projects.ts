@@ -24,7 +24,7 @@ export const projectsEpic = (
 
         return registrar
           .resolve("postJSON")({
-            url: `${credential.apiBaseUrl}/load-projects`,
+            url: `${credential.apiBaseUrl}/get-projects`,
             headers: {
               "x-api-key": credential.apiKey,
             },

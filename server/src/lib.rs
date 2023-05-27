@@ -27,6 +27,11 @@ pub struct IssueLoadingRequest {
 }
 
 #[derive(Deserialize)]
+pub struct GetProjectsRequest {
+    pub authorization: JiraAuhtorization,
+}
+
+#[derive(Deserialize)]
 pub struct SuggestionRequest {
     pub authorization: JiraAuhtorization,
     pub project: String,
@@ -141,7 +146,7 @@ async fn execute_get_project(event: &Request) -> Result<Response<Body>, Error> {
 }
 
 async fn execute_load_projects(event: &Request) -> Result<Response<Body>, Error> {
-    let json: IssueLoadingRequest = match event.body() {
+    let json: GetProjectsRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;

@@ -18,14 +18,12 @@ COPY . /code
 WORKDIR /code
 # provided:al2 はランタイム用の設定になっているので、ENTRYPOINTをビルド用に書き換える
 
-#RUN ["cargo", "build", "--release"]
-RUN ["cargo", "build"]
+RUN ["cargo", "build", "--release"]
 
 FROM public.ecr.aws/lambda/provided:al2
 
 # 実行ファイルを起動するようにするため、ファイル名を "bootstrap" に変更する
-#COPY --from=builder /code/target/release/jira-issue-loader ${LAMBDA_RUNTIME_DIR}/bootstrap
-COPY --from=builder /code/target/debug/jira-issue-loader ${LAMBDA_RUNTIME_DIR}/bootstrap
+COPY --from=builder /code/target/release/jira-issue-loader ${LAMBDA_RUNTIME_DIR}/bootstrap
 
 # カスタムランタイム同様ハンドラ名は利用しないため、適当な文字列を指定する。
 CMD [ "lambda-handler" ]

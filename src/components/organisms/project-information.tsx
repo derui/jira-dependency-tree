@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -6,7 +6,7 @@ import { ProjectInformationEditor } from "../molecules/project-information-edito
 import { ProjectEditorTop } from "../molecules/project-editor-top";
 import { queryProject } from "@/state/selectors/project";
 import { Loading } from "@/type";
-import { submitProjectKey } from "@/state/actions";
+import { projects, submitProjectKey } from "@/state/actions";
 import { selectProjectSuggestions } from "@/state/selectors/project-suggestions";
 
 export type Props = BaseProps;
@@ -75,6 +75,10 @@ export function ProjectInformation(props: Props) {
   const dispatch = useAppDispatch();
   const loading = _loading === Loading.Loading;
   const projectState = toProjectState(_suggestionLoading);
+
+  useEffect(() => {
+    dispatch(projects.loadProjects());
+  }, []);
 
   const handleSelectProject = (payload: string | null) => {
     if (!payload) {

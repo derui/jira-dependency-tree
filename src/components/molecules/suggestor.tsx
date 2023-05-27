@@ -148,7 +148,7 @@ export function Suggestor({ focusOnInit, onConfirmed, onEmptySuggestion, ...prop
 
   if (suggestionNodes.length === 0) {
     suggestionNodes.push(
-      <li key='_empty' className={classNames(Styles.empty)} data-testid={gen("empty")}>
+      <li key="_empty" className={classNames(Styles.empty)} data-testid={gen("empty")}>
         No suggestions
       </li>,
     );
@@ -165,9 +165,9 @@ export function Suggestor({ focusOnInit, onConfirmed, onEmptySuggestion, ...prop
         testid={gen("term")}
       />
       <Dialog
-        aligned='bottomRight'
+        aligned="bottomLeft"
         opened={opened}
-        margin='top'
+        margin="top"
         parentRect={ref.current ? Rect.fromDOMRect(ref.current.getBoundingClientRect()) : undefined}
         testid={gen("root")}
       >

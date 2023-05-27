@@ -67,7 +67,7 @@ fn request_to_get_all_projects_with_pagenation() {
             .header("content-type", "application/json")
             .body(
                 json!({
-                    "maxResults": 52,
+                    "total": 52,
                     "startAt": 0,
                     "values": (0..50).into_iter().map(|i| {
                          json!({
@@ -91,7 +91,7 @@ fn request_to_get_all_projects_with_pagenation() {
             .header("content-type", "application/json")
             .body(
                 json!({
-                    "maxResults": 52,
+                    "total": 52,
                     "startAt": 50,
                     "values": (50..52).into_iter().map(|i| {
                          json!({

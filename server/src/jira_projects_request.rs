@@ -59,7 +59,7 @@ fn load_projects_paginated(
         })
         .unwrap_or_default();
 
-    let result = json["maxResults"]
+    let result = json["total"]
         .as_i64()
         .map(|v| v as usize)
         .unwrap_or_default();

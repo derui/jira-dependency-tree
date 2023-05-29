@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -90,10 +90,10 @@ export function ProjectInformation(props: Props) {
   };
 
   const handleRequireEdit = () => {
+    setEditing(true);
+
     if (suggestions.length === 0) {
       dispatch(projects.loadProjects());
-    } else {
-      setEditing(true);
     }
   };
 

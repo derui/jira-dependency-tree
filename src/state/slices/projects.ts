@@ -30,6 +30,10 @@ const slice = createSlice({
         state.projects[value.id] = value;
       }
     });
+
+    builder.addCase(projects.loadProjectsError, (state) => {
+      state.loading = Loading.Errored;
+    });
   },
 });
 

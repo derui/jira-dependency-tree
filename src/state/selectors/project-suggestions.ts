@@ -9,7 +9,7 @@ const selectProjects = createDraftSafeSelector(selectSelf, (state) => state.proj
 
 export const selectProjectSuggestions = createDraftSafeSelector(selectProjects, (state): [Loading, SuggestedItem[]] => {
   if (state.loading !== Loading.Completed) {
-    return [Loading.Loading, []];
+    return [state.loading, []];
   }
 
   const values = Object.values(state.projects)

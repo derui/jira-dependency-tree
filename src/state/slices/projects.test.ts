@@ -34,3 +34,13 @@ test("make projects into record", () => {
     }),
   );
 });
+
+test("change state to error", () => {
+  const state = reducer(getInitialState(), projects.loadProjectsError({ reason: "something" }));
+
+  expect(state).toEqual(
+    expect.objectContaining({
+      loading: Loading.Errored,
+    }),
+  );
+});

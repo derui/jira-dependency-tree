@@ -134,3 +134,17 @@ test("do not send event on render", async () => {
     </Provider>,
   );
 });
+
+test("show loading after clicking edit button", async () => {
+  const store = createPureStore();
+
+  renderWrapper(
+    <Provider store={store}>
+      <ProjectInformation />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("top/editButton"));
+
+  expect(screen.queryByTestId("top/loader")).not.toBeNull();
+});

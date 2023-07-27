@@ -11,7 +11,7 @@ export default defineConfig({
     polyfillDynamicImport: false,
     jsx: isProduction ? 'react-jsx' : 'react-jsxdev',
   },
-  publicDir: 'dist',
+  publicDir: 'public',
   define:{
     "process.env": {
       "CI": isCI ? 'ci' : ''

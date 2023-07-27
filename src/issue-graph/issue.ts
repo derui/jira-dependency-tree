@@ -107,7 +107,7 @@ const upsertIssueNode = (
           .attr("x", configuration.nodeSize.width - IssueSizes.paddingX * 2 - IssueSizes.iconSize / 2)
           .attr("width", IssueSizes.iconSize)
           .attr("height", IssueSizes.iconSize)
-          .attr("xlink:href", "/assets/svg/tabler-icons/door-exit.svg")
+          .attr("xlink:href", "/svg/tabler-icons/door-exit.svg")
           .on("click", (e, d) => {
             if (d.issue) {
               e.preventDefault();

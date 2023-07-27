@@ -10,6 +10,7 @@ export class CdkStack extends cdk.Stack {
     const jiraIssueHandlerLambda = new lambda.DockerImageFunction(this, "jiraIssueLoader", {
       functionName: "jira-issue-loader",
       code: lambda.DockerImageCode.fromImageAsset("../"),
+      timeout: cdk.Duration.minutes(1),
     });
 
     const restApi = new apigw.LambdaRestApi(this, "Endpoint", {

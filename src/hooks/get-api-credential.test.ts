@@ -1,6 +1,5 @@
 import { test, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
 import { useGetApiCredential } from "./get-api-credential";
 import { getWrapper } from "./hook-test-util";
 import { createPureStore } from "@/state/store";
@@ -29,9 +28,8 @@ test("get api credential", () => {
 
   expect(ret.result.current).toBeUndefined();
 
-  act(() => {
-    store.dispatch(submitApiCredentialFulfilled(credential));
-  });
+  store.dispatch(submitApiCredentialFulfilled(credential));
+  ret.rerender();
 
   expect(ret.result.current).toEqual(credential);
 });

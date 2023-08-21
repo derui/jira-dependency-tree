@@ -1,22 +1,24 @@
 import { mapResponse } from "./mapper/issue";
 import { ApiCredential } from "@/model/event";
 import { Issue } from "@/model/issue";
-import { IssueKey } from "@/type";
 
 /**
  * execute to get a issues
  */
-export const call = async function call(apiCredential: ApiCredential, targetIssueKeys: IssueKey[]): Promise<Issue[]> {
+export const call = async function call(
+  apiCredential: ApiCredential,
+  jql: string,
+): Promise<[Issue[], string | undefined]> {
   const body = {
     authorization: {
       jira_token: apiCredential.token,
       email: apiCredential.email,
       user_domain: apiCredential.userDomain,
     },
-    issues: targetIssueKeys,
+    jql,
   };
 
-  const ret = await fetch(`${apiCredential.apiBaseUrl}/get-issues`, {
+  const ret = await fetch(`${apiCredential.apiBaseUrl}/search-issues`, {
     method: "POST",
     mode: "cors",
     headers: {
@@ -25,8 +27,11 @@ export const call = async function call(apiCredential: ApiCredential, targetIssu
     },
     body: JSON.stringify(body),
   });
-
   const json = await ret.json();
 
-  return mapResponse(json);
+  if (ret.status === 400) {
+    return [[], `Invalid JQL: ${json.message}`];
+  }
+
+  return [mapResponse(json), undefined];
 };

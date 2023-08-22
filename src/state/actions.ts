@@ -87,3 +87,6 @@ export const projects = {
   loadProjectsSucceeded: createAction<{ projects: SimpleProject[] }>("projects:loadProjectsSucceeded"),
   loadProjectsError: createAction<{ reason: string }>("projects:loadProjectsError"),
 } as const;
+
+// action to import issues
+export const importIssues = createAction<{ issues: IssueKey[] }>("importIssues");

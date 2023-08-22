@@ -56,4 +56,3 @@ export const SuggestionKind = {
 export type SuggestionKind = typeof SuggestionKind[keyof typeof SuggestionKind];
 
 export type IssueRelationId = string;
-export type IssueRelationExternalId = string;

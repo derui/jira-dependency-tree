@@ -97,7 +97,7 @@ describe("queryIssueModels", () => {
   });
 
   test("get issue model", () => {
-    const issues = [randomIssue({ summary: "sum", statusId: "", typeId: "" })];
+    const issues = [randomIssue({ summary: "sum", status: "", type: "" })];
     const store = createPureStore();
 
     store.dispatch(synchronizeIssuesFulfilled(issues));

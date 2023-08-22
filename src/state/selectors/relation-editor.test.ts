@@ -51,8 +51,8 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
     const inwardIssue = randomIssue({
       key: "foo",
       relations: [{ externalId: "id", id: "id", inwardIssue: "foo", outwardIssue: "key" }],
-      typeId: "",
-      statusId: "",
+      type: "",
+      status: "",
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
@@ -72,8 +72,8 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
     const outwardIssue = randomIssue({
       key: "foo",
       relations: [{ externalId: "id", id: "id", inwardIssue: "key", outwardIssue: "foo" }],
-      typeId: "",
-      statusId: "",
+      type: "",
+      status: "",
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
@@ -93,8 +93,8 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
     const outwardIssue = randomIssue({
       key: "foo",
       relations: [{ externalId: "id", id: "id", inwardIssue: "key", outwardIssue: "foo" }],
-      typeId: "",
-      statusId: "",
+      type: "",
+      status: "",
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));

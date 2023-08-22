@@ -77,9 +77,9 @@ const slice = createSlice({
           key: payload.inwardIssue,
           summary: "Unknown issue",
           description: "",
-          statusId: "",
+          status: "",
           selfUrl: "",
-          typeId: "",
+          type: "",
           relations: [{ ...payload }],
           subIssues: [],
         });
@@ -92,9 +92,9 @@ const slice = createSlice({
           key: payload.outwardIssue,
           summary: "Unknown issue",
           description: "",
-          statusId: "",
+          status: "",
           selfUrl: "",
-          typeId: "",
+          type: "",
           relations: [{ ...payload }],
           subIssues: [],
         });

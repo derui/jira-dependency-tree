@@ -1,12 +1,7 @@
-import { IssueKey, IssueRelationExternalId, IssueRelationId, IssueStatusId, IssueTypeId } from "@/type";
+import { IssueKey, IssueRelationId, IssueStatus, IssueType } from "@/type";
 
 export interface Relation {
   id: IssueRelationId;
-  /**
-   * external id is ID of JIRA
-   */
-  externalId: IssueRelationExternalId;
-
   inwardIssue: string;
   outwardIssue: string;
 }
@@ -15,8 +10,8 @@ export interface Issue {
   key: IssueKey;
   summary: string;
   description: string;
-  statusId: IssueStatusId;
-  typeId: IssueTypeId;
+  status: IssueStatus;
+  type: IssueType;
   selfUrl: string;
   relations: Relation[];
   parentIssue?: string;

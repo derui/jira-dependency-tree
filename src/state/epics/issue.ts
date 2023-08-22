@@ -73,8 +73,8 @@ const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
       key: b.key as string,
       summary: b.summary as string,
       description: b.description ?? "",
-      statusId: b.statusId ?? "",
-      typeId: b.typeId ?? "",
+      status: b.statusId ?? "",
+      type: b.typeId ?? "",
       selfUrl: b.selfUrl ?? "",
       relations: (b.links as { inwardIssue: string; id: string; outwardIssue: string }[]).map((v) => ({
         ...v,

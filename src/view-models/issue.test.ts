@@ -5,8 +5,8 @@ import { randomIssue, randomProject } from "@/mock-data";
 test("get simplest issue", () => {
   const project = randomProject();
   const issue = randomIssue({
-    statusId: "-1",
-    typeId: "-1",
+    status: "-1",
+    type: "-1",
   });
 
   const ret = issueToIssueModel(project, issue);
@@ -17,8 +17,8 @@ test("get simplest issue", () => {
 test("get issue model with status and type", () => {
   const project = randomProject();
   const issue = randomIssue({
-    statusId: Object.keys(project.statuses)[0],
-    typeId: Object.keys(project.issueTypes)[0],
+    status: Object.keys(project.statuses)[0],
+    type: Object.keys(project.issueTypes)[0],
   });
 
   const ret = issueToIssueModel(project, issue);

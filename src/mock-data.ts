@@ -60,8 +60,8 @@ export const randomIssue = (issue: Partial<Issue> = {}): Issue => {
     description: issue.description ?? faker.company.catchPhrase(),
     relations: issue.relations ?? [],
     selfUrl: issue.selfUrl ?? faker.internet.url(),
-    statusId: issue.statusId ?? faker.string.uuid(),
-    typeId: issue.typeId ?? faker.string.uuid(),
+    status: issue.status ?? faker.string.uuid(),
+    type: issue.type ?? faker.string.uuid(),
     parentIssue: issue.parentIssue,
     subIssues: issue.subIssues ?? [],
   };

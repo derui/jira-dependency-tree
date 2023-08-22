@@ -141,7 +141,7 @@ const upsertIssueNode = (
           .attr("filter", (d) => {
             if (!d.issue) return null;
 
-            const status = project.statuses[d.issue.statusId];
+            const status = project.statuses[d.issue.status];
             switch (status?.statusCategory) {
               case StatusCategory.TODO:
                 return "url(#todo-bg)";
@@ -161,7 +161,7 @@ const upsertIssueNode = (
               return "";
             }
 
-            const status = project.statuses[d.issue.statusId];
+            const status = project.statuses[d.issue.status];
             return status?.name ?? "";
           });
 
@@ -235,7 +235,7 @@ z
           .attr("filter", (d) => {
             if (!d.issue) return null;
 
-            const status = project.statuses[d.issue.statusId];
+            const status = project.statuses[d.issue.status];
             switch (status?.statusCategory) {
               case StatusCategory.TODO:
                 return "url(#todo-bg)";
@@ -255,7 +255,7 @@ z
               return "";
             }
 
-            const status = project.statuses[d.issue.statusId];
+            const status = project.statuses[d.issue.status];
             return status?.name ?? "";
           });
 

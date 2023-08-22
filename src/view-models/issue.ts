@@ -19,7 +19,7 @@ export const issueToIssueModel = (project: Project, issue: Issue): IssueModel =>
   return {
     key: issue.key,
     summary: issue.summary,
-    issueStatus: project.statuses[issue.statusId],
-    issueType: project.issueTypes[issue.typeId],
+    issueStatus: project.statuses[issue.status],
+    issueType: project.issueTypes[issue.type],
   };
 };

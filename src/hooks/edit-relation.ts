@@ -3,7 +3,7 @@ import { useAppDispatch } from "./hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { useGetRelations } from "./get-relation";
 import { IssueKey } from "@/type";
-import { addRelationError, addRelationSucceeded, removeRelationError, removeRelationSucceeded } from "@/state/actions";
+import { addRelationSucceeded, removeRelationSucceeded } from "@/state/actions";
 import { Apis } from "@/apis/api";
 import { Relation } from "@/model/issue";
 

@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
 import { useAppDispatch } from "./hooks";
+import { useGetApiCredential } from "./get-api-credential";
 import { IssueKey } from "@/type";
 import { importIssues } from "@/state/actions";
+import { Apis } from "@/apis/api";
 
 interface UseImportIssuesResult {
   /**
@@ -22,14 +24,21 @@ interface UseImportIssuesResult {
    * current selected issue keys
    */
   selectedIssues: IssueKey[];
+
+  isLoading: boolean;
+  error?: string;
 }
 
 /**
  * get methods to import issue and select/unselect issue to import
  */
 export const useImportIssues = function useImportIssues(): UseImportIssuesResult {
+  const apiCredential = useGetApiCredential();
   const [state, mutate] = useState<IssueKey[]>([]);
   const dispatch = useAppDispatch();
+  const [error, setError] = useState<string | undefined>();
+  const [loading, setLoading] = useState(false);
+
   const select = useCallback((key: IssueKey) => {
     mutate((state) => {
       const set = new Set(state);
@@ -47,9 +56,22 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
     });
   }, []);
 
-  const execute = useCallback(() => {
-    dispatch(importIssues({ issues: state }));
-  }, [state]);
+  const execute = useCallback(async () => {
+    if (!apiCredential) {
+      return;
+    }
 
-  return { execute, select, unselect, selectedIssues: state };
+    try {
+      setLoading(true);
+      setError(undefined);
+      const issues = await Apis.getIssues.call(apiCredential, state);
+      dispatch(importIssues({ issues: issues }));
+    } catch {
+      setError("Import error");
+    } finally {
+      setLoading(false);
+    }
+  }, [state, apiCredential]);
+
+  return { execute, select, unselect, selectedIssues: state, error, isLoading: loading };
 };

@@ -89,4 +89,4 @@ export const projects = {
 } as const;
 
 // action to import issues
-export const importIssues = createAction<{ issues: IssueKey[] }>("importIssues");
+export const importIssues = createAction<{ issues: Issue[] }>("importIssues");

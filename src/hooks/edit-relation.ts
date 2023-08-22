@@ -21,6 +21,11 @@ interface UseEditRelationResult {
    * return editing relation
    */
   isEditing: boolean;
+
+  /**
+   * error in editing
+   */
+  error?: string;
 }
 
 const findRelation = (relations: Relation[], issueKey: IssueKey) => {
@@ -37,6 +42,7 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
   const apiCredential = useGetApiCredential();
   const dispatch = useAppDispatch();
   const [editing, setEditing] = useState(false);
+  const [error, setError] = useState<string | undefined>();
 
   const create = useCallback<UseEditRelationResult["create"]>(
     async (toKey) => {
@@ -47,8 +53,9 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
         setEditing(true);
         const relation = await Apis.createRelation.call(apiCredential, fromKey, toKey);
         dispatch(addRelationSucceeded(relation));
+        setError(undefined);
       } catch {
-        dispatch(addRelationError({ relationId: "", fromKey, toKey }));
+        setError(`Error happened between ${fromKey} to ${toKey}. Please try again later`);
       } finally {
         setEditing(false);
       }
@@ -67,8 +74,9 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
         setEditing(true);
         await Apis.removeRelation.call(apiCredential, relation.id);
         dispatch(removeRelationSucceeded({ relationId: relation.id }));
+        setError(undefined);
       } catch {
-        dispatch(removeRelationError({ fromKey, toKey }));
+        setError(`Error happened between ${fromKey} to ${toKey}. Please try again later`);
       } finally {
         setEditing(false);
       }
@@ -76,5 +84,5 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
     [fromKey, apiCredential],
   );
 
-  return { create, remove, isEditing: editing };
+  return { create, remove, isEditing: editing, error };
 };

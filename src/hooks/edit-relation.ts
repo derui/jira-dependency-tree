@@ -47,9 +47,10 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
         setEditing(true);
         const relation = await Apis.createRelation.call(apiCredential, fromKey, toKey);
         dispatch(addRelationSucceeded(relation));
-        setEditing(false);
       } catch {
         dispatch(addRelationError({ relationId: "", fromKey, toKey }));
+      } finally {
+        setEditing(false);
       }
     },
     [fromKey, apiCredential],
@@ -66,9 +67,10 @@ export const useEditRelation = function useEditRelation(fromKey: IssueKey): UseE
         setEditing(true);
         await Apis.removeRelation.call(apiCredential, relation.id);
         dispatch(removeRelationSucceeded({ relationId: relation.id }));
-        setEditing(false);
       } catch {
         dispatch(removeRelationError({ fromKey, toKey }));
+      } finally {
+        setEditing(false);
       }
     },
     [fromKey, apiCredential],

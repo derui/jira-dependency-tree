@@ -14,7 +14,7 @@ const initialResult: UseSearchIssueResult = {
 } satisfies UseSearchIssueResult;
 
 /**
- * seach issue with jql
+ * search issue with jql
  */
 export const useSearchIssues = function useSearchIssues(jql: string, page: number = 0): UseSearchIssueResult {
   const [state, mutate] = useState(initialResult);

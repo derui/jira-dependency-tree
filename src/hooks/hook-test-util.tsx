@@ -1,6 +1,6 @@
 import { Provider } from "react-redux";
 import { Store } from "redux";
-import { waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { RootState } from "@/state/store";
 
 /**
@@ -13,4 +13,4 @@ export const getWrapper = (store: Store<RootState>) => (props: { children: React
 /**
  * A simple function to wait some promise resolved
  */
-export const waitForNextUpdate = () => waitFor(() => Promise.resolve());
+export const waitForNextUpdate = () => act(() => Promise.resolve());

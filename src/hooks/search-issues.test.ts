@@ -20,6 +20,14 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+const credential = {
+  apiBaseUrl: "aa",
+  apiKey: "key",
+  email: "email",
+  token: "token",
+  userDomain: "domain",
+};
+
 test("initial state is loading", async () => {
   const store = createPureStore();
 
@@ -34,14 +42,6 @@ test("initial state is loading", async () => {
 
 test("get result if jql and api credential are given and success API", async () => {
   (Apis.searchIssues.call as Mock).mockResolvedValue([[]]);
-
-  const credential = {
-    apiBaseUrl: "aa",
-    apiKey: "key",
-    email: "email",
-    token: "token",
-    userDomain: "domain",
-  };
 
   const store = createPureStore();
 
@@ -58,14 +58,6 @@ test("get result if jql and api credential are given and success API", async () 
 
 test("get error if api failed", async () => {
   (Apis.searchIssues.call as Mock).mockRejectedValue({ message: "error" });
-
-  const credential = {
-    apiBaseUrl: "aa",
-    apiKey: "key",
-    email: "email",
-    token: "token",
-    userDomain: "domain",
-  };
 
   const store = createPureStore();
 

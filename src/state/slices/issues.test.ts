@@ -31,12 +31,20 @@ test("loading", () => {
 });
 
 test("loaded issues", () => {
-  const issue = {
+  const issue: Issue = {
     key: "key",
     summary: "summary",
     description: "description",
-    statusId: "",
-    typeId: "",
+    status: {
+      id: "",
+      name: "",
+      statusCategory: "TODO",
+    },
+    type: {
+      id: "",
+      name: "",
+      avatarUrl: "",
+    },
     selfUrl: "",
     relations: [],
     subIssues: [],
@@ -49,23 +57,39 @@ test("loaded issues", () => {
 });
 
 test("loaded issues with other projection target", () => {
-  const issue = {
+  const issue: Issue = {
     key: "key",
     summary: "summary",
     description: "description",
-    statusId: "",
-    typeId: "",
+    status: {
+      id: "",
+      name: "",
+      statusCategory: "TODO",
+    },
+    type: {
+      id: "",
+      name: "",
+      avatarUrl: "",
+    },
     selfUrl: "",
     relations: [],
     parentIssue: "key2",
     subIssues: [],
   };
-  const issue2 = {
+  const issue2: Issue = {
     key: "key2",
     summary: "summary",
     description: "description",
-    statusId: "",
-    typeId: "",
+    status: {
+      id: "",
+      name: "",
+      statusCategory: "TODO",
+    },
+    type: {
+      id: "",
+      name: "",
+      avatarUrl: "",
+    },
     selfUrl: "",
     relations: [],
     subIssues: ["key"],
@@ -84,8 +108,16 @@ test("get issue matched", () => {
       key: "key",
       summary: "summary",
       description: "description",
-      status: "",
-      type: "",
+      status: {
+        id: "",
+        name: "",
+        statusCategory: "DONE",
+      },
+      type: {
+        id: "",
+        name: "",
+        avatarUrl: "",
+      },
       selfUrl: "",
       relations: [],
       subIssues: [],
@@ -105,8 +137,16 @@ test("empty matched issues if term is empty", () => {
       key: "key",
       summary: "summary",
       description: "description",
-      status: "",
-      type: "",
+      status: {
+        id: "",
+        name: "",
+        statusCategory: "TODO",
+      },
+      type: {
+        id: "",
+        name: "",
+        avatarUrl: "",
+      },
       selfUrl: "",
       relations: [],
       subIssues: [],
@@ -126,7 +166,6 @@ test("update relation when adding relation is successed", () => {
     ret,
     addRelationSucceeded({
       id: "id",
-      externalId: "id",
       inwardIssue: "key1",
       outwardIssue: "key2",
     }),
@@ -134,12 +173,8 @@ test("update relation when adding relation is successed", () => {
 
   const map = new Map(ret.issues.map((v) => [v.key, v]));
 
-  expect(map.get("key1")?.relations).toEqual([
-    { id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" },
-  ]);
-  expect(map.get("key2")?.relations).toEqual([
-    { id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" },
-  ]);
+  expect(map.get("key1")?.relations).toEqual([{ id: "id", inwardIssue: "key1", outwardIssue: "key2" }]);
+  expect(map.get("key2")?.relations).toEqual([{ id: "id", inwardIssue: "key1", outwardIssue: "key2" }]);
 });
 
 test("allow relation to add when inward or outward issue not found in issue", () => {
@@ -149,7 +184,6 @@ test("allow relation to add when inward or outward issue not found in issue", ()
     ret,
     addRelationSucceeded({
       id: "id",
-      externalId: "id",
       inwardIssue: "key1",
       outwardIssue: "key2",
     }),
@@ -157,19 +191,8 @@ test("allow relation to add when inward or outward issue not found in issue", ()
 
   const map = new Map(ret.issues.map((v) => [v.key, v]));
 
-  expect(map.get("key1")?.relations).toEqual([
-    { id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" },
-  ]);
-  expect(map.get("key2")).toEqual({
-    key: "key2",
-    summary: "Unknown issue",
-    description: "",
-    statusId: "",
-    selfUrl: "",
-    typeId: "",
-    relations: [{ id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" }],
-    subIssues: [],
-  });
+  expect(map.get("key1")?.relations).toEqual([{ id: "id", inwardIssue: "key1", outwardIssue: "key2" }]);
+  expect(map.get("key2")).toBeUndefined();
 });
 
 test("update relation when adding relation is successed", () => {
@@ -179,7 +202,6 @@ test("update relation when adding relation is successed", () => {
     ret,
     addRelationSucceeded({
       id: "id",
-      externalId: "id",
       inwardIssue: "key1",
       outwardIssue: "key2",
     }),
@@ -187,12 +209,8 @@ test("update relation when adding relation is successed", () => {
 
   const map = new Map(ret.issues.map((v) => [v.key, v]));
 
-  expect(map.get("key1")?.relations).toEqual([
-    { id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" },
-  ]);
-  expect(map.get("key2")?.relations).toEqual([
-    { id: "id", externalId: "id", inwardIssue: "key1", outwardIssue: "key2" },
-  ]);
+  expect(map.get("key1")?.relations).toEqual([{ id: "id", inwardIssue: "key1", outwardIssue: "key2" }]);
+  expect(map.get("key2")?.relations).toEqual([{ id: "id", inwardIssue: "key1", outwardIssue: "key2" }]);
 });
 
 test("remove relation if it exists", () => {
@@ -202,7 +220,6 @@ test("remove relation if it exists", () => {
     ret,
     addRelationSucceeded({
       id: "id",
-      externalId: "id",
       inwardIssue: "key1",
       outwardIssue: "key2",
     }),

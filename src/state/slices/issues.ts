@@ -72,32 +72,10 @@ const slice = createSlice({
 
       if (issueFromKey) {
         issueFromKey.relations.push(payload);
-      } else {
-        state.issues.push({
-          key: payload.inwardIssue,
-          summary: "Unknown issue",
-          description: "",
-          status: "",
-          selfUrl: "",
-          type: "",
-          relations: [{ ...payload }],
-          subIssues: [],
-        });
       }
 
       if (issueToKey) {
         issueToKey.relations.push(payload);
-      } else {
-        state.issues.push({
-          key: payload.outwardIssue,
-          summary: "Unknown issue",
-          description: "",
-          status: "",
-          selfUrl: "",
-          type: "",
-          relations: [{ ...payload }],
-          subIssues: [],
-        });
       }
     });
 

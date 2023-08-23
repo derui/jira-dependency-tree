@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   addRelationSucceeded,
   expandIssue,
+  importIssues,
   narrowExpandedIssue,
   removeRelationSucceeded,
   searchIssue,
@@ -35,21 +36,17 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(synchronizeIssues, (state) => {
-      state.loading = "Loading";
-    });
-
-    builder.addCase(synchronizeIssuesFulfilled, (state, action) => {
-      state._originalIssues = action.payload;
+    builder.addCase(importIssues, (state, action) => {
+      state._originalIssues = action.payload.issues;
       state.loading = "Completed";
 
       const target = state.projectionTarget;
       switch (target.kind) {
         case "Root":
-          state.issues = action.payload.filter((issue) => issue.parentIssue === undefined);
+          state.issues = action.payload.issues.filter((issue) => issue.parentIssue === undefined);
           break;
         case "InsideIssue":
-          state.issues = action.payload.filter((issue) => issue.parentIssue === target.issueKey);
+          state.issues = action.payload.issues.filter((issue) => issue.parentIssue === target.issueKey);
           break;
       }
     });

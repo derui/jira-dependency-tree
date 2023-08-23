@@ -60,5 +60,5 @@ export const useSynchronize = function useSynchronize(): UseSynchronizeResult {
     }
   }, [issueKeys, apiCredential]);
 
-  return { sync, error, isLoading: loading, isEnabled: apiCredential !== undefined };
+  return { sync, error, isLoading: loading, isEnabled: apiCredential !== undefined && !loading };
 };

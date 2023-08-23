@@ -4,6 +4,7 @@ import { SyncIssueButton } from "./sync-issue-button";
 import { createPureStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
+import { randomCredential } from "@/mock-data";
 
 const meta = {
   title: "Organisms/Sync issue button",
@@ -32,15 +33,7 @@ export const Enabled: Story = {
   render() {
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
-    store.dispatch(
-      submitApiCredentialFulfilled({
-        apiBaseUrl: "url",
-        apiKey: "key",
-        email: "email",
-        token: "token",
-        userDomain: "domain",
-      }),
-    );
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
     return (
       <Provider store={store}>

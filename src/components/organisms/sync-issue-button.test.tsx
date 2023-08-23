@@ -1,13 +1,23 @@
-import { test, expect, afterEach } from "vitest";
+import { test, expect, afterEach, vi, Mock } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
 import { createPureStore } from "@/state/store";
-import { submitApiCredentialFulfilled, submitProjectIdFulfilled } from "@/state/actions";
-import { projectFactory } from "@/model/project";
-import { Loading } from "@/type";
+import { submitApiCredentialFulfilled } from "@/state/actions";
+import { randomCredential } from "@/mock-data";
+import { Apis } from "@/apis/api";
+
+vi.mock("@/apis/api", () => {
+  return {
+    Apis: {
+      getIssues: {
+        call: vi.fn(),
+      },
+    },
+  };
+});
 
 afterEach(cleanup);
 
@@ -25,16 +35,7 @@ test("initial state is disabled all", () => {
 
 test("do not disable if setup finished", () => {
   const store = createPureStore();
-  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
-  store.dispatch(
-    submitApiCredentialFulfilled({
-      apiBaseUrl: "url",
-      apiKey: "key",
-      email: "email",
-      token: "token",
-      userDomain: "domain",
-    }),
-  );
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
     <Provider store={store}>
@@ -47,17 +48,10 @@ test("do not disable if setup finished", () => {
 });
 
 test("dispatch action when click action", async () => {
+  const user = userEvent.setup();
   const store = createPureStore();
-  store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
-  store.dispatch(
-    submitApiCredentialFulfilled({
-      apiBaseUrl: "url",
-      apiKey: "key",
-      email: "email",
-      token: "token",
-      userDomain: "domain",
-    }),
-  );
+  const cred = randomCredential();
+  store.dispatch(submitApiCredentialFulfilled(cred));
 
   render(
     <Provider store={store}>
@@ -67,8 +61,7 @@ test("dispatch action when click action", async () => {
 
   const button = screen.getByTestId("button") as HTMLBaseElement;
 
-  await userEvent.click(button);
+  await user.click(button);
 
-  expect(store.getState().issues.loading).toBe(Loading.Loading);
-  expect(button.getAttribute("aria-disabled")).toBe("true");
+  expect(Apis.getIssues.call as Mock).toBeCalledWith(cred, []);
 });

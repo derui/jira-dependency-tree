@@ -1,11 +1,7 @@
 import classNames from "classnames";
-import { useDispatch } from "react-redux";
 import { BaseProps, generateTestId } from "../helper";
-import { useAppSelector } from "../hooks";
 import { iconize } from "../atoms/iconize";
-import { isSyncable, queryIssues } from "@/state/selectors/issues";
-import { Loading } from "@/type";
-import { synchronizeIssues } from "@/state/actions";
+import { useSynchronize } from "@/hooks";
 
 export type Props = BaseProps;
 
@@ -21,19 +17,17 @@ const Styles = {
 // eslint-disable-next-line func-style
 export function SyncIssueButton(props: Props) {
   const gen = generateTestId(props.testid);
-  const syncable = useAppSelector(isSyncable());
-  const [loading] = useAppSelector(queryIssues());
-  const dispatch = useDispatch();
+  const { isEnabled, sync, isLoading } = useSynchronize();
 
   return (
     <div className={Styles.root} data-testid={gen("root")}>
       <button
-        className={Styles.icon(loading === Loading.Loading, syncable)}
-        disabled={!syncable}
-        aria-disabled={!syncable}
+        className={Styles.icon(isLoading, isEnabled)}
+        disabled={!isEnabled}
+        aria-disabled={!isEnabled}
         data-testid={gen("button")}
         onClick={() => {
-          dispatch(synchronizeIssues());
+          sync();
         }}
       ></button>
     </div>

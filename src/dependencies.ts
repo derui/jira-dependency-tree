@@ -1,10 +1,14 @@
 import { Observable } from "rxjs";
 import { IssueGraphCommand } from "./drivers/issue-graph";
 import type { Env } from "./model/env";
+import { Apis } from "@/apis/api";
 
 // define dependencies
 export type Dependencies = {
   env: Env;
+
+  apis: typeof Apis;
+
   /**
    * dependency to post JSON to URL and return JSON as response
    */

@@ -21,6 +21,11 @@ interface UseSynchronizeResult {
    * set error if synchronizing is failed
    */
   error?: string;
+
+  /**
+   * return synchronize enabled
+   */
+  isEnabled: boolean;
 }
 
 const currentIssueKeys = createDraftSafeSelector(
@@ -55,5 +60,5 @@ export const useSynchronize = function useSynchronize(): UseSynchronizeResult {
     }
   }, [issueKeys, apiCredential]);
 
-  return { sync, error, isLoading: loading };
+  return { sync, error, isLoading: loading, isEnabled: apiCredential !== undefined };
 };

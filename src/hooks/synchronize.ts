@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
-import { useAppDispatch, useAppSelector } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { importIssues } from "@/state/actions";
 import { Apis } from "@/apis/api";

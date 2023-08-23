@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useAppDispatch } from "./hooks";
+import { useAppDispatch } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { useGetRelations } from "./get-relation";
 import { IssueKey } from "@/type";

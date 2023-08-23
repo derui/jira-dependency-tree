@@ -17,7 +17,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
   test("do not get any relation when user did not select any issue", () => {
     const issue = randomIssue({
       key: "key",
-      relations: [{ externalId: "id", id: "id", inwardIssue: "foo", outwardIssue: "key" }],
+      relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
@@ -31,7 +31,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
   test("get unknown issue when related issue key is not found in issues", () => {
     const issue = randomIssue({
       key: "key",
-      relations: [{ externalId: "id", id: "id", inwardIssue: "foo", outwardIssue: "key" }],
+      relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
@@ -46,13 +46,11 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
   test("get inward issues", () => {
     const issue = randomIssue({
       key: "key",
-      relations: [{ externalId: "id", id: "id", inwardIssue: "foo", outwardIssue: "key" }],
+      relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
     const inwardIssue = randomIssue({
       key: "foo",
-      relations: [{ externalId: "id", id: "id", inwardIssue: "foo", outwardIssue: "key" }],
-      type: "",
-      status: "",
+      relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
     const store = createPureStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));

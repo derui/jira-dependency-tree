@@ -1,5 +1,5 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
-import { useAppSelector } from "./hooks";
+import { useAppSelector } from "./_internal-hooks";
 import type { RootState } from "@/state/store";
 import { ApiCredential } from "@/model/event";
 

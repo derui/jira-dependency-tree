@@ -1,5 +1,5 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
-import { useAppSelector } from "./hooks";
+import { useAppSelector } from "./_internal-hooks";
 import { IssueKey } from "@/type";
 import { Relation } from "@/model/issue";
 import { RootState } from "@/state/store";

@@ -6,17 +6,15 @@ const meta = {
   component: QueryInput,
   tags: ["autodocs"],
   argTypes: {
-    error: { control: "string" },
-    loading: { control: "switch" },
+    error: { control: "text" },
+    loading: { control: "boolean" },
   },
 } satisfies Meta<typeof QueryInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {},
-};
+export const Default: Story = {};
 
 export const Loading: Story = {
   args: {

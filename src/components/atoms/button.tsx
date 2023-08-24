@@ -74,29 +74,16 @@ const Styles = {
 export function Button(props: Props) {
   const classes = classNames(Styles.button, Styles.color(props.schema), Styles.width(props.size));
 
-  if (props.type === "submit") {
-    return (
-      <button
-        className={classes}
-        type='submit'
-        aria-disabled={props.disabled ?? false}
-        data-testid={props.testid ?? "button"}
-        onClick={props.onClick}
-      >
-        {props.children}
-      </button>
-    );
-  } else {
-    return (
-      <button
-        className={classes}
-        type='button'
-        aria-disabled={props.disabled ?? false}
-        data-testid={props.testid ?? "button"}
-        onClick={props.onClick}
-      >
-        {props.children}
-      </button>
-    );
-  }
+  const type = props.type === "submit" ? "submit" : "button";
+  return (
+    <button
+      className={classes}
+      type={type}
+      aria-disabled={props.disabled ?? false}
+      data-testid={props.testid ?? "button"}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </button>
+  );
 }

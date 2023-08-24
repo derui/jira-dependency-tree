@@ -43,21 +43,25 @@ export const useSynchronize = function useSynchronize(): UseSynchronizeResult {
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
 
-  const sync = useCallback(async () => {
+  const sync = useCallback(() => {
     if (!apiCredential) {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError(undefined);
-      const issues = await Apis.getIssues.call(apiCredential, issueKeys);
-      dispatch(importIssues({ issues: issues }));
-    } catch {
-      setError("Synchronizing failed");
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    setError(undefined);
+
+    Apis.getIssues
+      .call(apiCredential, issueKeys)
+      .then((issues) => {
+        dispatch(importIssues({ issues: issues }));
+      })
+      .catch(() => {
+        setError("Synchronizing failed");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [issueKeys, apiCredential]);
 
   return { sync, error, isLoading: loading, isEnabled: apiCredential !== undefined && !loading };

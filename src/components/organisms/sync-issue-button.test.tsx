@@ -20,6 +20,9 @@ vi.mock("@/apis/api", () => {
 });
 
 afterEach(cleanup);
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 test("initial state is disabled all", () => {
   render(
@@ -48,6 +51,8 @@ test("do not disable if setup finished", () => {
 });
 
 test("dispatch action when click action", async () => {
+  vi.mocked(Apis.getIssues.call).mockResolvedValue([]);
+
   const user = userEvent.setup();
   const store = createPureStore();
   const cred = randomCredential();

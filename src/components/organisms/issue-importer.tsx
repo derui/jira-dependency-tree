@@ -88,7 +88,13 @@ const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string })
     );
   }
 
-  return <ul className={Styles.issueList}></ul>;
+  return (
+    <ul className={Styles.issueList}>
+      {props.issues.map((v) => (
+        <IssueComponent key={v.key} issue={v} />
+      ))}
+    </ul>
+  );
 };
 
 // eslint-disable-next-line func-style

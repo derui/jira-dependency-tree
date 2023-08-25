@@ -91,7 +91,28 @@ export const DisplayIssues: Story = {
     msw: {
       handlers: [
         rest.post(`${MOCK_BASE_URL}/search-issues`, (_, res, ctx) => {
-          return res(ctx.json({ issues: randomIssue() }));
+          return res(
+            ctx.delay(300),
+            ctx.json({
+              issues: [
+                {
+                  key: "key",
+                  summary: "summary",
+                  status: {
+                    id: "",
+                    name: "name",
+                    statusCategory: "TODO",
+                  },
+                  type: {
+                    id: "",
+                    name: "name",
+                  },
+                  links: [],
+                  subtasks: [],
+                },
+              ],
+            }),
+          );
         }),
       ],
     },

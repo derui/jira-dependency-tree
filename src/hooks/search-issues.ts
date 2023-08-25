@@ -30,7 +30,8 @@ export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult 
               mutate({ isLoading: false, error });
             }
           })
-          .catch(() => {
+          .catch((e) => {
+            console.error(e);
             mutate({ isLoading: false, error: "Error occurred" });
           });
       }

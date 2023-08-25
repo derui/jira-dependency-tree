@@ -18,7 +18,7 @@ export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult 
   const apiCredential = useGetApiCredential();
 
   const search = useCallback<UseSearchIssueResult["search"]>(
-    (jql, number = 0) => {
+    (jql, page = 0) => {
       if (apiCredential && jql) {
         mutate((state) => ({ ...state, isLoading: true, error: undefined }));
         Apis.searchIssues

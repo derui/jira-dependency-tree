@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
 import { createPureStore } from "@/state/store";
-import { MOCK_BASE_URL, randomCredential } from "@/mock-data";
+import { MOCK_BASE_URL, randomCredential, randomIssue } from "@/mock-data";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
 const meta = {
@@ -68,6 +68,30 @@ export const Error: Story = {
       handlers: [
         rest.post(`${MOCK_BASE_URL}/search-issues`, (_, res, ctx) => {
           return res(ctx.delay(800), ctx.status(400), ctx.json({ message: "invalid syntax" }));
+        }),
+      ],
+    },
+  },
+  render(args) {
+    const store = createPureStore();
+    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+    return (
+      <Provider store={store}>
+        <IssueImporter {...args} />
+      </Provider>
+    );
+  },
+};
+export const DisplayIssues: Story = {
+  args: {
+    opened: true,
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        rest.post(`${MOCK_BASE_URL}/search-issues`, (_, res, ctx) => {
+          return res(ctx.json({ issues: randomIssue() }));
         }),
       ],
     },

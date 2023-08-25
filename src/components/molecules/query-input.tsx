@@ -46,6 +46,7 @@ const Styles = {
     "rounded",
     "bg-primary-200",
     "text-primary-500",
+    "animate-fade-in",
   ),
 };
 

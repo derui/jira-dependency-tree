@@ -5,6 +5,8 @@ import { projectFactory } from "./model/project";
 import { StatusCategory } from "./type";
 import { FirstArg } from "./util/type-tool";
 
+export const MOCK_BASE_URL = "https://mock.example.com";
+
 /**
  * get random project
  */
@@ -42,7 +44,7 @@ export const randomProject = (arg?: Partial<FirstArg<typeof projectFactory>>) =>
  */
 export const randomCredential = (): ApiCredential => {
   return {
-    apiBaseUrl: faker.internet.url(),
+    apiBaseUrl: MOCK_BASE_URL,
     apiKey: faker.internet.password(),
     email: faker.internet.email(),
     token: faker.internet.password(),

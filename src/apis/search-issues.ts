@@ -33,5 +33,5 @@ export const call = async function call(
     return [[], `Invalid JQL: ${json.message}`];
   }
 
-  return [mapResponse(json), undefined];
+  return [mapResponse(json.issues), undefined];
 };

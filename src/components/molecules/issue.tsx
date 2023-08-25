@@ -2,13 +2,13 @@ import React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
-import { IssueStatus, IssueType, Loading, StatusCategory } from "@/type";
+import { IssueStatus, IssueType, StatusCategory } from "@/type";
 import { stringToColour } from "@/util/color";
 import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
-  issue: IssueModel;
-  loading?: Loading;
+  issue?: IssueModel;
+  loading?: boolean;
   onDelete?: (key: string) => void;
   onClick?: (key: string) => void;
 }
@@ -118,7 +118,7 @@ export function Issue(props: Props) {
   const { issue, onClick, loading, onDelete } = props;
 
   const handleClick = (e: React.MouseEvent) => {
-    if (onClick) {
+    if (onClick && issue) {
       e.preventDefault();
       e.stopPropagation();
 
@@ -127,12 +127,12 @@ export function Issue(props: Props) {
   };
 
   const handleDelete = () => {
-    if (onDelete) {
+    if (onDelete && issue) {
       onDelete(issue.key);
     }
   };
 
-  if (loading === Loading.Loading) {
+  if (loading || !issue) {
     return (
       <li className={classNames(Styles.skeletonRoot)} data-testid={gen("root-skeleton")}>
         <span className={classNames(Styles.skeletonSummary)}></span>

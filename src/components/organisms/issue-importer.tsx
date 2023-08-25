@@ -52,10 +52,11 @@ const Styles = {
   headerKey: classNames("text-base"),
   headerButtonContainer: classNames("flex", "top-3", "right-2"),
   main: classNames("flex", "flex-col", "overflow-hidden", "h-full"),
-  issueList: classNames("flex", "flex-row", "px-3", "border-t", "border-t-lightgray", "h-full"),
+  issueList: classNames("flex", "flex-col", "pt-3", "gap-y-3", "px-3", "border-t", "border-t-lightgray", "h-full"),
   emptyIssuesArea: classNames(
     "flex",
     "items-center",
+    "mt-0",
     "m-3",
     "p-4",
     "rounded",

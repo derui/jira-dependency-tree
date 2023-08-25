@@ -8,7 +8,7 @@ import { setupMockServer } from "@/mock/server";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 import { randomCredential } from "@/mock-data";
 
-const server = setupMockServer({});
+const server = setupMockServer();
 
 beforeAll(() => server.listen());
 afterAll(() => server.close());

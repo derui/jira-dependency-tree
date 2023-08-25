@@ -1,9 +1,12 @@
 import type { Preview } from "@storybook/react";
-
 import { setup } from "@twind/core";
+import { initialize, mswLoader } from "msw-storybook-addon";
+
 import config from "../src/twind.config.cjs";
 
 setup(config);
+
+initialize();
 
 const preview: Preview = {
   parameters: {
@@ -18,6 +21,7 @@ const preview: Preview = {
       },
     },
   },
+  loaders: [mswLoader],
 };
 
 export default preview;

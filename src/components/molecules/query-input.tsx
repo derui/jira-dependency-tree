@@ -49,12 +49,16 @@ const Styles = {
   ),
 };
 
-const Error = ({ error, loading }: { error?: string; loading?: boolean }) => {
+const Error = ({ error, loading, testid }: { error?: string; loading?: boolean; testid: string }) => {
   if (!error || loading) {
     return null;
   }
 
-  return <span className={Styles.error}>{error}</span>;
+  return (
+    <span className={Styles.error} data-testid={testid}>
+      {error}
+    </span>
+  );
 };
 
 // eslint-disable-next-line func-style
@@ -79,7 +83,7 @@ export function QueryInput(props: Props) {
     <form className={Styles.root()} onSubmit={handleSubmit} data-testid={gen("root")}>
       <div className={Styles.inputWrapper}>
         <Input onInput={handleInput} value={query} placeholder="Input JQL" testid={gen("input")} />
-        <Error error={error} loading={loading} />
+        <Error error={error} loading={loading} testid={gen("error")} />
       </div>
       <Button schema="secondary2" type="submit" size="s" disabled={loading} testid={gen("button")}>
         <span className={Styles.icon(loading)}></span>

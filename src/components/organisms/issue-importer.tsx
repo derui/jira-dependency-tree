@@ -30,7 +30,7 @@ const Styles = {
       "overflow-hidden",
       {
         "w-0": !opened,
-        "w-80": opened,
+        "w-1/3": opened,
       },
     );
   },
@@ -51,9 +51,18 @@ const Styles = {
   headerText: classNames("text-xl", "h-full", "items-center", "flex"),
   headerKey: classNames("text-base"),
   headerButtonContainer: classNames("flex", "top-3", "right-2"),
-  main: classNames("flex-auto", "overflow-hidden"),
-  issueList: classNames(),
-  emptyIssuesArea: classNames(),
+  main: classNames("flex", "flex-col", "overflow-hidden", "h-full"),
+  issueList: classNames("flex", "flex-row", "px-3", "border-t", "border-t-lightgray", "h-full"),
+  emptyIssuesArea: classNames(
+    "flex",
+    "items-center",
+    "m-3",
+    "p-4",
+    "rounded",
+    "border",
+    "border-complement-200",
+    "text-secondary2-500",
+  ),
 };
 
 const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string }) => {

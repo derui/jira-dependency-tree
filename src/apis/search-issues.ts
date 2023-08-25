@@ -31,6 +31,9 @@ export const call = async function call(
 
   if (ret.status === 400) {
     return [[], `Invalid JQL: ${json.message}`];
+  } else if (ret.status !== 200) {
+    console.error("API failed");
+    throw ret.statusText;
   }
 
   return [mapResponse(json.issues), undefined];

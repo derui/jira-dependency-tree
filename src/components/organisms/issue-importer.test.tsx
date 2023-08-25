@@ -96,3 +96,27 @@ test("display issues after finished search", async () => {
   expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("false");
   expect(screen.queryByTestId("issue-list/empty")).not.toBeNull();
 });
+
+test("display error when API is failed", async () => {
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    searchIssues(_, res, ctx) {
+      return res(ctx.status(400), ctx.json({ message: "invalid syntax" }));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+
+  expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("query-input/error").textContent).toContain("invalid syntax");
+});

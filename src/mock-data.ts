@@ -76,3 +76,21 @@ export const randomIssue = (issue: Partial<Issue> = {}): Issue => {
     subIssues: issue.subIssues ?? [],
   };
 };
+
+export const randomApiIssue = function randomApiIssue(issue: Partial<>) {
+  return {
+    key: "key",
+    summary: "summary",
+    status: {
+      id: "",
+      name: "name",
+      statusCategory: "TODO",
+    },
+    type: {
+      id: "",
+      name: "name",
+    },
+    links: [],
+    subtasks: [],
+  }
+}

@@ -1,6 +1,11 @@
 import { Issue } from "@/model/issue";
 import { IssueKey } from "@/type";
 
+export interface ApiIssue {
+  key: string;
+  summary: string;
+}
+
 /**
  * map API response to issue.
  */

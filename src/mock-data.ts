@@ -4,6 +4,7 @@ import { Issue } from "./model/issue";
 import { projectFactory } from "./model/project";
 import { StatusCategory } from "./type";
 import { FirstArg } from "./util/type-tool";
+import { ApiIssue } from "./apis/mapper/issue";
 
 export const MOCK_BASE_URL = "https://mock.example.com";
 
@@ -77,20 +78,25 @@ export const randomIssue = (issue: Partial<Issue> = {}): Issue => {
   };
 };
 
-export const randomApiIssue = function randomApiIssue(issue: Partial<>) {
+/**
+ * create new ApiIssue for testing
+ */
+export const randomApiIssue = function randomApiIssue(issue: Partial<ApiIssue> = {}): ApiIssue {
   return {
-    key: "key",
-    summary: "summary",
+    key: faker.word.adverb(),
+    summary: faker.lorem.slug(),
     status: {
-      id: "",
-      name: "name",
+      id: faker.string.uuid(),
+      name: faker.word.noun(),
       statusCategory: "TODO",
     },
     type: {
-      id: "",
-      name: "name",
+      id: faker.string.uuid(),
+      name: faker.word.verb(),
+      avatarUrl: faker.internet.url(),
     },
     links: [],
     subtasks: [],
+    ...issue,
   }
 }

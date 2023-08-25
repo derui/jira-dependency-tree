@@ -91,7 +91,7 @@ const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string })
   return (
     <ul className={Styles.issueList}>
       {props.issues.map((v) => (
-        <IssueComponent key={v.key} issue={v} />
+        <IssueComponent key={v.key} issue={v} testid={gen('issue')} />
       ))}
     </ul>
   );

@@ -6,7 +6,8 @@ import { IssueImporter } from "./issue-importer";
 import { createPureStore } from "@/state/store";
 import { setupMockServer } from "@/mock/server";
 import { submitApiCredentialFulfilled } from "@/state/actions";
-import { randomCredential } from "@/mock-data";
+import { randomApiIssue, randomCredential } from "@/mock-data";
+import Sinon from "sinon";
 
 const server = setupMockServer();
 
@@ -34,12 +35,14 @@ test("should be able to render", () => {
   expect(root.getAttribute("aria-hidden")).toBe("true");
 });
 
-test("open panel", () => {
+test("open and close panel", async () => {
+  const user = userEvent.setup();
   const store = createPureStore();
+  const onClose = Sinon.fake.returns(null);
 
   render(
     <Provider store={store}>
-      <IssueImporter opened />
+      <IssueImporter opened onClose={onClose} />
     </Provider>,
   );
 
@@ -47,6 +50,10 @@ test("open panel", () => {
 
   expect(root.getAttribute("aria-hidden")).toBe("false");
   expect(screen.queryByTestId("issue-list/empty")).not.toBeNull();
+
+  await user.click(screen.getByTestId('close'));
+
+  expect(onClose.called).toBeTruthy();
 });
 
 test("change loading state of input query and search", async () => {
@@ -73,7 +80,7 @@ test("change loading state of input query and search", async () => {
   expect(screen.getAllByTestId("issue-list/skeleton/root-skeleton")).toHaveLength(3);
 });
 
-test("display issues after finished search", async () => {
+test("display empty list", async () => {
   const user = userEvent.setup();
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -119,4 +126,27 @@ test("display error when API is failed", async () => {
 
   expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("false");
   expect(screen.getByTestId("query-input/error").textContent).toContain("invalid syntax");
+});
+
+test("display issues where API returns some issues", async () => {
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    searchIssues(_, res, ctx) {
+      return res(ctx.json({issues: [randomApiIssue({key: 'key'})]}));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+
+  expect(screen.getAllByTestId("issue-list/issue/root")).toHaveLength(1);
 });

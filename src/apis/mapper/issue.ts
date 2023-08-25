@@ -1,9 +1,26 @@
 import { Issue } from "@/model/issue";
-import { IssueKey } from "@/type";
+import { IssueKey, StatusCategory } from "@/type";
 
+/**
+ * a type for issue returning from API
+ */
 export interface ApiIssue {
   key: string;
   summary: string;
+  description?: string;
+  status:{
+    id: string;
+    name: string;
+    statusCategory: StatusCategory;
+  },
+  type: {
+    id: string;
+    name: string;
+    avatarUrl: string
+  },
+  selfUrl?: string;
+  links: {inwardIssue: string; id: string; outwardIssue: string}[];
+  subtasks: string[];
 }
 
 /**

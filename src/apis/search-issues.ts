@@ -8,6 +8,7 @@ import { Issue } from "@/model/issue";
 export const call = async function call(
   apiCredential: ApiCredential,
   jql: string,
+  page: number = 1,
 ): Promise<[Issue[], string | undefined]> {
   const body = {
     authorization: {
@@ -16,6 +17,7 @@ export const call = async function call(
       user_domain: apiCredential.userDomain,
     },
     jql,
+    page,
   };
 
   const ret = await fetch(`${apiCredential.apiBaseUrl}/search-issues`, {

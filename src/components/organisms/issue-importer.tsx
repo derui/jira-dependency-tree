@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { useState } from "react";
 import { Button } from "../atoms/button";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
@@ -64,6 +65,24 @@ const Styles = {
     "border-complement-200",
     "text-secondary2-500",
   ),
+
+  paginator: {
+    root: classNames(),
+    skeleton: classNames(
+      "animate-pulse",
+      "flex",
+      "h-12",
+      "w-full",
+      "items-center",
+      "px-4",
+      "py-2",
+      "rounded",
+      "border",
+      "border-lightgray",
+      "flex-col",
+      "space-y-2",
+    ),
+  },
 };
 
 const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string }) => {
@@ -91,16 +110,41 @@ const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string })
   return (
     <ul className={Styles.issueList}>
       {props.issues.map((v) => (
-        <IssueComponent key={v.key} issue={v} testid={gen('issue')} />
+        <IssueComponent key={v.key} issue={v} testid={gen("issue")} />
       ))}
     </ul>
   );
 };
 
+const Paginator = (props: {
+  page: number;
+  disabled: boolean;
+  loading: boolean;
+  onChangePage: (page: number) => void;
+  testid: string;
+}) => {
+  const gen = generateTestId(props.testid);
+  if (props.disabled) {
+    return null;
+  }
+
+  if (props.loading) {
+    return (
+      <div className={Styles.paginator.root} data-testid={gen("root")}>
+        <span className={Styles.paginator.skeleton} data-testid={gen("skeleton")} />
+      </div>
+    );
+  }
+
+  return <div className={Styles.paginator.root} data-testid={gen("root")}></div>;
+};
+
 // eslint-disable-next-line func-style
 export function IssueImporter({ opened, testid, onClose }: Props) {
   const gen = generateTestId(testid);
-  const { isLoading, error, data, search } = useSearchIssues();
+  const [page, setPage] = useState(1);
+  const [{ isLoading, error, data }, search, paginate] = useSearchIssues();
+
   const handleClick = () => {
     if (onClose) {
       onClose();
@@ -109,6 +153,11 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
 
   const handleSearch = (v: string) => {
     search(v);
+    setPage(1);
+  };
+
+  const handleChangePage = (page: number) => {
+    paginate(page);
   };
 
   const loading = isLoading && error === undefined;
@@ -126,6 +175,13 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
       <main className={classNames(Styles.main)}>
         <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
         <IssueList issues={data ?? []} loading={loading} testid={gen("issue-list")} />
+        <Paginator
+          onChangePage={handleChangePage}
+          page={page}
+          disabled={(data ?? [])?.length === 0}
+          loading={loading}
+          testid={gen("paginator")}
+        />
       </main>
     </div>
   );

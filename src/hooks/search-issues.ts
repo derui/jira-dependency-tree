@@ -3,41 +3,68 @@ import { useGetApiCredential } from "./get-api-credential";
 import { Apis } from "@/apis/api";
 import { Issue } from "@/model/issue";
 
-interface UseSearchIssueResult {
+interface UseSearchIssueState {
   isLoading: boolean;
   error?: string;
   data?: Issue[];
-  search: (jql: string, page?: number) => void;
 }
+type search = (jql: string) => void;
+type paginate = (page: number) => void;
+
+type UseSearchIssueResult = [UseSearchIssueState, search, paginate];
 
 /**
  * search issue with jql
  */
 export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult {
-  const [state, mutate] = useState<Omit<UseSearchIssueResult, "search">>({ isLoading: false });
+  const [previousQuery, setPreviousQuery] = useState("");
+  const [state, mutate] = useState<UseSearchIssueState>({ isLoading: false });
   const apiCredential = useGetApiCredential();
 
-  const search = useCallback<UseSearchIssueResult["search"]>(
-    (jql, page = 0) => {
+  const search = useCallback<search>(
+    (jql) => {
       if (apiCredential && jql) {
+        setPreviousQuery(jql);
         mutate((state) => ({ ...state, isLoading: true, error: undefined }));
         Apis.searchIssues
           .call(apiCredential, jql)
           .then(([issues, error]) => {
             if (!error) {
-              mutate({ isLoading: false, data: issues });
+              mutate((state) => ({ ...state, isLoading: false, data: issues }));
             } else {
-              mutate({ isLoading: false, error });
+              mutate((state) => ({ ...state, isLoading: false, error, data: [] }));
             }
           })
           .catch((e) => {
             console.error(e);
-            mutate({ isLoading: false, error: "Error occurred" });
+            mutate((state) => ({ ...state, isLoading: false, error: "Error occurred" }));
           });
       }
     },
     [apiCredential],
   );
 
-  return { ...state, search };
+  const paginate = useCallback<paginate>(
+    (page) => {
+      if (apiCredential && previousQuery) {
+        mutate((state) => ({ ...state, isLoading: true, error: undefined }));
+        Apis.searchIssues
+          .call(apiCredential, previousQuery, page)
+          .then(([issues, error]) => {
+            if (!error) {
+              mutate((state) => ({ ...state, isLoading: false, data: issues }));
+            } else {
+              mutate((state) => ({ ...state, isLoading: false, error, data: [] }));
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            mutate((state) => ({ ...state, isLoading: false, error: "Error occurred" }));
+          });
+      }
+    },
+    [apiCredential, previousQuery],
+  );
+
+  return [state, search, paginate];
 };

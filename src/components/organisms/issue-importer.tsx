@@ -67,21 +67,25 @@ const Styles = {
   ),
 
   paginator: {
-    root: classNames(),
-    skeleton: classNames(
-      "animate-pulse",
-      "flex",
-      "h-12",
-      "w-full",
-      "items-center",
-      "px-4",
-      "py-2",
-      "rounded",
-      "border",
-      "border-lightgray",
-      "flex-col",
-      "space-y-2",
-    ),
+    root: classNames("flex-none", "flex", "flex-row", "px-3", "my-2", "flex-nowrap", "justify-between", "items-center"),
+    skeleton: classNames("animate-pulse", "flex", "flex-col", "h-4", "w-full", "bg-lightgray"),
+    pagingButton: (disabled: boolean) =>
+      classNames(
+        "group",
+        "border-b",
+        "border-b-transparent",
+        "border-b-2",
+        {
+          "hover:border-b-gray": !disabled,
+          "cursor-pointer": !disabled,
+        },
+        "transition",
+        "transition-border",
+      ),
+    forwardIcon: (disabled: boolean) =>
+      classNames(iconize({ type: "chevron-right", color: "gray", group: "group", disabled })),
+    backwardIcon: (disabled: boolean) =>
+      classNames(iconize({ type: "chevron-left", color: "gray", group: "group", disabled })),
   },
 };
 
@@ -124,9 +128,6 @@ const Paginator = (props: {
   testid: string;
 }) => {
   const gen = generateTestId(props.testid);
-  if (props.disabled) {
-    return null;
-  }
 
   if (props.loading) {
     return (
@@ -136,7 +137,26 @@ const Paginator = (props: {
     );
   }
 
-  return <div className={Styles.paginator.root} data-testid={gen("root")}></div>;
+  const backwardDisabled = props.page === 1 || props.disabled;
+
+  return (
+    <div className={Styles.paginator.root} data-testid={gen("root")}>
+      <span
+        className={Styles.paginator.pagingButton(backwardDisabled)}
+        aria-disabled={backwardDisabled}
+        data-testid={gen("backward")}
+      >
+        <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
+      </span>
+      <span
+        className={Styles.paginator.pagingButton(props.disabled)}
+        aria-disabled={props.disabled}
+        data-testid={gen("forward")}
+      >
+        <span className={Styles.paginator.forwardIcon(props.disabled)} />
+      </span>
+    </div>
+  );
 };
 
 // eslint-disable-next-line func-style

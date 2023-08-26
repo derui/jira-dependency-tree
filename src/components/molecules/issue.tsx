@@ -78,8 +78,9 @@ const Styles = {
     iconize({ type: "x", color: "primary", size: "s" }),
   ),
   selected: (selected: boolean) =>
-    classNames("rounded-full", "inline-block", "w-3", "h-3", "absolute", "top-0", "right-0", "bg-secondary1-300", {
+    classNames("rounded-full", "w-3", "h-3", "absolute", "top-1", "right-1", "bg-secondary1-300", {
       hidden: !selected,
+      "inline-block": selected,
     }),
 };
 

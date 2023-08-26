@@ -82,6 +82,7 @@ const Styles = {
         "transition",
         "transition-border",
       ),
+    icons: classNames("flex"),
     forwardIcon: (disabled: boolean) =>
       classNames(iconize({ type: "chevron-right", color: "gray", group: "group", disabled })),
     backwardIcon: (disabled: boolean) =>
@@ -158,7 +159,7 @@ const Paginator = (props: {
 
   return (
     <div className={Styles.paginator.root} data-testid={gen("root")}>
-      <div>
+      <div className={Styles.paginator.icons}>
         <span
           className={Styles.paginator.pagingButton(backwardDisabled)}
           aria-disabled={backwardDisabled}

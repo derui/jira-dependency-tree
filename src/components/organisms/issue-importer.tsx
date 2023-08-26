@@ -145,6 +145,7 @@ const Paginator = (props: {
         className={Styles.paginator.pagingButton(backwardDisabled)}
         aria-disabled={backwardDisabled}
         data-testid={gen("backward")}
+        onClick={() => props.onChangePage(props.page - 1)}
       >
         <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
       </span>
@@ -152,6 +153,7 @@ const Paginator = (props: {
         className={Styles.paginator.pagingButton(props.disabled)}
         aria-disabled={props.disabled}
         data-testid={gen("forward")}
+        onClick={() => props.onChangePage(props.page + 1)}
       >
         <span className={Styles.paginator.forwardIcon(props.disabled)} />
       </span>
@@ -178,6 +180,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
 
   const handleChangePage = (page: number) => {
     paginate(page);
+    setPage(page);
   };
 
   const loading = isLoading && error === undefined;

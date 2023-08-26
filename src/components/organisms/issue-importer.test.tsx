@@ -3,6 +3,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
+import { act } from "react-dom/test-utils";
 import { IssueImporter } from "./issue-importer";
 import { createPureStore } from "@/state/store";
 import { setupMockServer } from "@/mock/server";
@@ -78,6 +79,7 @@ test("change loading state of input query and search", async () => {
 
   expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("true");
   expect(screen.getAllByTestId("issue-list/skeleton/root-skeleton")).toHaveLength(3);
+  expect(screen.getAllByTestId("paginator/skeleton")).toHaveLength(1);
 });
 
 test("display empty list", async () => {
@@ -150,4 +152,65 @@ test("display issues when API returns some issues", async () => {
 
   expect(screen.getAllByTestId("issue-list/issue/root")).toHaveLength(1);
   expect(screen.getAllByTestId("issue-list/issue/root")[0].textContent).toContain("key");
+});
+
+test("disable bakward pagination after initial search", async () => {
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    searchIssues(_, res, ctx) {
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+
+  expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("true");
+  expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
+});
+
+test("change page after search", async () => {
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    async searchIssues(_, res, ctx) {
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+
+  server.use({
+    async searchIssues(req, res, ctx) {
+      const json = await req.json();
+
+      expect(json.page).toBe(2);
+
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key2" })] }));
+    },
+  });
+
+  await user.click(screen.getByTestId("paginator/forward"));
+
+  expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("issue-list/issue/root").textContent).toContain("key2");
 });

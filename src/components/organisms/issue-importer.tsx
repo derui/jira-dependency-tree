@@ -89,8 +89,16 @@ const Styles = {
   },
 };
 
-const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string }) => {
+const IssueList = (props: {
+  issues: Issue[];
+  selectedIssues: string[];
+  loading: boolean;
+  testid: string;
+  onToggleMark: (key: string) => void;
+}) => {
   const gen = generateTestId(props.testid);
+  const selectedIssueKeys = new Set(props.selectedIssues);
+
   if (props.loading) {
     return (
       <ul className={Styles.issueList}>
@@ -114,7 +122,13 @@ const IssueList = (props: { issues: Issue[]; loading: boolean; testid: string })
   return (
     <ul className={Styles.issueList}>
       {props.issues.map((v) => (
-        <IssueComponent key={v.key} issue={v} testid={gen("issue")} />
+        <IssueComponent
+          key={v.key}
+          issue={v}
+          testid={gen("issue")}
+          selected={selectedIssueKeys.has(v.key)}
+          onClick={props.onToggleMark}
+        />
       ))}
     </ul>
   );
@@ -126,6 +140,7 @@ const Paginator = (props: {
   loading: boolean;
   onChangePage: (page: number) => void;
   testid: string;
+  issueCount: number;
 }) => {
   const gen = generateTestId(props.testid);
 
@@ -138,25 +153,34 @@ const Paginator = (props: {
   }
 
   const backwardDisabled = props.page === 1 || props.disabled;
+  const importDisabled = props.issueCount === 0;
+  const importText = props.issueCount === 0 ? "Select issues" : `Import ${props.issueCount} issues`;
 
   return (
     <div className={Styles.paginator.root} data-testid={gen("root")}>
-      <span
-        className={Styles.paginator.pagingButton(backwardDisabled)}
-        aria-disabled={backwardDisabled}
-        data-testid={gen("backward")}
-        onClick={() => props.onChangePage(props.page - 1)}
-      >
-        <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
-      </span>
-      <span
-        className={Styles.paginator.pagingButton(props.disabled)}
-        aria-disabled={props.disabled}
-        data-testid={gen("forward")}
-        onClick={() => props.onChangePage(props.page + 1)}
-      >
-        <span className={Styles.paginator.forwardIcon(props.disabled)} />
-      </span>
+      <div>
+        <span
+          className={Styles.paginator.pagingButton(backwardDisabled)}
+          aria-disabled={backwardDisabled}
+          data-testid={gen("backward")}
+          onClick={() => props.onChangePage(props.page - 1)}
+        >
+          <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
+        </span>
+        <span
+          className={Styles.paginator.pagingButton(props.disabled)}
+          aria-disabled={props.disabled}
+          data-testid={gen("forward")}
+          onClick={() => props.onChangePage(props.page + 1)}
+        >
+          <span className={Styles.paginator.forwardIcon(props.disabled)} />
+        </span>
+      </div>
+      <div>
+        <Button type="normal" testid={gen("import")} disabled={importDisabled} schema="secondary2">
+          {importText}
+        </Button>
+      </div>
     </div>
   );
 };
@@ -165,6 +189,7 @@ const Paginator = (props: {
 export function IssueImporter({ opened, testid, onClose }: Props) {
   const gen = generateTestId(testid);
   const [page, setPage] = useState(1);
+  const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
   const [{ isLoading, error, data }, search, paginate] = useSearchIssues();
 
   const handleClick = () => {
@@ -184,6 +209,19 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
   };
 
   const loading = isLoading && error === undefined;
+  const handleToggleMark = (key: string) => {
+    setSelectedIssues((state) => {
+      const set = new Set(state);
+
+      if (set.has(key)) {
+        set.delete(key);
+      } else {
+        set.add(key);
+      }
+
+      return Array.from(set);
+    });
+  };
 
   return (
     <div className={classNames(Styles.root(opened))} aria-hidden={!opened} data-testid={gen("root")}>
@@ -197,13 +235,20 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
       </header>
       <main className={classNames(Styles.main)}>
         <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
-        <IssueList issues={data ?? []} loading={loading} testid={gen("issue-list")} />
+        <IssueList
+          selectedIssues={selectedIssues}
+          issues={data ?? []}
+          loading={loading}
+          testid={gen("issue-list")}
+          onToggleMark={handleToggleMark}
+        />
         <Paginator
           onChangePage={handleChangePage}
           page={page}
           disabled={(data ?? [])?.length === 0}
           loading={loading}
           testid={gen("paginator")}
+          issueCount={selectedIssues.length}
         />
       </main>
     </div>

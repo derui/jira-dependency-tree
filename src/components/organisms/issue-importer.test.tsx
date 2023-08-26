@@ -214,3 +214,30 @@ test("change page after search", async () => {
   expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
   expect(screen.getByTestId("issue-list/issue/root").textContent).toContain("key2");
 });
+
+test("select issue to mark to import after", async () => {
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    async searchIssues(_, res, ctx) {
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+  await user.click(screen.getByTestId("issue-list/issue/root"));
+
+  expect(screen.getByTestId("issue-list/issue/selected").className).not.toContain("hidden");
+  await user.click(screen.getByTestId("issue-list/issue/root"));
+
+  expect(screen.getByTestId("issue-list/issue/selected").className).toContain("hidden");
+});

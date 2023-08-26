@@ -9,6 +9,7 @@ import { IssueModel } from "@/view-models/issue";
 export interface Props extends BaseProps {
   issue?: IssueModel;
   loading?: boolean;
+  selected?: boolean;
   onDelete?: (key: string) => void;
   onClick?: (key: string) => void;
 }
@@ -76,6 +77,10 @@ const Styles = {
     "items-center",
     iconize({ type: "x", color: "primary", size: "s" }),
   ),
+  selected: (selected: boolean) =>
+    classNames("rounded-full", "inline-block", "w-3", "h-3", "absolute", "top-0", "right-0", "bg-secondary1-300", {
+      hidden: !selected,
+    }),
 };
 
 // eslint-disable-next-line func-style
@@ -115,7 +120,7 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
 // eslint-disable-next-line func-style
 export function Issue(props: Props) {
   const gen = generateTestId(props.testid);
-  const { issue, onClick, loading, onDelete } = props;
+  const { issue, onClick, loading, onDelete, selected } = props;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick && issue) {
@@ -147,6 +152,7 @@ export function Issue(props: Props) {
 
   return (
     <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
+      <span className={Styles.selected(!!selected)} data-testid={gen("selected")} />
       <span className={classNames(Styles.summary)} data-testid={gen("summary")}>
         {issue.summary}
       </span>

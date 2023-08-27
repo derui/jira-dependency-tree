@@ -7,13 +7,9 @@ import { Apis } from "@/apis/api";
 
 interface UseImportIssuesResult {
   /**
-   * select an issue to import list
+   * toggle selecting an issue to import list
    */
-  select: (key: IssueKey) => void;
-  /**
-   * unselect an issue from import list
-   */
-  unselect: (key: IssueKey) => void;
+  toggle: (key: IssueKey) => void;
 
   /**
    * execute importing
@@ -39,18 +35,15 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
 
-  const select = useCallback((key: IssueKey) => {
+  const toggle = useCallback((key: IssueKey) => {
     mutate((state) => {
       const set = new Set(state);
-      set.add(key);
 
-      return Array.from(set);
-    });
-  }, []);
-  const unselect = useCallback((key: IssueKey) => {
-    mutate((state) => {
-      const set = new Set(state);
-      set.delete(key);
+      if (set.has(key)) {
+        set.delete(key);
+      } else {
+        set.add(key);
+      }
 
       return Array.from(set);
     });
@@ -73,5 +66,5 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
     }
   }, [state, apiCredential]);
 
-  return { execute, select, unselect, selectedIssues: state, error, isLoading: loading };
+  return { execute, toggle, selectedIssues: state, error, isLoading: loading };
 };

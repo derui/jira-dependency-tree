@@ -5,7 +5,7 @@ import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { QueryInput } from "../molecules/query-input";
 import { Issue as IssueComponent } from "../molecules/issue";
-import { useSearchIssues } from "@/hooks";
+import { useImportIssues, useSearchIssues } from "@/hooks";
 import { Issue } from "@/model/issue";
 
 export interface Props extends BaseProps {
@@ -152,6 +152,7 @@ const Paginator = (props: {
   disabled: boolean;
   loading: boolean;
   onChangePage: (page: number) => void;
+  onImport: () => void;
   testid: string;
   issueCount: number;
 }) => {
@@ -191,7 +192,13 @@ const Paginator = (props: {
         </span>
       </div>
       <div>
-        <Button type="normal" testid={gen("import")} disabled={importDisabled} schema="secondary2">
+        <Button
+          type="normal"
+          testid={gen("import")}
+          disabled={importDisabled}
+          schema="secondary2"
+          onClick={() => props.onImport()}
+        >
           {importText}
         </Button>
       </div>
@@ -203,8 +210,8 @@ const Paginator = (props: {
 export function IssueImporter({ opened, testid, onClose }: Props) {
   const gen = generateTestId(testid);
   const [page, setPage] = useState(1);
-  const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
   const [{ isLoading, error, data }, search, paginate] = useSearchIssues();
+  const importer = useImportIssues();
 
   const handleClick = () => {
     if (onClose) {
@@ -222,20 +229,15 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
     setPage(page);
   };
 
-  const loading = isLoading && error === undefined;
   const handleToggleMark = (key: string) => {
-    setSelectedIssues((state) => {
-      const set = new Set(state);
-
-      if (set.has(key)) {
-        set.delete(key);
-      } else {
-        set.add(key);
-      }
-
-      return Array.from(set);
-    });
+    importer.toggle(key);
   };
+
+  const handleImport = () => {
+    importer.execute();
+  };
+
+  const loading = isLoading && error === undefined;
 
   return (
     <div className={classNames(Styles.root(opened))} aria-hidden={!opened} data-testid={gen("root")}>
@@ -250,7 +252,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
       <main className={classNames(Styles.main)}>
         <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
         <IssueList
-          selectedIssues={selectedIssues}
+          selectedIssues={importer.selectedIssues}
           issues={data ?? []}
           loading={loading}
           testid={gen("issue-list")}
@@ -258,11 +260,12 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
         />
         <Paginator
           onChangePage={handleChangePage}
+          onImport={handleImport}
           page={page}
           disabled={(data ?? [])?.length === 0}
           loading={loading}
           testid={gen("paginator")}
-          issueCount={selectedIssues.length}
+          issueCount={importer.selectedIssues.length}
         />
       </main>
     </div>

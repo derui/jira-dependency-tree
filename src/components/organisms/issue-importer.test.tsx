@@ -3,7 +3,6 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
-import { act } from "react-dom/test-utils";
 import { IssueImporter } from "./issue-importer";
 import { createPureStore } from "@/state/store";
 import { setupMockServer } from "@/mock/server";
@@ -79,7 +78,7 @@ test("change loading state of input query and search", async () => {
 
   expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("true");
   expect(screen.getAllByTestId("issue-list/skeleton/root-skeleton")).toHaveLength(3);
-  expect(screen.getAllByTestId("paginator/skeleton")).toHaveLength(1);
+  expect(screen.getAllByTestId("paginator/skeleton")).toHaveLength(2);
 });
 
 test("display empty list", async () => {
@@ -154,7 +153,7 @@ test("display issues when API returns some issues", async () => {
   expect(screen.getAllByTestId("issue-list/issue/root")[0].textContent).toContain("key");
 });
 
-test("disable bakward pagination after initial search", async () => {
+test("disable backward pagination after initial search", async () => {
   const user = userEvent.setup();
   const store = createPureStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
@@ -237,7 +236,40 @@ test("select issue to mark to import after", async () => {
   await user.click(screen.getByTestId("issue-list/issue/root"));
 
   expect(screen.getByTestId("issue-list/issue/selected").className).not.toContain("hidden");
+  expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
   await user.click(screen.getByTestId("issue-list/issue/root"));
 
   expect(screen.getByTestId("issue-list/issue/selected").className).toContain("hidden");
+  expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
+});
+
+test("execute import when some issues are selected", async () => {
+  expect.assertions(1);
+
+  const user = userEvent.setup();
+  const store = createPureStore();
+  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+
+  render(
+    <Provider store={store}>
+      <IssueImporter opened />
+    </Provider>,
+  );
+
+  server.use({
+    async searchIssues(_, res, ctx) {
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+    },
+    async getIssues(req, res, ctx) {
+      const json = await req.json();
+      expect(json.issues).toContain("key");
+
+      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+    },
+  });
+
+  await user.type(screen.getByTestId("query-input/input"), "sample jql");
+  await user.click(screen.getByTestId("query-input/button"));
+  await user.click(screen.getByTestId("issue-list/issue/root"));
+  await user.click(screen.getByTestId("paginator/import"));
 });

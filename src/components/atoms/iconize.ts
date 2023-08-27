@@ -24,6 +24,7 @@ const Icons = {
   "loader-2": "before:[mask-image:url(/svg/tabler-icons/loader-2.svg)]",
   "chevron-left": "before:[mask-image:url(/svg/tabler-icons/chevron-left.svg)]",
   "chevron-right": "before:[mask-image:url(/svg/tabler-icons/chevron-right.svg)]",
+  "transfer-in": "before:[mask-image:url(/svg/tabler-icons/transfer-in.svg)]",
 } as const;
 type Icons = keyof typeof Icons;
 

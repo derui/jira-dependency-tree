@@ -67,8 +67,20 @@ const Styles = {
   ),
 
   paginator: {
-    root: classNames("flex-none", "flex", "flex-row", "px-3", "my-2", "flex-nowrap", "justify-between", "items-center"),
-    skeleton: classNames("animate-pulse", "flex", "flex-col", "h-4", "w-full", "bg-lightgray"),
+    root: classNames(
+      "flex-none",
+      "flex",
+      "flex-row",
+      "px-3",
+      "py-2",
+      "flex-nowrap",
+      "justify-between",
+      "items-center",
+      "border-t",
+      "border-t-lightgray",
+    ),
+    pagingskeleton: classNames("animate-pulse", "flex", "h-4", "w-12", "bg-lightgray"),
+    buttonSkeleton: classNames("animate-pulse", "bg-lightgray", "h-10", "w-20"),
     pagingButton: (disabled: boolean) =>
       classNames(
         "group",
@@ -148,7 +160,8 @@ const Paginator = (props: {
   if (props.loading) {
     return (
       <div className={Styles.paginator.root} data-testid={gen("root")}>
-        <span className={Styles.paginator.skeleton} data-testid={gen("skeleton")} />
+        <span className={Styles.paginator.pagingskeleton} data-testid={gen("skeleton")} />
+        <span className={Styles.paginator.buttonSkeleton} data-testid={gen("skeleton")} />
       </div>
     );
   }

@@ -8,7 +8,7 @@ import { useAppSelector } from "./components/hooks";
 import { SideToolbar } from "./components/containers/side-toolbar";
 import { getZoom } from "./state/selectors/zoom";
 import { RelationEditorPanel } from "./components/containers/relation-editor-panel";
-import { ProjectToolbar } from "./components/containers/project-toolbar";
+import { TopToolbar } from "./components/containers/top-toolbar";
 
 export type Props = BaseProps;
 
@@ -42,7 +42,7 @@ export const App: React.FC<Props> = () => {
   return (
     <div className={Styles.root}>
       <div className={Styles.topToolbars}>
-        <ProjectToolbar testid="project-toolbar" />
+        <TopToolbar testid="project-toolbar" />
         <div></div>
         <IssueSearcher testid="issue-searcher" />
         <UserConfiguration testid="user-configuration" />

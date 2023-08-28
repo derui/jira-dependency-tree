@@ -22,7 +22,7 @@ const Styles = {
 };
 
 // eslint-disable-next-line func-style
-export function ProjectToolbar(props: Props) {
+export function TopToolbar(props: Props) {
   const gen = generateTestId(props.testid);
   const [opened, setOpened] = useState(false);
 

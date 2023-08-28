@@ -3,7 +3,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
-import { ProjectToolbar } from "./project-toolbar";
+import { TopToolbar } from "./top-toolbar";
 import { createPureStore } from "@/state/store";
 
 afterEach(cleanup);
@@ -13,7 +13,7 @@ test("should be able to render", async () => {
 
   render(
     <Provider store={store}>
-      <ProjectToolbar />
+      <TopToolbar />
     </Provider>,
   );
 
@@ -29,7 +29,7 @@ test("open panel after clicked", async () => {
 
   render(
     <Provider store={store}>
-      <ProjectToolbar />
+      <TopToolbar />
     </Provider>,
   );
 
@@ -47,7 +47,7 @@ test("close panel", async () => {
 
   render(
     <Provider store={store}>
-      <ProjectToolbar />
+      <TopToolbar />
     </Provider>,
   );
 

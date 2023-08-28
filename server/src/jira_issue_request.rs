@@ -3,7 +3,6 @@ use serde_json::{json, Value};
 use std::collections::{HashMap, HashSet};
 
 use crate::api_type::IssueLoadingRequest;
-use crate::api_type::IssueSearchCondition;
 use crate::issue::as_issue;
 use crate::issue::JiraIssue;
 use crate::jira_url::JiraUrl;
@@ -18,14 +17,6 @@ fn as_issue_keys(issue: &Value) -> HashSet<String> {
         .to_string();
     keys.insert(key);
 
-    if let Some(v) = issue["fields"]["issuelinks"].as_array() {
-        v.iter().for_each(|v| {
-            if let Some(key) = v["outwardIssue"]["key"].as_str() {
-                keys.insert(key.to_string());
-            }
-        })
-    }
-
     if let Some(v) = issue["fields"]["subtasks"].as_array() {
         v.iter().for_each(|v| {
             if let Some(key) = v["key"].as_str() {
@@ -38,23 +29,8 @@ fn as_issue_keys(issue: &Value) -> HashSet<String> {
 }
 
 fn request_to_jql(request: &IssueLoadingRequest) -> String {
-    match &request.condition {
-        Some(IssueSearchCondition {
-            sprint: Some(sprint),
-            epic: None,
-        }) => format!("project = \"{}\" AND Sprint = {}", request.project, sprint),
-        Some(IssueSearchCondition {
-            sprint: None,
-            epic: Some(epic),
-        }) => format!(
-            "project = \"{}\" AND parentEpic = \"{}\"",
-            request.project, epic
-        ),
-        _ => format!(
-            "project = \"{}\" AND Sprint in openSprints()",
-            request.project
-        ),
-    }
+    let keys = request.issues.join(",");
+    format!("key in ({})", keys)
 }
 
 /// load all issues from Jira API with JQL

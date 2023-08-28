@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
-    api_type::{IssueLoadingRequest, IssueSearchCondition},
+    api_type::IssueLoadingRequest,
     issue::{JiraIssue, JiraIssueLink},
     jira_issue_request::load_issue,
     jira_url::{JiraAuhtorization, JiraUrl},
@@ -32,7 +32,7 @@ fn request_to_get_an_issue() {
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
             .header("authorization", "foo")
-            .body_contains("project = ");
+            .body_contains("key-1");
 
         then.status(200)
             .header("content-type", "application/json")
@@ -66,7 +66,7 @@ fn request_to_get_an_issue() {
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
             .header("authorization", "foo")
-            .body_contains("key IN ");
+            .body_contains("other");
 
         then.status(200)
             .header("content-type", "application/json")
@@ -89,13 +89,12 @@ fn request_to_get_an_issue() {
             jira_token: "token".to_string(),
             user_domain: "domain".to_string(),
         },
-        project: "project".to_string(),
-        condition: None,
+        issues: vec!["key-1".to_string()],
     };
     let result = load_issue(&request, url);
 
     // verify
-    assert_eq!(result.len(), 2);
+    assert_eq!(result.len(), 1);
     let result = result
         .iter()
         .filter(|v| v.key == "test")
@@ -150,8 +149,7 @@ fn request_to_get_simplest_issue() {
             jira_token: "token".to_string(),
             user_domain: "domain".to_string(),
         },
-        project: "project".to_string(),
-        condition: None,
+        issues: vec!["key-1".to_string()],
     };
     let result = load_issue(&request, url);
 
@@ -175,7 +173,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
             .header("authorization", "foo")
-            .body_contains("project =");
+            .body_contains("test");
 
         then.status(200)
             .header("content-type", "application/json")
@@ -186,7 +184,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
             .path("/rest/api/3/search")
             .header("content-type", "application/json")
             .header("authorization", "foo")
-            .body_contains("key IN");
+            .body_contains("key-2");
 
         then.status(200)
             .header("content-type", "application/json")
@@ -201,8 +199,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
             jira_token: "token".to_string(),
             user_domain: "domain".to_string(),
         },
-        project: "project".to_string(),
-        condition: None,
+        issues: vec!["test".to_string()],
     };
     let mut result = load_issue(&request, url);
 
@@ -217,78 +214,6 @@ fn request_to_get_simplest_issue_with_subtasks() {
     assert_eq!(result[0].links.len(), 1);
     assert_eq!(result[0].subtasks.len(), 1);
     assert_eq!(result[0].subtasks[0], "key-2");
-}
-
-#[test]
-fn request_to_search_with_sprint() {
-    // arrange
-    let server = httpmock::MockServer::start();
-    let mock = server.mock(|when, then| {
-        when.method(Method::POST)
-            .path("/rest/api/3/search")
-            .header("content-type", "application/json")
-            .header("authorization", "foo")
-            .body_contains("Sprint = abc");
-
-        then.status(200)
-            .header("content-type", "application/json")
-            .body(include_str!("issue.json"));
-    });
-
-    // do
-    let url = TestRequest { server: &server };
-    let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
-        project: "project".to_string(),
-        condition: Some(IssueSearchCondition {
-            sprint: Some("abc".to_string()),
-            ..Default::default()
-        }),
-    };
-    load_issue(&request, url);
-
-    // verify
-    mock.assert();
-}
-
-#[test]
-fn request_to_search_with_epic() {
-    // arrange
-    let server = httpmock::MockServer::start();
-    let mock = server.mock(|when, then| {
-        when.method(Method::POST)
-            .path("/rest/api/3/search")
-            .header("content-type", "application/json")
-            .header("authorization", "foo")
-            .body_contains("parentEpic = \\\"abc\\\"");
-
-        then.status(200)
-            .header("content-type", "application/json")
-            .body(include_str!("issue.json"));
-    });
-
-    // do
-    let url = TestRequest { server: &server };
-    let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
-        project: "project".to_string(),
-        condition: Some(IssueSearchCondition {
-            epic: Some("abc".to_string()),
-            ..Default::default()
-        }),
-    };
-    load_issue(&request, url);
-
-    // verify
-    mock.assert();
 }
 
 #[test]
@@ -327,8 +252,7 @@ fn request_recursive() {
             jira_token: "token".to_string(),
             user_domain: "domain".to_string(),
         },
-        project: "project".to_string(),
-        condition: Some(Default::default()),
+        issues: (1..51).into_iter().map(|v| format!("key-{}", v)).collect(),
     };
     let ret = load_issue(&request, url);
     let keys = ret.into_iter().map(|v| v.key).collect::<HashSet<String>>();

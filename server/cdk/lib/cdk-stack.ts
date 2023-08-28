@@ -27,18 +27,6 @@ export class CdkStack extends cdk.Stack {
     issues.addMethod("POST", integration, { apiKeyRequired: true });
     issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
-    const project = restApi.root.addResource("get-project");
-    project.addMethod("POST", integration, { apiKeyRequired: true });
-    project.addMethod("OPTIONS", integration, { apiKeyRequired: false });
-
-    const projects = restApi.root.addResource("get-projects");
-    projects.addMethod("POST", integration, { apiKeyRequired: true });
-    projects.addMethod("OPTIONS", integration, { apiKeyRequired: false });
-
-    const suggestions = restApi.root.addResource("get-suggestions");
-    suggestions.addMethod("POST", integration, { apiKeyRequired: true });
-    suggestions.addMethod("OPTIONS", integration, { apiKeyRequired: false });
-
     const createLink = restApi.root.addResource("create-link");
     createLink.addMethod("POST", integration, { apiKeyRequired: true });
     createLink.addMethod("OPTIONS", integration, { apiKeyRequired: false });

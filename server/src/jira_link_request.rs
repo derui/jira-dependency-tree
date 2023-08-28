@@ -1,10 +1,8 @@
-use isahc::{http::StatusCode, Body, Error, RequestExt, Response};
+use isahc::{http::StatusCode, Body, Error, Request, RequestExt, Response};
 use serde_json::json;
 use url::Url;
 
-use crate::{
-    issue::JiraIssueLink, jira_projects_request::build_partial_request, jira_url::JiraUrl,
-};
+use crate::{issue::JiraIssueLink, jira_url::JiraUrl};
 
 // load all sprints from Jira API
 fn request_create_link(
@@ -12,8 +10,14 @@ fn request_create_link(
     outward_key: &str,
     url: &impl JiraUrl,
 ) -> Result<Response<Body>, Error> {
-    build_partial_request("/rest/api/3/issueLink", url)
-        .method(isahc::http::Method::POST)
+    Request::post(url.get_url("/rest/api/3/issueLink"))
+        .header(
+            "authorization",
+            url.get_base_headers()
+                .get("authorization")
+                .unwrap_or(&String::from("")),
+        )
+        .header("content-type", "application/json")
         .body(
             json!({
                 "outwardIssue": {
@@ -64,8 +68,16 @@ pub fn create_link(
 
 // load all sprints from Jira API
 fn request_delete_link(id: &str, url: &impl JiraUrl) -> Result<Response<Body>, Error> {
-    build_partial_request(&format!("/rest/api/3/issueLink/{}", id), url)
-        .method(isahc::http::Method::DELETE)
+    let jira_url = url.get_url(&format!("/rest/api/3/issueLink/{}", id));
+
+    Request::delete(jira_url)
+        .header(
+            "authorization",
+            url.get_base_headers()
+                .get("authorization")
+                .unwrap_or(&String::from("")),
+        )
+        .header("content-type", "application/json")
         .body(())?
         .send()
 }

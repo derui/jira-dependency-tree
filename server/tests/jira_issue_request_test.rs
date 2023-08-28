@@ -2,9 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
-    jira_issue_request::{load_issue, JiraIssue, JiraIssueLink},
+    api_type::{IssueLoadingRequest, IssueSearchCondition},
+    issue::{JiraIssue, JiraIssueLink},
+    jira_issue_request::load_issue,
     jira_url::{JiraAuhtorization, JiraUrl},
-    IssueLoadingRequest, IssueSearchCondition,
 };
 
 struct TestRequest<'a> {

@@ -1,60 +1,23 @@
+pub mod api_type;
+pub mod issue;
 pub mod jira_issue_request;
 pub mod jira_link_request;
 pub mod jira_project_request;
 pub mod jira_projects_request;
+pub mod jira_search_request;
 pub mod jira_suggestion_request;
 pub mod jira_url;
 
+use api_type::{
+    CreateLinkRequest, DeleteLinkRequest, GetProjectsRequest, IssueLoadingRequest,
+    ProjectsResponse, SuggestionRequest,
+};
 use isahc::http::Method;
 use jira_link_request::{create_link, delete_link};
-use jira_projects_request::JiraSimpleProject;
-use jira_url::JiraAuhtorization;
+
 use lambda_http::{Body, Error, Request, Response};
-use serde::{Deserialize, Serialize};
+
 use serde_json::json;
-
-#[derive(Deserialize, Default)]
-pub struct IssueSearchCondition {
-    pub sprint: Option<String>,
-    pub epic: Option<String>,
-}
-
-#[derive(Deserialize)]
-pub struct IssueLoadingRequest {
-    pub authorization: JiraAuhtorization,
-    pub project: String,
-    pub condition: Option<IssueSearchCondition>,
-}
-
-#[derive(Deserialize)]
-pub struct GetProjectsRequest {
-    pub authorization: JiraAuhtorization,
-}
-
-#[derive(Deserialize)]
-pub struct SuggestionRequest {
-    pub authorization: JiraAuhtorization,
-    pub project: String,
-    pub input_value: String,
-}
-
-#[derive(Deserialize)]
-pub struct CreateLinkRequest {
-    pub authorization: JiraAuhtorization,
-    pub inward_issue: String,
-    pub outward_issue: String,
-}
-
-#[derive(Deserialize)]
-pub struct DeleteLinkRequest {
-    pub authorization: JiraAuhtorization,
-    pub id: String,
-}
-
-#[derive(Serialize)]
-pub struct ProjectsResponse {
-    values: Vec<JiraSimpleProject>,
-}
 
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request

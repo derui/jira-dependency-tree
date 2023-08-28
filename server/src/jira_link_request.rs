@@ -1,15 +1,10 @@
 use isahc::{http::StatusCode, Body, Error, RequestExt, Response};
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
 
-use crate::{jira_projects_request::build_partial_request, jira_url::JiraUrl};
-
-#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct JiraIssueLink {
-    pub id: String,
-}
+use crate::{
+    issue::JiraIssueLink, jira_projects_request::build_partial_request, jira_url::JiraUrl,
+};
 
 // load all sprints from Jira API
 fn request_create_link(
@@ -56,6 +51,8 @@ pub fn create_link(
 
             Some(JiraIssueLink {
                 id: id_segment.to_string(),
+                outward_issue: String::from(outward_key),
+                inward_issue: String::from(inward_key),
             })
         } else {
             None

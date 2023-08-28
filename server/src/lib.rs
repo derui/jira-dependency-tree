@@ -1,4 +1,5 @@
 pub mod api_type;
+mod error;
 pub mod issue;
 pub mod jira_issue_request;
 pub mod jira_link_request;

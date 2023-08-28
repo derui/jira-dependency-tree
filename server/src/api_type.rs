@@ -2,13 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{jira_projects_request::JiraSimpleProject, jira_url::JiraAuhtorization};
 
-/// A http state when error happended
-pub enum ErrorHttpState {
-    BadRequest,
-    NotFound,
-    InternalServerError,
-}
-
 #[derive(Deserialize, Default)]
 pub struct IssueSearchCondition {
     pub sprint: Option<String>,

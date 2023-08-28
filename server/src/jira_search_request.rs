@@ -1,23 +1,26 @@
-use isahc::{ReadResponseExt, Request, RequestExt};
+use isahc::{ReadResponseExt, Request, RequestExt, Response};
 
 use serde_json::{json, Value};
 
 use crate::{
-    api_type::{ErrorHttpState, IssueSearchRequest},
+    api_type::IssueSearchRequest,
+    error::{bad_request, internal_server_error},
     issue::{as_issue, JiraIssue},
     jira_url::JiraUrl,
 };
 
-/// load all issues from Jira API with JQL
-fn search_issue_recursive(
-    jql: &str,
-    page: u32,
-    url: &impl JiraUrl,
-) -> Result<Vec<JiraIssue>, ErrorHttpState> {
+// load issue with request
+pub fn search_issue(
+    request: &IssueSearchRequest,
+    url: impl JiraUrl,
+) -> Result<Vec<JiraIssue>, Response<()>> {
+    let jql = request.jql.clone();
+
+    // load all issue keys in jql
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
         "jql": jql,
-        "startAt": page,
+        "startAt": request.page,
         "maxResults": 50,
         "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
     });
@@ -33,7 +36,7 @@ fn search_issue_recursive(
         .body(body.to_string())
     {
         Ok(cl) => cl,
-        Err(_) => return Err(ErrorHttpState::InternalServerError),
+        Err(_) => return Err(bad_request()),
     };
 
     match cl.send() {
@@ -53,21 +56,10 @@ fn search_issue_recursive(
         }
         Err(e) => {
             if e.is_client() {
-                Err(ErrorHttpState::BadRequest)
+                Err(bad_request())
             } else {
-                Err(ErrorHttpState::InternalServerError)
+                Err(internal_server_error())
             }
         }
     }
-}
-
-// load issue with request
-pub fn search_issue(
-    request: &IssueSearchRequest,
-    url: impl JiraUrl,
-) -> Result<Vec<JiraIssue>, ErrorHttpState> {
-    let jql = request.jql.clone();
-
-    // load all issue keys in jql
-    search_issue_recursive(&jql, request.page, &url)
 }

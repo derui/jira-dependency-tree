@@ -10,7 +10,7 @@ use crate::{
 };
 
 // load issue with request
-pub fn search_issue(
+pub fn search_issues(
     request: &IssueSearchRequest,
     url: impl JiraUrl,
 ) -> Result<Vec<JiraIssue>, Response<()>> {
@@ -20,7 +20,7 @@ pub fn search_issue(
     let jira_url = url.get_url("/rest/api/3/search");
     let body = json!({
         "jql": jql,
-        "startAt": request.page,
+        "startAt": (request.page - 1).max(0) * 50,
         "maxResults": 50,
         "fields": vec!["status", "issuetype", "issuelinks", "subtasks", "summary"]
     });

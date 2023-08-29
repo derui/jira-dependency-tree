@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectIdFulfilled } from "@/state/actions";
 import { projectFactory } from "@/model/project";
 import { randomCredential } from "@/mock-data";
@@ -18,7 +18,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
 
     return (
       <Provider store={store}>
@@ -31,7 +31,7 @@ export const Default: Story = {
 
 export const Enabled: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(projectFactory({ key: "key", id: "id", name: "name" })));
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 

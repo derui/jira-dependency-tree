@@ -1,13 +1,13 @@
 import { test, expect, describe } from "vitest";
 import { removeRelation, selectIssueInGraph, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "../actions";
-import { createPureStore } from "../store";
+import { createStore } from "../store";
 import * as s from "./relation-editor";
 import { Loading } from "@/type";
 import { randomIssue, randomProject } from "@/mock-data";
 
 describe("queryCurrentRelatedIssuesWithKind", () => {
   test("do not return any issues if store is not setupped", () => {
-    const store = createPureStore();
+    const store = createStore();
 
     const ret = s.queryCurrentRelatedIssuesWithKind("inward")(store.getState());
 
@@ -19,7 +19,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
       key: "key",
       relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled([issue]));
 
@@ -33,7 +33,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
       key: "key",
       relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled([issue]));
     store.dispatch(selectIssueInGraph("key"));
@@ -52,7 +52,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
       key: "foo",
       relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }],
     });
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled([issue, inwardIssue]));
     store.dispatch(selectIssueInGraph("key"));
@@ -73,7 +73,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
       type: "",
       status: "",
     });
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled([issue, outwardIssue]));
     store.dispatch(selectIssueInGraph("key"));
@@ -94,7 +94,7 @@ describe("queryCurrentRelatedIssuesWithKind", () => {
       type: "",
       status: "",
     });
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled([issue, outwardIssue]));
     store.dispatch(selectIssueInGraph("key"));

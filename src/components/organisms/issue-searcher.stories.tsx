@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
 import { randomCredential, randomIssue, randomProject } from "@/mock-data";
 
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
     store.dispatch(

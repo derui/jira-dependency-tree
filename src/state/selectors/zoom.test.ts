@@ -1,10 +1,10 @@
 import { test, expect } from "vitest";
 import { changeZoom } from "../actions";
-import { createPureStore } from "../store";
+import { createStore } from "../store";
 import * as s from "./zoom";
 
 test("get percentage", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   const ret = s.getZoom()(store.getState());
 
@@ -14,7 +14,7 @@ test("get percentage", () => {
 test("get changed percentage", () => {
   const selector = s.getZoom();
 
-  const store = createPureStore();
+  const store = createStore();
 
   const ret1 = selector(store.getState());
   store.dispatch(changeZoom(150));

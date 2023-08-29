@@ -4,12 +4,12 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { TopToolbar } from "./top-toolbar";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 
 afterEach(cleanup);
 
 test("should be able to render", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -25,7 +25,7 @@ test("should be able to render", async () => {
 });
 
 test("open panel after clicked", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -43,7 +43,7 @@ test("open panel after clicked", async () => {
 });
 
 test("close panel", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>

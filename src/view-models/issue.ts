@@ -1,5 +1,4 @@
 import { Issue } from "@/model/issue";
-import { Project } from "@/model/project";
 import { IssueKey, IssueStatus, IssueType } from "@/type";
 
 /**
@@ -15,11 +14,11 @@ export interface IssueModel {
 /**
  * converter to convert from issue to issue model
  */
-export const issueToIssueModel = (project: Project, issue: Issue): IssueModel => {
+export const issueToIssueModel = (issue: Issue): IssueModel => {
   return {
     key: issue.key,
     summary: issue.summary,
-    issueStatus: project.statuses[issue.status],
-    issueType: project.issueTypes[issue.type],
+    issueStatus: issue.status,
+    issueType: issue.type,
   };
 };

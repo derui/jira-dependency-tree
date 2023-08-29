@@ -10,7 +10,7 @@ import {
 import * as issues from "../slices/issues";
 import * as project from "../slices/project";
 import * as apiCredential from "../slices/api-credential";
-import { createPureStore, RootState } from "../store";
+import { createStore, RootState } from "../store";
 import * as s from "./issues";
 import { Loading } from "@/type";
 import { Issue } from "@/model/issue";
@@ -79,7 +79,7 @@ test("return request if request setup finished", () => {
 
 describe("queryIssueModels", () => {
   test("loading when project or issue are loading", () => {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitProjectId("key"));
 
     const ret = s.selectMatchedIssueModel()(store.getState());
@@ -88,7 +88,7 @@ describe("queryIssueModels", () => {
   });
 
   test("can not get issues when project is invalid", () => {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(synchronizeIssuesFulfilled([randomIssue()]));
 
     const ret = s.selectMatchedIssueModel()(store.getState());
@@ -98,7 +98,7 @@ describe("queryIssueModels", () => {
 
   test("get issue model", () => {
     const issues = [randomIssue({ summary: "sum", status: "", type: "" })];
-    const store = createPureStore();
+    const store = createStore();
 
     store.dispatch(synchronizeIssuesFulfilled(issues));
     store.dispatch(submitProjectIdFulfilled(randomProject()));
@@ -112,7 +112,7 @@ describe("queryIssueModels", () => {
 
 describe("select issue that is current projection target", () => {
   test("return undefined when no projection target", () => {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
 
     const ret = s.selectProjectionTargetIssue()(store.getState());
@@ -122,7 +122,7 @@ describe("select issue that is current projection target", () => {
 
   test("return issue target projected", () => {
     const issues = [randomIssue({ key: "key" })];
-    const store = createPureStore();
+    const store = createStore();
 
     store.dispatch(synchronizeIssuesFulfilled(issues));
     store.dispatch(expandIssue("key"));

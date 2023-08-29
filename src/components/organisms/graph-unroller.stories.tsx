@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { expandIssue, synchronizeIssuesFulfilled } from "@/state/actions";
 import { randomIssue } from "@/mock-data";
 
@@ -17,7 +17,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
 
     return (
       <Provider store={store}>
@@ -29,7 +29,7 @@ export const Default: Story = {
 
 export const Active: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
     store.dispatch(expandIssue("key"));
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 
 const meta = {
   title: "Organisms/User Configuration",
@@ -15,7 +15,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render() {
-    const store = createPureStore();
+    const store = createStore();
 
     return (
       <Provider store={store}>

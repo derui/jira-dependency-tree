@@ -4,14 +4,14 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
 import { randomCredential, randomIssue, randomProject } from "@/mock-data";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -25,7 +25,7 @@ test("should be able to render", () => {
 });
 
 test("should be clickable after setup finished", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -45,7 +45,7 @@ test("should be clickable after setup finished", async () => {
 });
 
 test("open term input after opener clicked", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
@@ -63,7 +63,7 @@ test("open term input after opener clicked", async () => {
 });
 
 test("show issue are matched with inputted term", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
@@ -91,7 +91,7 @@ test("show issue are matched with inputted term", async () => {
 });
 
 test("reset after click cancel", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
@@ -120,7 +120,7 @@ test("reset after click cancel", async () => {
 });
 
 test("send action when issue click", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitProjectIdFulfilled(randomProject()));
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { RelationEditor } from "./relation-editor";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { randomIssue, randomProject } from "@/mock-data";
 import { selectIssueInGraph, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
 
@@ -22,10 +22,10 @@ export const Inward: Story = {
     kind: "inward",
   },
   render() {
-    const store = createPureStore();
+    const store = createStore();
     const issues = [
-      randomIssue({ key: "key", relations: [{ id: "id", externalId: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
-      randomIssue({ key: "foo", relations: [{ id: "id", externalId: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
+      randomIssue({ key: "key", relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
+      randomIssue({ key: "foo", relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
     ];
     store.dispatch(submitProjectIdFulfilled(randomProject()));
     store.dispatch(synchronizeIssuesFulfilled(issues));
@@ -45,7 +45,7 @@ export const Outward: Story = {
     kind: "outward",
   },
   render() {
-    const store = createPureStore();
+    const store = createStore();
 
     return (
       <Provider store={store}>

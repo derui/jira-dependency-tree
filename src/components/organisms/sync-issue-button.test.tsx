@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 import { randomCredential } from "@/mock-data";
 import { Apis } from "@/apis/api";
@@ -26,7 +26,7 @@ afterEach(() => {
 
 test("initial state is disabled all", () => {
   render(
-    <Provider store={createPureStore()}>
+    <Provider store={createStore()}>
       <SyncIssueButton />
     </Provider>,
   );
@@ -37,7 +37,7 @@ test("initial state is disabled all", () => {
 });
 
 test("do not disable if setup finished", () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -54,7 +54,7 @@ test("dispatch action when click action", async () => {
   vi.mocked(Apis.getIssues.call).mockResolvedValue([]);
 
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   const cred = randomCredential();
   store.dispatch(submitApiCredentialFulfilled(cred));
 

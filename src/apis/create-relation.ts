@@ -40,7 +40,6 @@ const mapResponse = (fromKey: IssueKey, toKey: IssueKey, body: Record<string, un
 
   return {
     id,
-    externalId: id,
     inwardIssue: fromKey,
     outwardIssue: toKey,
   };

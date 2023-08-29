@@ -3,14 +3,14 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { expandIssue, synchronizeIssuesFulfilled } from "@/state/actions";
 import { randomIssue } from "@/mock-data";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -24,7 +24,7 @@ test("should be able to render", () => {
 });
 
 test("should active icon when graph expanding", () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
   store.dispatch(expandIssue("key"));
 
@@ -40,7 +40,7 @@ test("should active icon when graph expanding", () => {
 });
 
 test("narrow and inactive icon", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
   store.dispatch(expandIssue("key"));
 

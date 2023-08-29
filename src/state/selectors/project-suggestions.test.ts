@@ -1,12 +1,12 @@
 import { test, expect, describe } from "vitest";
 import { projects } from "../actions";
-import { createPureStore } from "../store";
+import { createStore } from "../store";
 import * as s from "./project-suggestions";
 import { Loading } from "@/type";
 
 describe("project suggestions", () => {
   test("should return loading when state has loading", () => {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(projects.loadProjects());
 
     const ret = s.selectProjectSuggestions(store.getState());
@@ -15,7 +15,7 @@ describe("project suggestions", () => {
   });
 
   test("should return suggestion items", () => {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(
       projects.loadProjectsSucceeded({
         projects: [

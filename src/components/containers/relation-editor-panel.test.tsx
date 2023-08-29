@@ -4,13 +4,13 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { RelationEditorPanel } from "./relation-editor-panel";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { selectIssueInGraph } from "@/state/actions";
 
 afterEach(cleanup);
 
 test("do not open panel first", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -24,7 +24,7 @@ test("do not open panel first", () => {
 });
 
 test("open panel after select issue", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -39,7 +39,7 @@ test("open panel after select issue", async () => {
 });
 
 test("close panel after click close button", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -56,7 +56,7 @@ test("close panel after click close button", async () => {
 });
 
 test("display selected key", async () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(selectIssueInGraph("key"));
 
   render(

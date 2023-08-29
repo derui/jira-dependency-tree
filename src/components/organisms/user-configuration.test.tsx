@@ -3,13 +3,13 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -23,7 +23,7 @@ test("should be able to render", () => {
 });
 
 test("initial payload is empty", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -34,7 +34,7 @@ test("initial payload is empty", () => {
         return (
           <>
             {props.children}
-            <div id='dialog-root' />
+            <div id="dialog-root" />
           </>
         );
       },
@@ -51,7 +51,7 @@ test("initial payload is empty", () => {
 });
 
 test("initial payload inputted", () => {
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(
     submitApiCredentialFulfilled({
       apiBaseUrl: "url",
@@ -71,7 +71,7 @@ test("initial payload inputted", () => {
         return (
           <>
             {props.children}
-            <div id='dialog-root' />
+            <div id="dialog-root" />
           </>
         );
       },
@@ -88,7 +88,7 @@ test("initial payload inputted", () => {
 });
 
 test("open dialog when opener clicked", async () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -99,7 +99,7 @@ test("open dialog when opener clicked", async () => {
         return (
           <>
             {props.children}
-            <div id='dialog-root' />
+            <div id="dialog-root" />
           </>
         );
       },
@@ -116,7 +116,7 @@ test("open dialog when opener clicked", async () => {
 
 test("hide dialog when submitted", async () => {
   expect.assertions(1);
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -127,7 +127,7 @@ test("hide dialog when submitted", async () => {
         return (
           <>
             {props.children}
-            <div id='dialog-root' />
+            <div id="dialog-root" />
           </>
         );
       },
@@ -153,7 +153,7 @@ test("hide dialog when submitted", async () => {
 
 test("hide dialog when canceled on form", async () => {
   expect.assertions(1);
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -164,7 +164,7 @@ test("hide dialog when canceled on form", async () => {
         return (
           <>
             {props.children}
-            <div id='dialog-root' />
+            <div id="dialog-root" />
           </>
         );
       },

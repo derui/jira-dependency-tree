@@ -1,21 +1,12 @@
-import { Action, configureStore } from "@reduxjs/toolkit";
-import { combineEpics, createEpicMiddleware } from "redux-observable";
+import { configureStore } from "@reduxjs/toolkit";
 import * as apiCredential from "./slices/api-credential";
 import * as project from "./slices/project";
 import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
 import * as suggestions from "./slices/suggestions";
-import { issueEpic } from "./epics/issue";
-import { suggestionEpic } from "./epics/suggestion";
-import { projectEpic } from "./epics/project";
 import * as zoom from "./slices/zoom";
-import { issueGraphEpic } from "./epics/issue-graph";
 import * as relationEditor from "./slices/relation-editor";
-import { relationEpic } from "./epics/relation";
 import * as projects from "./slices/projects";
-import { projectsEpic } from "./epics/projects";
-import type { Dependencies } from "@/dependencies";
-import { DependencyRegistrar } from "@/util/dependency-registrar";
 
 // INJECT REDUCER IMPORT HERE
 
@@ -40,39 +31,10 @@ const reducers = {
   // do not format this structure.
 } as const;
 
-// eslint-disable-next-line
-export const createStore = (registrar: DependencyRegistrar<Dependencies>) => {
-  const rootEpics = [
-    ...Object.values(projectsEpic(registrar)),
-
-    ...Object.values(relationEpic(registrar)),
-
-    ...Object.values(issueGraphEpic(registrar)),
-
-    ...Object.values(projectEpic(registrar)),
-
-    ...Object.values(suggestionEpic(registrar)),
-    ...Object.values(issueEpic(registrar)),
-    // do not format this structure.
-  ];
-
-  // eslint-disable-next-line
-  const epicMiddleware = createEpicMiddleware<Action, Action, any>();
-
-  const store = configureStore({
-    reducer: reducers,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(epicMiddleware),
-  });
-
-  epicMiddleware.run(combineEpics<Action, Action, RootState>(...rootEpics));
-
-  return store;
-};
-
 /**
  * create pure store. This store does not have any epic/thunk based process. To use for test.
  */
-export const createPureStore = () => {
+export const createStore = () => {
   return configureStore({ reducer: reducers });
 };
 

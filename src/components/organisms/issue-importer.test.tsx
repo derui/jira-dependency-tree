@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
 import { IssueImporter } from "./issue-importer";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { setupMockServer } from "@/mock/server";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 import { randomApiIssue, randomCredential } from "@/mock-data";
@@ -22,7 +22,7 @@ afterEach(() => {
 });
 
 test("should be able to render", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   render(
     <Provider store={store}>
@@ -37,7 +37,7 @@ test("should be able to render", () => {
 
 test("open and close panel", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   const onClose = Sinon.fake.returns(null);
 
   render(
@@ -58,7 +58,7 @@ test("open and close panel", async () => {
 
 test("change loading state of input query and search", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -83,7 +83,7 @@ test("change loading state of input query and search", async () => {
 
 test("display empty list", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -107,7 +107,7 @@ test("display empty list", async () => {
 
 test("display error when API is failed", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -131,7 +131,7 @@ test("display error when API is failed", async () => {
 
 test("display issues when API returns some issues", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -155,7 +155,7 @@ test("display issues when API returns some issues", async () => {
 
 test("disable backward pagination after initial search", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -179,7 +179,7 @@ test("disable backward pagination after initial search", async () => {
 
 test("change page after search", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -216,7 +216,7 @@ test("change page after search", async () => {
 
 test("select issue to mark to import after", async () => {
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(
@@ -247,7 +247,7 @@ test("execute import when some issues are selected", async () => {
   expect.assertions(1);
 
   const user = userEvent.setup();
-  const store = createPureStore();
+  const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
   render(

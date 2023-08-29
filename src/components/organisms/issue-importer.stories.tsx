@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { MOCK_BASE_URL, randomCredential, randomIssue } from "@/mock-data";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
@@ -23,7 +23,7 @@ export const Default: Story = {
     opened: false,
   },
   render(args) {
-    const store = createPureStore();
+    const store = createStore();
 
     return (
       <Provider store={store}>
@@ -48,7 +48,7 @@ export const Loading: Story = {
     },
   },
   render(args) {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
     return (
@@ -73,7 +73,7 @@ export const Error: Story = {
     },
   },
   render(args) {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
     return (
@@ -118,7 +118,7 @@ export const DisplayIssues: Story = {
     },
   },
   render(args) {
-    const store = createPureStore();
+    const store = createStore();
     store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
     return (

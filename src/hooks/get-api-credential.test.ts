@@ -2,11 +2,11 @@ import { test, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useGetApiCredential } from "./get-api-credential";
 import { getWrapper } from "./hook-test-util";
-import { createPureStore } from "@/state/store";
+import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
 test("get undefined if credential is not setupped", () => {
-  const store = createPureStore();
+  const store = createStore();
 
   const ret = renderHook(() => useGetApiCredential(), { wrapper: getWrapper(store) });
 
@@ -22,7 +22,7 @@ test("get api credential", () => {
     userDomain: "domain",
   };
 
-  const store = createPureStore();
+  const store = createStore();
 
   const ret = renderHook(() => useGetApiCredential(), { wrapper: getWrapper(store) });
 

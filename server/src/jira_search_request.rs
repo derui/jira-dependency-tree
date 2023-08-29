@@ -1,5 +1,6 @@
 use isahc::{ReadResponseExt, Request, RequestExt, Response};
 
+use lambda_http::Body;
 use serde_json::{json, Value};
 
 use crate::{
@@ -13,7 +14,7 @@ use crate::{
 pub fn search_issues(
     request: &IssueSearchRequest,
     url: impl JiraUrl,
-) -> Result<Vec<JiraIssue>, Response<()>> {
+) -> Result<Vec<JiraIssue>, Response<Body>> {
     let jql = request.jql.clone();
 
     // load all issue keys in jql

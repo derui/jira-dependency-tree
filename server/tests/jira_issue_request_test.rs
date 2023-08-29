@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     api_type::IssueLoadingRequest,
-    issue::{JiraIssue, JiraIssueLink},
+    issue::{JiraIssue, JiraIssueLink, JiraStatus},
     jira_issue_request::load_issue,
     jira_url::{JiraAuhtorization, JiraUrl},
 };
@@ -105,7 +105,6 @@ fn request_to_get_an_issue() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
-    assert_eq!(result[0].status_id, None);
     assert_eq!(
         result[0].links[0],
         JiraIssueLink {
@@ -160,7 +159,6 @@ fn request_to_get_simplest_issue() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, None);
     assert_eq!(result[0].self_url, None);
-    assert_eq!(result[0].status_id, None);
     assert_eq!(result[0].links.len(), 0);
 }
 
@@ -210,7 +208,14 @@ fn request_to_get_simplest_issue_with_subtasks() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
-    assert_eq!(result[0].status_id, Some("10001".to_string()));
+    assert_eq!(
+        result[0].status.clone().unwrap(),
+        JiraStatus {
+            id: "10001".to_string(),
+            name: "foo".to_string(),
+            status_category: "TODO".to_string(),
+        }
+    );
     assert_eq!(result[0].links.len(), 1);
     assert_eq!(result[0].subtasks.len(), 1);
     assert_eq!(result[0].subtasks[0], "key-2");

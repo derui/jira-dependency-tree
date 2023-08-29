@@ -28,8 +28,8 @@ export class CdkStack extends cdk.Stack {
     issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     const searchIssues = restApi.root.addResource("search-issues");
-    issues.addMethod("POST", integration, { apiKeyRequired: true });
-    issues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
+    searchIssues.addMethod("POST", integration, { apiKeyRequired: true });
+    searchIssues.addMethod("OPTIONS", integration, { apiKeyRequired: false });
 
     const createLink = restApi.root.addResource("create-link");
     createLink.addMethod("POST", integration, { apiKeyRequired: true });

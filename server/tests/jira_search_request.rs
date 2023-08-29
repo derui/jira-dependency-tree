@@ -79,7 +79,7 @@ fn request_to_get_an_issue() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
-    assert_eq!(result[0].status_id, None);
+    assert_eq!(result[0].status.clone(), None);
     assert_eq!(
         result[0].links[0],
         JiraIssueLink {
@@ -136,6 +136,6 @@ fn request_to_next_page() {
     assert_eq!(result[0].summary, "summary");
     assert_eq!(result[0].description, None);
     assert_eq!(result[0].self_url, None);
-    assert_eq!(result[0].status_id, None);
+    assert_eq!(result[0].status, None);
     assert_eq!(result[0].links.len(), 0);
 }

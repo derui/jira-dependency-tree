@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -11,14 +11,30 @@ pub struct JiraIssueLink {
     pub inward_issue: String,
 }
 
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct JiraStatus {
+    pub id: String,
+    pub name: String,
+    pub status_category: String,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct JiraIssueType {
+    pub id: String,
+    pub name: String,
+    pub avatar_url: Option<String>,
+}
+
 #[derive(Deserialize, Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssue {
     pub key: String,
     pub summary: String,
     pub description: Option<String>,
-    pub status_id: Option<String>,
-    pub type_id: Option<String>,
+    pub status: Option<JiraStatus>,
+    pub issue_type: Option<JiraIssueType>,
     pub self_url: Option<String>,
     pub links: Vec<JiraIssueLink>,
     pub subtasks: Vec<String>,
@@ -79,6 +95,39 @@ fn as_subtasks(value: &[Value]) -> Vec<String> {
         .collect()
 }
 
+fn as_status(v: &Map<String, Value>) -> JiraStatus {
+    JiraStatus {
+        id: v["id"]
+            .as_str()
+            .map(|v| v.into())
+            .unwrap_or(String::default()),
+        name: v
+            .get("name")
+            .and_then(|v| v.as_str())
+            .map(|v| v.into())
+            .unwrap_or(String::default()),
+        status_category: v
+            .get("statusCategory")
+            .and_then(|v| v.as_str())
+            .map(|v| v.into())
+            .unwrap_or(String::default()),
+    }
+}
+
+fn as_issue_type(v: &Map<String, Value>) -> JiraIssueType {
+    JiraIssueType {
+        id: v["id"]
+            .as_str()
+            .map(|v| v.into())
+            .unwrap_or(String::default()),
+        name: v["name"]
+            .as_str()
+            .map(|v| v.into())
+            .unwrap_or(String::default()),
+        avatar_url: v["avatarUrl"].as_str().map(|v| v.into()),
+    }
+}
+
 /// json to JiraIssue
 pub fn as_issue(issue: &Value) -> JiraIssue {
     let key = issue["key"].as_str().expect("key must not null");
@@ -92,10 +141,8 @@ pub fn as_issue(issue: &Value) -> JiraIssue {
         description: issue["fields"]["description"]["text"]
             .as_str()
             .map(|v| v.into()),
-        status_id: issue["fields"]["status"]["id"].as_str().map(|v| v.into()),
-        type_id: issue["fields"]["issuetype"]["id"]
-            .as_str()
-            .map(|v| v.into()),
+        status: issue["fields"]["status"].as_object().map(as_status),
+        issue_type: issue["fields"]["issuetype"].as_object().map(as_issue_type),
         self_url: issue["self"].as_str().map(|v| v.into()),
         links: issue["fields"]["issuelinks"]
             .as_array()

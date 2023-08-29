@@ -11,7 +11,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -26,7 +28,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -41,7 +45,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -56,7 +62,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -71,7 +79,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -86,7 +96,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -101,7 +113,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -116,7 +130,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }
@@ -131,7 +147,9 @@
         },
         "issuelinks": [],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "name",
+          "statusCategory": "TODO"
         },
         "subtasks": []
       }

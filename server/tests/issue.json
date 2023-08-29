@@ -18,7 +18,9 @@
           }
         ],
         "status": {
-          "id": "10001"
+          "id": "10001",
+          "name": "foo",
+          "statusCategory": "TODO"
         },
         "subtasks": [
           {

@@ -4,7 +4,17 @@
     {
       "key": "key-2",
       "fields": {
-        "summary": "sub"
+        "summary": "sub",
+        "status": {
+          "id": "10000",
+          "name": "foo",
+          "statusCategory": "TODO"
+        },
+        "issuetype": {
+          "id": "10001",
+          "name": "name",
+          "avatarUrl": "url"
+        }
       }
     }
   ]

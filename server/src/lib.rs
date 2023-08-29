@@ -6,7 +6,7 @@ pub mod jira_link_request;
 pub mod jira_search_request;
 pub mod jira_url;
 
-use api_type::{CreateLinkRequest, DeleteLinkRequest, IssueLoadingRequest};
+use api_type::{CreateLinkRequest, DeleteLinkRequest, IssueLoadingRequest, IssueSearchRequest};
 use isahc::http::Method;
 use jira_link_request::{create_link, delete_link};
 
@@ -21,7 +21,7 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
 
     match event.uri().path() {
         "/prod/get-issues" => match *event.method() {
-            Method::POST => execute_load_issue(&event).await,
+            Method::POST => execute_get_issues(&event).await,
             Method::OPTIONS => preflight,
             _ => unmatch,
         },
@@ -35,11 +35,16 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
             Method::OPTIONS => preflight,
             _ => unmatch,
         },
+        "/prod/search-issues" => match *event.method() {
+            Method::POST => execute_search_issues(&event).await,
+            Method::OPTIONS => preflight,
+            _ => unmatch,
+        },
         _ => unmatch,
     }
 }
 
-async fn execute_load_issue(event: &Request) -> Result<Response<Body>, Error> {
+async fn execute_get_issues(event: &Request) -> Result<Response<Body>, Error> {
     let json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
@@ -105,6 +110,35 @@ async fn execute_create_link(event: &Request) -> Result<Response<Body>, Error> {
         )
         .map_err(Box::new)?;
     Ok(resp)
+}
+
+async fn execute_search_issues(event: &Request) -> Result<Response<Body>, Error> {
+    let json: IssueSearchRequest = match event.body() {
+        Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
+        _ => Err("Invalid body type"),
+    }?;
+
+    let issues = jira_search_request::search_issues(&json, json.authorization.clone());
+
+    match issues {
+        Ok(issues) => {
+            // Return something that implements IntoResponse.
+            // It will be serialized to the right response event automatically by the runtime
+            let resp = Response::builder()
+                .status(200)
+                .header("content-type", "application/json")
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Access-Control-Allow-Method", "POST,OPTIONS")
+                .body(
+                    serde_json::to_string(&issues)
+                        .expect("unexpected format")
+                        .into(),
+                )
+                .unwrap();
+            Ok(resp)
+        }
+        Err(resp) => Ok(resp),
+    }
 }
 
 fn not_found() -> Result<Response<Body>, Error> {

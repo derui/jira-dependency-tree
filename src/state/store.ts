@@ -5,7 +5,7 @@ import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
 import * as suggestions from "./slices/suggestions";
 import * as zoom from "./slices/zoom";
-import * as relationEditor from "./slices/relation-editor";
+import * as relations from "./slices/relations";
 import * as projects from "./slices/projects";
 
 // INJECT REDUCER IMPORT HERE
@@ -18,7 +18,7 @@ const reducers = {
 
   projects: projects.reducer,
 
-  relationEditor: relationEditor.reducer,
+  relations: relations.reducer,
 
   zoom: zoom.reducer,
 

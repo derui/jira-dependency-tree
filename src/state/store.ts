@@ -9,10 +9,13 @@ import * as relationEditor from "./slices/relation-editor";
 import * as projects from "./slices/projects";
 
 // INJECT REDUCER IMPORT HERE
+import * as relationDelta from "./slices/relation-delta";
 
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  relationDelta: relationDelta.reducer,
+
   projects: projects.reducer,
 
   relationEditor: relationEditor.reducer,

@@ -1,44 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { ApiCredential } from "./model/event";
 import { Issue } from "./model/issue";
-import { projectFactory } from "./model/project";
-import { StatusCategory } from "./type";
-import { FirstArg } from "./util/type-tool";
 import { ApiIssue } from "./apis/mapper/issue";
 
 export const MOCK_BASE_URL = "https://mock.example.com";
-
-/**
- * get random project
- */
-export const randomProject = (arg?: Partial<FirstArg<typeof projectFactory>>) => {
-  return projectFactory({
-    id: arg?.id ?? faker.string.uuid(),
-    key: arg?.key ?? faker.word.verb(),
-    name: arg?.name ?? faker.person.jobTitle(),
-    issueTypes: [
-      {
-        id: faker.string.uuid(),
-        name: faker.string.sample(),
-        avatarUrl: faker.internet.url(),
-      },
-    ],
-    statusCategories: [
-      {
-        id: faker.string.uuid(),
-        name: faker.string.sample(),
-        colorName: faker.color.human(),
-      },
-    ],
-    statuses: [
-      {
-        id: faker.string.uuid(),
-        name: faker.string.sample(),
-        statusCategory: StatusCategory.IN_PROGRESS,
-      },
-    ],
-  });
-};
 
 /**
  * get random api credential
@@ -98,5 +63,5 @@ export const randomApiIssue = function randomApiIssue(issue: Partial<ApiIssue> =
     links: [],
     subtasks: [],
     ...issue,
-  }
-}
+  };
+};

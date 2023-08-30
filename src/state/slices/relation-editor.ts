@@ -21,7 +21,7 @@ interface RelationEditorState {
   opened: boolean;
   selectedIssueKey: IssueKey | undefined;
   draft: Record<IssueKey, DraftPerIssue>;
-  relations: Record<IssueKey, Record<IssueRelationId, Relation>>;
+  relations: Record<IssueRelationId, Relation>;
 }
 
 const initialState = {
@@ -72,61 +72,12 @@ const slice = createSlice({
       state.loading = Loading.Completed;
 
       state.draft = {};
-      state.relations = payload.reduce<Record<string, Record<IssueRelationId, Relation>>>((accum, issue) => {
-        accum[issue.key] = issue.relations.reduce<Record<IssueRelationId, Relation>>((relations, v) => {
-          relations[v.id] = v;
-          return relations;
-        }, {});
-
+      state.relations = payload.reduce<Record<IssueRelationId, Relation>>((accum, issue) => {
+        issue.relations.forEach((v) => {
+          accum[v.id] = v;
+        });
         return accum;
       }, {});
-    });
-
-    builder.addCase(addRelationAccepted, (state, { payload }) => {
-      if (state.draft[payload.fromKey]) {
-        state.draft[payload.fromKey][payload.relationId] = Loading.Loading;
-      } else {
-        state.draft[payload.fromKey] = { [payload.relationId]: Loading.Loading };
-      }
-
-      if (state.draft[payload.toKey]) {
-        state.draft[payload.toKey][payload.relationId] = Loading.Loading;
-      } else {
-        state.draft[payload.toKey] = { [payload.relationId]: Loading.Loading };
-      }
-
-      const tempRelation = {
-        id: payload.relationId,
-        externalId: "",
-        inwardIssue: payload.fromKey,
-        outwardIssue: payload.toKey,
-      };
-
-      if (state.relations[payload.fromKey]) {
-        state.relations[payload.fromKey][payload.relationId] = tempRelation;
-      } else {
-        state.relations[payload.fromKey] = { [payload.relationId]: tempRelation };
-      }
-
-      if (state.relations[payload.fromKey]) {
-        state.relations[payload.toKey][payload.relationId] = tempRelation;
-      } else {
-        state.relations[payload.toKey] = { [payload.relationId]: tempRelation };
-      }
-    });
-
-    builder.addCase(addRelationError, (state, { payload }) => {
-      deleteRelationFromDraft(state, payload.relationId);
-
-      delete state.relations[payload.fromKey][payload.relationId];
-      delete state.relations[payload.toKey][payload.relationId];
-    });
-
-    builder.addCase(addRelationSucceeded, (state, { payload }) => {
-      deleteRelationFromDraft(state, payload.id);
-
-      state.relations[payload.inwardIssue][payload.id] = payload;
-      state.relations[payload.outwardIssue][payload.id] = payload;
     });
 
     builder.addCase(removeRelation, (state, { payload }) => {
@@ -144,22 +95,6 @@ const slice = createSlice({
         } else {
           state.draft[relation.outwardIssue] = { [relation.id]: Loading.Loading };
         }
-      });
-    });
-
-    builder.addCase(removeRelationError, (state, { payload }) => {
-      const targetRelations = getTargetRelations(state, payload);
-
-      targetRelations.forEach((v) => {
-        deleteRelationFromDraft(state, v.id);
-      });
-    });
-
-    builder.addCase(removeRelationSucceeded, (state, { payload }) => {
-      deleteRelationFromDraft(state, payload.relationId);
-
-      Object.entries(state.relations).forEach(([, relations]) => {
-        delete relations[payload.relationId];
       });
     });
   },

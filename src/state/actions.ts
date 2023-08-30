@@ -4,7 +4,8 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
-import { IssueKey, SuggestionKind } from "@/type";
+import { DeltaId, IssueKey, SuggestionKind } from "@/type";
+import { RelationDelta } from "@/model/relation-delta";
 
 type ApiCredentialPayload = {
   token: string;
@@ -90,3 +91,8 @@ export const projects = {
 
 // action to import issues
 export const importIssues = createAction<{ issues: Issue[] }>("importIssues");
+
+export const relations = {
+  appendDelta: createAction<RelationDelta>("relations:appendDelta"),
+  deleteDelta: createAction<DeltaId>("relations:deleteDelta"),
+} as const;

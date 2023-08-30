@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../hooks";
 import { Button } from "../atoms/button";
 import { Suggestor } from "../molecules/suggestor";
 import { iconize } from "../atoms/iconize";
-import { IssueKey, Loading } from "@/type";
+import { IssueKey, IssueRelationId, Loading } from "@/type";
 import {
   queryCurrentRelatedIssuesWithKind,
   RelationKind,
@@ -15,10 +15,9 @@ import {
 import { selectMatchedIssueModel } from "@/state/selectors/issues";
 import { addRelation, attentionIssue, removeRelation, searchIssue } from "@/state/actions";
 import { AppDispatch } from "@/state/store";
+import { IssueModel } from "@/view-models/issue";
 
-export interface Props extends BaseProps {
-  kind: RelationKind;
-}
+export type Props = BaseProps;
 
 const Styles = {
   root: classNames(
@@ -98,13 +97,20 @@ const IssueAppender = function IssueAppender({
           onEmptySuggestion={(term) => dispatch(searchIssue(term))}
         />
       ) : (
-        <Button size="full" schema='gray' testid={gen("add-button")} onClick={() => setSearching(!searching)}>
+        <Button size="full" schema="gray" testid={gen("add-button")} onClick={() => setSearching(!searching)}>
           <span className={Styles.appenderButton}>Add</span>
         </Button>
       )}
     </div>
   );
 };
+
+type IssueWithRelation = {
+  relationId: IssueRelationId;
+  issue: IssueModel;
+};
+
+const Editor = function Editor(props: { title: string; issues: IssueWithRelation[] }) {};
 
 // eslint-disable-next-line func-style
 export function RelationEditor(props: Props) {
@@ -139,13 +145,14 @@ export function RelationEditor(props: Props) {
 
   return (
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
-      <header className={classNames(Styles.header)} data-testid={gen("title")}>
+      <div></div>
+      <div className={classNames(Styles.header)} data-testid={gen("title")}>
         {kindToTitle(props.kind)}
-      </header>
+      </div>
       {loading === Loading.Loading || !selectedIssueKey ? (
         <Skeleton testid={gen("skeleton")} />
       ) : (
-        <main className={classNames(Styles.main)}>
+        <div className={classNames(Styles.main)}>
           <IssueAppender
             testid={gen("appender")}
             relatedIssues={relatedIssueKeys}
@@ -154,7 +161,7 @@ export function RelationEditor(props: Props) {
             kind={props.kind}
           />
           <ul className={classNames(Styles.issueList)}>{issueList}</ul>
-        </main>
+        </div>
       )}
     </div>
   );

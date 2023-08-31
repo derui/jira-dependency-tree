@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { synchronizeIssuesFulfilled } from "../actions";
+import { importIssues } from "../actions";
 import { IssueRelationId } from "@/type";
 import { Relation } from "@/model/issue";
 
@@ -16,8 +16,8 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(synchronizeIssuesFulfilled, (state, { payload }) => {
-      state.relations = payload.reduce<Record<IssueRelationId, Relation>>((accum, issue) => {
+    builder.addCase(importIssues, (state, { payload }) => {
+      state.relations = payload.issues.reduce<Record<IssueRelationId, Relation>>((accum, issue) => {
         issue.relations.forEach((v) => {
           accum[v.id] = v;
         });

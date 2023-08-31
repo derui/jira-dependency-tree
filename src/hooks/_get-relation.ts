@@ -1,10 +1,9 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
-import { IssueKey, IssueRelationId } from "@/type";
-import { Issue } from "@/model/issue";
 import { RootState } from "@/state/store";
-import { IssueModel, issueToIssueModel } from "@/view-models/issue";
+import { issueToIssueModel } from "@/view-models/issue";
 import { filterUndefined } from "@/util/basic";
+import { RelationModel } from "@/model/relation";
 
 const relations = createDraftSafeSelector(
   (state: RootState) => state,
@@ -13,19 +12,8 @@ const relations = createDraftSafeSelector(
 
 const issues = createDraftSafeSelector(
   (state: RootState) => state,
-  (state) =>
-    state.issues.issues.reduce<Record<IssueKey, Issue>>((accum, v) => {
-      accum[v.key] = v;
-
-      return accum;
-    }, {}),
+  (state) => state.issues.issues,
 );
-
-interface RelationModel {
-  relationId: IssueRelationId;
-  inward: IssueModel;
-  outward: IssueModel;
-}
 
 interface Result {
   relations: RelationModel[];

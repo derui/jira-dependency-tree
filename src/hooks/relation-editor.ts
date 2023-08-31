@@ -2,37 +2,46 @@ import { useCallback, useState } from "react";
 import { useAppDispatch } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { useGetRelations } from "./_get-relation";
-import { IssueKey, IssueRelationId } from "@/type";
-import { addRelationSucceeded, removeRelationSucceeded } from "@/state/actions";
-import { Apis } from "@/apis/api";
-import { IssueModel } from "@/view-models/issue";
+import { useGetDelta } from "./_get-delta";
+import { useGenerateId } from "./_generate-id";
+import { DeltaId, IssueKey, IssueRelationId } from "@/type";
+import * as Actions from "@/state/actions";
+import { RelationDelta, createAppending, createDeleting } from "@/model/relation-delta";
+import { RelationModel } from "@/model/relation";
+
+type Touched = { kind: "Touched"; delta: RelationDelta };
+type NoTouched = { kind: "NoTouched"; relation: RelationModel };
+
+type Draft = Touched | NoTouched;
 
 interface State {
-  inwardIssues: {
-    relationId: IssueRelationId;
-    issue: IssueModel;
-  }[];
-
-  outwardIssues: {
-    relationId: IssueRelationId;
-    issue: IssueModel;
-  }[];
+  drafts: Draft[];
 }
 
 interface UseEditRelationResult {
   /**
    * create relation fromKey to toKey
    */
-  create: (toKey: IssueKey) => void;
+  create: (inward: IssueKey, outward: IssueKey) => void;
   /**
    * remove relation between fromKey to toKey
    */
-  remove: (toKey: IssueKey) => void;
+  remove: (relation: IssueRelationId) => void;
+
+  /**
+   * undo delta
+   */
+  undo: (deltaId: DeltaId) => void;
+
+  /**
+   * apply drafts
+   */
+  apply: () => void;
 
   /**
    * return editing relation
    */
-  isEditing: boolean;
+  isLoading: boolean;
 
   /**
    * error in editing
@@ -42,57 +51,54 @@ interface UseEditRelationResult {
   state: State;
 }
 
+const toDrafts = (state: ReturnType<typeof useGetDelta>, relations: ReturnType<typeof useGetRelations>): Draft[] => {
+  const appending: Draft[] = Object.values(state.appending).map((v) => {
+    return { kind: "Touched", delta: v } as const;
+  });
+  return relations.relations
+    .map<Draft>((v) => {
+      const delta = Object.values(state.deleting).find((delta) => delta.relationId === v.relationId);
+      if (!delta) {
+        return { kind: "NoTouched", relation: v } as const;
+      }
+
+      return { kind: "Touched", delta } as const;
+    })
+    .concat(appending);
+};
+
 /**
  * get methods to edit relation between issues
  */
-export const useEditRelation = function useRelationEditor(fromKey: IssueKey): UseEditRelationResult {
-  const { inwardIssues, outwardIssues } = useGetRelations();
-  const relationIds = inwardIssues.map((v) => v.relationId).concat(outwardIssues.map((v) => v.relationId));
+export const useRelationEditor = function useRelationEditor(): UseEditRelationResult {
+  const generateId = useGenerateId();
+  const relations = useGetRelations();
+  const delta = useGetDelta();
   const apiCredential = useGetApiCredential();
   const dispatch = useAppDispatch();
-  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
+  const drafts = toDrafts(delta, relations);
 
-  const create = useCallback<UseEditRelationResult["create"]>(
-    async (toKey) => {
-      if (!apiCredential) {
-        return;
-      }
-      try {
-        setEditing(true);
-        const relation = await Apis.createRelation.call(apiCredential, fromKey, toKey);
-        dispatch(addRelationSucceeded(relation));
-        setError(undefined);
-      } catch {
-        setError(`Error happened between ${fromKey} to ${toKey}. Please try again later`);
-      } finally {
-        setEditing(false);
-      }
-    },
-    [fromKey, apiCredential],
-  );
+  const create = useCallback<UseEditRelationResult["create"]>((inward, outward) => {
+    const delta = createAppending(generateId(), inward, outward);
 
-  const remove = useCallback<UseEditRelationResult["remove"]>(
-    async (relationId) => {
-      const contains = relationIds.includes(relationId);
+    dispatch(Actions.relations.appendDelta(delta));
+  }, []);
 
-      if (!apiCredential || !contains) {
-        return;
-      }
+  const remove = useCallback<UseEditRelationResult["remove"]>((relationId) => {
+    const delta = createDeleting(generateId(), relationId);
 
-      try {
-        setEditing(true);
-        await Apis.removeRelation.call(apiCredential, relationId);
-        dispatch(removeRelationSucceeded({ relationId }));
-        setError(undefined);
-      } catch {
-        setError(`Error happened between ${relationId}. Please try again later`);
-      } finally {
-        setEditing(false);
-      }
-    },
-    [fromKey, apiCredential],
-  );
+    dispatch(Actions.relations.appendDelta(delta));
+  }, []);
 
-  return { create, remove, isEditing: editing, error, state: { inwardIssues, outwardIssues } };
+  const undo = useCallback<UseEditRelationResult["undo"]>((deltaId) => {
+    dispatch(Actions.relations.deleteDelta(deltaId));
+  }, []);
+
+  const apply = useCallback<UseEditRelationResult["apply"]>(async () => {
+    // todo
+  }, [drafts]);
+
+  return { create, remove, undo, apply, isLoading: loading, error, state: { drafts } };
 };

@@ -16,7 +16,7 @@ import { filterEmptyString } from "@/util/basic";
 type ProjectionTarget = { kind: "Root" } | { kind: "InsideIssue"; issueKey: IssueKey };
 
 interface IssuesState {
-  issues: Issue[];
+  issues: Record<IssueKey, Issue>;
   loading: Loading;
   matchedIssues: Issue[];
   projectionTarget: ProjectionTarget;
@@ -24,7 +24,7 @@ interface IssuesState {
 }
 
 const initialState = {
-  issues: [],
+  issues: {},
   loading: "Completed",
   matchedIssues: [],
   projectionTarget: { kind: "Root" },
@@ -43,10 +43,20 @@ const slice = createSlice({
       const target = state.projectionTarget;
       switch (target.kind) {
         case "Root":
-          state.issues = action.payload.issues.filter((issue) => issue.parentIssue === undefined);
+          state.issues = action.payload.issues
+            .filter((issue) => issue.parentIssue === undefined)
+            .reduce<IssuesState["issues"]>((accum, v) => {
+              accum[v.key] = v;
+              return accum;
+            }, {});
           break;
         case "InsideIssue":
-          state.issues = action.payload.issues.filter((issue) => issue.parentIssue === target.issueKey);
+          state.issues = action.payload.issues
+            .filter((issue) => issue.parentIssue === target.issueKey)
+            .reduce<IssuesState["issues"]>((accum, v) => {
+              accum[v.key] = v;
+              return accum;
+            }, {});
           break;
       }
     });

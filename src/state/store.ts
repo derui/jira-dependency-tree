@@ -1,12 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import * as apiCredential from "./slices/api-credential";
-import * as project from "./slices/project";
 import * as issues from "./slices/issues";
 import * as graphLayout from "./slices/graph-layout";
 import * as suggestions from "./slices/suggestions";
 import * as zoom from "./slices/zoom";
 import * as relations from "./slices/relations";
-import * as projects from "./slices/projects";
 
 // INJECT REDUCER IMPORT HERE
 import * as relationDelta from "./slices/relation-delta";
@@ -15,8 +13,6 @@ import * as relationDelta from "./slices/relation-delta";
 
 const reducers = {
   relationDelta: relationDelta.reducer,
-
-  projects: projects.reducer,
 
   relations: relations.reducer,
 
@@ -27,8 +23,6 @@ const reducers = {
   graphLayout: graphLayout.reducer,
 
   issues: issues.reducer,
-
-  project: project.reducer,
 
   apiCredential: apiCredential.reducer,
   // do not format this structure.

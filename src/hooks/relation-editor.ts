@@ -9,6 +9,7 @@ import * as Actions from "@/state/actions";
 import { RelationDelta, createAppending, createDeleting } from "@/model/relation-delta";
 import { RelationModel } from "@/model/relation";
 import { Apis } from "@/apis/api";
+import { Relation } from "@/model/issue";
 
 type Touched = { kind: "Touched"; delta: RelationDelta };
 type NoTouched = { kind: "NoTouched"; relation: RelationModel };
@@ -148,14 +149,28 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
         }
       }),
     )
-      .then(() => {
-        dispatch(Actions.relations.reset());
+      .then((result) => {
+        const payload = result.reduce<{ appended: Relation[]; removed: IssueRelationId[] }>(
+          (accum, v) => {
+            if (typeof v === "string") {
+              accum.removed.push(v);
+            } else {
+              accum.appended.push(v);
+            }
+
+            return accum;
+          },
+          { removed: [], appended: [] },
+        );
+
+        dispatch(Actions.relations.reflect(payload));
       })
       .catch(() => {
         setError("Error happend to apply. Please apply after");
       })
       .finally(() => {
         setLoading(false);
+        dispatch(Actions.relations.reset());
       });
   }, [drafts, apiCredential]);
 

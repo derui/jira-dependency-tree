@@ -4,7 +4,10 @@ import { IssueRelationId } from "@/type";
 /**
  * execute to get a issues
  */
-export const call = async function call(apiCredential: ApiCredential, relationId: IssueRelationId): Promise<void> {
+export const call = async function call(
+  apiCredential: ApiCredential,
+  relationId: IssueRelationId,
+): Promise<IssueRelationId> {
   const body = {
     authorization: {
       jira_token: apiCredential.token,
@@ -23,4 +26,6 @@ export const call = async function call(apiCredential: ApiCredential, relationId
     },
     body: JSON.stringify(body),
   });
+
+  return relationId;
 };

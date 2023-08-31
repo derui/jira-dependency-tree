@@ -1,8 +1,6 @@
 import { createAction } from "@reduxjs/toolkit";
-import { SimpleProject } from "./models/simple-project";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
-import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
 import { DeltaId, IssueKey, IssueRelationId, SuggestionKind } from "@/type";
 import { RelationDelta } from "@/model/relation-delta";
@@ -17,17 +15,6 @@ type ApiCredentialPayload = {
 export const submitApiCredential = createAction<ApiCredentialPayload>("submitApiCredential");
 export const submitApiCredentialFulfilled = createAction<ApiCredential>("submitApiCredentialFulfilled");
 export const restoreApiCredential = createAction<ApiCredential>("restoreApiCredential");
-
-// actions for project
-
-export const submitProjectId = createAction<string>("submitProjectId");
-export const submitProjectIdFulfilled = createAction<Project>("submitProjectIdFulfilled");
-export const submitProjectIdError = createAction("submitProjectIdError");
-export const changeConditionToEpic = createAction<string>("changeConditionToEpic");
-export const changeConditionToSprint = createAction<{ value: string; displayName: string }>("changeConditionToSprint");
-export const changeDefaultCondition = createAction("changeDefaultCondition");
-
-export const changeSearchConditionFullfilled = createAction<Issue[]>("changeSearchConditionFullfilled");
 
 // actions for issue
 export type IssueRequest = {

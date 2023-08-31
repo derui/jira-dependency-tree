@@ -1,14 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  addRelationSucceeded,
-  expandIssue,
-  importIssues,
-  narrowExpandedIssue,
-  removeRelationSucceeded,
-  searchIssue,
-  synchronizeIssues,
-  synchronizeIssuesFulfilled,
-} from "../actions";
+import { expandIssue, importIssues, narrowExpandedIssue, searchIssue } from "../actions";
 import { Issue } from "@/model/issue";
 import { IssueKey, Loading } from "@/type";
 import { filterEmptyString } from "@/util/basic";
@@ -69,31 +60,6 @@ const slice = createSlice({
           (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
         );
       }
-    });
-
-    builder.addCase(addRelationSucceeded, (state, { payload }) => {
-      const issueMap = new Map(state.issues.map((v) => [v.key, v]));
-
-      const issueFromKey = issueMap.get(payload.inwardIssue);
-      const issueToKey = issueMap.get(payload.outwardIssue);
-
-      if (issueFromKey) {
-        issueFromKey.relations.push(payload);
-      }
-
-      if (issueToKey) {
-        issueToKey.relations.push(payload);
-      }
-    });
-
-    builder.addCase(removeRelationSucceeded, (state, { payload }) => {
-      state.issues.forEach((issue) => {
-        const index = issue.relations.findIndex((r) => r.id === payload.relationId);
-
-        if (index !== -1) {
-          issue.relations.splice(index, 1);
-        }
-      });
     });
 
     builder.addCase(expandIssue, (state, { payload }) => {

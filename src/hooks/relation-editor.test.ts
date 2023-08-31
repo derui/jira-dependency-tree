@@ -1,13 +1,14 @@
-import { test, expect, vi, Mock, afterEach } from "vitest";
+import { test, expect, vi, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { getWrapper } from "./hook-test-util";
 import { useRelationEditor } from "./relation-editor";
 import { useGenerateId } from "./_generate-id";
 import { createStore } from "@/state/store";
 import { createAppending, createDeleting } from "@/model/relation-delta";
-import { importIssues, synchronizeIssuesFulfilled } from "@/state/actions";
-import { randomIssue } from "@/mock-data";
+import { importIssues, submitApiCredentialFulfilled } from "@/state/actions";
+import { randomCredential, randomIssue } from "@/mock-data";
 import { issueToIssueModel } from "@/view-models/issue";
+import { Apis } from "@/apis/api";
 
 vi.mock("./_generate-id", () => {
   return {
@@ -108,7 +109,7 @@ test("undo delta", () => {
   expect(result.current.state.drafts).toEqual([]);
 });
 
-test("apply remove and append delta", () => {
+test("apply remove and append delta", async () => {
   const store = createStore();
   const issues = [
     randomIssue({
@@ -120,15 +121,22 @@ test("apply remove and append delta", () => {
       relations: [{ id: "1", inwardIssue: "in", outwardIssue: "out" }],
     }),
   ];
+  const credentail = randomCredential();
   store.dispatch(importIssues({ issues }));
-  const mock = vi.mocked(useGenerateId);
-  mock.mockReturnValue(() => "id");
+  store.dispatch(submitApiCredentialFulfilled(credentail));
+  vi.mocked(useGenerateId).mockReturnValue(() => "id");
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
   result.current.remove("1");
+  result.current.create("key1", "key2");
+  rerender();
+  result.current.apply();
   rerender();
 
-  expect(result.current.state.drafts).toEqual(
-    expect.arrayContaining([{ kind: "Touched", delta: createDeleting("id", "1") }]),
-  );
+  const createRelation = vi.mocked(Apis.createRelation.call);
+  const removeRelation = vi.mocked(Apis.removeRelation.call);
+
+  expect(result.current.isLoading).toBeTruthy();
+  expect(createRelation).toBeCalledWith(credentail, "key1", "key2");
+  expect(removeRelation).toBeCalledWith(credentail, "1");
 });

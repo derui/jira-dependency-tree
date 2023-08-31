@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { importIssues } from "../actions";
+import { importIssues, relations } from "../actions";
 import { IssueRelationId } from "@/type";
 import { Relation } from "@/model/issue";
 
@@ -23,6 +23,18 @@ const slice = createSlice({
         });
         return accum;
       }, {});
+    });
+
+    builder.addCase(relations.reflect, (state, { payload: { appended, removed } }) => {
+      removed.forEach((id) => {
+        delete state.relations[id];
+      });
+
+      appended.forEach((relation) => {
+        state.relations[relation.id] = relation;
+      });
+
+      return state;
     });
   },
 });

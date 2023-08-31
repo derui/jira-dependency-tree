@@ -57,6 +57,10 @@ const slice = createSlice({
 
       return state;
     });
+
+    builder.addCase(relations.reset, () => {
+      return { appendingDelta: {}, deletingDelta: {} };
+    });
   },
 });
 

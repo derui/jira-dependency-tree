@@ -8,6 +8,7 @@ import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import * as Actions from "@/state/actions";
 import { RelationDelta, createAppending, createDeleting } from "@/model/relation-delta";
 import { RelationModel } from "@/model/relation";
+import { Apis } from "@/apis/api";
 
 type Touched = { kind: "Touched"; delta: RelationDelta };
 type NoTouched = { kind: "NoTouched"; relation: RelationModel };
@@ -67,6 +68,38 @@ const toDrafts = (state: ReturnType<typeof useGetDelta>, relations: ReturnType<t
     .concat(appending);
 };
 
+const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDelta[] {
+  const deltas: RelationDelta[] = [];
+
+  drafts.forEach((draft) => {
+    switch (draft.kind) {
+      case "NoTouched":
+        break;
+      case "Touched": {
+        switch (draft.delta.kind) {
+          case "append": {
+            const delta = draft.delta;
+            const exists = deltas.some(
+              (v) =>
+                v.kind === "append" && v.inwardIssue === delta.inwardIssue && v.outwardIssue === delta.outwardIssue,
+            );
+
+            if (!exists) {
+              deltas.push(delta);
+            }
+            break;
+          }
+          case "delete":
+            deltas.push(draft.delta);
+            break;
+        }
+      }
+    }
+  });
+
+  return deltas;
+};
+
 /**
  * get methods to edit relation between issues
  */
@@ -80,25 +113,51 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   const [error, setError] = useState<string | undefined>();
   const drafts = toDrafts(delta, relations);
 
-  const create = useCallback<UseEditRelationResult["create"]>((inward, outward) => {
+  const create = (inward: IssueKey, outward: IssueKey) => {
     const delta = createAppending(generateId(), inward, outward);
 
     dispatch(Actions.relations.appendDelta(delta));
-  }, []);
+  };
 
-  const remove = useCallback<UseEditRelationResult["remove"]>((relationId) => {
+  const remove = (relationId: IssueRelationId) => {
     const delta = createDeleting(generateId(), relationId);
 
     dispatch(Actions.relations.appendDelta(delta));
-  }, []);
+  };
 
-  const undo = useCallback<UseEditRelationResult["undo"]>((deltaId) => {
+  const undo = (deltaId: DeltaId) => {
     dispatch(Actions.relations.deleteDelta(deltaId));
-  }, []);
+  };
 
   const apply = useCallback<UseEditRelationResult["apply"]>(async () => {
-    // todo
-  }, [drafts]);
+    const mergedDeltas = mergeDeltaInDrafts(drafts);
+
+    if (!apiCredential || mergedDeltas.length === 0) {
+      return;
+    }
+
+    setLoading(true);
+
+    Promise.all(
+      mergedDeltas.map((delta) => {
+        switch (delta.kind) {
+          case "append":
+            return Apis.createRelation.call(apiCredential, delta.inwardIssue, delta.outwardIssue);
+          case "delete":
+            return Apis.removeRelation.call(apiCredential, delta.relationId);
+        }
+      }),
+    )
+      .then(() => {
+        dispatch(Actions.relations.reset());
+      })
+      .catch(() => {
+        setError("Error happend to apply. Please apply after");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [drafts, apiCredential]);
 
   return { create, remove, undo, apply, isLoading: loading, error, state: { drafts } };
 };

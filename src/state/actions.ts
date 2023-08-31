@@ -4,7 +4,7 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { Project } from "@/model/project";
 import { Suggestion } from "@/model/suggestion";
-import { DeltaId, IssueKey, SuggestionKind } from "@/type";
+import { DeltaId, IssueKey, IssueRelationId, SuggestionKind } from "@/type";
 import { RelationDelta } from "@/model/relation-delta";
 
 type ApiCredentialPayload = {
@@ -63,36 +63,17 @@ export const changeZoom = createAction<number>("changeZoom");
 export const expandIssue = createAction<IssueKey>("expandIssue");
 export const narrowExpandedIssue = createAction("narrowExpandedIssue");
 
-// actions for relation edit
 export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
 export const deselectIssueInGraph = createAction("deselectIssueInGraph");
 
-export const addRelation = createAction<{ fromKey: string; toKey: string }>("addRelation");
-export const addRelationAccepted = createAction<{ relationId: string; fromKey: string; toKey: string }>(
-  "addRelationAccepted",
-);
-export const addRelationSucceeded = createAction<Relation>("addRelationSucceeded");
-export const addRelationError = createAction<{ relationId: string; fromKey: string; toKey: string }>(
-  "addRelationError",
-);
-
-export const removeRelation = createAction<{ fromKey: string; toKey: string }>("removeRelation");
-export const removeRelationSucceeded = createAction<{ relationId: string }>("removeRelationSucceeded");
-export const removeRelationError = createAction<{ fromKey: string; toKey: string }>("removeRelationError");
-
-/**
- * Actions for projects
- */
-export const projects = {
-  loadProjects: createAction("projects:loadProjects"),
-  loadProjectsSucceeded: createAction<{ projects: SimpleProject[] }>("projects:loadProjectsSucceeded"),
-  loadProjectsError: createAction<{ reason: string }>("projects:loadProjectsError"),
-} as const;
+// actions for relation edit
 
 // action to import issues
 export const importIssues = createAction<{ issues: Issue[] }>("importIssues");
 
 export const relations = {
+  reflect: createAction<{ appended: Relation[]; removed: IssueRelationId[] }>("editRelations"),
   appendDelta: createAction<RelationDelta>("relations:appendDelta"),
   deleteDelta: createAction<DeltaId>("relations:deleteDelta"),
+  reset: createAction("relations:reset"),
 } as const;

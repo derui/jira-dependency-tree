@@ -15,6 +15,19 @@ vi.mock("./_generate-id", () => {
   };
 });
 
+vi.mock("@/apis/api", () => {
+  return {
+    Apis: {
+      createRelation: {
+        call: vi.fn(),
+      },
+      removeRelation: {
+        call: vi.fn(),
+      },
+    },
+  };
+});
+
 afterEach(() => {
   vi.resetAllMocks();
 });
@@ -93,4 +106,29 @@ test("undo delta", () => {
   rerender();
 
   expect(result.current.state.drafts).toEqual([]);
+});
+
+test("apply remove and append delta", () => {
+  const store = createStore();
+  const issues = [
+    randomIssue({
+      key: "in",
+      relations: [{ id: "1", inwardIssue: "in", outwardIssue: "out" }],
+    }),
+    randomIssue({
+      key: "out",
+      relations: [{ id: "1", inwardIssue: "in", outwardIssue: "out" }],
+    }),
+  ];
+  store.dispatch(importIssues({ issues }));
+  const mock = vi.mocked(useGenerateId);
+  mock.mockReturnValue(() => "id");
+
+  const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
+  result.current.remove("1");
+  rerender();
+
+  expect(result.current.state.drafts).toEqual(
+    expect.arrayContaining([{ kind: "Touched", delta: createDeleting("id", "1") }]),
+  );
 });

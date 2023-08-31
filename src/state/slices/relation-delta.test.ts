@@ -58,3 +58,18 @@ test("do not append delta for deleting same relation", () => {
   expect(state.appendingDelta).toStrictEqual({});
   expect(state.deletingDelta).toStrictEqual({ "1": delta.payload });
 });
+
+test("reset delta", () => {
+  // Arrange
+  const delta = relations.appendDelta(createDeleting("1", "2"));
+  const delta2 = relations.appendDelta(createDeleting("2", "2"));
+  let state = reducer(getInitialState(), delta);
+  state = reducer(state, delta2);
+  state = reducer(state, relations.reset());
+
+  // Act
+
+  // Assert
+  expect(state.appendingDelta).toStrictEqual({});
+  expect(state.deletingDelta).toStrictEqual({});
+});

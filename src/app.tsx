@@ -4,11 +4,10 @@ import { BaseProps } from "./components/helper";
 import { IssueSearcher } from "./components/organisms/issue-searcher";
 import { UserConfiguration } from "./components/organisms/user-configuration";
 import { ZoomSlider } from "./components/molecules/zoom-slider";
-import { useAppSelector } from "./components/hooks";
 import { SideToolbar } from "./components/containers/side-toolbar";
-import { getZoom } from "./state/selectors/zoom";
 import { RelationEditorPanel } from "./components/containers/relation-editor-panel";
 import { TopToolbar } from "./components/containers/top-toolbar";
+import { useZoom } from "./hooks/zoom";
 
 export type Props = BaseProps;
 
@@ -37,7 +36,7 @@ const Styles = {
 };
 
 export const App: React.FC<Props> = () => {
-  const zoom = useAppSelector(getZoom());
+  const zoom = useZoom();
 
   return (
     <div className={Styles.root}>

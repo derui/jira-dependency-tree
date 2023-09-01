@@ -5,7 +5,7 @@ import { useRelationEditor } from "./relation-editor";
 import { useGenerateId } from "./_generate-id";
 import { createStore } from "@/state/store";
 import { createAppending, createDeleting } from "@/model/relation-delta";
-import { importIssues, submitApiCredentialFulfilled } from "@/state/actions";
+import { importIssues, selectIssueInGraph, submitApiCredentialFulfilled } from "@/state/actions";
 import { randomCredential, randomIssue } from "@/mock-data";
 import { issueToIssueModel } from "@/view-models/issue";
 import { Apis } from "@/apis/api";
@@ -49,12 +49,11 @@ test("create delta with keys", () => {
   mock.mockReturnValue(() => "1");
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
-  result.current.create("key1", "key2");
+  result.current.startPreparationToAdd();
   rerender();
 
-  expect(result.current.state.drafts).toEqual(
-    expect.arrayContaining([{ kind: "Touched", delta: createAppending("1", "key1", "key2") }]),
-  );
+  expect(result.current.state.drafts).toEqual([]);
+  expect(result.current.state.preparationToAdd).toEqual({});
 });
 
 test("remove delta", () => {
@@ -101,7 +100,7 @@ test("undo delta", () => {
   mock.mockReturnValue(() => "1");
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
-  result.current.create("key1", "key2");
+  result.current.startPreparationToAdd();
   rerender();
   result.current.undo("1");
   rerender();
@@ -128,7 +127,9 @@ test("apply remove and append delta", async () => {
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
   result.current.remove("1");
-  result.current.create("key1", "key2");
+  result.current.startPreparationToAdd();
+  store.dispatch(selectIssueInGraph("key1"));
+  store.dispatch(selectIssueInGraph("key2"));
   rerender();
   result.current.apply();
   rerender();

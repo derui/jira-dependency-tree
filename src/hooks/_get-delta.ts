@@ -2,30 +2,38 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
 import { RootState } from "@/state/store";
 
-const deletingDelta = createDraftSafeSelector(
+const selectDeletingDelta = createDraftSafeSelector(
   (state: RootState) => state,
   (state) => state.relationDelta.deletingDelta,
 );
 
-const appendingDelta = createDraftSafeSelector(
+const selectAppendingDelta = createDraftSafeSelector(
   (state: RootState) => state,
   (state) => state.relationDelta.appendingDelta,
+);
+
+const selectPreparation = createDraftSafeSelector(
+  (state: RootState) => state,
+  (state) => state.relationDelta.preparationToAdd,
 );
 
 type Result = {
   deleting: RootState["relationDelta"]["deletingDelta"];
   appending: RootState["relationDelta"]["appendingDelta"];
+  preparation: RootState["relationDelta"]["preparationToAdd"];
 };
 
 /**
  * get relations for issue
  */
 export const useGetDelta = function useGetDelta(): Result {
-  const deleting = useAppSelector(deletingDelta);
-  const appending = useAppSelector(appendingDelta);
+  const deleting = useAppSelector(selectDeletingDelta);
+  const appending = useAppSelector(selectAppendingDelta);
+  const preparation = useAppSelector(selectPreparation);
 
   return {
     appending,
     deleting,
+    preparation,
   };
 };

@@ -60,6 +60,7 @@ export const importIssues = createAction<{ issues: Issue[] }>("importIssues");
 
 export const relations = {
   reflect: createAction<{ appended: Relation[]; removed: IssueRelationId[] }>("editRelations"),
+  prepareToAdd: createAction<DeltaId>("relations:prepareToAdd"),
   appendDelta: createAction<RelationDelta>("relations:appendDelta"),
   deleteDelta: createAction<DeltaId>("relations:deleteDelta"),
   reset: createAction("relations:reset"),

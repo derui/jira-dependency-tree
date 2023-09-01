@@ -10,21 +10,27 @@ import { RelationDelta, createAppending, createDeleting } from "@/model/relation
 import { RelationModel } from "@/model/relation";
 import { Apis } from "@/apis/api";
 import { Relation } from "@/model/issue";
+import { IssueModel } from "@/view-models/issue";
 
 type Touched = { kind: "Touched"; delta: RelationDelta };
 type NoTouched = { kind: "NoTouched"; relation: RelationModel };
 
 type Draft = Touched | NoTouched;
 
+type PreparationToAdd = {
+  inward?: IssueModel;
+};
+
 interface State {
   drafts: Draft[];
+  preparationToAdd?: PreparationToAdd;
 }
 
 interface UseEditRelationResult {
   /**
-   * create relation fromKey to toKey
+   * add preparation to add relation
    */
-  create: (inward: IssueKey, outward: IssueKey) => void;
+  startPreparationToAdd: () => void;
   /**
    * remove relation between fromKey to toKey
    */
@@ -101,6 +107,22 @@ const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDelta[]
   return deltas;
 };
 
+const toPreparationToAdd = function toPreparationToAdd(
+  inward: IssueKey | undefined,
+  issues: Record<IssueKey, IssueModel>,
+) {
+  if (inward === undefined) {
+    return {};
+  }
+
+  const issue = issues[inward];
+  if (issue === undefined) {
+    return {};
+  }
+
+  return { inward: issue };
+};
+
 /**
  * get methods to edit relation between issues
  */
@@ -113,11 +135,10 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const drafts = toDrafts(delta, relations);
+  const preparation = toPreparationToAdd(delta.preparation?.inward, relations.issues);
 
-  const create = (inward: IssueKey, outward: IssueKey) => {
-    const delta = createAppending(generateId(), inward, outward);
-
-    dispatch(Actions.relations.appendDelta(delta));
+  const startPreparationToAdd = () => {
+    dispatch(Actions.relations.prepareToAdd(generateId()));
   };
 
   const remove = (relationId: IssueRelationId) => {
@@ -174,5 +195,13 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
       });
   }, [drafts, apiCredential]);
 
-  return { create, remove, undo, apply, isLoading: loading, error, state: { drafts } };
+  return {
+    startPreparationToAdd,
+    remove,
+    undo,
+    apply,
+    isLoading: loading,
+    error,
+    state: { drafts, preparationToAdd: preparation },
+  };
 };

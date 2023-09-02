@@ -65,7 +65,7 @@ const Styles = {
 };
 
 // eslint-disable-next-line func-style
-export function IssueSearcher(props: Props) {
+export function SearchInput(props: Props) {
   const { loading } = props;
   const gen = generateTestId(props.testid);
   const [term, setTerm] = useState("");

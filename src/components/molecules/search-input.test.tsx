@@ -2,12 +2,12 @@ import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Sinon from "sinon";
-import { IssueSearcher } from "./issue-searcher";
+import { SearchInput } from "./search-input";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  render(<IssueSearcher loading />);
+  render(<SearchInput loading />);
 
   const opener = screen.getByTestId("opener");
 
@@ -15,7 +15,7 @@ test("should be able to render", () => {
 });
 
 test("should be clickable after setup finished", async () => {
-  render(<IssueSearcher />);
+  render(<SearchInput />);
 
   const opener = screen.getByTestId("opener");
 
@@ -24,7 +24,7 @@ test("should be clickable after setup finished", async () => {
 });
 
 test("open term input after opener clicked", async () => {
-  render(<IssueSearcher />);
+  render(<SearchInput />);
 
   await userEvent.click(screen.getByTestId("opener"));
 
@@ -37,7 +37,7 @@ test("open term input after opener clicked", async () => {
   const user = userEvent.setup();
   const mock = Sinon.fake();
 
-  render(<IssueSearcher onSearch={mock} />);
+  render(<SearchInput onSearch={mock} />);
 
   await user.click(screen.getByTestId("opener"));
   await user.type(screen.getByTestId("input"), "term");
@@ -47,7 +47,7 @@ test("open term input after opener clicked", async () => {
 
 test("reset after click cancel", async () => {
   const mock = Sinon.fake();
-  render(<IssueSearcher onCancel={mock} />);
+  render(<SearchInput onCancel={mock} />);
 
   await userEvent.click(screen.getByTestId("opener"));
   await userEvent.type(screen.getByTestId("input"), "TES");

@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { IssueSearcher } from "./issue-searcher";
+import { SearchInput } from "./search-input";
 
 const meta = {
-  title: "Molecules/Issue Searcher",
-  component: IssueSearcher,
+  title: "Molecules/Search Input",
+  component: SearchInput,
   tags: ["autodocs"],
   argTypes: {
     loading: { control: "boolean" },
   },
-} satisfies Meta<typeof IssueSearcher>;
+} satisfies Meta<typeof SearchInput>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

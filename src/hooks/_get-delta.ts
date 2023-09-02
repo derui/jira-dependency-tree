@@ -21,6 +21,7 @@ type Result = {
   deleting: RootState["relationDelta"]["deletingDelta"];
   appending: RootState["relationDelta"]["appendingDelta"];
   preparation: RootState["relationDelta"]["preparationToAdd"];
+  hasDelta: boolean;
 };
 
 /**
@@ -31,9 +32,12 @@ export const useGetDelta = function useGetDelta(): Result {
   const appending = useAppSelector(selectAppendingDelta);
   const preparation = useAppSelector(selectPreparation);
 
+  const hasDelta = Object.keys(deleting).length > 0 || Object.keys(appending).length > 0;
+
   return {
     appending,
     deleting,
     preparation,
+    hasDelta,
   };
 };

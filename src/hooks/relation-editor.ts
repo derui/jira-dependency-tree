@@ -25,6 +25,7 @@ type PreparationToAdd = {
 interface State {
   drafts: Draft[];
   preparationToAdd?: PreparationToAdd;
+  appliable: boolean;
 }
 
 interface UseEditRelationResult {
@@ -140,6 +141,7 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   const [error, setError] = useState<string | undefined>();
   const drafts = toDrafts(delta, relations);
   const preparation = toPreparationToAdd(delta.preparation, relations.issues);
+  const appliable = delta.hasDelta;
 
   const startPreparationToAdd = () => {
     dispatch(Actions.relations.prepareToAdd(generateId()));
@@ -206,6 +208,6 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
     apply,
     isLoading: loading,
     error,
-    state: { drafts, preparationToAdd: preparation },
+    state: { drafts, preparationToAdd: preparation, appliable },
   };
 };

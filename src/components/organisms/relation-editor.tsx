@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
+import { SearchInput } from "../molecules/search-input";
 import { IssueSearcher } from "./issue-searcher";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
@@ -49,7 +50,7 @@ const Styles = {
 // eslint-disable-next-line func-style
 function Appender(props: { show?: boolean; onClick?: () => void; testid: string }) {
   const gen = generateTestId(props.testid);
-  if (props.show) {
+  if (!props.show) {
     return null;
   }
 
@@ -66,7 +67,7 @@ function Appender(props: { show?: boolean; onClick?: () => void; testid: string 
 // eslint-disable-next-line func-style
 function Preparation(props: { show?: boolean; inward?: IssueModel; testid: string }) {
   const gen = generateTestId(props.testid);
-  if (props.show) {
+  if (!props.show) {
     return null;
   }
 
@@ -83,13 +84,14 @@ export function RelationEditor(props: Props) {
   const { state, remove, undo, startPreparationToAdd } = useRelationEditor();
 
   const draftList = state.drafts.map((draft) => {
-    return <EditableRelationDraft draft={draft} onUndo={undo} onRequestDelete={remove} />;
+    const key = draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
+    return <EditableRelationDraft key={key} draft={draft} onUndo={undo} onRequestDelete={remove} />;
   });
 
   return (
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
       <div className={classNames(Styles.header)} data-testid={gen("title")}>
-        <IssueSearcher />
+        <SearchInput />
       </div>
       <Appender show={state.preparationToAdd === undefined} onClick={startPreparationToAdd} testid={gen("appender")} />
       <Preparation

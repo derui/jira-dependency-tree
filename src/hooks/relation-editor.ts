@@ -112,14 +112,14 @@ const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDeltaMo
 };
 
 const toPreparationToAdd = function toPreparationToAdd(
-  inward: IssueKey | undefined,
+  preparation: ReturnType<typeof useGetDelta>["preparation"] | undefined,
   issues: Record<IssueKey, IssueModel>,
 ) {
-  if (inward === undefined) {
-    return {};
+  if (preparation === undefined) {
+    return;
   }
 
-  const issue = issues[inward];
+  const issue = issues[preparation.inward ?? ""];
   if (issue === undefined) {
     return {};
   }
@@ -139,7 +139,7 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const drafts = toDrafts(delta, relations);
-  const preparation = toPreparationToAdd(delta.preparation?.inward, relations.issues);
+  const preparation = toPreparationToAdd(delta.preparation, relations.issues);
 
   const startPreparationToAdd = () => {
     dispatch(Actions.relations.prepareToAdd(generateId()));

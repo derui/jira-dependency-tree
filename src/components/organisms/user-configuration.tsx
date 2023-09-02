@@ -29,7 +29,7 @@ const Styles = {
     return classNames("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7");
   },
   marker: (show: boolean) => {
-    return classNames("flex", "w-2", "h-2", "-left-1", "-top-1", "absolute", !show ? "invisible" : "visible");
+    return classNames("flex", "w-2", "h-2", "left-2", "top-2", "absolute", !show ? "invisible" : "visible");
   },
   markerPing: classNames("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
   markerInner: classNames("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),

@@ -28,6 +28,7 @@ const Styles = {
       "border-lightgray",
       "relative",
       "transition",
+      "bg-white",
       {
         "cursor-pointer": clickable,
       },

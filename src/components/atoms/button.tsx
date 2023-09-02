@@ -62,7 +62,7 @@ const Styles = {
     return classNames({
       "w-full": size === "full",
       "w-40": size === "l",
-      "w-12": size === "s",
+      "min-w-12": size === "s",
       "w-20": size === "m",
     });
   },

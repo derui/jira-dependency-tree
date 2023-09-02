@@ -5,10 +5,12 @@ import { Relation } from "@/model/issue";
 
 interface RelationsState {
   relations: Record<IssueRelationId, Relation>;
+  term?: string;
 }
 
 const initialState = {
   relations: {},
+  term: undefined,
 } as RelationsState satisfies RelationsState;
 
 const slice = createSlice({
@@ -33,6 +35,18 @@ const slice = createSlice({
       appended.forEach((relation) => {
         state.relations[relation.id] = relation;
       });
+
+      return state;
+    });
+
+    builder.addCase(relations.filter, (state, { payload }) => {
+      state.term = payload;
+
+      return state;
+    });
+
+    builder.addCase(relations.clearFilter, (state) => {
+      state.term = undefined;
 
       return state;
     });

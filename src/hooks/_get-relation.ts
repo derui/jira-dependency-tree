@@ -8,7 +8,20 @@ import { mapValue } from "@/util/record";
 
 const relations = createDraftSafeSelector(
   (state: RootState) => state,
-  (state) => state.relations.relations,
+  (state) => {
+    if (state.relations.term) {
+      const term = state.relations.term.toLowerCase();
+
+      return mapValue(state.relations.relations, (v) => {
+        if (v.inwardIssue.toLowerCase().includes(term) || v.outwardIssue.toLowerCase().includes(term)) {
+          return v;
+        }
+        return;
+      });
+    } else {
+      return state.relations.relations;
+    }
+  },
 );
 
 const issues = createDraftSafeSelector(

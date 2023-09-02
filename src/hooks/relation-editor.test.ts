@@ -4,11 +4,12 @@ import { getWrapper } from "./hook-test-util";
 import { useRelationEditor } from "./relation-editor";
 import { useGenerateId } from "./_generate-id";
 import { createStore } from "@/state/store";
-import { createAppending, createDeleting } from "@/model/relation-delta";
+import { createDeleting } from "@/model/relation-delta";
 import { importIssues, selectIssueInGraph, submitApiCredentialFulfilled } from "@/state/actions";
 import { randomCredential, randomIssue } from "@/mock-data";
 import { issueToIssueModel } from "@/view-models/issue";
 import { Apis } from "@/apis/api";
+import { toDeletingModel } from "@/view-models/relation-delta";
 
 vi.mock("./_generate-id", () => {
   return {
@@ -90,7 +91,18 @@ test("remove delta", () => {
   rerender();
 
   expect(result.current.state.drafts).toEqual(
-    expect.arrayContaining([{ kind: "Touched", delta: createDeleting("id", "1") }]),
+    expect.arrayContaining([
+      {
+        kind: "Touched",
+        delta: toDeletingModel(createDeleting("id", "1"), {
+          "1": {
+            relationId: "1",
+            inward: issueToIssueModel(issues[0]),
+            outward: issueToIssueModel(issues[1]),
+          },
+        }),
+      },
+    ]),
   );
 });
 
@@ -118,6 +130,12 @@ test("apply remove and append delta", async () => {
     randomIssue({
       key: "out",
       relations: [{ id: "1", inwardIssue: "in", outwardIssue: "out" }],
+    }),
+    randomIssue({
+      key: "key1",
+    }),
+    randomIssue({
+      key: "key2",
     }),
   ];
   const credentail = randomCredential();

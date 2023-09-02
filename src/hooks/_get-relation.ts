@@ -2,9 +2,9 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
 import { RootState } from "@/state/store";
 import { IssueModel, issueToIssueModel } from "@/view-models/issue";
-import { filterUndefined } from "@/util/basic";
-import { RelationModel } from "@/model/relation";
-import { IssueKey } from "@/type";
+import { IssueKey, IssueRelationId } from "@/type";
+import { RelationModel } from "@/view-models/relation";
+import { mapValue } from "@/util/record";
 
 const relations = createDraftSafeSelector(
   (state: RootState) => state,
@@ -26,6 +26,7 @@ const issues = createDraftSafeSelector(
 interface Result {
   issues: Record<IssueKey, IssueModel>;
   relations: RelationModel[];
+  relationRecord: Record<IssueRelationId, RelationModel>;
 }
 
 /**
@@ -34,20 +35,19 @@ interface Result {
 export const useGetRelations = function useGetRelations(): Result {
   const relationRecord = useAppSelector(relations);
   const issueRecord = useAppSelector(issues);
-  const entries = Object.entries(relationRecord);
+  const entries = mapValue(relationRecord, (relation): RelationModel | undefined => {
+    const inward = issueRecord[relation.inwardIssue];
+    const outward = issueRecord[relation.outwardIssue];
+    if (!inward || !outward) {
+      return undefined;
+    }
+
+    return { relationId: relation.id, inward, outward };
+  });
 
   return {
     issues: issueRecord,
-    relations: entries
-      .map(([id, relation]) => {
-        const inward = issueRecord[relation.inwardIssue];
-        const outward = issueRecord[relation.outwardIssue];
-        if (!inward || !outward) {
-          return undefined;
-        }
-
-        return { relationId: id, inward, outward };
-      })
-      .filter(filterUndefined),
+    relationRecord: entries,
+    relations: Object.values(entries),
   };
 };

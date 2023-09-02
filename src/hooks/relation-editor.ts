@@ -6,16 +6,17 @@ import { useGetDelta } from "./_get-delta";
 import { useGenerateId } from "./_generate-id";
 import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import * as Actions from "@/state/actions";
-import { RelationDelta, createAppending, createDeleting } from "@/model/relation-delta";
-import { RelationModel } from "@/model/relation";
+import { createDeleting } from "@/model/relation-delta";
 import { Apis } from "@/apis/api";
 import { Relation } from "@/model/issue";
 import { IssueModel } from "@/view-models/issue";
+import { RelationDeltaModel, toAppendingModel, toDeletingModel } from "@/view-models/relation-delta";
+import { RelationModel } from "@/view-models/relation";
 
-type Touched = { kind: "Touched"; delta: RelationDelta };
+type Touched = { kind: "Touched"; delta: RelationDeltaModel };
 type NoTouched = { kind: "NoTouched"; relation: RelationModel };
 
-type Draft = Touched | NoTouched;
+export type Draft = Touched | NoTouched;
 
 type PreparationToAdd = {
   inward?: IssueModel;
@@ -61,8 +62,9 @@ interface UseEditRelationResult {
 
 const toDrafts = (state: ReturnType<typeof useGetDelta>, relations: ReturnType<typeof useGetRelations>): Draft[] => {
   const appending: Draft[] = Object.values(state.appending).map((v) => {
-    return { kind: "Touched", delta: v } as const;
+    return { kind: "Touched", delta: toAppendingModel(v, relations.issues) } as const;
   });
+
   return relations.relations
     .map<Draft>((v) => {
       const delta = Object.values(state.deleting).find((delta) => delta.relationId === v.relationId);
@@ -70,13 +72,13 @@ const toDrafts = (state: ReturnType<typeof useGetDelta>, relations: ReturnType<t
         return { kind: "NoTouched", relation: v } as const;
       }
 
-      return { kind: "Touched", delta } as const;
+      return { kind: "Touched", delta: toDeletingModel(delta, relations.relationRecord) } as const;
     })
     .concat(appending);
 };
 
-const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDelta[] {
-  const deltas: RelationDelta[] = [];
+const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDeltaModel[] {
+  const deltas: RelationDeltaModel[] = [];
 
   drafts.forEach((draft) => {
     switch (draft.kind) {
@@ -88,7 +90,9 @@ const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDelta[]
             const delta = draft.delta;
             const exists = deltas.some(
               (v) =>
-                v.kind === "append" && v.inwardIssue === delta.inwardIssue && v.outwardIssue === delta.outwardIssue,
+                v.kind === "append" &&
+                v.inwardIssue.key === delta.inwardIssue.key &&
+                v.outwardIssue.key === delta.outwardIssue.key,
             );
 
             if (!exists) {
@@ -164,9 +168,9 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
       mergedDeltas.map((delta) => {
         switch (delta.kind) {
           case "append":
-            return Apis.createRelation.call(apiCredential, delta.inwardIssue, delta.outwardIssue);
+            return Apis.createRelation.call(apiCredential, delta.inwardIssue.key, delta.outwardIssue.key);
           case "delete":
-            return Apis.removeRelation.call(apiCredential, delta.relationId);
+            return Apis.removeRelation.call(apiCredential, delta.relation.relationId);
         }
       }),
     )

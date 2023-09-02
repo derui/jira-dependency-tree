@@ -2,11 +2,11 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { SearchInput } from "../molecules/search-input";
-import { IssueSearcher } from "./issue-searcher";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
 import { IssueModel } from "@/view-models/issue";
+import { useRelationFiltering } from "@/hooks/relation-filtering";
 
 export type Props = BaseProps;
 
@@ -82,6 +82,7 @@ function Preparation(props: { show?: boolean; inward?: IssueModel; testid: strin
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
   const { state, remove, undo, startPreparationToAdd } = useRelationEditor();
+  const { filter, clear } = useRelationFiltering();
 
   const draftList = state.drafts.map((draft) => {
     const key = draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
@@ -91,7 +92,7 @@ export function RelationEditor(props: Props) {
   return (
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
       <div className={classNames(Styles.header)} data-testid={gen("title")}>
-        <SearchInput />
+        <SearchInput onSearch={filter} onCancel={clear} />
       </div>
       <Appender show={state.preparationToAdd === undefined} onClick={startPreparationToAdd} testid={gen("appender")} />
       <Preparation

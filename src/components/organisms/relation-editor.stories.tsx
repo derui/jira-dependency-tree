@@ -24,7 +24,14 @@ export const Default: Story = {
     const store = createStore();
     const issues = [
       randomIssue({ key: "key", relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
-      randomIssue({ key: "foo", relations: [{ id: "id", inwardIssue: "foo", outwardIssue: "key" }] }),
+      randomIssue({
+        key: "foo",
+        relations: [
+          { id: "id", inwardIssue: "foo", outwardIssue: "key" },
+          { id: "id2", inwardIssue: "bar", outwardIssue: "foo" },
+        ],
+      }),
+      randomIssue({ key: "bar", relations: [{ id: "id2", inwardIssue: "bar", outwardIssue: "foo" }] }),
     ];
     store.dispatch(importIssues({ issues }));
 

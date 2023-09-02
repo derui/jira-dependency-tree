@@ -31,15 +31,8 @@ export const searchIssue = createAction<string>("searchIssue");
 export const changeToVerticalLayout = createAction("changeToVerticalLayout");
 export const changeToHorizontalLayout = createAction("changeToHorizontalLayout");
 
-// actions for suggestion
-export const requestSuggestion = createAction<{ term: string; kind: SuggestionKind }>("requestSuggestion");
-export const requestSuggestionAccepted = createAction<{ term: string; kind: SuggestionKind }>(
-  "requestSuggestionAccepted",
-);
-export const requestSuggestionFulfilled = createAction<{ kind: SuggestionKind; suggestion: Suggestion }>(
-  "requestSuggestionFulfilled",
-);
-export const requestSuggestionError = createAction<string>("requestSuggestionError");
+export const filterIssues = createAction<string>("filterIssues");
+export const clearIssueFilter = createAction("clearIssueFilter");
 
 // actions for issue graph
 export const attentionIssue = createAction<string>("attentionIssue");

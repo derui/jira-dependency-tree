@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { expandIssue, importIssues, narrowExpandedIssue, searchIssue } from "../actions";
+import {
+  clearIssueFilter,
+  expandIssue,
+  filterIssues,
+  importIssues,
+  narrowExpandedIssue,
+  searchIssue,
+} from "../actions";
 import { Issue } from "@/model/issue";
 import { IssueKey, Loading } from "@/type";
 import { filterEmptyString } from "@/util/basic";
@@ -52,7 +59,7 @@ const slice = createSlice({
       }
     });
 
-    builder.addCase(searchIssue, (state, { payload }) => {
+    builder.addCase(filterIssues, (state, { payload }) => {
       if (!filterEmptyString(payload)) {
         state.matchedIssues = [];
       } else {
@@ -60,6 +67,10 @@ const slice = createSlice({
           (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
         );
       }
+    });
+
+    builder.addCase(clearIssueFilter, (state) => {
+      state.matchedIssues = [];
     });
 
     builder.addCase(expandIssue, (state, { payload }) => {

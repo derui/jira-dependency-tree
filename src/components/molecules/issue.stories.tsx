@@ -9,6 +9,7 @@ const meta = {
   argTypes: {
     issue: { control: "object" },
     loading: { control: "radio", options: Object.keys(Loading), defaultValue: Loading.Completed },
+    draft: { control: "boolean" },
   },
 } satisfies Meta<typeof Issue>;
 
@@ -69,5 +70,11 @@ export const DONE: Story = {
         name: "type",
       },
     },
+  },
+};
+
+export const Placeholder: Story = {
+  args: {
+    placeholder: true,
   },
 };

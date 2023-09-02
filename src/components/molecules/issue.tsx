@@ -12,6 +12,7 @@ export interface Props extends BaseProps {
   selected?: boolean;
   onDelete?: (key: string) => void;
   onClick?: (key: string) => void;
+  placeholder?: boolean;
 }
 
 const Styles = {
@@ -32,6 +33,25 @@ const Styles = {
       },
     );
   },
+  placeholderRoot: () => {
+    return classNames(
+      "h-16",
+      "flex",
+      "flex-col",
+      "rounded",
+      "border-2",
+      "border-dashed",
+      "border-primary-200",
+      "px-4",
+      "py-2",
+      "transition",
+      "bg-primary-200/10",
+      "justify-center",
+      "items-center",
+    );
+  },
+  placeholderText: classNames("font-bold", "text-primary-100"),
+
   summary: classNames("text-sm", "mb-2"),
   information: classNames("flex", "flex-row", "items-center", "space-x-2", "w-full"),
   issueType: classNames("w-3", "h-3", "inline-block", "overflow-hidden"),
@@ -121,7 +141,7 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
 // eslint-disable-next-line func-style
 export function Issue(props: Props) {
   const gen = generateTestId(props.testid);
-  const { issue, onClick, loading, onDelete, selected } = props;
+  const { issue, onClick, loading, onDelete, selected, placeholder } = props;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick && issue) {
@@ -137,6 +157,14 @@ export function Issue(props: Props) {
       onDelete(issue.key);
     }
   };
+
+  if (placeholder) {
+    return (
+      <li className={classNames(Styles.placeholderRoot())} data-testid={gen("root-draft")}>
+        <span className={classNames(Styles.placeholderText)}>Waiting to set issue...</span>
+      </li>
+    );
+  }
 
   if (loading || !issue) {
     return (

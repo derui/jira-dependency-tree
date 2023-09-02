@@ -63,7 +63,7 @@ const slice = createSlice({
       if (!filterEmptyString(payload)) {
         state.matchedIssues = [];
       } else {
-        state.matchedIssues = state.issues.filter(
+        state.matchedIssues = Object.values(state.issues).filter(
           (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
         );
       }

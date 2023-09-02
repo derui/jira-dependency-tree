@@ -1,14 +1,24 @@
-import { test, expect, afterEach } from "vitest";
-import { render, screen, cleanup, act } from "@testing-library/react";
+import { test, expect, afterEach, vi } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createStore } from "@/state/store";
-import { submitApiCredentialFulfilled, submitProjectIdFulfilled, synchronizeIssuesFulfilled } from "@/state/actions";
-import { randomCredential, randomIssue, randomProject } from "@/mock-data";
+import { importIssues, synchronizeIssuesFulfilled } from "@/state/actions";
+import { randomIssue } from "@/mock-data";
+import { useFocusIssue } from "@/hooks/focus-issue";
+
+vi.mock("@/hooks/focus-issue", () => {
+  return {
+    useFocusIssue: vi.fn(),
+  };
+});
 
 afterEach(cleanup);
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 test("should be able to render", () => {
   const store = createStore();
@@ -19,59 +29,22 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const opener = screen.getByTestId("opener");
+  const opener = screen.queryAllByTestId("issue/root");
 
-  expect(opener.getAttribute("aria-disabled")).toBe("true");
-});
-
-test("should be clickable after setup finished", async () => {
-  const store = createStore();
-
-  render(
-    <Provider store={store}>
-      <IssueSearcher />
-    </Provider>,
-  );
-
-  const opener = screen.getByTestId("opener");
-
-  act(() => {
-    store.dispatch(submitProjectIdFulfilled(randomProject()));
-    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-  });
-
-  expect(opener.getAttribute("aria-disabled")).toBe("false");
-  expect(screen.getByTestId("input-wrapper").getAttribute("aria-hidden")).toBe("true");
-});
-
-test("open term input after opener clicked", async () => {
-  const store = createStore();
-  store.dispatch(submitProjectIdFulfilled(randomProject()));
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
-
-  render(
-    <Provider store={store}>
-      <IssueSearcher />
-    </Provider>,
-  );
-
-  await userEvent.click(screen.getByTestId("opener"));
-
-  const term = screen.getByTestId("input-wrapper");
-
-  expect(term.getAttribute("aria-hidden")).toBe("false");
+  expect(opener).toHaveLength(0);
 });
 
 test("show issue are matched with inputted term", async () => {
+  const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitProjectIdFulfilled(randomProject()));
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
-    synchronizeIssuesFulfilled([
-      randomIssue({ key: "TES-10", summary: "summary" }),
-      randomIssue({ key: "TES-11", summary: "other" }),
-      randomIssue({ key: "OTHER-11", summary: "not match" }),
-    ]),
+    importIssues({
+      issues: [
+        randomIssue({ key: "TES-10", summary: "summary" }),
+        randomIssue({ key: "TES-11", summary: "other" }),
+        randomIssue({ key: "OTHER-11", summary: "not match" }),
+      ],
+    }),
   );
 
   render(
@@ -80,8 +53,8 @@ test("show issue are matched with inputted term", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByTestId("opener"));
-  await userEvent.type(screen.getByTestId("input"), "TES");
+  await user.click(screen.getByTestId("input/opener"));
+  await user.type(screen.getByTestId("input/input"), "TES");
 
   const issues = screen.getAllByTestId("issue/root");
 
@@ -92,8 +65,6 @@ test("show issue are matched with inputted term", async () => {
 
 test("reset after click cancel", async () => {
   const store = createStore();
-  store.dispatch(submitProjectIdFulfilled(randomProject()));
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
     synchronizeIssuesFulfilled([
       randomIssue({ key: "TES-10", summary: "summary" }),
@@ -108,28 +79,32 @@ test("reset after click cancel", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByTestId("opener"));
-  await userEvent.type(screen.getByTestId("input"), "TES");
-  await userEvent.click(screen.getByTestId("cancel"));
+  await userEvent.click(screen.getByTestId("input/opener"));
+  await userEvent.type(screen.getByTestId("input/input"), "TES");
+  await userEvent.click(screen.getByTestId("input/cancel"));
 
   const issues = screen.queryAllByTestId("issue/root");
-  const term = screen.getByTestId("input") as HTMLInputElement;
+  const term = screen.getByTestId("input/input") as HTMLInputElement;
 
   expect(issues).toHaveLength(0);
   expect(term.value).toBe("");
 });
 
 test("send action when issue click", async () => {
+  const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitProjectIdFulfilled(randomProject()));
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
   store.dispatch(
-    synchronizeIssuesFulfilled([
-      randomIssue({ key: "TES-10", summary: "summary" }),
-      randomIssue({ key: "TES-11", summary: "other" }),
-      randomIssue({ key: "OTHER-11", summary: "not match" }),
-    ]),
+    importIssues({
+      issues: [
+        randomIssue({ key: "TES-10", summary: "summary" }),
+        randomIssue({ key: "TES-11", summary: "other" }),
+        randomIssue({ key: "OTHER-11", summary: "not match" }),
+      ],
+    }),
   );
+  const mockedFn = vi.fn();
+  const mock = vi.mocked(useFocusIssue);
+  mock.mockReturnValue(mockedFn);
 
   render(
     <Provider store={store}>
@@ -137,9 +112,11 @@ test("send action when issue click", async () => {
     </Provider>,
   );
 
-  await userEvent.click(screen.getByTestId("opener"));
-  await userEvent.type(screen.getByTestId("input"), "TES-10");
+  await user.click(screen.getByTestId("input/opener"));
+  await user.type(screen.getByTestId("input/input"), "TES-10");
 
   const issue = screen.getByTestId("issue/root");
-  await userEvent.click(issue);
+  await user.click(issue);
+
+  expect(mockedFn).toBeCalledWith("TES-10");
 });

@@ -1,0 +1,59 @@
+import { test, expect, afterEach } from "vitest";
+import { render, screen, cleanup, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import Sinon from "sinon";
+import { IssueSearcher } from "./issue-searcher";
+
+afterEach(cleanup);
+
+test("should be able to render", () => {
+  render(<IssueSearcher loading />);
+
+  const opener = screen.getByTestId("opener");
+
+  expect(opener.getAttribute("aria-disabled")).toBe("true");
+});
+
+test("should be clickable after setup finished", async () => {
+  render(<IssueSearcher />);
+
+  const opener = screen.getByTestId("opener");
+
+  expect(opener.getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("input-wrapper").getAttribute("aria-hidden")).toBe("true");
+});
+
+test("open term input after opener clicked", async () => {
+  render(<IssueSearcher />);
+
+  await userEvent.click(screen.getByTestId("opener"));
+
+  const term = screen.getByTestId("input-wrapper");
+
+  expect(term.getAttribute("aria-hidden")).toBe("false");
+});
+
+test("open term input after opener clicked", async () => {
+  const user = userEvent.setup();
+  const mock = Sinon.fake();
+
+  render(<IssueSearcher onSearch={mock} />);
+
+  await user.click(screen.getByTestId("opener"));
+  await user.type(screen.getByTestId("input"), "term");
+
+  expect(mock.calledWith("term")).toBeTruthy();
+});
+
+test("reset after click cancel", async () => {
+  const mock = Sinon.fake();
+  render(<IssueSearcher onCancel={mock} />);
+
+  await userEvent.click(screen.getByTestId("opener"));
+  await userEvent.type(screen.getByTestId("input"), "TES");
+  await userEvent.click(screen.getByTestId("cancel"));
+  const term = screen.getByTestId("input") as HTMLInputElement;
+
+  expect(term.value).toBe("");
+  expect(mock.called).toBeTruthy();
+});

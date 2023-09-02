@@ -1,36 +1,25 @@
 import React, { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { Issue } from "../molecules/issue";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { Button } from "../atoms/button";
-import { Suggestor } from "../molecules/suggestor";
 import { iconize } from "../atoms/iconize";
-import { IssueKey, IssueRelationId, Loading } from "@/type";
-import {
-  queryCurrentRelatedIssuesWithKind,
-  RelationKind,
-  selectSelectedIssueKey,
-} from "@/state/selectors/relation-editor";
-import { selectMatchedIssueModel } from "@/state/selectors/issues";
-import { addRelation, attentionIssue, removeRelation, searchIssue } from "@/state/actions";
-import { AppDispatch } from "@/state/store";
-import { IssueModel } from "@/view-models/issue";
+import { IssueSearcher } from "./issue-searcher";
+import { EditableRelationDraft } from "./editable-relation-draft";
+import { useRelationEditor } from "@/hooks/relation-editor";
 
 export type Props = BaseProps;
 
 const Styles = {
-  root: classNames(
-    "h-1/2",
+  root: classNames("h-1/2", "flex", "flex-col", "w-full", "px-3", "overflow-hidden"),
+  header: classNames(
+    "h-16",
+    "text-secondary1-500",
     "flex",
-    "flex-col",
-    "w-full",
-    "px-3",
-    "first-of-type:border-b",
-    "first-of-type:border-b-secondary2-400",
-    "overflow-hidden",
+    "text-lg",
+    "items-center",
+    "flex-none",
+    "border-b",
+    "border-b-secondary2-400",
   ),
-  header: classNames("h-8", "text-secondary1-500", "flex", "text-lg", "items-center", "flex-none"),
   main: classNames("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
   issueList: classNames("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
@@ -38,131 +27,21 @@ const Styles = {
   appenderButton: classNames("flex", "flex-row", "items-center", "w-full", iconize({ type: "plus", color: "gray" })),
 };
 
-const kindToTitle = (kind: RelationKind) => {
-  switch (kind) {
-    case "inward":
-      return "Inward issues";
-    case "outward":
-      return "Outward issues";
-  }
-};
-
-const Skeleton = function Skeleton({ testid }: { testid: string }) {
-  return <main className={classNames(Styles.skeleton)} data-testid={testid} />;
-};
-
-const IssueAppender = function IssueAppender({
-  testid,
-  dispatch,
-  issueKey,
-  kind,
-  relatedIssues,
-}: {
-  testid: string;
-  dispatch: AppDispatch;
-  issueKey: string;
-  kind: RelationKind;
-  relatedIssues: IssueKey[];
-}) {
-  const gen = generateTestId(testid);
-  const parentElement = useRef<HTMLDivElement | null>(null);
-  const [searching, setSearching] = useState(false);
-  const allIssues = useAppSelector(selectMatchedIssueModel());
-  const suggestions = allIssues
-    .filter((issue) => issue.key !== issueKey && !relatedIssues.includes(issue.key))
-    .map((issue) => {
-      return { id: issue.key, value: issue.key, displayName: `${issue.key} ${issue.summary}` };
-    });
-
-  const handleSelect = (key: string) => {
-    setSearching(false);
-    dispatch(searchIssue(""));
-
-    if (kind === "inward") {
-      dispatch(addRelation({ fromKey: key, toKey: issueKey }));
-    } else {
-      dispatch(addRelation({ fromKey: issueKey, toKey: key }));
-    }
-  };
-
-  return (
-    <div ref={parentElement} className={classNames(Styles.appender)}>
-      {searching ? (
-        <Suggestor
-          focusOnInit={true}
-          testid={gen("suggestion-list")}
-          suggestions={suggestions}
-          placeholder="Input issue key/summary"
-          onConfirmed={handleSelect}
-          onEmptySuggestion={(term) => dispatch(searchIssue(term))}
-        />
-      ) : (
-        <Button size="full" schema="gray" testid={gen("add-button")} onClick={() => setSearching(!searching)}>
-          <span className={Styles.appenderButton}>Add</span>
-        </Button>
-      )}
-    </div>
-  );
-};
-
-type IssueWithRelation = {
-  relationId: IssueRelationId;
-  issue: IssueModel;
-};
-
-const Editor = function Editor(props: { title: string; issues: IssueWithRelation[] }) {};
-
 // eslint-disable-next-line func-style
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
-  const [loading, relatedIssues = []] = useAppSelector(queryCurrentRelatedIssuesWithKind(props.kind));
-  const selectedIssueKey = useAppSelector(selectSelectedIssueKey());
-  const dispatch = useAppDispatch();
-  const relatedIssueKeys = relatedIssues.map(([, v]) => v.key);
+  const { state, remove, undo } = useRelationEditor();
 
-  const handleIssueDeleted = (key: string) => {
-    if (!selectedIssueKey) {
-      return;
-    }
-
-    if (props.kind === "inward") {
-      dispatch(removeRelation({ fromKey: key, toKey: selectedIssueKey }));
-    } else {
-      dispatch(removeRelation({ fromKey: selectedIssueKey, toKey: key }));
-    }
-  };
-
-  const issueList = relatedIssues.map(([loading, issue]) => (
-    <Issue
-      key={issue.key}
-      loading={loading}
-      issue={issue}
-      onClick={(key) => dispatch(attentionIssue(key))}
-      onDelete={handleIssueDeleted}
-      testid={gen("issue")}
-    />
-  ));
+  const draftList = state.drafts.map((draft) => {
+    return <EditableRelationDraft draft={draft} onUndo={undo} onRequestDelete={remove} />;
+  });
 
   return (
     <div className={classNames(Styles.root)} data-testid={gen("root")}>
-      <div></div>
       <div className={classNames(Styles.header)} data-testid={gen("title")}>
-        {kindToTitle(props.kind)}
+        <IssueSearcher />
       </div>
-      {loading === Loading.Loading || !selectedIssueKey ? (
-        <Skeleton testid={gen("skeleton")} />
-      ) : (
-        <div className={classNames(Styles.main)}>
-          <IssueAppender
-            testid={gen("appender")}
-            relatedIssues={relatedIssueKeys}
-            dispatch={dispatch}
-            issueKey={selectedIssueKey}
-            kind={props.kind}
-          />
-          <ul className={classNames(Styles.issueList)}>{issueList}</ul>
-        </div>
-      )}
+      <div className={classNames(Styles.main)}>{draftList}</div>
     </div>
   );
 }

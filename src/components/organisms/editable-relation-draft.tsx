@@ -16,8 +16,10 @@ export interface Props extends BaseProps {
 const Styles = {
   root: classNames("flex", "flex-col", "items-center", "p-2"),
   touchedRoot: () => classNames(Styles.root, "bg-primary-200/10", "relative"),
-  undoButton: classNames("absolute", "left-2", "top-2", "group"),
+  undoButton: classNames("absolute", "-left-36", "group"),
   undoIcon: classNames(iconize({ type: "arrow-back" }), "mr-2"),
+
+  arrowWithUndo: classNames("flex", "flex-row", "items-center", "justify-center", "relative"),
 };
 
 // eslint-disable-next-line func-style
@@ -37,14 +39,16 @@ export function EditableRelationDraft(props: Props) {
 
     return (
       <ul className={Styles.touchedRoot()} data-testid={gen("unroller")}>
-        <span className={Styles.undoButton}>
-          <Button schema="primary" size="s" onClick={handleClick} testid={gen("undo")}>
-            <span className={Styles.undoIcon} />
-            undo
-          </Button>
-        </span>
         <Issue issue={inward} testid={gen("inward")} />
-        <RelationArrow draft={delta.kind === "delete"} />
+        <ul className={Styles.arrowWithUndo}>
+          <span className={Styles.undoButton}>
+            <Button schema="primary" size="s" onClick={handleClick} testid={gen("undo")}>
+              <span className={Styles.undoIcon} />
+              undo
+            </Button>
+          </span>
+          <RelationArrow draft={delta.kind === "delete"} />
+        </ul>
         <Issue issue={outward} testid={gen("outward")} />
       </ul>
     );

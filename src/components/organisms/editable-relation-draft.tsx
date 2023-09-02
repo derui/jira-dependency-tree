@@ -38,14 +38,14 @@ export function EditableRelationDraft(props: Props) {
     return (
       <ul className={Styles.touchedRoot()} data-testid={gen("unroller")}>
         <span className={Styles.undoButton}>
-          <Button schema="primary" size="s" onClick={handleClick}>
+          <Button schema="primary" size="s" onClick={handleClick} testid={gen("undo")}>
             <span className={Styles.undoIcon} />
             undo
           </Button>
         </span>
-        <Issue issue={inward} />
+        <Issue issue={inward} testid={gen("inward")} />
         <RelationArrow draft={delta.kind === "delete"} />
-        <Issue issue={outward} />
+        <Issue issue={outward} testid={gen("outward")} />
       </ul>
     );
   } else {
@@ -54,9 +54,9 @@ export function EditableRelationDraft(props: Props) {
 
     return (
       <ul className={Styles.root} data-testid={gen("unroller")}>
-        <Issue issue={delta.inward} />
+        <Issue issue={delta.inward} testid={gen("inward")} />
         <RelationArrow onClick={handleClick} />
-        <Issue issue={delta.outward} />
+        <Issue issue={delta.outward} testid={gen("outward")} />
       </ul>
     );
   }

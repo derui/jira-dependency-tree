@@ -100,13 +100,15 @@ export function RelationEditor(props: Props) {
 
   const draftList = state.drafts.map((draft) => {
     const key = draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
-    return <EditableRelationDraft key={key} draft={draft} onUndo={undo} onRequestDelete={remove} />;
+    return (
+      <EditableRelationDraft key={key} draft={draft} onUndo={undo} onRequestDelete={remove} testid={gen("draft")} />
+    );
   });
 
   return (
     <div className={Styles.root} data-testid={gen("root")}>
       <div className={Styles.header} data-testid={gen("title")}>
-        <SearchInput onSearch={filter} onCancel={clear} />
+        <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />
       </div>
       <Appender show={state.preparationToAdd === undefined} onClick={startPreparationToAdd} testid={gen("appender")} />
       <Preparation

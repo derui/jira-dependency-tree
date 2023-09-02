@@ -35,10 +35,10 @@ export function EditableRelationDraft(props: Props) {
         }
       : undefined;
     const inward = delta.kind === "append" ? delta.inwardIssue : delta.relation.inward;
-    const outward = delta.kind === "append" ? delta.inwardIssue : delta.relation.outward;
+    const outward = delta.kind === "append" ? delta.outwardIssue : delta.relation.outward;
 
     return (
-      <ul className={Styles.touchedRoot()} data-testid={gen("unroller")}>
+      <ul className={Styles.touchedRoot()} data-testid={gen("touched")}>
         <Issue issue={inward} testid={gen("inward")} />
         <ul className={Styles.arrowWithUndo}>
           <span className={Styles.undoButton}>
@@ -57,9 +57,9 @@ export function EditableRelationDraft(props: Props) {
     const handleClick = onRequestDelete ? () => onRequestDelete(delta.relationId) : undefined;
 
     return (
-      <ul className={Styles.root} data-testid={gen("unroller")}>
+      <ul className={Styles.root} data-testid={gen("no-touched")}>
         <Issue issue={delta.inward} testid={gen("inward")} />
-        <RelationArrow onClick={handleClick} />
+        <RelationArrow onClick={handleClick} testid={gen("arrow")} />
         <Issue issue={delta.outward} testid={gen("outward")} />
       </ul>
     );

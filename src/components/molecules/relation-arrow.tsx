@@ -93,7 +93,9 @@ export function RelationArrow(props: Props) {
     props.onClick();
   };
 
-  const Deleter = props.onClick ? <span className={Styles.deleter} onClick={handleClick} /> : null;
+  const Deleter = props.onClick ? (
+    <span className={Styles.deleter} onClick={handleClick} data-testid={gen("deleter")} />
+  ) : null;
 
   return (
     <li className={Styles.root} data-testid={gen("root")}>

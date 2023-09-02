@@ -4,8 +4,8 @@ import { BaseProps, generateTestId } from "../helper";
 import { UserConfigurationForm, Props as UserConfigurationFormProps } from "../molecules/user-configuration-form";
 import { Dialog } from "../atoms/dialog";
 import { iconize } from "../atoms/iconize";
-import { submitApiCredential } from "@/state/actions";
 import { FirstArg } from "@/util/type-tool";
+import { useUserConfiguration } from "@/hooks/user-configuration";
 
 export type Props = BaseProps;
 
@@ -40,13 +40,11 @@ export function UserConfiguration(props: Props) {
   const gen = generateTestId(props.testid);
   const ref = useRef<HTMLDivElement>(null);
   const [opened, setOpened] = useState(false);
-  const currentCredential = useAppSelector(getApiCrednetial());
-  const dispatch = useAppDispatch();
-  const setupFinished = currentCredential !== undefined;
+  const { state, apply } = useUserConfiguration();
 
   const handleEndEdit = (obj: FirstArg<UserConfigurationFormProps["onEndEdit"]>) => {
     if (obj) {
-      dispatch(submitApiCredential(obj));
+      apply(obj);
     }
     setOpened(false);
   };
@@ -59,7 +57,11 @@ export function UserConfiguration(props: Props) {
           data-testid={gen("opener")}
           onClick={() => setOpened(!opened)}
         >
-          <span className={Styles.marker(!setupFinished)} aria-hidden={setupFinished} data-testid={gen("marker")}>
+          <span
+            className={Styles.marker(!state.setupFinished)}
+            aria-hidden={state.setupFinished}
+            data-testid={gen("marker")}
+          >
             <span className={Styles.markerPing}></span>
             <span className={Styles.markerInner}></span>
           </span>
@@ -72,7 +74,7 @@ export function UserConfiguration(props: Props) {
         parentRect={ref.current?.getBoundingClientRect()}
         aligned="bottomRight"
       >
-        <UserConfigurationForm testid={gen("form")} initialPayload={currentCredential} onEndEdit={handleEndEdit} />
+        <UserConfigurationForm testid={gen("form")} initialPayload={state.credential} onEndEdit={handleEndEdit} />
       </Dialog>
     </div>
   );

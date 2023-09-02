@@ -1,10 +1,16 @@
-import { test, expect, afterEach } from "vitest";
+import { test, expect, afterEach, beforeEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
 import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
+import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { Dependencies } from "@/dependencies";
+import { RegistrarContext } from "@/registrar-context";
+
+const registrar = createDependencyRegistrar<Dependencies>();
+registrar.register("env", { apiKey: "key", apiBaseUrl: "url" });
 
 afterEach(cleanup);
 
@@ -12,9 +18,11 @@ test("should be able to render", () => {
   const store = createStore();
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
   );
 
   const marker = screen.getByTestId("marker");
@@ -26,9 +34,11 @@ test("initial payload is empty", () => {
   const store = createStore();
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
     {
       wrapper(props) {
         return (
@@ -63,9 +73,11 @@ test("initial payload inputted", () => {
   );
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
     {
       wrapper(props) {
         return (
@@ -91,9 +103,11 @@ test("open dialog when opener clicked", async () => {
   const store = createStore();
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
     {
       wrapper(props) {
         return (
@@ -119,9 +133,11 @@ test("hide dialog when submitted", async () => {
   const store = createStore();
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
     {
       wrapper(props) {
         return (
@@ -156,9 +172,11 @@ test("hide dialog when canceled on form", async () => {
   const store = createStore();
 
   render(
-    <Provider store={store}>
-      <UserConfiguration />
-    </Provider>,
+    <RegistrarContext.Provider value={registrar}>
+      <Provider store={store}>
+        <UserConfiguration />
+      </Provider>
+    </RegistrarContext.Provider>,
     {
       wrapper(props) {
         return (

@@ -1,10 +1,11 @@
-import React, { useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { IssueSearcher } from "./issue-searcher";
 import { EditableRelationDraft } from "./editable-relation-draft";
+import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
+import { IssueModel } from "@/view-models/issue";
 
 export type Props = BaseProps;
 
@@ -23,14 +24,63 @@ const Styles = {
   main: classNames("flex", "flex-col", "flex-auto", "p-2", "h-full", "overflow-hidden"),
   issueList: classNames("overflow-y-scroll", "space-y-2", "h-full", "pr-2", "hover:scroll-auto", "scroll-smooth"),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
-  appender: classNames("flex", "mb-2"),
   appenderButton: classNames("flex", "flex-row", "items-center", "w-full", iconize({ type: "plus", color: "gray" })),
+
+  appender: {
+    root: classNames(
+      "rounded",
+      "mt-3",
+      "p-4",
+      "border-4",
+      "border-dashed",
+      "border-primary-300",
+      "hover:bg-primary-200/20",
+      "cursor-pointer",
+      "transition",
+    ),
+    text: classNames("flex", "flex-row", "text-primary-400", "items-center", "justify-center"),
+    icon: classNames(iconize({ type: "plus", active: true })),
+  },
+  preparation: {
+    root: classNames("mt-3"),
+  },
 };
+
+// eslint-disable-next-line func-style
+function Appender(props: { show?: boolean; onClick?: () => void; testid: string }) {
+  const gen = generateTestId(props.testid);
+  if (props.show) {
+    return null;
+  }
+
+  return (
+    <div className={Styles.appender.root} onClick={props.onClick} data-testid={gen("root")}>
+      <p className={Styles.appender.text}>
+        <span className={Styles.appender.icon} />
+        Click to add relation
+      </p>
+    </div>
+  );
+}
+
+// eslint-disable-next-line func-style
+function Preparation(props: { show?: boolean; inward?: IssueModel; testid: string }) {
+  const gen = generateTestId(props.testid);
+  if (props.show) {
+    return null;
+  }
+
+  return (
+    <div className={Styles.preparation.root} data-testid={gen("root")}>
+      <AppendingPreparation inward={props.inward} />
+    </div>
+  );
+}
 
 // eslint-disable-next-line func-style
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
-  const { state, remove, undo } = useRelationEditor();
+  const { state, remove, undo, startPreparationToAdd } = useRelationEditor();
 
   const draftList = state.drafts.map((draft) => {
     return <EditableRelationDraft draft={draft} onUndo={undo} onRequestDelete={remove} />;
@@ -41,6 +91,12 @@ export function RelationEditor(props: Props) {
       <div className={classNames(Styles.header)} data-testid={gen("title")}>
         <IssueSearcher />
       </div>
+      <Appender show={state.preparationToAdd === undefined} onClick={startPreparationToAdd} testid={gen("appender")} />
+      <Preparation
+        show={state.preparationToAdd !== undefined}
+        inward={state.preparationToAdd?.inward}
+        testid={gen("preparation")}
+      />
       <div className={classNames(Styles.main)}>{draftList}</div>
     </div>
   );

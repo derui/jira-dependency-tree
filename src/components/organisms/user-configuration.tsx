@@ -1,19 +1,17 @@
 import { useRef, useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 import { UserConfigurationForm, Props as UserConfigurationFormProps } from "../molecules/user-configuration-form";
 import { Dialog } from "../atoms/dialog";
-import { useAppDispatch, useAppSelector } from "../hooks";
 import { iconize } from "../atoms/iconize";
 import { submitApiCredential } from "@/state/actions";
 import { FirstArg } from "@/util/type-tool";
-import { getApiCrednetial } from "@/state/selectors/api-credential";
 
 export type Props = BaseProps;
 
 const Styles = {
-  root: classes("inline-block", "relative"),
-  toolbar: classes(
+  root: classNames("inline-block", "relative"),
+  toolbar: classNames(
     "flex",
     "relative",
     "flex-auto",
@@ -28,19 +26,13 @@ const Styles = {
     "justify-center",
   ),
   opener: () => {
-    return {
-      ...classes("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7"),
-    };
+    return classNames("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7");
   },
   marker: (show: boolean) => {
-    return {
-      ...classes("flex", "w-2", "h-2", "-left-1", "-top-1", "absolute"),
-      ...(!show ? classes("invisible") : {}),
-      ...(show ? classes("visible") : {}),
-    };
+    return classNames("flex", "w-2", "h-2", "-left-1", "-top-1", "absolute", !show ? "invisible" : "visible");
   },
-  markerPing: classes("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
-  markerInner: classes("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
+  markerPing: classNames("absolute", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-200", "animate-ping"),
+  markerInner: classNames("relative", "inline-flex", "w-2", "h-2", "rounded-full", "bg-primary-400"),
 };
 
 // eslint-disable-next-line func-style
@@ -60,29 +52,25 @@ export function UserConfiguration(props: Props) {
   };
 
   return (
-    <div ref={ref} className={classNames(Styles.root)}>
-      <div className={classNames(Styles.toolbar)}>
+    <div ref={ref} className={Styles.root}>
+      <div className={Styles.toolbar}>
         <button
-          className={classNames(Styles.opener(), iconize({ type: "settings", color: "complement", size: "l" }))}
+          className={(Styles.opener(), iconize({ type: "settings", color: "complement", size: "l" }))}
           data-testid={gen("opener")}
           onClick={() => setOpened(!opened)}
         >
-          <span
-            className={classNames(Styles.marker(!setupFinished))}
-            aria-hidden={setupFinished}
-            data-testid={gen("marker")}
-          >
-            <span className={classNames(Styles.markerPing)}></span>
-            <span className={classNames(Styles.markerInner)}></span>
+          <span className={Styles.marker(!setupFinished)} aria-hidden={setupFinished} data-testid={gen("marker")}>
+            <span className={Styles.markerPing}></span>
+            <span className={Styles.markerInner}></span>
           </span>
         </button>
       </div>
       <Dialog
-        testid='container'
+        testid="container"
         opened={opened}
-        margin='top'
+        margin="top"
         parentRect={ref.current?.getBoundingClientRect()}
-        aligned='bottomRight'
+        aligned="bottomRight"
       >
         <UserConfigurationForm testid={gen("form")} initialPayload={currentCredential} onEndEdit={handleEndEdit} />
       </Dialog>

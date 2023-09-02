@@ -1,10 +1,8 @@
 import { useState } from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { GraphLayout } from "@/issue-graph/type";
-import { getGraphLayout } from "@/state/selectors/graph-layout";
 import { changeToHorizontalLayout, changeToVerticalLayout } from "@/state/actions";
 
 export type Props = BaseProps;
@@ -23,23 +21,21 @@ const Styles = {
       iconize({ type: "layout-2", size: "m", color: "secondary1", active: opened }),
     ),
   graphLayouter: (opened: boolean) => {
-    return {
-      ...classes(
-        "absolute",
-        "flex",
-        "flex-row",
-        "left-16",
-        "top-0",
-        "bg-white",
-        "rounded",
-        "shadow-lg",
-        "transition-opacity",
-        "opacity-0",
-        "px-1",
-      ),
-      ...(opened ? classes("opacity-100", "visible") : {}),
-      ...(!opened ? classes("invisible") : {}),
-    };
+    return classNames(
+      "absolute",
+      "flex",
+      "flex-row",
+      "left-16",
+      "top-0",
+      "bg-white",
+      "rounded",
+      "shadow-lg",
+      "transition-opacity",
+      "opacity-0",
+      "px-1",
+      opened ? ["opacity-100", "visible"] : [],
+      !opened ? "invisible" : "",
+    );
   },
   iconButton: (layout: GraphLayout, active: boolean) =>
     classNames(
@@ -84,7 +80,7 @@ export function IssueGraphLayouter(props: Props) {
       onClick={() => setOpened(!opened)}
       data-active={opened}
     >
-      <div className={classNames(Styles.graphLayouter(opened))} data-testid={gen("layouter")}>
+      <div className={Styles.graphLayouter(opened)} data-testid={gen("layouter")}>
         <span
           className={Styles.iconButton(GraphLayout.Horizontal, horizontalActive)}
           onClick={() => dispatch(changeToHorizontalLayout())}

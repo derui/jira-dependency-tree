@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import classNames from "classnames";
-import { BaseProps, classes, generateTestId } from "../helper";
+import { BaseProps, generateTestId } from "../helper";
 
 export interface Props extends BaseProps {
   placeholder?: string;
@@ -13,7 +13,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  container: classes(
+  container: classNames(
     "flex",
     "flex-auto",
     "items-center",
@@ -24,8 +24,8 @@ const Styles = {
     "mt-4",
     "first:mt-0",
   ),
-  label: classes("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap"),
-  input: classes(
+  label: classNames("flex-[1_1_40%]", "text-primary-500", "whitespace-nowrap"),
+  input: classNames(
     "w-full",
     "flex-[1_1_60%]",
     "px-3",
@@ -73,7 +73,7 @@ export function Input({ placeholder, label, focus, onInput, onKeypress, ...props
   const input = (
     <input
       ref={ref}
-      className={classNames(Styles.input)}
+      className={Styles.input}
       type="text"
       placeholder={placeholder}
       value={value}
@@ -85,8 +85,8 @@ export function Input({ placeholder, label, focus, onInput, onKeypress, ...props
 
   if (label) {
     return (
-      <label className={classNames(Styles.container)}>
-        <span className={classNames(Styles.label)} data-testid={gen("label")}>
+      <label className={Styles.container}>
+        <span className={Styles.label} data-testid={gen("label")}>
           {label}
         </span>
         {input}

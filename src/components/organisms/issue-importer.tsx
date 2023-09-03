@@ -5,6 +5,7 @@ import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { QueryInput } from "../molecules/query-input";
 import { Issue as IssueComponent } from "../molecules/issue";
+import { Panel } from "../molecules/panel";
 import { useImportIssues, useSearchIssues } from "@/hooks";
 import { Issue } from "@/model/issue";
 
@@ -240,34 +241,24 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
   const loading = isLoading && error === undefined;
 
   return (
-    <div className={classNames(Styles.root(opened))} aria-hidden={!opened} data-testid={gen("root")}>
-      <header className={classNames(Styles.header)} data-testid={gen("header")}>
-        <h4 className={classNames(Styles.headerText)}> Import Issues </h4>
-        <span className={classNames(Styles.headerButtonContainer)}>
-          <Button size="s" onClick={handleClick} testid={gen("close")} schema="gray">
-            <span className={iconize({ type: "x", size: "s", color: "gray" })}></span>
-          </Button>
-        </span>
-      </header>
-      <main className={classNames(Styles.main)}>
-        <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
-        <IssueList
-          selectedIssues={importer.selectedIssues}
-          issues={data ?? []}
-          loading={loading}
-          testid={gen("issue-list")}
-          onToggleMark={handleToggleMark}
-        />
-        <Paginator
-          onChangePage={handleChangePage}
-          onImport={handleImport}
-          page={page}
-          disabled={(data ?? [])?.length === 0}
-          loading={loading}
-          testid={gen("paginator")}
-          issueCount={importer.selectedIssues.length}
-        />
-      </main>
-    </div>
+    <Panel title="Import Issues" opened={opened} onClose={handleClick}>
+      <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
+      <IssueList
+        selectedIssues={importer.selectedIssues}
+        issues={data ?? []}
+        loading={loading}
+        testid={gen("issue-list")}
+        onToggleMark={handleToggleMark}
+      />
+      <Paginator
+        onChangePage={handleChangePage}
+        onImport={handleImport}
+        page={page}
+        disabled={(data ?? [])?.length === 0}
+        loading={loading}
+        testid={gen("paginator")}
+        issueCount={importer.selectedIssues.length}
+      />
+    </Panel>
   );
 }

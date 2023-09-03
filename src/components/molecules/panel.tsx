@@ -1,14 +1,19 @@
 import classNames from "classnames";
-import { useState } from "react";
+import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { iconize } from "../atoms/iconize";
 import { Button } from "../atoms/button";
 import { BaseProps, generateTestId } from "../helper";
-import { RelationEditor } from "../organisms/relation-editor";
-import { iconize } from "../atoms/iconize";
 
-export type Props = BaseProps;
+export interface Props extends BaseProps, React.PropsWithChildren {
+  selector?: string;
+  opened?: boolean;
+  onClose?: () => void;
+  title?: string;
+}
 
 const Styles = {
-  root: (opened: boolean) => {
+  root: (opened?: boolean) => {
     return classNames(
       "absolute",
       "top-0",
@@ -25,7 +30,7 @@ const Styles = {
       "overflow-hidden",
       {
         "w-0": !opened,
-        "w-80": opened,
+        "w-96": opened,
       },
     );
   },
@@ -46,33 +51,44 @@ const Styles = {
   headerText: classNames("text-xl", "h-full", "items-center", "flex"),
   headerKey: classNames("text-base"),
   headerButtonContainer: classNames("flex", "top-3", "right-2"),
-  main: classNames("flex-auto", "overflow-hidden"),
+  main: classNames("flex", "flex-col", "overflow-hidden", "h-full"),
 };
 
 // eslint-disable-next-line func-style
-export function RelationEditorPanel(props: Props) {
+export function Panel(props: Props) {
   const gen = generateTestId(props.testid);
-  const [opened, setOpened] = useState(false);
+  const { opened, onClose } = props;
+  const ref = useRef(document.createElement("div"));
 
-  return (
+  const selector = props.selector ?? "#dialog-root";
+
+  useEffect(() => {
+    document.querySelector(selector)?.appendChild(ref.current);
+
+    return () => {
+      document.querySelector(selector)?.removeChild(ref.current);
+    };
+  }, []);
+
+  const handleClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const container = (
     <div className={classNames(Styles.root(opened))} aria-hidden={!opened} data-testid={gen("root")}>
-      <div className={classNames(Styles.header)} data-testid={gen("header")}>
+      <header className={classNames(Styles.header)} data-testid={gen("header")}>
+        <h4 className={classNames(Styles.headerText)}>{props.title}</h4>
         <span className={classNames(Styles.headerButtonContainer)}>
-          <Button
-            size="s"
-            onClick={() => {
-              setOpened(false);
-            }}
-            testid={gen("close")}
-            schema="gray"
-          >
+          <Button size="s" onClick={handleClick} testid={gen("close")} schema="gray">
             <span className={iconize({ type: "x", size: "s", color: "gray" })}></span>
           </Button>
         </span>
-      </div>
-      <main className={classNames(Styles.main)}>
-        <RelationEditor testid={gen("editor")} />
-      </main>
+      </header>
+      <main className={classNames(Styles.main)}>{props.children}</main>
     </div>
   );
+
+  return createPortal(container, ref.current);
 }

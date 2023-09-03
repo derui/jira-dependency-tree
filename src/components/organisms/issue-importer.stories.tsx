@@ -27,6 +27,7 @@ export const Default: Story = {
 
     return (
       <Provider store={store}>
+        <div id="dialog-root" className="absolute top-0 left-0 w-full h-full -z-1" />
         <IssueImporter {...args} />
       </Provider>
     );
@@ -53,6 +54,7 @@ export const Loading: Story = {
 
     return (
       <Provider store={store}>
+        <div id="dialog-root" className="absolute top-0 left-0 w-full h-full -z-1" />
         <IssueImporter {...args} />
       </Provider>
     );
@@ -78,6 +80,7 @@ export const Error: Story = {
 
     return (
       <Provider store={store}>
+        <div id="dialog-root" className="absolute top-0 left-0 w-full h-full -z-1" />
         <IssueImporter {...args} />
       </Provider>
     );
@@ -123,6 +126,7 @@ export const DisplayIssues: Story = {
 
     return (
       <Provider store={store}>
+        <div id="dialog-root" className="absolute top-0 left-0 w-full h-full -z-1" />
         <IssueImporter {...args} />
       </Provider>
     );

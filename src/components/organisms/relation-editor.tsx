@@ -3,16 +3,20 @@ import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { SearchInput } from "../molecules/search-input";
 import { Button } from "../atoms/button";
+import { Panel } from "../molecules/panel";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
 import { IssueModel } from "@/view-models/issue";
 import { useRelationFiltering } from "@/hooks/relation-filtering";
 
-export type Props = BaseProps;
+export interface Props extends BaseProps {
+  opened?: boolean;
+  onClose?: () => void;
+}
 
 const Styles = {
-  root: classNames("h-1/2", "flex", "flex-col", "w-full", "px-3", "overflow-hidden"),
+  root: classNames("h-1/2", "flex", "flex-col", "w-full", "px-3", "overflow-hidden", "flex-auto"),
   header: classNames(
     "h-16",
     "text-secondary1-500",
@@ -27,19 +31,17 @@ const Styles = {
     "flex",
     "flex-col",
     "flex-auto",
-    "p-2",
+    "m-2",
     "h-full",
     "overflow-hidden",
-    "overflow-y-scroll",
+    "overflow-y-auto",
     "space-y-2",
-    "h-full",
     "pr-2",
-    "hover:scroll-auto",
     "scroll-smooth",
   ),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
   appenderButton: classNames("flex", "flex-row", "items-center", "w-full", iconize({ type: "plus", color: "gray" })),
-  footer: classNames("flex-none"),
+  footer: classNames("flex-none", "py-2"),
 
   appender: {
     root: classNames(
@@ -106,22 +108,28 @@ export function RelationEditor(props: Props) {
   });
 
   return (
-    <div className={Styles.root} data-testid={gen("root")}>
-      <div className={Styles.header} data-testid={gen("title")}>
-        <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />
+    <Panel opened={props.opened} onClose={props.onClose} title="Relations">
+      <div className={Styles.root} data-testid={gen("root")}>
+        <div className={Styles.header} data-testid={gen("title")}>
+          <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />
+        </div>
+        <Appender
+          show={state.preparationToAdd === undefined}
+          onClick={startPreparationToAdd}
+          testid={gen("appender")}
+        />
+        <Preparation
+          show={state.preparationToAdd !== undefined}
+          inward={state.preparationToAdd?.inward}
+          testid={gen("preparation")}
+        />
+        <div className={Styles.main}>{draftList}</div>
+        <div className={Styles.footer}>
+          <Button type="normal" size="full" schema="secondary2" disabled={!state.appliable} onClick={apply}>
+            Apply drafts
+          </Button>
+        </div>
       </div>
-      <Appender show={state.preparationToAdd === undefined} onClick={startPreparationToAdd} testid={gen("appender")} />
-      <Preparation
-        show={state.preparationToAdd !== undefined}
-        inward={state.preparationToAdd?.inward}
-        testid={gen("preparation")}
-      />
-      <div className={Styles.main}>{draftList}</div>
-      <div className={Styles.footer}>
-        <Button type="normal" size="full" schema="secondary2" disabled={!state.appliable} onClick={apply}>
-          Apply drafts
-        </Button>
-      </div>
-    </div>
+    </Panel>
   );
 }

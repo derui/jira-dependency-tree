@@ -8,18 +8,18 @@ export interface ApiIssue {
   key: string;
   summary: string;
   description?: string;
-  status:{
+  status: {
     id: string;
     name: string;
     statusCategory: StatusCategory;
-  },
+  };
   type: {
     id: string;
     name: string;
-    avatarUrl: string
-  },
+    avatarUrl: string;
+  };
   selfUrl?: string;
-  links: {inwardIssue: string; id: string; outwardIssue: string}[];
+  links: { inwardIssue: string; id: string; outwardIssue: string }[];
   subtasks: string[];
 }
 
@@ -41,7 +41,7 @@ export const mapResponse = (body: { [k: string]: unknown }[]): Issue[] => {
       summary: b.summary as string,
       description: b.description ?? "",
       status: b.status,
-      type: b.type,
+      type: b.issueType,
       selfUrl: b.selfUrl ?? "",
       relations: (b.links as { inwardIssue: string; id: string; outwardIssue: string }[]).map((v) => ({
         ...v,

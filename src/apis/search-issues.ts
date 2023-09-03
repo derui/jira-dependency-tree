@@ -38,5 +38,5 @@ export const call = async function call(
     throw ret.statusText;
   }
 
-  return [mapResponse(json.issues), undefined];
+  return [mapResponse(json), undefined];
 };

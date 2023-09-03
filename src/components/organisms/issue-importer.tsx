@@ -54,7 +54,17 @@ const Styles = {
   headerKey: classNames("text-base"),
   headerButtonContainer: classNames("flex", "top-3", "right-2"),
   main: classNames("flex", "flex-col", "overflow-hidden", "h-full"),
-  issueList: classNames("flex", "flex-col", "pt-3", "gap-y-3", "px-3", "border-t", "border-t-lightgray", "h-full"),
+  issueList: classNames(
+    "flex",
+    "flex-col",
+    "pt-3",
+    "gap-y-3",
+    "px-3",
+    "border-t",
+    "border-t-lightgray",
+    "h-full",
+    "overflow-y-auto",
+  ),
   emptyIssuesArea: classNames(
     "flex",
     "items-center",
@@ -255,7 +265,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
         onImport={handleImport}
         page={page}
         disabled={(data ?? [])?.length === 0}
-        loading={loading}
+        loading={loading || importer.isLoading}
         testid={gen("paginator")}
         issueCount={importer.selectedIssues.length}
       />

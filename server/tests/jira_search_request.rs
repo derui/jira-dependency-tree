@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use httpmock::{Method, MockServer};
 use jira_issue_loader::{
     api_type::IssueSearchRequest,
-    issue::JiraIssueLink,
+    issue::{JiraIssueLink, JiraIssueType},
     jira_search_request::search_issues,
     jira_url::{JiraAuhtorization, JiraUrl},
 };
@@ -46,6 +46,11 @@ fn request_to_get_an_issue() {
                             "description": {
                                 "text": "description"
                             },
+                            "issuetype": {
+                                "id": "1",
+                                "name": "type",
+                                "iconUrl": "url"
+                            },
                             "issuelinks": [
                                 {
                                     "id": "100",
@@ -80,6 +85,14 @@ fn request_to_get_an_issue() {
     assert_eq!(result[0].description, Some("description".to_string()));
     assert_eq!(result[0].self_url, Some("https://self.url".to_string()));
     assert_eq!(result[0].status.clone(), None);
+    assert_eq!(
+        result[0].issue_type.clone().unwrap(),
+        JiraIssueType {
+            id: "1".to_string(),
+            name: "type".to_string(),
+            avatar_url: Some("url".to_string()),
+        }
+    );
     assert_eq!(
         result[0].links[0],
         JiraIssueLink {

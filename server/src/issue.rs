@@ -19,7 +19,7 @@ pub struct JiraStatus {
     pub status_category: String,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct JiraIssueType {
     pub id: String,
@@ -108,8 +108,13 @@ fn as_status(v: &Map<String, Value>) -> JiraStatus {
             .unwrap_or(String::default()),
         status_category: v
             .get("statusCategory")
-            .and_then(|v| v.as_str())
-            .map(|v| v.into())
+            .and_then(|v| v.as_object())
+            .map(|v| {
+                v["name"]
+                    .as_str()
+                    .map(|v| v.into())
+                    .unwrap_or(String::default())
+            })
             .unwrap_or(String::default()),
     }
 }
@@ -124,7 +129,7 @@ fn as_issue_type(v: &Map<String, Value>) -> JiraIssueType {
             .as_str()
             .map(|v| v.into())
             .unwrap_or(String::default()),
-        avatar_url: v["avatarUrl"].as_str().map(|v| v.into()),
+        avatar_url: v["iconUrl"].as_str().map(|v| v.into()),
     }
 }
 

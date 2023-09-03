@@ -15,6 +15,7 @@ export interface Props extends BaseProps, React.PropsWithChildren {
 const Styles = {
   root: (opened?: boolean) => {
     return classNames(
+      "z-10",
       "absolute",
       "top-0",
       "right-0",

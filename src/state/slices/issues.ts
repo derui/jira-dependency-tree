@@ -47,8 +47,6 @@ const slice = createSlice({
             }, {});
           break;
       }
-
-      return state;
     });
 
     builder.addCase(filterIssues, (state, { payload }) => {

@@ -60,10 +60,12 @@ const issueGraphSubject = new BehaviorSubject<IssueGraphSink | null>(null);
 const selectIssueGraphSink = createDraftSafeSelector(
   (state: RootState) => state.graphLayout.layout,
   (state: RootState) => state.issues.issues,
-  (layout, issues) => {
+  (state: RootState) => state.relations.relations,
+  (layout, issues, relations) => {
     return {
       graphLayout: layout,
-      issues,
+      issues: Object.values(issues),
+      relations,
     };
   },
 );
@@ -116,7 +118,7 @@ store.subscribe(() => {
   if (sink.issues) {
     issueGraphSubject.next({
       graphLayout: sink.graphLayout,
-      issues: Object.values(sink.issues),
+      issues: sink.issues,
     });
   }
 

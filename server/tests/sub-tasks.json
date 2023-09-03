@@ -8,12 +8,16 @@
         "status": {
           "id": "10000",
           "name": "foo",
-          "statusCategory": "TODO"
+          "statusCategory":{
+            "id": "101",
+            "name": "To Do",
+            "colorName": "black"
+          }
         },
         "issuetype": {
           "id": "10001",
           "name": "name",
-          "avatarUrl": "url"
+          "iconUrl": "url"
         }
       }
     }

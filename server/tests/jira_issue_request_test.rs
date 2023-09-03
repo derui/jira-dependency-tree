@@ -213,7 +213,7 @@ fn request_to_get_simplest_issue_with_subtasks() {
         JiraStatus {
             id: "10001".to_string(),
             name: "foo".to_string(),
-            status_category: "TODO".to_string(),
+            status_category: "To Do".to_string(),
         }
     );
     assert_eq!(result[0].links.len(), 1);

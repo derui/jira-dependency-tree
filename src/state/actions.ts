@@ -3,6 +3,7 @@ import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/model/relation-delta";
+import { GraphLayout } from "@/drivers/issue-graph/type";
 
 type ApiCredentialPayload = {
   token: string;
@@ -24,6 +25,9 @@ export type IssueRequest = {
 // filter issues
 export const filterIssues = createAction<string>("filterIssues");
 export const clearIssueFilter = createAction("clearIssueFilter");
+
+// graph layout (internal use)
+export const changeGraphLayout = createAction<GraphLayout>("changeGraphLayout:internal");
 
 // actions for issue graph
 export const attentionIssue = createAction<string>("attentionIssue");

@@ -9,7 +9,7 @@ const meta = {
   argTypes: {
     issue: { control: "object" },
     loading: { control: "radio", options: Object.keys(Loading), defaultValue: Loading.Completed },
-    draft: { control: "boolean" },
+    placeholder: { control: "boolean" },
   },
 } satisfies Meta<typeof Issue>;
 

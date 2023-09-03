@@ -5,7 +5,6 @@ import { IssueSearcher } from "./components/organisms/issue-searcher";
 import { UserConfiguration } from "./components/organisms/user-configuration";
 import { ZoomSlider } from "./components/molecules/zoom-slider";
 import { SideToolbar } from "./components/containers/side-toolbar";
-import { RelationEditorPanel } from "./components/containers/relation-editor-panel";
 import { TopToolbar } from "./components/containers/top-toolbar";
 import { useZoom } from "./hooks/zoom";
 
@@ -48,7 +47,6 @@ export const App: React.FC<Props> = () => {
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />
       <SideToolbar testid="side-toolbar" />
-      <RelationEditorPanel testid="relation-editor" />
     </div>
   );
 };

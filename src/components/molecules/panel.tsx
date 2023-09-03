@@ -60,7 +60,7 @@ export function Panel(props: Props) {
   const { opened, onClose } = props;
   const ref = useRef(document.createElement("div"));
 
-  const selector = props.selector ?? "#dialog-root";
+  const selector = props.selector ?? "#panel-root";
 
   useEffect(() => {
     document.querySelector(selector)?.appendChild(ref.current);

@@ -8,10 +8,9 @@ import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
 import { SettingArgument } from "./model/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
-import { createStore } from "./state/store";
+import { RootState, createStore } from "./state/store";
 import { createDependencyRegistrar } from "./util/dependency-registrar";
 import { Dependencies } from "./dependencies";
-import { post, postJSON } from "./infrastructures/fetch";
 import {
   changeZoom,
   deselectIssueInGraph,
@@ -19,22 +18,17 @@ import {
   restoreApiCredential,
   selectIssueInGraph,
 } from "./state/actions";
-import { queryProject } from "./state/selectors/project";
-import { getGraphLayout } from "./state/selectors/graph-layout";
-import { queryIssues } from "./state/selectors/issues";
-import { getApiCrednetial } from "./state/selectors/api-credential";
 import { App } from "./app";
 import config from "./twind.config.cjs";
+import { RegistrarContext } from "./registrar-context";
 
 // wiring depencencies
 
 const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("env", env);
-registrar.register("postJSON", postJSON);
-registrar.register("post", post);
 registrar.register("generateId", () => v4());
 
-const store = createStore(registrar);
+const store = createStore();
 
 // wiring storage driver
 const storageDriver = makeStorageDriver("jiraDependencyTree", localStorage);
@@ -64,33 +58,33 @@ storageDriver(storageSubject)
 const issueGraphSubject = new BehaviorSubject<IssueGraphSink | null>(null);
 
 const selectIssueGraphSink = createDraftSafeSelector(
-  queryProject(),
-  getGraphLayout(),
-  queryIssues(),
-  ([, project], layout, [, issues]) => {
+  (state: RootState) => state.graphLayout.layout,
+  (state: RootState) => state.issues.issues,
+  (layout, issues) => {
     return {
-      project,
       graphLayout: layout,
       issues,
     };
   },
 );
 
-const selectStorageValue = createDraftSafeSelector(getGraphLayout(), getApiCrednetial(), (graphLayout, credential) => {
-  if (!credential) {
-    return undefined;
-  }
+const selectStorageValue = createDraftSafeSelector(
+  (state: RootState) => state.apiCredential.credential,
+  (credential) => {
+    if (!credential) {
+      return undefined;
+    }
 
-  return {
-    graphLayout,
-    credentials: {
-      email: credential.email,
-      jiraToken: credential.token,
-    },
-    userDomain: credential.userDomain,
-    issueNodeSize: { width: 160, height: 80 },
-  } as SettingArgument;
-});
+    return {
+      credentials: {
+        email: credential.email,
+        jiraToken: credential.token,
+      },
+      userDomain: credential.userDomain,
+      issueNodeSize: { width: 160, height: 80 },
+    } as SettingArgument;
+  },
+);
 const issueGraphSource = makeIssueGraphDriver("#graph-root")(issueGraphSubject);
 
 registrar.register("sendCommandTo", (command) => {
@@ -119,11 +113,10 @@ issueGraphSource.action$.subscribe((action) => {
 store.subscribe(() => {
   const sink = selectIssueGraphSink(store.getState());
 
-  if (sink.project && sink.issues) {
+  if (sink.issues) {
     issueGraphSubject.next({
       graphLayout: sink.graphLayout,
-      issues: sink.issues,
-      project: sink.project,
+      issues: Object.values(sink.issues),
     });
   }
 
@@ -147,7 +140,9 @@ install(config, process.env.NODE_ENV === "production");
 const root = createRoot(document.getElementById("root")!);
 
 root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <RegistrarContext.Provider value={registrar}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </RegistrarContext.Provider>,
 );

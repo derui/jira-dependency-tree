@@ -5,11 +5,15 @@ import * as zoom from "./slices/zoom";
 import * as relations from "./slices/relations";
 
 // INJECT REDUCER IMPORT HERE
+import * as graphLayout from "./slices/graph-layout";
+
 import * as relationDelta from "./slices/relation-delta";
 
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  graphLayout: graphLayout.reducer,
+
   relationDelta: relationDelta.reducer,
 
   relations: relations.reducer,

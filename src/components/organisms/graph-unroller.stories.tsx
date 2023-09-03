@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
 import { createStore } from "@/state/store";
-import { expandIssue, synchronizeIssuesFulfilled } from "@/state/actions";
+import { expandIssue, importIssues } from "@/state/actions";
 import { randomIssue } from "@/mock-data";
 
 const meta = {
@@ -30,7 +30,7 @@ export const Default: Story = {
 export const Active: Story = {
   render() {
     const store = createStore();
-    store.dispatch(synchronizeIssuesFulfilled([randomIssue({ key: "key" })]));
+    store.dispatch(importIssues({ issues: [randomIssue({ key: "key" })] }));
     store.dispatch(expandIssue("key"));
 
     return (

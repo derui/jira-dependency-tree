@@ -1,8 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential, SearchCondition } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
-import { Suggestion } from "@/model/suggestion";
-import { DeltaId, IssueKey, IssueRelationId, SuggestionKind } from "@/type";
+import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/model/relation-delta";
 
 type ApiCredentialPayload = {
@@ -22,15 +21,7 @@ export type IssueRequest = {
   searchCondition: SearchCondition;
 };
 
-export const synchronizeIssues = createAction("synchronizeIssues");
-export const synchronizeIssuesFulfilled = createAction<Issue[]>("synchronizeIssuesFulfilled");
-
-export const searchIssue = createAction<string>("searchIssue");
-
-// actions for graph layout
-export const changeToVerticalLayout = createAction("changeToVerticalLayout");
-export const changeToHorizontalLayout = createAction("changeToHorizontalLayout");
-
+// filter issues
 export const filterIssues = createAction<string>("filterIssues");
 export const clearIssueFilter = createAction("clearIssueFilter");
 

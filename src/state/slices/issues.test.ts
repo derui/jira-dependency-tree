@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { expandIssue, filterIssues, importIssues, narrowExpandedIssue, searchIssue } from "../actions";
+import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue } from "../actions";
 import { getInitialState, reducer } from "./issues";
 import { Issue } from "@/model/issue";
 import { randomIssue } from "@/mock-data";
@@ -134,7 +134,7 @@ test("empty matched issues if term is empty", () => {
     { key: "not match", summary: "not match" } as Issue satisfies Issue,
   ];
   let ret = reducer(getInitialState(), importIssues({ issues }));
-  ret = reducer(ret, searchIssue(""));
+  ret = reducer(ret, clearIssueFilter());
 
   expect(ret.matchedIssues.length).toBe(0);
 });

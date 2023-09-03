@@ -1,10 +1,9 @@
 import * as d3 from "d3";
+import { makeForceGraph } from "./force-graph";
+import { Configuration } from "./type";
 import { Issue } from "@/model/issue";
-import { Project } from "@/model/project";
-import { makeForceGraph } from "@/issue-graph/force-graph";
-import { Configuration } from "@/issue-graph/type";
 
-export const makeIssueGraphRoot = (issues: Issue[], project: Project, configuration: Configuration) => {
+export const makeIssueGraphRoot = (issues: Issue[], configuration: Configuration) => {
   const { width, height } = configuration.canvasSize;
   const svg = d3
     .create("svg")
@@ -61,7 +60,7 @@ export const makeIssueGraphRoot = (issues: Issue[], project: Project, configurat
   // definition for text backgrounds
   svg.append("g").attr("font-family", "sans-serif").attr("font-size", 10);
 
-  const restarter = makeForceGraph(svg, issues, project, configuration);
+  const restarter = makeForceGraph(svg, issues, configuration);
 
   return [svg, restarter] as const;
 };

@@ -23,19 +23,19 @@ export const randomCredential = (): ApiCredential => {
  */
 export const randomIssue = (issue: Partial<Issue> = {}): Issue => {
   return {
-    key: issue.key ?? faker.string.sample(),
+    key: issue.key ?? faker.word.sample(),
     summary: issue.summary ?? faker.lorem.sentence(),
     description: issue.description ?? faker.company.catchPhrase(),
     relations: issue.relations ?? [],
     selfUrl: issue.selfUrl ?? faker.internet.url(),
     status: issue.status ?? {
       id: faker.string.uuid(),
-      name: faker.string.symbol(),
+      name: faker.word.verb(),
       statusCategory: "TODO",
     },
     type: issue.type ?? {
       id: faker.string.uuid(),
-      name: faker.string.symbol(),
+      name: faker.word.verb(),
       avatarUrl: faker.internet.url(),
     },
     parentIssue: issue.parentIssue,

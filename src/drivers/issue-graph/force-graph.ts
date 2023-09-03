@@ -2,10 +2,7 @@ import * as d3 from "d3";
 import type { BaseType } from "d3";
 import { calculateLayouts, LayoutedGraph } from "./issue-layout";
 import { buildTooltip } from "./tooltip";
-import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/depgraph/main";
-import { Issue, selectOutwardIssues } from "@/model/issue";
-import { Project } from "@/model/project";
-import { buildIssueGraph } from "@/issue-graph/issue";
+import { buildIssueGraph } from "./issue";
 import {
   Configuration,
   D3Node,
@@ -14,7 +11,9 @@ import {
   LayoutedLeveledIssue,
   TreeFrame,
   LayoutedLeveledIssueUnit,
-} from "@/issue-graph/type";
+} from "./type";
+import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/drivers/depgraph/main";
+import { Issue, selectOutwardIssues } from "@/model/issue";
 import { Position, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
@@ -206,7 +205,6 @@ export type GraphRestarter = (issues: Issue[], configuration: Configuration) => 
 export const makeForceGraph = (
   container: D3Node<SVGSVGElement>,
   issues: Issue[],
-  project: Project,
   configuration: Configuration,
 ): GraphRestarter => {
   let issueGraph = makeIssueGraph(issues);
@@ -227,7 +225,7 @@ export const makeForceGraph = (
   let links: d3.Selection<SVGPathElement, IssueLink, BaseType, undefined> = container.append("svg:g").selectAll("path");
 
   // build issue graphs
-  const [_issueNode, issueNodeRestarter] = buildIssueGraph(container, project, configuration);
+  const [_issueNode, issueNodeRestarter] = buildIssueGraph(container, configuration);
   let issueNode = _issueNode;
 
   // build frame for issue group

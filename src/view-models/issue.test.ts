@@ -1,32 +1,35 @@
 import { test, expect } from "vitest";
-import { issueToIssueModel } from "./issue";
-import { randomIssue, randomProject } from "@/mock-data";
+import { IssueModel, issueToIssueModel } from "./issue";
+import { randomIssue } from "@/mock-data";
 
 test("get simplest issue", () => {
-  const project = randomProject();
-  const issue = randomIssue({
-    status: "-1",
-    type: "-1",
-  });
+  const issue = randomIssue();
 
-  const ret = issueToIssueModel(project, issue);
+  const ret = issueToIssueModel(issue);
 
-  expect(ret).toEqual({ key: issue.key, summary: issue.summary });
+  expect(ret).toEqual({ key: issue.key, summary: issue.summary, issueType: issue.type, issueStatus: issue.status });
 });
 
 test("get issue model with status and type", () => {
-  const project = randomProject();
   const issue = randomIssue({
-    status: Object.keys(project.statuses)[0],
-    type: Object.keys(project.issueTypes)[0],
+    status: {
+      id: "1",
+      name: "name",
+      statusCategory: "DONE",
+    },
+    type: {
+      id: "2",
+      name: "name",
+      avatarUrl: "url",
+    },
   });
 
-  const ret = issueToIssueModel(project, issue);
+  const ret = issueToIssueModel(issue);
 
   expect(ret).toEqual({
     key: issue.key,
     summary: issue.summary,
-    issueType: Object.values(project.issueTypes)[0],
-    issueStatus: Object.values(project.statuses)[0],
-  });
+    issueType: issue.type,
+    issueStatus: issue.status,
+  } as IssueModel);
 });

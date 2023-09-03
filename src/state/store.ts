@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import * as apiCredential from "./slices/api-credential";
 import * as issues from "./slices/issues";
-import * as graphLayout from "./slices/graph-layout";
 import * as zoom from "./slices/zoom";
 import * as relations from "./slices/relations";
 
@@ -16,8 +15,6 @@ const reducers = {
   relations: relations.reducer,
 
   zoom: zoom.reducer,
-
-  graphLayout: graphLayout.reducer,
 
   issues: issues.reducer,
 

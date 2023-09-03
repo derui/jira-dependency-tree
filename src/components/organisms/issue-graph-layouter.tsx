@@ -2,8 +2,8 @@ import { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
-import { GraphLayout } from "@/issue-graph/type";
-import { changeToHorizontalLayout, changeToVerticalLayout } from "@/state/actions";
+import { GraphLayout } from "@/drivers/issue-graph/type";
+import { useGraphLayout } from "@/hooks";
 
 export type Props = BaseProps;
 
@@ -67,11 +67,10 @@ const Styles = {
 export function IssueGraphLayouter(props: Props) {
   const gen = generateTestId(props.testid);
   const [opened, setOpened] = useState(false);
-  const layout = useAppSelector(getGraphLayout());
-  const dispatch = useAppDispatch();
+  const { state, changeToVertical, changeToHorizontal } = useGraphLayout();
 
-  const horizontalActive = layout === GraphLayout.Horizontal;
-  const verticalActive = layout === GraphLayout.Vertical;
+  const horizontalActive = state === GraphLayout.Horizontal;
+  const verticalActive = state === GraphLayout.Vertical;
 
   return (
     <li
@@ -83,13 +82,13 @@ export function IssueGraphLayouter(props: Props) {
       <div className={Styles.graphLayouter(opened)} data-testid={gen("layouter")}>
         <span
           className={Styles.iconButton(GraphLayout.Horizontal, horizontalActive)}
-          onClick={() => dispatch(changeToHorizontalLayout())}
+          onClick={changeToHorizontal}
           data-testid={gen("horizontal-layouter")}
           data-active={horizontalActive}
         ></span>
         <span
           className={Styles.iconButton(GraphLayout.Vertical, verticalActive)}
-          onClick={() => dispatch(changeToVerticalLayout())}
+          onClick={changeToVertical}
           data-testid={gen("vertical-layouter")}
           data-active={verticalActive}
         ></span>

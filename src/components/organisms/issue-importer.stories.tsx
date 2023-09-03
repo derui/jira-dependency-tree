@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
 import { createStore } from "@/state/store";
-import { MOCK_BASE_URL, randomCredential, randomIssue } from "@/mock-data";
+import { MOCK_BASE_URL, randomCredential } from "@/mock-data";
 import { submitApiCredentialFulfilled } from "@/state/actions";
 
 const meta = {

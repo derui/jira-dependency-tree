@@ -1,10 +1,8 @@
 import type React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { useAppDispatch, useAppSelector } from "../hooks";
 import { iconize } from "../atoms/iconize";
-import { selectProjectionTargetIssue } from "@/state/selectors/issues";
-import { narrowExpandedIssue } from "@/state/actions";
+import { useGraphUnroll } from "@/hooks/graph-unroll";
 
 export type Props = BaseProps;
 
@@ -26,18 +24,14 @@ const Styles = {
 // eslint-disable-next-line func-style
 export function GraphUnroller(props: Props) {
   const gen = generateTestId(props.testid);
-  const projectionTarget = useAppSelector(selectProjectionTargetIssue());
-  const dispatch = useAppDispatch();
+  const { active, narrow } = useGraphUnroll();
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
 
-    if (projectionTarget) {
-      dispatch(narrowExpandedIssue());
-    }
+    narrow();
   };
-  const active = projectionTarget !== undefined;
 
   return (
     <li

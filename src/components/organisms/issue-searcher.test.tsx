@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createStore } from "@/state/store";
-import { importIssues, synchronizeIssuesFulfilled } from "@/state/actions";
+import { importIssues } from "@/state/actions";
 import { randomIssue } from "@/mock-data";
 import { useFocusIssue } from "@/hooks/focus-issue";
 
@@ -66,11 +66,13 @@ test("show issue are matched with inputted term", async () => {
 test("reset after click cancel", async () => {
   const store = createStore();
   store.dispatch(
-    synchronizeIssuesFulfilled([
-      randomIssue({ key: "TES-10", summary: "summary" }),
-      randomIssue({ key: "TES-11", summary: "other" }),
-      randomIssue({ key: "OTHER-11", summary: "not match" }),
-    ]),
+    importIssues({
+      issues: [
+        randomIssue({ key: "TES-10", summary: "summary" }),
+        randomIssue({ key: "TES-11", summary: "other" }),
+        randomIssue({ key: "OTHER-11", summary: "not match" }),
+      ],
+    }),
   );
 
   render(

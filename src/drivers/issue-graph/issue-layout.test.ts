@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 
-import { emptyDirectedGraph } from "@/depgraph/main";
-import { calculateLayouts } from "@/issue-graph/issue-layout";
+import { calculateLayouts } from "./issue-layout";
+import { emptyDirectedGraph } from "@/drivers/depgraph/main";
 
 test("do not layout if given graph is empty", () => {
   // arrange

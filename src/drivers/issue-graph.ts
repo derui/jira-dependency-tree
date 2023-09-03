@@ -1,15 +1,14 @@
 import { Selection } from "d3";
 import { distinctUntilChanged, filter, fromEvent, Observable, Subject, take, takeUntil } from "rxjs";
 import { simpleTransit } from "./util/transition";
+import { makeIssueGraphRoot } from "./issue-graph/root";
+import { GraphLayout, IssueGraphAction } from "./issue-graph/type";
+import { getTargetIssuePositionInSVG } from "./issue-graph/issue";
+import { GraphRestarter } from "./issue-graph/force-graph";
 import { Issue } from "@/model/issue";
-import { Project } from "@/model/project";
-import { makeIssueGraphRoot } from "@/issue-graph/root";
 import { Position, Size } from "@/type";
 import { filterNull, Rect } from "@/util/basic";
-import { GraphLayout, IssueGraphAction } from "@/issue-graph/type";
-import { getTargetIssuePositionInSVG } from "@/issue-graph/issue";
 import { cubicBezier } from "@/util/bezier";
-import { GraphRestarter } from "@/issue-graph/force-graph";
 
 type AttentionIssueCommand = {
   kind: "AttentionIssue";
@@ -25,7 +24,6 @@ interface IssueGraphState {
 
 export interface IssueGraphSink {
   issues: Issue[];
-  project: Project;
   graphLayout: GraphLayout;
 }
 
@@ -213,9 +211,9 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
     };
 
     sink$.pipe(filter(filterNull), distinctUntilChanged()).subscribe({
-      next: ({ issues, project, graphLayout }) => {
+      next: ({ issues, graphLayout }) => {
         if (svg === null) {
-          const [_svg, _restarter] = makeIssueGraphRoot(issues, project, {
+          const [_svg, _restarter] = makeIssueGraphRoot(issues, {
             ...configuration,
             graphLayout,
             dispatchAction(action) {
@@ -229,7 +227,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
           svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
           stateReference.pan = { x: -1 * (svgSize.width / 2), y: (-1 * svgSize.height) / 2 };
         } else if (prevIssues !== issues || prevLayout !== graphLayout) {
-          updateIssueGraph({ issues, project, graphLayout });
+          updateIssueGraph({ issues, graphLayout });
         }
 
         configuration.canvasSize = { width: svgSize.width, height: svgSize.height };

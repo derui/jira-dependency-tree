@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 
-import { ContainCycle, emptyDirectedGraph, DirectedGraph } from "@/depgraph/main";
+import { ContainCycle, emptyDirectedGraph, DirectedGraph } from "./main";
 
 const diagrams = (diagrams: string[]): DirectedGraph => {
   const vertexDirections = diagrams.map((diagram) => diagram.split(/>/).map((v) => v.trim()));

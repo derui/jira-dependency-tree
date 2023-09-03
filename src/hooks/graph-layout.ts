@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraphLayout } from "@/issue-graph/type";
+import { GraphLayout } from "@/drivers/issue-graph/type";
 
 interface UseGraphLayoutResult {
   /**
@@ -18,7 +18,7 @@ interface UseGraphLayoutResult {
  * get logic and states to manage GraphLayout
  */
 export const useGraphLayout = function useGraphLayout(): UseGraphLayoutResult {
-  const [state, setState] = useState<GraphLayout>(GraphLayout.Vertical);
+  const [state, setState] = useState<GraphLayout>(GraphLayout.Horizontal);
 
   const changeToVertical = () => {
     setState(GraphLayout.Vertical);

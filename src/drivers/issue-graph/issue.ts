@@ -1,9 +1,8 @@
 import * as d3 from "d3";
 import { BaseType } from "d3";
 import { makeTextMeasure } from "./text-measure";
-import { Project } from "@/model/project";
+import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "./type";
 import { Position, StatusCategory } from "@/type";
-import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "@/issue-graph/type";
 
 const IssueSizes = {
   paddingX: 8,
@@ -40,7 +39,6 @@ const IssuePositions = {
 
 const upsertIssueNode = (
   container: d3.Selection<d3.BaseType, undefined, d3.BaseType, undefined>,
-  project: Project,
   configuration: Configuration,
   data: LayoutedLeveledIssue[],
 ) => {
@@ -141,8 +139,8 @@ const upsertIssueNode = (
           .attr("filter", (d) => {
             if (!d.issue) return null;
 
-            const status = project.statuses[d.issue.status];
-            switch (status?.statusCategory) {
+            const status = d.issue.status;
+            switch (status.statusCategory) {
               case StatusCategory.TODO:
                 return "url(#todo-bg)";
               case StatusCategory.IN_PROGRESS:
@@ -161,8 +159,8 @@ const upsertIssueNode = (
               return "";
             }
 
-            const status = project.statuses[d.issue.status];
-            return status?.name ?? "";
+            const status = d.issue.status;
+            return status.name;
           });
 
         // sub issue notification
@@ -235,8 +233,8 @@ z
           .attr("filter", (d) => {
             if (!d.issue) return null;
 
-            const status = project.statuses[d.issue.status];
-            switch (status?.statusCategory) {
+            const status = d.issue.status;
+            switch (status.statusCategory) {
               case StatusCategory.TODO:
                 return "url(#todo-bg)";
               case StatusCategory.IN_PROGRESS:
@@ -255,8 +253,8 @@ z
               return "";
             }
 
-            const status = project.statuses[d.issue.status];
-            return status?.name ?? "";
+            const status = d.issue.status;
+            return status.name;
           });
 
         return update;
@@ -271,7 +269,6 @@ z
 
 export const buildIssueGraph = (
   container: D3Node<SVGSVGElement>,
-  project: Project,
   configuration: Configuration,
 ): [IssueNode, Restarter<IssueNode, LayoutedLeveledIssue[]>] => {
   const issueNodeContainer = container.append("svg:g");
@@ -281,7 +278,7 @@ export const buildIssueGraph = (
     issueNode,
     (data) => {
       // update existing issues
-      upsertIssueNode(issueNodeContainer, project, configuration, data);
+      upsertIssueNode(issueNodeContainer, configuration, data);
 
       return issueNodeContainer.selectAll("g.graph-issue");
     },

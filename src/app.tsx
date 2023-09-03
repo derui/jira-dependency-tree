@@ -31,7 +31,7 @@ export const App: React.FC<Props> = () => {
   return (
     <div className={Styles.root}>
       <div className={Styles.topToolbars}>
-        <TopToolbar testid="project-toolbar" />
+        <TopToolbar testid="top-toolbar" />
         <IssueSearcher testid="issue-searcher" />
         <div></div>
         <UserConfiguration testid="user-configuration" />

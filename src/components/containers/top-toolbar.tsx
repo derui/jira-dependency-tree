@@ -53,7 +53,11 @@ export function TopToolbar(props: Props) {
 
       <SyncIssueButton testid="sync-issue-button" />
       <IssueImporter opened={opened === "importer"} testid={gen("importer")} onClose={() => setOpened("none")} />
-      <RelationEditor opened={opened === "importer"} testid={gen("importer")} onClose={() => setOpened("none")} />
+      <RelationEditor
+        opened={opened === "relation-editor"}
+        testid={gen("relation-editor")}
+        onClose={() => setOpened("none")}
+      />
     </div>
   );
 }

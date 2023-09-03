@@ -241,7 +241,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
   const loading = isLoading && error === undefined;
 
   return (
-    <Panel title="Import Issues" opened={opened} onClose={handleClick}>
+    <Panel title="Import Issues" opened={opened} onClose={handleClick} testid={testid}>
       <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
       <IssueList
         selectedIssues={importer.selectedIssues}

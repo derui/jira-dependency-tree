@@ -21,10 +21,19 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+const renderWrapper = (comp: React.ReactElement) => {
+  return render(
+    <>
+      <div id="dialog-root" />
+      {comp}
+    </>,
+  );
+};
+
 test("should be able to render", () => {
   const store = createStore();
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter />
     </Provider>,
@@ -40,7 +49,7 @@ test("open and close panel", async () => {
   const store = createStore();
   const onClose = Sinon.fake.returns(null);
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened onClose={onClose} />
     </Provider>,
@@ -61,7 +70,7 @@ test("change loading state of input query and search", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -86,7 +95,7 @@ test("display empty list", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -110,7 +119,7 @@ test("display error when API is failed", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -134,7 +143,7 @@ test("display issues when API returns some issues", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -158,7 +167,7 @@ test("disable backward pagination after initial search", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -182,7 +191,7 @@ test("change page after search", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -219,7 +228,7 @@ test("select issue to mark to import after", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,
@@ -250,7 +259,7 @@ test("execute import when some issues are selected", async () => {
   const store = createStore();
   store.dispatch(submitApiCredentialFulfilled(randomCredential()));
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <IssueImporter opened />
     </Provider>,

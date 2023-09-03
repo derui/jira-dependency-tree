@@ -8,7 +8,7 @@ import { Panel } from "./panel";
 const renderWrapper = (comp: React.ReactElement) => {
   return render(
     <>
-      <div id="dialog-root" />
+      <div id="panel-root" />
       {comp}
     </>,
   );

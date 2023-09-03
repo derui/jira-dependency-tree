@@ -23,7 +23,7 @@ const renderWrapper = (v: React.ReactElement) =>
       return (
         <RegistrarContext.Provider value={registrar}>
           {props.children}
-          <div id="dialog-root" />
+          <div id="panel-root" />
         </RegistrarContext.Provider>
       );
     },

@@ -37,6 +37,7 @@ export function TopToolbar(props: Props) {
       <div className={Styles.iconContainer}>
         <span
           className={Styles.importerOpenerIcon(opened !== "none")}
+          aria-disabled={opened !== "none"}
           data-testid={gen("importer-opener")}
           onClick={() => setOpened("importer")}
         />
@@ -44,6 +45,7 @@ export function TopToolbar(props: Props) {
       <div className={Styles.iconContainer}>
         <span
           className={Styles.relationEditorOpenerIcon(opened !== "none")}
+          aria-disabled={opened !== "none"}
           data-testid={gen("relation-editor-opener")}
           onClick={() => setOpened("relation-editor")}
         />

@@ -11,7 +11,7 @@ afterEach(cleanup);
 const renderWrapper = (comp: React.ReactElement) => {
   return render(
     <>
-      <div id="dialog-root" />
+      <div id="panel-root" />
       {comp}
     </>,
   );
@@ -28,11 +28,11 @@ test("should be able to render", async () => {
 
   const panel = screen.getByTestId("importer/root");
   const button = screen.getByTestId("importer-opener");
-  const relationEditorButton = screen.getByTestId("relation-editor-opener") as HTMLButtonElement;
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
 
   expect(panel.getAttribute("aria-hidden")).toBe("true");
-  expect(button.getAttribute("disabled")).toBeNull();
-  expect(relationEditorButton.getAttribute("disabled")).toBeNull();
+  expect(button.getAttribute("aria-disabled")).toEqual("false");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toEqual("false");
 });
 
 test("open panel after clicked", async () => {
@@ -47,11 +47,11 @@ test("open panel after clicked", async () => {
   await userEvent.click(screen.getByTestId("importer-opener"));
 
   const panel = screen.getByTestId("importer/root");
-  const button = screen.getByTestId("importer-opener") as HTMLButtonElement;
-  const relationEditorButton = screen.getByTestId("relation-editor-opener") as HTMLButtonElement;
+  const button = screen.getByTestId("importer-opener");
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
 
-  expect(button.disabled).toBe(true);
-  expect(relationEditorButton.disabled).toBe(true);
+  expect(button.getAttribute("aria-disabled")).toBe("true");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toBe("true");
   expect(panel.getAttribute("aria-hidden")).toBe("false");
 });
 
@@ -68,10 +68,10 @@ test("close panel", async () => {
   await userEvent.click(screen.getByTestId("importer/close"));
 
   const panel = screen.getByTestId("importer/root");
-  const button = screen.getByTestId("importer-opener") as HTMLButtonElement;
-  const relationEditorButton = screen.getByTestId("relation-editor-opener") as HTMLButtonElement;
+  const button = screen.getByTestId("importer-opener");
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
 
-  expect(button.disabled).toBe(false);
-  expect(relationEditorButton.disabled).toBe(false);
+  expect(button.getAttribute("aria-disabled")).toBe("false");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toBe("false");
   expect(panel.getAttribute("aria-hidden")).toBe("true");
 });

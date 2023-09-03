@@ -46,7 +46,7 @@ export const Default: Story = {
     return (
       <RegistrarContext.Provider value={registrar}>
         <Provider store={store}>
-          <div id="dialog-root" className="absolute top-0 left-0 w-full h-full -z-1" />
+          <div id="panel-root" className="absolute top-0 right-0 w-full h-full -z-1" />
           <RelationEditor {...args} />
         </Provider>
       </RegistrarContext.Provider>

@@ -17,21 +17,12 @@ const Styles = {
     "grid",
     "grid-cols-top-toolbar",
     "grid-rows-1",
+    "gap-3",
     "top-3",
     "px-3",
     "w-full",
     "z-10",
   ),
-  projectToolbar: classNames(
-    "relative",
-    "bg-white",
-    "shadow-md",
-    "gap-2",
-    "grid",
-    "grid-cols-project-toolbar",
-    "transition-height",
-  ),
-  divider: classNames("w-0", "border-l", "border-lightgray", "m-2"),
 };
 
 export const App: React.FC<Props> = () => {
@@ -41,8 +32,8 @@ export const App: React.FC<Props> = () => {
     <div className={Styles.root}>
       <div className={Styles.topToolbars}>
         <TopToolbar testid="project-toolbar" />
-        <div></div>
         <IssueSearcher testid="issue-searcher" />
+        <div></div>
         <UserConfiguration testid="user-configuration" />
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />

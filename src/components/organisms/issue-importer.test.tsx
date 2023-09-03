@@ -1,5 +1,5 @@
 import { test, expect, afterEach, beforeAll, afterAll, vi } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
@@ -24,7 +24,7 @@ afterEach(() => {
 const renderWrapper = (comp: React.ReactElement) => {
   return render(
     <>
-      <div id="dialog-root" />
+      <div id="panel-root" />
       {comp}
     </>,
   );
@@ -103,7 +103,7 @@ test("display empty list", async () => {
 
   server.use({
     searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [] }));
+      return res(ctx.json([]));
     },
   });
 
@@ -151,7 +151,7 @@ test("display issues when API returns some issues", async () => {
 
   server.use({
     searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
   });
 
@@ -175,7 +175,7 @@ test("disable backward pagination after initial search", async () => {
 
   server.use({
     searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
   });
 
@@ -199,7 +199,7 @@ test("change page after search", async () => {
 
   server.use({
     async searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
   });
 
@@ -212,7 +212,7 @@ test("change page after search", async () => {
 
       expect(json.page).toBe(2);
 
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key2" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key2" })]));
     },
   });
 
@@ -236,7 +236,7 @@ test("select issue to mark to import after", async () => {
 
   server.use({
     async searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
   });
 
@@ -267,13 +267,13 @@ test("execute import when some issues are selected", async () => {
 
   server.use({
     async searchIssues(_, res, ctx) {
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
     async getIssues(req, res, ctx) {
       const json = await req.json();
       expect(json.issues).toContain("key");
 
-      return res(ctx.json({ issues: [randomApiIssue({ key: "key" })] }));
+      return res(ctx.json([randomApiIssue({ key: "key" })]));
     },
   });
 

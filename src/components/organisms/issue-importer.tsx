@@ -221,10 +221,16 @@ const Paginator = (props: {
 export function IssueImporter({ opened, testid, onClose }: Props) {
   const gen = generateTestId(testid);
   const [page, setPage] = useState(1);
-  const [{ isLoading, error, data }, search, paginate] = useSearchIssues();
+  const {
+    state: { isLoading, error, data },
+    search,
+    paginate,
+    reset,
+  } = useSearchIssues();
   const importer = useImportIssues();
 
   const handleClick = () => {
+    reset();
     if (onClose) {
       onClose();
     }

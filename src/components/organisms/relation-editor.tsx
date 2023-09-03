@@ -97,7 +97,7 @@ function Preparation(props: { show?: boolean; inward?: IssueModel; testid: strin
 // eslint-disable-next-line func-style
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
-  const { state, remove, undo, startPreparationToAdd, apply } = useRelationEditor();
+  const { state, remove, undo, startPreparationToAdd, apply, isLoading } = useRelationEditor();
   const { filter, clear } = useRelationFiltering();
 
   const draftList = state.drafts.map((draft) => {
@@ -125,7 +125,13 @@ export function RelationEditor(props: Props) {
         />
         <div className={Styles.main}>{draftList}</div>
         <div className={Styles.footer}>
-          <Button type="normal" size="full" schema="secondary2" disabled={!state.appliable} onClick={apply}>
+          <Button
+            type="normal"
+            size="full"
+            schema="secondary2"
+            disabled={!state.appliable || isLoading}
+            onClick={apply}
+          >
             Apply drafts
           </Button>
         </div>

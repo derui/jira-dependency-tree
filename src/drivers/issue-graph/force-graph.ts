@@ -13,7 +13,7 @@ import {
   LayoutedLeveledIssueUnit,
 } from "./type";
 import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/drivers/depgraph/main";
-import { Issue, selectOutwardIssues } from "@/model/issue";
+import { Issue, Relation } from "@/model/issue";
 import { Position, Size } from "@/type";
 import { Rect } from "@/util/basic";
 
@@ -44,11 +44,16 @@ const removeCycle = (graph: DirectedGraph) => {
   }, emptyDirectedGraph());
 };
 
-const makeIssueGraph = (issues: Issue[]) => {
-  const issueGraph = issues.reduce((graph, issue) => {
-    const edited = graph.addVertex(issue.key);
-    return selectOutwardIssues(issue).reduce((graph, key) => graph.directTo(issue.key, key), edited);
+const makeIssueGraph = (issues: Issue[], relations: Relation[]) => {
+  const graphWithIssues = issues.reduce((graph, issue) => {
+    return graph.addVertex(issue.key);
   }, emptyDirectedGraph());
+
+  const issueGraph = relations.reduce((graph, relation) => {
+    let edited = graph.addVertex(relation.inwardIssue);
+    edited = edited.addVertex(relation.outwardIssue);
+    return edited.directTo(relation.inwardIssue, relation.outwardIssue);
+  }, graphWithIssues);
 
   return removeCycle(issueGraph);
 };
@@ -200,14 +205,15 @@ const makeOrphanUnitSimulation = (
   return simulation;
 };
 
-export type GraphRestarter = (issues: Issue[], configuration: Configuration) => void;
+export type GraphRestarter = (issues: Issue[], configuration: Configuration, relations: Relation[]) => void;
 
 export const makeForceGraph = (
   container: D3Node<SVGSVGElement>,
   issues: Issue[],
   configuration: Configuration,
+  relations: Relation[],
 ): GraphRestarter => {
-  let issueGraph = makeIssueGraph(issues);
+  let issueGraph = makeIssueGraph(issues, relations);
   let leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
   let leveledIssues = leveledIssueUnits.units
     .map(({ issues }) => issues)
@@ -411,8 +417,8 @@ export const makeForceGraph = (
       });
   };
 
-  const graphRestarter = (issues: Issue[], configuration: Configuration) => {
-    issueGraph = makeIssueGraph(issues);
+  const graphRestarter = (issues: Issue[], configuration: Configuration, relations: Relation[]) => {
+    issueGraph = makeIssueGraph(issues, relations);
     leveledIssueUnits = makeLeveledIssues(issueGraph, issues, configuration.nodeSize, configuration.graphLayout);
     leveledIssues = leveledIssueUnits.units
       .map(({ issues }) => issues)

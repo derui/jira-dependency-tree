@@ -11,7 +11,12 @@ interface UseSearchIssueState {
 type search = (jql: string) => void;
 type paginate = (page: number) => void;
 
-type UseSearchIssueResult = [UseSearchIssueState, search, paginate];
+type UseSearchIssueResult = {
+  state: UseSearchIssueState;
+  search: search;
+  paginate: paginate;
+  reset: () => void;
+};
 
 /**
  * search issue with jql
@@ -66,5 +71,9 @@ export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult 
     [apiCredential, previousQuery],
   );
 
-  return [state, search, paginate];
+  const reset = () => {
+    mutate({ isLoading: false });
+  };
+
+  return { state, search, paginate, reset };
 };

@@ -65,7 +65,7 @@ const selectIssueGraphSink = createDraftSafeSelector(
     return {
       graphLayout: layout,
       issues: Object.values(issues),
-      relations,
+      relations: Object.values(relations),
     };
   },
 );
@@ -119,6 +119,7 @@ store.subscribe(() => {
     issueGraphSubject.next({
       graphLayout: sink.graphLayout,
       issues: sink.issues,
+      relations: sink.relations,
     });
   }
 

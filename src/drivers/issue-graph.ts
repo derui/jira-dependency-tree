@@ -5,7 +5,7 @@ import { makeIssueGraphRoot } from "./issue-graph/root";
 import { GraphLayout, IssueGraphAction } from "./issue-graph/type";
 import { getTargetIssuePositionInSVG } from "./issue-graph/issue";
 import { GraphRestarter } from "./issue-graph/force-graph";
-import { Issue } from "@/model/issue";
+import { Issue, Relation } from "@/model/issue";
 import { Position, Size } from "@/type";
 import { filterNull, Rect } from "@/util/basic";
 import { cubicBezier } from "@/util/bezier";
@@ -25,6 +25,7 @@ interface IssueGraphState {
 export interface IssueGraphSink {
   issues: Issue[];
   graphLayout: GraphLayout;
+  relations: Relation[];
 }
 
 export interface IssueGraphSource {
@@ -197,29 +198,37 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
       },
     });
 
-    const updateIssueGraph = ({ issues, graphLayout }: IssueGraphSink) => {
+    const updateIssueGraph = ({ issues, graphLayout, relations }: IssueGraphSink) => {
       if (!svg || !restarter) return;
 
       svg.attr("viewBox", makeViewBox(stateReference, svgSize));
-      restarter(issues, {
-        ...configuration,
-        graphLayout,
-        dispatchAction(action) {
-          actionStream.next(action);
+      restarter(
+        issues,
+        {
+          ...configuration,
+          graphLayout,
+          dispatchAction(action) {
+            actionStream.next(action);
+          },
         },
-      });
+        relations,
+      );
     };
 
     sink$.pipe(filter(filterNull), distinctUntilChanged()).subscribe({
-      next: ({ issues, graphLayout }) => {
+      next: ({ issues, graphLayout, relations }) => {
         if (svg === null) {
-          const [_svg, _restarter] = makeIssueGraphRoot(issues, {
-            ...configuration,
-            graphLayout,
-            dispatchAction(action) {
-              actionStream.next(action);
+          const [_svg, _restarter] = makeIssueGraphRoot(
+            issues,
+            {
+              ...configuration,
+              graphLayout,
+              dispatchAction(action) {
+                actionStream.next(action);
+              },
             },
-          });
+            relations,
+          );
           svg = _svg;
           restarter = _restarter;
 
@@ -227,7 +236,7 @@ export const makeIssueGraphDriver = function makeIssueGraphDriver(
           svgSize = document.querySelector(parentSelector)?.getBoundingClientRect() ?? svgSize;
           stateReference.pan = { x: -1 * (svgSize.width / 2), y: (-1 * svgSize.height) / 2 };
         } else if (prevIssues !== issues || prevLayout !== graphLayout) {
-          updateIssueGraph({ issues, graphLayout });
+          updateIssueGraph({ issues, graphLayout, relations });
         }
 
         configuration.canvasSize = { width: svgSize.width, height: svgSize.height };

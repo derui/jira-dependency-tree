@@ -6,15 +6,11 @@ This project provides web-app to display dependency tree of issues in JIRA with 
   - only outward link
 - Switch layout
   - horizontal/vertical
-- Change issues condition to synchronize issues with JIRA
-  - Current sprint (default)
-  - In selected sprint
-    - with suggestion
-  - In specified Epic
+- Import issues via JQL
 - Zoom/Pan on canvas
 - Search issue and view it in application
-- Edit relations of an issue
-  - add/remove relation inward/outward of the issue
+- Edit relations
+  - Multiple Delete/Append at one time
 - Expand/Narrow issue/subtasks
   - Default graph doesn't display subtasks
   - Display subtasks when notification of a parent issue clicked
@@ -28,7 +24,12 @@ This feature that display issue dependency is one of the most pain point of JIRA
 #+end_quote
 
 ** Images
-[[file:doc/issues.png]]
+
+*** Importer
+[[file:doc/screenshot.png]]
+
+*** Relation Editor
+[[file:doc/screenshot2.png]]
 
 ** Architecture
 JIRA Dependency Tree has frontend and server.

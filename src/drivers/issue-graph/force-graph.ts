@@ -49,7 +49,12 @@ const makeIssueGraph = (issues: Issue[], relations: Relation[]) => {
     return graph.addVertex(issue.key);
   }, emptyDirectedGraph());
 
+  const issueKeys = new Set(graphWithIssues.vertices);
+
   const issueGraph = relations.reduce((graph, relation) => {
+    if (!issueKeys.has(relation.inwardIssue) || !issueKeys.has(relation.outwardIssue)) {
+      return graph;
+    }
     let edited = graph.addVertex(relation.inwardIssue);
     edited = edited.addVertex(relation.outwardIssue);
     return edited.directTo(relation.inwardIssue, relation.outwardIssue);

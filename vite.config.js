@@ -12,6 +12,9 @@ export default defineConfig({
     jsx: isProduction ? 'react-jsx' : 'react-jsxdev',
   },
   publicDir: 'public',
+  server: {
+    hmr: !isCI
+  },
   define:{
     "process.env": {
       "CI": isCI ? 'ci' : ''

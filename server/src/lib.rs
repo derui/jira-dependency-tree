@@ -192,6 +192,9 @@ fn preflight() -> Result<Response<Body>, Error> {
     Ok(builder
         .header("Access-Control-Allow-Origin", origin)
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
-        .header("Access-Control-Allow-Headers", "content-type,x-api-key")
+        .header(
+            "Access-Control-Allow-Headers",
+            "content-type,x-api-key,x-user-domain,x-user-email,x-user-token",
+        )
         .body(Body::Text(json.to_string()))?)
 }

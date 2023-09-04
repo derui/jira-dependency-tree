@@ -12,14 +12,14 @@ export interface Props extends BaseProps {
 type Status = "Searching" | "Prepared" | "BeforePrepared";
 
 const Styles = {
-  inputWrapper: (status: Status) =>
+  input: (status: Status) =>
     classNames("flex-1", "flex", "flex-row", "overflow-hidden", "transition-width", {
       "w-72": status === "Searching",
       "w-0": status !== "Searching",
       "animate-hidden": status !== "Searching",
     }),
 
-  input: () => classNames("outline-none", "w-full", "pl-2"),
+  term: () => classNames("outline-none", "w-full", "pl-2"),
   searcher: classNames("h-12", "flex", "items-center", "justify-center", "max-w-fit"),
   issue: classNames(
     "flex",
@@ -124,9 +124,9 @@ export function SearchInput(props: Props) {
         aria-disabled={status === "BeforePrepared"}
         onClick={handleOpenerClicked}
       ></button>
-      <div className={Styles.inputWrapper(status)}>
+      <div className={Styles.input(status)}>
         <input
-          className={Styles.input()}
+          className={Styles.term()}
           type="text"
           placeholder="Search Term"
           value={term}

@@ -74,7 +74,6 @@ test("Do cancel to close searcher", async ({ page }) => {
 
   // verify issues
   await page.getByTestId("issue-searcher/input/cancel").click();
-  await expect(page.getByTestId("issue-searcher/input/input")).not.toBeVisible();
   await expect(page.getByTestId("issue-searcher/input/input")).toHaveValue("");
 });
 

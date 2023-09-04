@@ -60,11 +60,17 @@ export default defineConfig({
           '0%': {opacity: 1, visibility: 'visible'},
           '50%': {opacity: 0.5, visibility: 'visible'},
           '100%': {opacity: 0, visibility: 'hidden'},
+        },
+        'hidden': {
+          '0%': {visibility: 'visible'},
+          '100%': {visibility: 'hidden'},
         }
+
       },
       animation: {
         'fade-in': 'fade-in 0.1s ease-in-out 1',
         'fade-out': 'fade-out 0.1s ease-in-out 1',
+        'hidden': 'hidden 0.2s ease-in-out 1',
       },
       transitionProperty: {
         'outline': 'outline',

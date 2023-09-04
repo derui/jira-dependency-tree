@@ -12,17 +12,14 @@ export interface Props extends BaseProps {
 type Status = "Searching" | "Prepared" | "BeforePrepared";
 
 const Styles = {
-  opener: classNames("flex-none", "w-6", "h-6", "items-center", "justify-center", "flex"),
-  input: classNames("w-full", "outline-none", "pl-2"),
-  cancel: (status: Status) => {
-    return classNames("flex-none", "w-6", "h-6", "flex", { hidden: status !== "Searching" });
-  },
-  inputWrapper: (status: Status) => {
-    return classNames("flex-1", "overflow-hidden", "transition-width", {
+  inputWrapper: (status: Status) =>
+    classNames("flex-1", "flex", "flex-row", "overflow-hidden", "transition-width", {
       "w-72": status === "Searching",
       "w-0": status !== "Searching",
-    });
-  },
+      "animate-hidden": status !== "Searching",
+    }),
+
+  input: () => classNames("outline-none", "w-full", "pl-2"),
   searcher: classNames("h-12", "flex", "items-center", "justify-center", "max-w-fit"),
   issue: classNames(
     "flex",
@@ -60,8 +57,26 @@ const Styles = {
       },
     );
   },
-  searchButton: (searching: boolean) => classNames(iconize({ type: "search", color: "complement", active: searching })),
-  cancelButton: (active: boolean) => classNames(iconize({ type: "x", color: "primary", active })),
+  searchButton: (searching: boolean) =>
+    classNames(
+      "flex-none",
+      "w-6",
+      "h-6",
+      "items-center",
+      "justify-center",
+      "flex",
+      iconize({ type: "search", color: "complement", active: searching }),
+    ),
+
+  cancelButton: (status: Status, active: boolean) =>
+    classNames(
+      "flex-none",
+      "w-6",
+      "h-6",
+      "flex",
+      { hidden: status !== "Searching" },
+      iconize({ type: "x", color: "primary", active }),
+    ),
 };
 
 // eslint-disable-next-line func-style
@@ -102,36 +117,28 @@ export function SearchInput(props: Props) {
 
   return (
     <div className={Styles.searcher}>
-      <span className={Styles.opener}>
-        <button
-          type="button"
-          className={Styles.searchButton(status === "Searching")}
-          data-testid={gen("opener")}
-          aria-disabled={status === "BeforePrepared"}
-          onClick={handleOpenerClicked}
-        ></button>
-      </span>
-      <span
-        className={Styles.inputWrapper(status)}
-        aria-hidden={status !== "Searching"}
-        data-testid={gen("input-wrapper")}
-      >
+      <button
+        type="button"
+        className={Styles.searchButton(status === "Searching")}
+        data-testid={gen("opener")}
+        aria-disabled={status === "BeforePrepared"}
+        onClick={handleOpenerClicked}
+      ></button>
+      <div className={Styles.inputWrapper(status)}>
         <input
-          className={Styles.input}
+          className={Styles.input()}
           type="text"
           placeholder="Search Term"
           value={term}
           onChange={(e) => handleTermInputted(e.target.value)}
           data-testid={gen("input")}
         />
-      </span>
-      <span className={Styles.cancel(status)}>
         <button
-          className={Styles.cancelButton(!!term)}
+          className={Styles.cancelButton(status, !!term)}
           data-testid={gen("cancel")}
           onClick={handleCancelClicked}
         ></button>
-      </span>
+      </div>
     </div>
   );
 }

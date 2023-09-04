@@ -8,11 +8,6 @@ import { IssueKey } from "@/type";
  */
 export const call = async function call(apiCredential: ApiCredential, targetIssueKeys: IssueKey[]): Promise<Issue[]> {
   const body = {
-    authorization: {
-      jira_token: apiCredential.token,
-      email: apiCredential.email,
-      user_domain: apiCredential.userDomain,
-    },
     issues: targetIssueKeys,
   };
 
@@ -22,6 +17,9 @@ export const call = async function call(apiCredential: ApiCredential, targetIssu
     headers: {
       "content-type": "application/json",
       "x-api-key": apiCredential.apiKey,
+      "x-user-domain": apiCredential.userDomain,
+      "x-user-email": apiCredential.email,
+      "x-user-token": apiCredential.token,
     },
     body: JSON.stringify(body),
   });

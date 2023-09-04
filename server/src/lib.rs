@@ -10,6 +10,7 @@ use api_type::{CreateLinkRequest, DeleteLinkRequest, IssueLoadingRequest, IssueS
 use isahc::http::Method;
 use jira_link_request::{create_link, delete_link};
 
+use jira_url::JiraAuhtorization;
 use lambda_http::{Body, Error, Request, Response};
 
 use serde_json::json;
@@ -44,13 +45,41 @@ pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     }
 }
 
+fn event_to_cred(event: &Request) -> JiraAuhtorization {
+    JiraAuhtorization {
+        user_domain: event
+            .headers()
+            .get("x-user-domain")
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string(),
+        email: event
+            .headers()
+            .get("x-user-email")
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string(),
+        jira_token: event
+            .headers()
+            .get("x-user-token")
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string(),
+    }
+}
+
 async fn execute_get_issues(event: &Request) -> Result<Response<Body>, Error> {
     let json: IssueLoadingRequest = match event.body() {
         Body::Text(text) => serde_json::from_str(text).map_err(|_| "Invalid format"),
         _ => Err("Invalid body type"),
     }?;
 
-    let issues = jira_issue_request::load_issue(&json, json.authorization.clone());
+    let cred = event_to_cred(event);
+
+    let issues = jira_issue_request::load_issue(&json, cred.clone());
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
@@ -74,7 +103,9 @@ async fn execute_delete_link(event: &Request) -> Result<Response<Body>, Error> {
         _ => Err("Invalid body type"),
     }?;
 
-    delete_link(&json.id, &json.authorization).expect("Not found");
+    let cred = event_to_cred(event);
+
+    delete_link(&json.id, &cred).expect("Not found");
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
@@ -93,8 +124,8 @@ async fn execute_create_link(event: &Request) -> Result<Response<Body>, Error> {
         _ => Err("Invalid body type"),
     }?;
 
-    let link = create_link(&json.inward_issue, &json.outward_issue, &json.authorization)
-        .expect("Not found");
+    let cred = event_to_cred(event);
+    let link = create_link(&json.inward_issue, &json.outward_issue, &cred).expect("Not found");
 
     // Return something that implements IntoResponse.
     // It will be serialized to the right response event automatically by the runtime
@@ -118,7 +149,8 @@ async fn execute_search_issues(event: &Request) -> Result<Response<Body>, Error>
         _ => Err("Invalid body type"),
     }?;
 
-    let issues = jira_search_request::search_issues(&json, json.authorization.clone());
+    let cred = event_to_cred(event);
+    let issues = jira_search_request::search_issues(&json, cred.clone());
 
     match issues {
         Ok(issues) => {

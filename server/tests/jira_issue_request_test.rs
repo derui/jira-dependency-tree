@@ -5,7 +5,7 @@ use jira_issue_loader::{
     api_type::IssueLoadingRequest,
     issue::{JiraIssue, JiraIssueLink, JiraStatus},
     jira_issue_request::load_issue,
-    jira_url::{JiraAuhtorization, JiraUrl},
+    jira_url::JiraUrl,
 };
 
 struct TestRequest<'a> {
@@ -84,11 +84,6 @@ fn request_to_get_an_issue() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         issues: vec!["key-1".to_string()],
     };
     let result = load_issue(&request, url);
@@ -143,11 +138,6 @@ fn request_to_get_simplest_issue() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         issues: vec!["key-1".to_string()],
     };
     let result = load_issue(&request, url);
@@ -192,11 +182,6 @@ fn request_to_get_simplest_issue_with_subtasks() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         issues: vec!["test".to_string()],
     };
     let mut result = load_issue(&request, url);
@@ -252,11 +237,6 @@ fn request_recursive() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueLoadingRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         issues: (1..51).into_iter().map(|v| format!("key-{}", v)).collect(),
     };
     let ret = load_issue(&request, url);

@@ -5,7 +5,7 @@ use jira_issue_loader::{
     api_type::IssueSearchRequest,
     issue::{JiraIssueLink, JiraIssueType},
     jira_search_request::search_issues,
-    jira_url::{JiraAuhtorization, JiraUrl},
+    jira_url::JiraUrl,
 };
 
 struct TestRequest<'a> {
@@ -68,11 +68,6 @@ fn request_to_get_an_issue() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueSearchRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         jql: "jql".to_string(),
         page: 1,
     };
@@ -132,11 +127,6 @@ fn request_to_next_page() {
     // do
     let url = TestRequest { server: &server };
     let request = IssueSearchRequest {
-        authorization: JiraAuhtorization {
-            email: "email".to_string(),
-            jira_token: "token".to_string(),
-            user_domain: "domain".to_string(),
-        },
         page: 2,
         jql: "jql".to_string(),
     };

@@ -11,11 +11,6 @@ export const call = async function call(
   page: number = 1,
 ): Promise<[Issue[], string | undefined]> {
   const body = {
-    authorization: {
-      jira_token: apiCredential.token,
-      email: apiCredential.email,
-      user_domain: apiCredential.userDomain,
-    },
     jql,
     page,
   };
@@ -26,6 +21,9 @@ export const call = async function call(
     headers: {
       "content-type": "application/json",
       "x-api-key": apiCredential.apiKey,
+      "x-user-domain": apiCredential.userDomain,
+      "x-user-email": apiCredential.email,
+      "x-user-token": apiCredential.token,
     },
     body: JSON.stringify(body),
   });

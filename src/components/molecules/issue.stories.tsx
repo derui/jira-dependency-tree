@@ -24,7 +24,7 @@ export const TODO: Story = {
       issueStatus: {
         id: "id",
         name: "Status",
-        statusCategory: "TODO",
+        statusCategory: "To Do",
       },
       issueType: {
         id: "id",
@@ -43,7 +43,7 @@ export const InProgress: Story = {
       issueStatus: {
         id: "id",
         name: "Status",
-        statusCategory: "IN_PROGRESS",
+        statusCategory: "In progress",
       },
       issueType: {
         id: "id",
@@ -62,7 +62,7 @@ export const DONE: Story = {
       issueStatus: {
         id: "id",
         name: "Status",
-        statusCategory: "DONE",
+        statusCategory: "Done",
       },
       issueType: {
         id: "id",

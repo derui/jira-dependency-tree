@@ -9,6 +9,7 @@
     "start:vite": "vite",
     "ci": "CI=true vite",
     "start": "concurrently --handle-input \"pnpm:start:*\"",
+    "dev": "concurrently --handle-input \"pnpm:test:watch\" \"pnpm:storybook\" ",
     "build:bundle": "NODE_ENV=production vite build",
     "build": "pnpm run build:bundle",
     "lint:ts": "eslint --cache --cache-location=node_modules/.cache/eslint src/",

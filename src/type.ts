@@ -25,7 +25,7 @@ export type IssueStatusCategory = {
 export type IssueStatus = {
   id: string;
   name: string;
-  statusCategory: StatusCategory;
+  statusCategory: string;
 };
 
 export type IssueType = {

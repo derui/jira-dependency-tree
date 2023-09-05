@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { IssueStatus, IssueType, StatusCategory } from "@/type";
-import { stringToColour } from "@/util/color";
+import { colorStringToInvertColor, stringToColour, stringToHighContrastColor } from "@/util/color";
 import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
@@ -56,13 +56,11 @@ const Styles = {
   summary: classNames("text-sm", "mb-2"),
   information: classNames("flex", "flex-row", "items-center", "space-x-2", "w-full"),
   issueType: classNames("w-3", "h-3", "inline-block", "overflow-hidden"),
-  issueStatus: (category?: StatusCategory) => {
-    return classNames("inline-block", "px-2", "py-1", "text-sm", {
-      "bg-complement-200": category === "DONE",
-      "bg-secondary1-200": category === "IN_PROGRESS",
-      "text-white": category === "IN_PROGRESS",
-      "bg-lightgray": category === "TODO",
-    });
+  issueStatus: (category?: string) => {
+    const base = stringToColour(category ?? "");
+    const highContrast = stringToHighContrastColor(category ?? "");
+
+    return classNames("inline-block", "px-2", "py-1", "text-sm", `bg-[${base}]`, `text-[${highContrast}]`, "text-bold");
   },
   key: classNames("mx-3"),
   skeletonRoot: classNames(

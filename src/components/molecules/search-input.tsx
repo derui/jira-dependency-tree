@@ -124,7 +124,7 @@ export function SearchInput(props: Props) {
         aria-disabled={status === "BeforePrepared"}
         onClick={handleOpenerClicked}
       ></button>
-      <div className={Styles.input(status)}>
+      <div className={Styles.input(status)} aria-hidden={status !== "Searching"} data-testid={gen("input-wrapper")}>
         <input
           className={Styles.term()}
           type="text"

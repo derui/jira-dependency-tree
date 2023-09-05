@@ -68,41 +68,11 @@ export const makeIssueGraphRoot = (issues: Issue[], configuration: Configuration
 const defineFilters = (defs: d3.Selection<SVGDefsElement, undefined, null, undefined>) => {
   const todo = defs
     .append("filter")
-    .attr("id", "todo-bg")
+    .attr("id", "status-bg")
     // this settings for centric placement for text
     .attr("x", -0.05)
     .attr("y", -0.1)
     .attr("width", 1.1)
     .attr("height", 1.2);
-  todo
-    .append("feFlood")
-    // secondary-2-1
-    .attr("flood-color", "#6A909B");
   todo.append("feComposite").attr("in", "SourceGraphic").attr("operator", "xor");
-
-  const inProgress = defs
-    .append("filter")
-    .attr("id", "in-progress-bg")
-    .attr("x", -0.05)
-    .attr("y", -0.1)
-    .attr("width", 1.1)
-    .attr("height", 1.2);
-  inProgress
-    .append("feFlood")
-    // primary-1
-    .attr("flood-color", "#FDACAE");
-  inProgress.append("feComposite").attr("in", "SourceGraphic").attr("operator", "atop");
-
-  const done = defs
-    .append("filter")
-    .attr("id", "done-bg")
-    .attr("x", -0.05)
-    .attr("y", -0.1)
-    .attr("width", 1.1)
-    .attr("height", 1.2);
-  done
-    .append("feFlood")
-    // complement-1-1
-    .attr("flood-color", "#90CF8D");
-  done.append("feComposite").attr("in", "SourceGraphic").attr("operator", "atop");
 };

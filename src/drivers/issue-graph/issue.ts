@@ -3,6 +3,7 @@ import { BaseType } from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "./type";
 import { Position, StatusCategory } from "@/type";
+import { stringToColour } from "@/util/color";
 
 const IssueSizes = {
   paddingX: 8,
@@ -136,24 +137,7 @@ const upsertIssueNode = (
           .attr("class", "issue-node__status p-1")
           .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
           .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
-          .attr("filter", (d) => {
-            if (!d.issue) return null;
-
-            const status = d.issue.status;
-            switch (status.statusCategory) {
-              case StatusCategory.TODO:
-                return "url(#todo-bg)";
-              case StatusCategory.IN_PROGRESS:
-                // secondary-1-1
-                return "url(#in-progress-bg)";
-              case StatusCategory.DONE:
-                return "url(#done-bg)";
-              default:
-                break;
-            }
-
-            return null;
-          })
+          .attr("filter", "url(#status-bg)")
           .text((d) => {
             if (!d.issue) {
               return "";
@@ -228,34 +212,14 @@ z
 
           return "";
         });
-        update
-          .select("text.issue-node__status")
-          .attr("filter", (d) => {
-            if (!d.issue) return null;
+        update.select("text.issue-node__status").text((d) => {
+          if (!d.issue) {
+            return "";
+          }
 
-            const status = d.issue.status;
-            switch (status.statusCategory) {
-              case StatusCategory.TODO:
-                return "url(#todo-bg)";
-              case StatusCategory.IN_PROGRESS:
-                // secondary-1-1
-                return "url(#in-progress-bg)";
-              case StatusCategory.DONE:
-                return "url(#done-bg)";
-              default:
-                break;
-            }
-
-            return null;
-          })
-          .text((d) => {
-            if (!d.issue) {
-              return "";
-            }
-
-            const status = d.issue.status;
-            return status.name;
-          });
+          const status = d.issue.status;
+          return status.name;
+        });
 
         return update;
       },

@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import { BaseType } from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "./type";
-import { Position, StatusCategory } from "@/type";
+import { Position } from "@/type";
 import { stringToColour, stringToHighContrastColor } from "@/util/color";
 
 const IssueSizes = {

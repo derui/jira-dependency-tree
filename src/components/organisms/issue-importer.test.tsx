@@ -1,5 +1,5 @@
 import { test, expect, afterEach, beforeAll, afterAll, vi } from "vitest";
-import { render, screen, cleanup, waitFor } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
@@ -78,7 +78,7 @@ test("change loading state of input query and search", async () => {
 
   server.use({
     searchIssues(_, res, ctx) {
-      return res(ctx.delay(1000), ctx.json({ issues: [] }));
+      return res(ctx.delay(1000), ctx.json([]));
     },
   });
 

@@ -2,7 +2,7 @@
  * definition server that is used by msw
  */
 import { rest } from "msw";
-import { SetupServer, SetupServerApi, setupServer } from "msw/node";
+import { setupServer } from "msw/node";
 
 import { Apis } from "@/apis/api";
 import { MOCK_BASE_URL } from "@/mock-data";

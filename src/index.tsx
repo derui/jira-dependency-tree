@@ -131,12 +131,6 @@ store.subscribe(() => {
   }
 });
 
-if (process.env.CI === "ci") {
-  const { worker } = await import("./mock-worker");
-
-  worker.start();
-}
-
 install(config, process.env.NODE_ENV === "production");
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

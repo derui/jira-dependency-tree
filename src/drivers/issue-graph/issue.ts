@@ -3,7 +3,7 @@ import { BaseType } from "d3";
 import { makeTextMeasure } from "./text-measure";
 import { Configuration, D3Node, IssueNode, LayoutedLeveledIssue, Restarter } from "./type";
 import { Position, StatusCategory } from "@/type";
-import { stringToColour } from "@/util/color";
+import { stringToColour, stringToHighContrastColor } from "@/util/color";
 
 const IssueSizes = {
   paddingX: 8,
@@ -133,11 +133,34 @@ const upsertIssueNode = (
 
         // issue status
         root
-          .append("text")
-          .attr("class", "issue-node__status p-1")
+          .append("rect")
+          .attr("class", "issue-node__status-bg")
           .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2)
           .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
-          .attr("filter", "url(#status-bg)")
+          .attr("width", (d) => {
+            return measure.getTextWidthOf(d.issue?.status?.name ?? "") + IssueSizes.textHeight / 2;
+          })
+          .attr("height", IssueSizes.textHeight)
+          .attr("fill", (d) => {
+            if (!d.issue) {
+              return "";
+            }
+
+            return stringToColour(d.issue.status.statusCategory);
+          });
+
+        root
+          .append("text")
+          .attr("class", "issue-node__status p-1")
+          .attr("x", IssueSizes.paddingX + IssueSizes.paddingX / 2 + IssueSizes.textHeight / 4)
+          .attr("y", IssueSizes.paddingY * 3 + IssueSizes.textHeight * 2)
+          .attr("fill", (d) => {
+            if (!d.issue) {
+              return "";
+            }
+
+            return stringToHighContrastColor(d.issue.status.statusCategory);
+          })
           .text((d) => {
             if (!d.issue) {
               return "";
@@ -220,6 +243,18 @@ z
           const status = d.issue.status;
           return status.name;
         });
+        update
+          .select("rect.issue-node__status-bg")
+          .attr("width", (d) => {
+            return measure.getTextWidthOf(d.issue?.status?.name ?? "") + IssueSizes.textHeight / 2;
+          })
+          .attr("fill", (d) => {
+            if (!d.issue) {
+              return "";
+            }
+
+            return stringToColour(d.issue.status.statusCategory);
+          });
 
         return update;
       },

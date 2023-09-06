@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 import { useGetApiCredential } from "./get-api-credential";
 import { Apis } from "@/apis/api";
-import { Issue } from "@/model/issue";
+import { IssueModel, issueToIssueModel } from "@/view-models/issue";
 
 interface UseSearchIssueState {
   isLoading: boolean;
   error?: string;
-  data?: Issue[];
+  data?: IssueModel[];
 }
 type search = (jql: string) => void;
 type paginate = (page: number) => void;
@@ -35,7 +35,7 @@ export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult 
           .call(apiCredential, jql)
           .then(([issues, error]) => {
             if (!error) {
-              mutate((state) => ({ ...state, isLoading: false, data: issues }));
+              mutate((state) => ({ ...state, isLoading: false, data: issues.map(issueToIssueModel) }));
             } else {
               mutate((state) => ({ ...state, isLoading: false, error, data: [] }));
             }
@@ -57,7 +57,7 @@ export const useSearchIssues = function useSearchIssues(): UseSearchIssueResult 
           .call(apiCredential, previousQuery, page)
           .then(([issues, error]) => {
             if (!error) {
-              mutate((state) => ({ ...state, isLoading: false, data: issues }));
+              mutate((state) => ({ ...state, isLoading: false, data: issues.map(issueToIssueModel) }));
             } else {
               mutate((state) => ({ ...state, isLoading: false, error, data: [] }));
             }

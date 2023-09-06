@@ -2,8 +2,8 @@ import React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
-import { IssueStatus, IssueType, StatusCategory } from "@/type";
-import { colorStringToInvertColor, stringToColour, stringToHighContrastColor } from "@/util/color";
+import { IssueStatus, IssueType } from "@/type";
+import { stringToColour, stringToHighContrastColor } from "@/util/color";
 import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {

@@ -96,25 +96,23 @@ export const DisplayIssues: Story = {
         rest.post(`${MOCK_BASE_URL}/search-issues`, (_, res, ctx) => {
           return res(
             ctx.delay(300),
-            ctx.json({
-              issues: [
-                {
-                  key: "key",
-                  summary: "summary",
-                  status: {
-                    id: "",
-                    name: "name",
-                    statusCategory: "TODO",
-                  },
-                  type: {
-                    id: "",
-                    name: "name",
-                  },
-                  links: [],
-                  subtasks: [],
+            ctx.json([
+              {
+                key: "key",
+                summary: "summary",
+                status: {
+                  id: "",
+                  name: "name",
+                  statusCategory: "To  do",
                 },
-              ],
-            }),
+                issueType: {
+                  id: "",
+                  name: "name",
+                },
+                links: [],
+                subtasks: [],
+              },
+            ]),
           );
         }),
       ],

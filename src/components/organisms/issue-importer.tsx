@@ -7,7 +7,7 @@ import { QueryInput } from "../molecules/query-input";
 import { Issue as IssueComponent } from "../molecules/issue";
 import { Panel } from "../molecules/panel";
 import { useImportIssues, useSearchIssues } from "@/hooks";
-import { Issue } from "@/model/issue";
+import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
   opened?: boolean;
@@ -114,7 +114,7 @@ const Styles = {
 };
 
 const IssueList = (props: {
-  issues: Issue[];
+  issues: IssueModel[];
   selectedIssues: string[];
   loading: boolean;
   testid: string;

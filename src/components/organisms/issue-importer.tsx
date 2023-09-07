@@ -110,6 +110,7 @@ const Styles = {
       classNames(iconize({ type: "chevron-right", color: "gray", group: "group", disabled })),
     backwardIcon: (disabled: boolean) =>
       classNames(iconize({ type: "chevron-left", color: "gray", group: "group", disabled })),
+    pageDisplay: classNames("text-sm", "bg-complement-200/50", "text-secondary1-500", "px-2", "py-1", "rounded"),
   },
 };
 
@@ -160,7 +161,7 @@ const IssueList = (props: {
 
 const Paginator = (props: {
   page: number;
-  disabled: boolean;
+  currentPageDataCount: number;
   loading: boolean;
   onChangePage: (page: number) => void;
   onImport: () => void;
@@ -178,29 +179,35 @@ const Paginator = (props: {
     );
   }
 
-  const backwardDisabled = props.page === 1 || props.disabled;
+  const backwardDisabled = props.page === 1;
+  const forwardDisabled = props.page !== 1 && props.currentPageDataCount === 0;
   const importDisabled = props.issueCount === 0;
   const importText = props.issueCount === 0 ? "Select issues" : `Import ${props.issueCount} issues`;
 
   return (
     <div className={Styles.paginator.root} data-testid={gen("root")}>
       <div className={Styles.paginator.icons}>
-        <span
+        <button
           className={Styles.paginator.pagingButton(backwardDisabled)}
+          disabled={backwardDisabled}
           aria-disabled={backwardDisabled}
           data-testid={gen("backward")}
           onClick={() => props.onChangePage(props.page - 1)}
         >
           <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
-        </span>
-        <span
-          className={Styles.paginator.pagingButton(props.disabled)}
-          aria-disabled={props.disabled}
+        </button>
+        <button
+          className={Styles.paginator.pagingButton(forwardDisabled)}
+          disabled={forwardDisabled}
+          aria-disabled={forwardDisabled}
           data-testid={gen("forward")}
           onClick={() => props.onChangePage(props.page + 1)}
         >
-          <span className={Styles.paginator.forwardIcon(props.disabled)} />
-        </span>
+          <span className={Styles.paginator.forwardIcon(forwardDisabled)} />
+        </button>
+      </div>
+      <div className={Styles.paginator.pageDisplay} data-testid={gen("page")}>
+        Page {props.page}
       </div>
       <div>
         <Button
@@ -270,7 +277,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
         onChangePage={handleChangePage}
         onImport={handleImport}
         page={page}
-        disabled={(data ?? [])?.length === 0}
+        currentPageDataCount={(data ?? [])?.length}
         loading={loading || importer.isLoading}
         testid={gen("paginator")}
         issueCount={importer.selectedIssues.length}

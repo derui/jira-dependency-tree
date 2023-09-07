@@ -220,6 +220,7 @@ test("change page after search", async () => {
 
   expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("false");
   expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId("paginator/page").textContent).toContain("Page 2");
   expect(screen.getByTestId("issue-list/issue/root").textContent).toContain("key2");
 });
 

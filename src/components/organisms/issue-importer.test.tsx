@@ -245,11 +245,11 @@ test("select issue to mark to import after", async () => {
   await user.click(screen.getByTestId("query-input/button"));
   await user.click(screen.getByTestId("issue-list/issue/root"));
 
-  expect(screen.getByTestId("issue-list/issue/selected").className).not.toContain("hidden");
+  expect(screen.getByTestId("issue-list/issue/root").dataset["selected"]).toEqual("true");
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
   await user.click(screen.getByTestId("issue-list/issue/root"));
 
-  expect(screen.getByTestId("issue-list/issue/selected").className).toContain("hidden");
+  expect(screen.getByTestId("issue-list/issue/root").dataset["selected"]).toEqual("false");
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
 });
 

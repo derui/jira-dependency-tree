@@ -16,7 +16,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: (clickable: boolean) => {
+  root: (clickable: boolean, selected: boolean) => {
     return classNames(
       "rounded",
       "flex",
@@ -31,6 +31,11 @@ const Styles = {
       "bg-white",
       {
         "cursor-pointer": clickable,
+      },
+      {
+        "bg-gradient-to-r": selected,
+        "from-complement-200/10": selected,
+        "to-complement-200/10": selected,
       },
     );
   },
@@ -96,11 +101,6 @@ const Styles = {
     "items-center",
     iconize({ type: "x", color: "primary", size: "s" }),
   ),
-  selected: (selected: boolean) =>
-    classNames("rounded-full", "w-3", "h-3", "absolute", "top-1", "right-1", "bg-secondary1-300", {
-      hidden: !selected,
-      "inline-block": selected,
-    }),
 };
 
 // eslint-disable-next-line func-style
@@ -179,8 +179,12 @@ export function Issue(props: Props) {
   }
 
   return (
-    <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
-      <span className={Styles.selected(!!selected)} data-testid={gen("selected")} />
+    <li
+      className={classNames(Styles.root(!!onClick, !!selected))}
+      onClick={handleClick}
+      data-testid={gen("root")}
+      data-selected={!!selected}
+    >
       <span className={classNames(Styles.summary)} data-testid={gen("summary")}>
         {issue.summary}
       </span>

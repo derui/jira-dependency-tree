@@ -2,8 +2,8 @@ import { test, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useGetApiCredential } from "./get-api-credential";
 import { getWrapper } from "./hook-test-util";
-import { createStore } from "@/state/store";
-import { submitApiCredentialFulfilled } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { submitApiCredentialFulfilled } from "@/status/actions";
 
 test("get undefined if credential is not setupped", () => {
   const store = createStore();

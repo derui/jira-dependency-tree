@@ -2,7 +2,7 @@ import { produce } from "immer";
 import { Env } from "./env";
 import { ApiCredential } from "./event";
 import { Size } from "@/type";
-import { filterEmptyString } from "@/util/basic";
+import { filterEmptyString } from "@/utils/basic";
 
 export type SettingArgument = {
   // Size of issue in environment

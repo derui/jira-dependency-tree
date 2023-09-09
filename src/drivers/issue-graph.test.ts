@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 import { makeViewBox } from "./issue-graph";
-import { Rect } from "@/util/basic";
+import { Rect } from "@/utils/basic";
 
 const rect = function rect(width: number, height: number) {
   return new Rect({ left: 0, top: 0, right: width, bottom: height });

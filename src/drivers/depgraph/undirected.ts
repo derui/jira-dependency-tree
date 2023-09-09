@@ -1,6 +1,6 @@
 import { AdjacentMatrix, Edge, Vertex } from "./type";
 import { DirectedGraph } from "./main";
-import { constraint } from "@/util/basic";
+import { constraint } from "@/utils/basic";
 
 /**
  * An interface of undirected graph.

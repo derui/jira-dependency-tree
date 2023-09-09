@@ -1,4 +1,4 @@
-import { Issue } from "@/model/issue";
+import { Issue } from "@/models/issue";
 import { IssueKey, IssueStatus, IssueType } from "@/type";
 
 /**

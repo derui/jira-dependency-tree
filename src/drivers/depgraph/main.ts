@@ -1,6 +1,6 @@
 import deepEqual from "fast-deep-equal";
 import type { AdjacentMatrix, Edge, Vertex } from "./type";
-import { constraint, difference } from "@/util/basic";
+import { constraint, difference } from "@/utils/basic";
 
 type NotHaveCycle = { kind: "NotHaveCycle" };
 interface Cycle {

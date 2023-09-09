@@ -1,5 +1,5 @@
 ---
-to: src/state/store.ts
+to: src/status/store.ts
 inject: true
 skip_if: <%= h.changeCase.camel(name) %>Epic
 after: "// INJECT EPIC IMPORT HERE"

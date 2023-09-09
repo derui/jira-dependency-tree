@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 
 test("can registrar any type and get any type with key", () => {
   type dep = {

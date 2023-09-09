@@ -13,9 +13,9 @@ import {
   LayoutedLeveledIssueUnit,
 } from "./type";
 import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/drivers/depgraph/main";
-import { Issue, Relation } from "@/model/issue";
+import { Issue, Relation } from "@/models/issue";
 import { Position, Size } from "@/type";
-import { Rect } from "@/util/basic";
+import { Rect } from "@/utils/basic";
 
 const correctSubgraph = (subgraph: DirectedGraph, cycle: CycleDetection) => {
   if (cycle.kind === "NotHaveCycle") {

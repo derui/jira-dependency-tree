@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { makeForceGraph } from "./force-graph";
 import { Configuration } from "./type";
-import { Issue, Relation } from "@/model/issue";
+import { Issue, Relation } from "@/models/issue";
 
 export const makeIssueGraphRoot = (issues: Issue[], configuration: Configuration, relations: Relation[]) => {
   const { width, height } = configuration.canvasSize;

@@ -3,8 +3,8 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { Dialog } from "../atoms/dialog";
 import { Input } from "../atoms/input";
-import { SuggestedItem } from "@/model/suggestion";
-import { Rect } from "@/util/basic";
+import { SuggestedItem } from "@/models/suggestion";
+import { Rect } from "@/utils/basic";
 
 export interface Props extends BaseProps {
   focusOnInit: boolean;

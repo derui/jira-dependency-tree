@@ -6,7 +6,7 @@ import { setupServer } from "msw/node";
 
 import { MOCK_BASE_URL } from "./generators";
 import { Apis } from "@/apis/api";
-import { SecondArg } from "@/util/type-tool";
+import { SecondArg } from "@/utils/type-tool";
 
 type Definitions = {
   [k in keyof typeof Apis]?: SecondArg<typeof rest.post>;

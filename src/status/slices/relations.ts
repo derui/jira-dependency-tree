@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { importIssues, relations } from "../actions";
 import { IssueRelationId } from "@/type";
-import { Relation } from "@/model/issue";
+import { Relation } from "@/models/issue";
 
 interface RelationsState {
   relations: Record<IssueRelationId, Relation>;

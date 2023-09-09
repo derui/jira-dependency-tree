@@ -4,7 +4,7 @@ import { filter, map } from "rxjs/operators";
 import type { RootState } from "../store";
 import { attentionIssue, attentionIssueFulfilled } from "../actions";
 import type { Dependencies } from "@/dependencies";
-import { DependencyRegistrar } from "@/util/dependency-registrar";
+import { DependencyRegistrar } from "@/utils/dependency-registrar";
 
 type Epics = "sendIssueFocusingAction";
 

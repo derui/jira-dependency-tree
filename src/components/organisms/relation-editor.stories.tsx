@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { RelationEditor } from "./relation-editor";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 import { randomIssue } from "@/mock/generators";
-import { importIssues } from "@/state/actions";
+import { importIssues } from "@/status/actions";
 import { RegistrarContext } from "@/registrar-context";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 
 const meta = {

@@ -2,7 +2,7 @@ import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suggestor } from "./suggestor";
-import type { SuggestedItem } from "@/model/suggestion";
+import type { SuggestedItem } from "@/models/suggestion";
 
 afterEach(cleanup);
 
@@ -12,7 +12,7 @@ const renderWrapper = (v: React.ReactElement) =>
       return (
         <>
           {props.children}
-          <div id='dialog-root' />
+          <div id="dialog-root" />
         </>
       );
     },

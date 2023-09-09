@@ -1,7 +1,7 @@
 import { Provider } from "react-redux";
 import { Store } from "redux";
 import { act } from "@testing-library/react";
-import { RootState } from "@/state/store";
+import { RootState } from "@/status/store";
 
 /**
  * get wrapper for test

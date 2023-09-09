@@ -1,4 +1,4 @@
-import { ApiCredential } from "@/model/event";
+import { ApiCredential } from "@/models/event";
 import { IssueRelationId } from "@/type";
 
 /**

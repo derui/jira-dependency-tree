@@ -1,5 +1,5 @@
 import { useAppDispatch } from "./_internal-hooks";
-import * as Actions from "@/state/actions";
+import * as Actions from "@/status/actions";
 
 interface Result {
   /**

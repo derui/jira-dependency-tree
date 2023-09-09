@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "./dialog";
-import { Rect } from "@/util/basic";
+import { Rect } from "@/utils/basic";
 
 const meta = {
   title: "Atoms/Dialog",

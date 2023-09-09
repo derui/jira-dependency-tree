@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue } from "../actions";
 import { getInitialState, reducer } from "./issues";
-import { Issue } from "@/model/issue";
+import { Issue } from "@/models/issue";
 import { randomIssue } from "@/mock/generators";
 
 test("initial state", () => {

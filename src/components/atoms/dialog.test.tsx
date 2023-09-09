@@ -1,13 +1,13 @@
 import { test, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { Dialog } from "./dialog";
-import { Rect } from "@/util/basic";
+import { Rect } from "@/utils/basic";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
   render(
-    <Dialog selector='body' opened={false} aligned='bottomLeft'>
+    <Dialog selector="body" opened={false} aligned="bottomLeft">
       abc
     </Dialog>,
   );
@@ -19,7 +19,7 @@ test("should be able to render", () => {
 
 test("opened", () => {
   render(
-    <Dialog selector='body' opened={true} aligned='bottomLeft'>
+    <Dialog selector="body" opened={true} aligned="bottomLeft">
       abc
     </Dialog>,
   );
@@ -33,7 +33,7 @@ test("opened", () => {
 test("calculate top by rect", () => {
   const rect = new Rect({ bottom: 10, right: 10, left: 0, top: 5 });
   render(
-    <Dialog selector='body' parentRect={rect} opened={true} aligned='bottomLeft'>
+    <Dialog selector="body" parentRect={rect} opened={true} aligned="bottomLeft">
       abc
     </Dialog>,
   );
@@ -46,7 +46,7 @@ test("calculate top by rect", () => {
 test("calculate right by rect", () => {
   const rect = new Rect({ bottom: 10, right: 10, left: 0, top: 5 });
   render(
-    <Dialog selector='body' parentRect={rect} opened={true} aligned='bottomRight'>
+    <Dialog selector="body" parentRect={rect} opened={true} aligned="bottomRight">
       abc
     </Dialog>,
   );

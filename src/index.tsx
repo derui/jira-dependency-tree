@@ -5,11 +5,11 @@ import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { install } from "@twind/core";
 import { IssueGraphSink, makeIssueGraphDriver } from "./drivers/issue-graph";
-import { SettingArgument } from "./model/setting";
+import { SettingArgument } from "./models/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
-import { RootState, createStore } from "./state/store";
-import { createDependencyRegistrar } from "./util/dependency-registrar";
+import { RootState, createStore } from "./status/store";
+import { createDependencyRegistrar } from "./utils/dependency-registrar";
 import { Dependencies } from "./dependencies";
 import {
   changeZoom,
@@ -17,7 +17,7 @@ import {
   expandIssue,
   restoreApiCredential,
   selectIssueInGraph,
-} from "./state/actions";
+} from "./status/actions";
 import { App } from "./app";
 import config from "./twind.config.cjs";
 import { RegistrarContext } from "./registrar-context";

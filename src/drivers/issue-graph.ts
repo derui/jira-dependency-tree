@@ -5,10 +5,10 @@ import { makeIssueGraphRoot } from "./issue-graph/root";
 import { GraphLayout, IssueGraphAction } from "./issue-graph/type";
 import { getTargetIssuePositionInSVG } from "./issue-graph/issue";
 import { GraphRestarter } from "./issue-graph/force-graph";
-import { Issue, Relation } from "@/model/issue";
+import { Issue, Relation } from "@/models/issue";
 import { Position, Size } from "@/type";
-import { filterNull, Rect } from "@/util/basic";
-import { cubicBezier } from "@/util/bezier";
+import { filterNull, Rect } from "@/utils/basic";
+import { cubicBezier } from "@/utils/bezier";
 
 type AttentionIssueCommand = {
   kind: "AttentionIssue";

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { relations, selectIssueInGraph } from "../actions";
-import { AppendingRelationDelta, DeletingRelationDelta, RelationDelta, createAppending } from "@/model/relation-delta";
+import { AppendingRelationDelta, DeletingRelationDelta, RelationDelta, createAppending } from "@/models/relation-delta";
 import { DeltaId, IssueKey } from "@/type";
 
 interface PreparationToAdd {

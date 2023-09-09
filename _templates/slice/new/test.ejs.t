@@ -1,5 +1,5 @@
 ---
-to: src/state/slices/<%= name %>.test.ts
+to: src/status/slices/<%= name %>.test.ts
 ---
 import {test, expect} from 'vitest';
 import {getInitialState} from './<%= name %>';

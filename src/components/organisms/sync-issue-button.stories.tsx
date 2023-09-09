@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
-import { createStore } from "@/state/store";
-import { submitApiCredentialFulfilled } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { submitApiCredentialFulfilled } from "@/status/actions";
 import { randomCredential } from "@/mock/generators";
 
 const meta = {

@@ -2,7 +2,7 @@ import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { createPortal } from "react-dom";
 import { BaseProps, generateTestId } from "../helper";
-import { Rect } from "@/util/basic";
+import { Rect } from "@/utils/basic";
 
 type Alignment = "bottomLeft" | "bottomRight";
 type Margin = "all" | "left" | "left-top" | "top" | "right-top" | "right" | "none";

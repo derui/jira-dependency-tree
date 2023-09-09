@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
-import { createStore } from "@/state/store";
-import { importIssues } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { importIssues } from "@/status/actions";
 import { randomIssue } from "@/mock/generators";
 import { useFocusIssue } from "@/hooks/focus-issue";
 

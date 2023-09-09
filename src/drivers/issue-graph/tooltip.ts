@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Issue } from "@/model/issue";
+import { Issue } from "@/models/issue";
 
 type Visible = (element: HTMLElement, issue: Issue | undefined) => void;
 type Invisible = () => void;

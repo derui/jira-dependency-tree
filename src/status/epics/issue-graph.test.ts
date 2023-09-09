@@ -4,7 +4,7 @@ import { StateObservable } from "redux-observable";
 import { NEVER } from "rxjs";
 import { attentionIssue, attentionIssueFulfilled } from "../actions";
 import { Dependencies } from "../../dependencies";
-import { createDependencyRegistrar } from "../../util/dependency-registrar";
+import { createDependencyRegistrar } from "../../utils/dependency-registrar";
 import { RootState } from "../store";
 import * as epic from "./issue-graph";
 

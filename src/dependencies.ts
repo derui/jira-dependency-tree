@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { IssueGraphCommand } from "./drivers/issue-graph";
-import type { Env } from "./model/env";
+import type { Env } from "./models/env";
 import { Apis } from "@/apis/api";
 
 // define dependencies

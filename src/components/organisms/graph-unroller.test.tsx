@@ -3,8 +3,8 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
-import { createStore } from "@/state/store";
-import { expandIssue, importIssues } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { expandIssue, importIssues } from "@/status/actions";
 import { randomIssue } from "@/mock/generators";
 
 afterEach(cleanup);

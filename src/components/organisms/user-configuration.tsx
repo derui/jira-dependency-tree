@@ -4,7 +4,7 @@ import { BaseProps, generateTestId } from "../helper";
 import { UserConfigurationForm, Props as UserConfigurationFormProps } from "../molecules/user-configuration-form";
 import { Dialog } from "../atoms/dialog";
 import { iconize } from "../atoms/iconize";
-import { FirstArg } from "@/util/type-tool";
+import { FirstArg } from "@/utils/type-tool";
 import { useUserConfiguration } from "@/hooks/user-configuration";
 
 export type Props = BaseProps;

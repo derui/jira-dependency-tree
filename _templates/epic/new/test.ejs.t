@@ -1,9 +1,9 @@
 ---
-to: src/state/epics/<%= name %>.test.ts
+to: src/status/epics/<%= name %>.test.ts
 ---
 import {test, expect} from 'vitest';
 import * as epic from './<%= name %>';
-import {createDependencyRegistrar} from '../../util/dependency-registrar';
+import {createDependencyRegistrar} from '../../utils/dependency-registrar';
 import {Dependencies} from '../../dependencies';
 
 const registrar = createDependencyRegistrar<Dependencies>();

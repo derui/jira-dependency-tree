@@ -5,12 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { RelationEditor } from "./relation-editor";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 import { randomIssue } from "@/mock/generators";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 import { RegistrarContext } from "@/registrar-context";
-import { importIssues } from "@/state/actions";
+import { importIssues } from "@/status/actions";
 
 const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("generateId", () => v4());

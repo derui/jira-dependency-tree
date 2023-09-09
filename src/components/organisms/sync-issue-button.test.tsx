@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
-import { createStore } from "@/state/store";
-import { submitApiCredentialFulfilled } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { submitApiCredentialFulfilled } from "@/status/actions";
 import { randomCredential } from "@/mock/generators";
 import { Apis } from "@/apis/api";
 

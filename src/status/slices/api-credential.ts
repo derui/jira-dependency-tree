@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { restoreApiCredential, submitApiCredentialFulfilled } from "../actions";
-import { ApiCredential } from "@/model/event";
+import { ApiCredential } from "@/models/event";
 
 interface ApiCredentialState {
   credential?: ApiCredential;

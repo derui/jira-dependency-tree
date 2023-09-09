@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue } from "../actions";
-import { Issue } from "@/model/issue";
+import { Issue } from "@/models/issue";
 import { IssueKey } from "@/type";
-import { filterEmptyString } from "@/util/basic";
+import { filterEmptyString } from "@/utils/basic";
 
 type ProjectionTarget = { kind: "Root" } | { kind: "InsideIssue"; issueKey: IssueKey };
 

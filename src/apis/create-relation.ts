@@ -1,5 +1,5 @@
-import { ApiCredential } from "@/model/event";
-import { Relation } from "@/model/issue";
+import { ApiCredential } from "@/models/event";
+import { Relation } from "@/models/issue";
 import { IssueKey } from "@/type";
 
 /**

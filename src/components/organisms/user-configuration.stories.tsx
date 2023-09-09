@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
-import { createStore } from "@/state/store";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { createStore } from "@/status/store";
+import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 import { RegistrarContext } from "@/registrar-context";
 

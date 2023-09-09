@@ -1,5 +1,5 @@
 import { map, filter, Observable, Subject, distinctUntilChanged } from "rxjs";
-import { filterUndefined } from "@/util/basic";
+import { filterUndefined } from "@/utils/basic";
 
 type HashMap = { [k: string]: unknown };
 

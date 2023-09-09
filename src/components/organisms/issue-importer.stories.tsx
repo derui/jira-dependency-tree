@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 import { MOCK_BASE_URL, randomCredential } from "@/mock/generators";
-import { submitApiCredentialFulfilled } from "@/state/actions";
+import { submitApiCredentialFulfilled } from "@/status/actions";
 
 const meta = {
   title: "Organisms/Issue Importer",

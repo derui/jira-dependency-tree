@@ -1,10 +1,10 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
-import { RootState } from "@/state/store";
+import { RootState } from "@/status/store";
 import { IssueModel, issueToIssueModel } from "@/view-models/issue";
 import { IssueKey, IssueRelationId } from "@/type";
 import { RelationModel } from "@/view-models/relation";
-import { mapValue } from "@/util/record";
+import { mapValue } from "@/utils/record";
 
 const relations = createDraftSafeSelector(
   (state: RootState) => state,

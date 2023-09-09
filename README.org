@@ -113,7 +113,7 @@ Some developers does not have personal macOS. We think this application might ru
 You should create ~src/env.prod.ts~ before.
 
 #+begin_src typescript
-  import { Env } from "./model/env";
+  import { Env } from "./models/env";
 
   export const env: Env = {
     apiBaseUrl: "<URL of API Gateway>",

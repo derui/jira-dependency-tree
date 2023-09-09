@@ -3,7 +3,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { SideToolbar } from "./side-toolbar";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 
 afterEach(cleanup);
 

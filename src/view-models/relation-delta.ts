@@ -1,7 +1,7 @@
 import { IssueModel } from "./issue";
 import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationModel } from "@/view-models/relation";
-import { AppendingRelationDelta, DeletingRelationDelta } from "@/model/relation-delta";
+import { AppendingRelationDelta, DeletingRelationDelta } from "@/models/relation-delta";
 
 export type AppendingRelationDeltaModel = {
   kind: "append";

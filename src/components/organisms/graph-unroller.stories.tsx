@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
-import { createStore } from "@/state/store";
-import { expandIssue, importIssues } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { expandIssue, importIssues } from "@/status/actions";
 import { randomIssue } from "@/mock/generators";
 
 const meta = {

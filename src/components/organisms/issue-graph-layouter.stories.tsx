@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { IssueGraphLayouter } from "./issue-graph-layouter";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 
 const meta = {
   title: "Organisms/Issue Graph Layouter",

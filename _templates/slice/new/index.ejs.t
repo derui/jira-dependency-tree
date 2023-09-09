@@ -1,5 +1,5 @@
 ---
-to: src/state/slices/<%= name %>.ts
+to: src/status/slices/<%= name %>.ts
 ---
 
 import {createSlice} from '@reduxjs/toolkit';

@@ -1,6 +1,6 @@
 import { mapResponse } from "./mapper/issue";
-import { ApiCredential } from "@/model/event";
-import { Issue } from "@/model/issue";
+import { ApiCredential } from "@/models/event";
+import { Issue } from "@/models/issue";
 
 /**
  * execute to get a issues

@@ -1,8 +1,8 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { IssueModel, issueToIssueModel } from "@/view-models/issue";
-import { RootState } from "@/state/store";
-import { clearIssueFilter, filterIssues } from "@/state/actions";
+import { RootState } from "@/status/store";
+import { clearIssueFilter, filterIssues } from "@/status/actions";
 
 type UseFilterIssueResult = {
   state: {

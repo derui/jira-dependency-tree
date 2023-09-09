@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { Input } from "../atoms/input";
 import { Button } from "../atoms/button";
-import { filterEmptyString } from "@/util/basic";
+import { filterEmptyString } from "@/utils/basic";
 
 type Payload = { userDomain: string; token: string; email: string };
 

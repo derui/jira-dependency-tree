@@ -3,9 +3,9 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
-import { createStore } from "@/state/store";
-import { submitApiCredentialFulfilled } from "@/state/actions";
-import { createDependencyRegistrar } from "@/util/dependency-registrar";
+import { createStore } from "@/status/store";
+import { submitApiCredentialFulfilled } from "@/status/actions";
+import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 import { RegistrarContext } from "@/registrar-context";
 

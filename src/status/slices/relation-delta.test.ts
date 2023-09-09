@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import { relations } from "../actions";
 import { getInitialState, reducer } from "./relation-delta";
-import { createAppending, createDeleting } from "@/model/relation-delta";
+import { createAppending, createDeleting } from "@/models/relation-delta";
 
 test("initial state", () => {
   expect(getInitialState()).toEqual({ appendingDelta: {}, deletingDelta: {} });

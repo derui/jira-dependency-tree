@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
-import { createStore } from "@/state/store";
-import { importIssues } from "@/state/actions";
+import { createStore } from "@/status/store";
+import { importIssues } from "@/status/actions";
 import { randomIssue } from "@/mock/generators";
 
 const meta = {

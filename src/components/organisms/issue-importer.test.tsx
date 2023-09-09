@@ -4,9 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import Sinon from "sinon";
 import { IssueImporter } from "./issue-importer";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 import { setupMockServer } from "@/mock/server";
-import { submitApiCredentialFulfilled } from "@/state/actions";
+import { submitApiCredentialFulfilled } from "@/status/actions";
 import { randomApiIssue, randomCredential } from "@/mock/generators";
 
 const server = setupMockServer();

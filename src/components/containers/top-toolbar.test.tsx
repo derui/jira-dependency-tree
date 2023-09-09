@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import { Provider } from "react-redux";
 import { TopToolbar } from "./top-toolbar";
-import { createStore } from "@/state/store";
+import { createStore } from "@/status/store";
 
 afterEach(cleanup);
 

@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
-import { settingFactory } from "@/model/setting";
-import { Env } from "@/model/env";
+import { settingFactory } from "@/models/setting";
+import { Env } from "@/models/env";
 
 test("empty setting", () => {
   // arrange

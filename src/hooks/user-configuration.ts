@@ -1,9 +1,9 @@
 import { useCallback, useContext } from "react";
 import { useAppDispatch } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
-import { ApiCredential } from "@/model/event";
-import { submitApiCredentialFulfilled } from "@/state/actions";
-import { FirstArg } from "@/util/type-tool";
+import { ApiCredential } from "@/models/event";
+import { submitApiCredentialFulfilled } from "@/status/actions";
+import { FirstArg } from "@/utils/type-tool";
 import { RegistrarContext } from "@/registrar-context";
 
 type Result = {

@@ -1,11 +1,11 @@
 ---
-to: src/state/epics/<%= name %>.ts
+to: src/status/epics/<%= name %>.ts
 ---
 import { Epic } from "redux-observable";
 import type { Action } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import type { Dependencies } from "@/dependencies";
-import { DependencyRegistrar } from "@/util/dependency-registrar";
+import { DependencyRegistrar } from "@/utils/dependency-registrar";
 
 type Epics = '';
 

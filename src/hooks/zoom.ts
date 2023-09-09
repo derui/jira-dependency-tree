@@ -1,6 +1,6 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
-import type { RootState } from "@/state/store";
+import type { RootState } from "@/status/store";
 
 const selector = createDraftSafeSelector(
   (state: RootState) => state,

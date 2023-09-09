@@ -1,6 +1,6 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
-import { RootState } from "@/state/store";
+import { RootState } from "@/status/store";
 
 const selectDeletingDelta = createDraftSafeSelector(
   (state: RootState) => state,

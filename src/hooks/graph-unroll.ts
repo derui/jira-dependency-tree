@@ -1,8 +1,8 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
-import { RootState } from "@/state/store";
-import { narrowExpandedIssue } from "@/state/actions";
+import { RootState } from "@/status/store";
+import { narrowExpandedIssue } from "@/status/actions";
 
 type Result = {
   /**

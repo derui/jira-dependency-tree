@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 
-import { difference, filterEmptyString, filterUndefined, Rect } from "@/util/basic";
+import { difference, filterEmptyString, filterUndefined, Rect } from "@/utils/basic";
 
 test("filter empty string", () => {
   // Arrange

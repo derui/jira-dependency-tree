@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { mergeSuggestion, suggestionFactory } from "@/model/suggestion";
+import { mergeSuggestion, suggestionFactory } from "@/models/suggestion";
 
 test("empty sprints", () => {
   // arrange

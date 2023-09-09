@@ -1,5 +1,5 @@
 ---
-to: src/state/selectors/<%= name %>.ts
+to: src/status/selectors/<%= name %>.ts
 ---
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
 

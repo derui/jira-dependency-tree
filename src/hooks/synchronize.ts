@@ -2,9 +2,9 @@ import { useCallback, useState } from "react";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
-import { importIssues } from "@/state/actions";
+import { importIssues } from "@/status/actions";
 import { Apis } from "@/apis/api";
-import { RootState } from "@/state/store";
+import { RootState } from "@/status/store";
 
 interface UseSynchronizeResult {
   /**

@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { factorialize } from "@/util/bezier";
+import { factorialize } from "@/utils/bezier";
 
 test("factorialize", () => {
   expect(factorialize(0)).toBe(1);

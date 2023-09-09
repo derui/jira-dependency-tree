@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useAppDispatch } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { IssueKey } from "@/type";
-import { importIssues } from "@/state/actions";
+import { importIssues } from "@/status/actions";
 import { Apis } from "@/apis/api";
 
 interface UseImportIssuesResult {

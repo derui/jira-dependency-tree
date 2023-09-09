@@ -1,8 +1,8 @@
 import { LayoutedLeveledVertex } from "./type";
-import { DirectedGraph } from "@/drivers/depgraph/main";
+import { DirectedGraph } from "@/libs/depgraph/main";
 import { Position, Size } from "@/type";
-import { fromDirectedGraph, UndirectedGraph } from "@/drivers/depgraph/undirected";
-import { Vertex } from "@/drivers/depgraph/type";
+import { fromDirectedGraph, UndirectedGraph } from "@/libs/depgraph/undirected";
+import { Vertex } from "@/libs/depgraph/type";
 
 const getGroups = (graph: DirectedGraph): UndirectedGraph[] => {
   const undirected = fromDirectedGraph(graph);

@@ -12,7 +12,7 @@ import {
   TreeFrame,
   LayoutedLeveledIssueUnit,
 } from "./type";
-import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/drivers/depgraph/main";
+import { CycleDetection, emptyDirectedGraph, DirectedGraph } from "@/libs/depgraph/main";
 import { Issue, Relation } from "@/models/issue";
 import { Position, Size } from "@/type";
 import { Rect } from "@/utils/basic";

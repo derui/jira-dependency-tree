@@ -86,7 +86,7 @@
     "vitest": "^0.34.3"
   },
   "volta": {
-    "node": "20.2.0"
+    "node": "20.6.1"
   },
   "msw": {
     "workerDirectory": "public"

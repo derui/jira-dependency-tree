@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
 import { createStore } from "@/state/store";
 import { submitApiCredentialFulfilled } from "@/state/actions";
-import { randomCredential } from "@/mock-data";
+import { randomCredential } from "@/mock/generators";
 
 const meta = {
   title: "Organisms/Sync issue button",

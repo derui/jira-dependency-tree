@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { GraphUnroller } from "./graph-unroller";
 import { createStore } from "@/state/store";
 import { expandIssue, importIssues } from "@/state/actions";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 
 const meta = {
   title: "Organisms/Graph Unroller",

@@ -4,8 +4,8 @@
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
+import { MOCK_BASE_URL } from "./generators";
 import { Apis } from "@/apis/api";
-import { MOCK_BASE_URL } from "@/mock-data";
 import { SecondArg } from "@/util/type-tool";
 
 type Definitions = {

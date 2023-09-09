@@ -6,7 +6,7 @@ import { useGenerateId } from "./_generate-id";
 import { createStore } from "@/state/store";
 import { createDeleting } from "@/model/relation-delta";
 import { importIssues, selectIssueInGraph, submitApiCredentialFulfilled } from "@/state/actions";
-import { randomCredential, randomIssue } from "@/mock-data";
+import { randomCredential, randomIssue } from "@/mock/generators";
 import { issueToIssueModel } from "@/view-models/issue";
 import { Apis } from "@/apis/api";
 import { toDeletingModel } from "@/view-models/relation-delta";

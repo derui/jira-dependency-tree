@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { IssueSearcher } from "./issue-searcher";
 import { createStore } from "@/state/store";
 import { importIssues } from "@/state/actions";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 
 const meta = {
   title: "Organisms/Issue Searcher",

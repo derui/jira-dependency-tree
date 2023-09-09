@@ -1,7 +1,7 @@
 import { test, expect } from "vitest";
 import { importIssues, relations } from "../actions";
 import { getInitialState, reducer } from "./relations";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 
 test("initial state", () => {
   expect(getInitialState()).toEqual({ relations: {} });

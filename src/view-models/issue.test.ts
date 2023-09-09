@@ -1,6 +1,6 @@
 import { test, expect } from "vitest";
 import { IssueModel, issueToIssueModel } from "./issue";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 
 test("get simplest issue", () => {
   const issue = randomIssue();

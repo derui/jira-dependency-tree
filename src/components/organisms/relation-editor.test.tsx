@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { RelationEditor } from "./relation-editor";
 import { createStore } from "@/state/store";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 import { createDependencyRegistrar } from "@/util/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 import { RegistrarContext } from "@/registrar-context";

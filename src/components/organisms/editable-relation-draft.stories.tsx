@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { EditableRelationDraft } from "./editable-relation-draft";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 import { issueToIssueModel } from "@/view-models/issue";
 import { RelationModel } from "@/view-models/relation";
 import { AppendingRelationDeltaModel, DeletingRelationDeltaModel } from "@/view-models/relation-delta";

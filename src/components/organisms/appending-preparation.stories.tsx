@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AppendingPreparation } from "./appending-preparation";
-import { randomIssue } from "@/mock-data";
+import { randomIssue } from "@/mock/generators";
 import { issueToIssueModel } from "@/view-models/issue";
 
 const meta = {

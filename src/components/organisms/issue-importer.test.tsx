@@ -7,7 +7,7 @@ import { IssueImporter } from "./issue-importer";
 import { createStore } from "@/state/store";
 import { setupMockServer } from "@/mock/server";
 import { submitApiCredentialFulfilled } from "@/state/actions";
-import { randomApiIssue, randomCredential } from "@/mock-data";
+import { randomApiIssue, randomCredential } from "@/mock/generators";
 
 const server = setupMockServer();
 

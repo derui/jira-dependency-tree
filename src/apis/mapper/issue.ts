@@ -1,5 +1,5 @@
 import { Issue } from "@/model/issue";
-import { IssueKey, StatusCategory } from "@/type";
+import { IssueKey } from "@/type";
 
 /**
  * a type for issue returning from API
@@ -11,7 +11,7 @@ export interface ApiIssue {
   status: {
     id: string;
     name: string;
-    statusCategory: StatusCategory;
+    statusCategory: string;
   };
   type: {
     id: string;

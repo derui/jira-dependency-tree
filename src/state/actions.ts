@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import { ApiCredential, SearchCondition } from "@/model/event";
+import { ApiCredential } from "@/model/event";
 import { Issue, Relation } from "@/model/issue";
 import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/model/relation-delta";
@@ -15,12 +15,6 @@ type ApiCredentialPayload = {
 export const submitApiCredential = createAction<ApiCredentialPayload>("submitApiCredential");
 export const submitApiCredentialFulfilled = createAction<ApiCredential>("submitApiCredentialFulfilled");
 export const restoreApiCredential = createAction<ApiCredential>("restoreApiCredential");
-
-// actions for issue
-export type IssueRequest = {
-  apiCredential: ApiCredential;
-  searchCondition: SearchCondition;
-};
 
 // filter issues
 export const filterIssues = createAction<string>("filterIssues");

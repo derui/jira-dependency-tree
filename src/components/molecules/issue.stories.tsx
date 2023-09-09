@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Issue } from "./issue";
-import { Loading } from "@/type";
 
 const meta = {
   title: "Molecules/Issue",
@@ -8,7 +7,7 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     issue: { control: "object" },
-    loading: { control: "radio", options: Object.keys(Loading), defaultValue: Loading.Completed },
+    loading: { control: "boolean" },
     placeholder: { control: "boolean" },
   },
 } satisfies Meta<typeof Issue>;

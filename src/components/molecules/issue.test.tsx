@@ -3,7 +3,6 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Issue } from "./issue";
-import { StatusCategory } from "@/type";
 
 afterEach(cleanup);
 
@@ -58,7 +57,7 @@ test("display value for type and status", async () => {
     issueStatus: {
       id: "id",
       name: "name",
-      statusCategory: StatusCategory.DONE,
+      statusCategory: "DONE",
     },
     issueType: { id: "id", name: "Task", avatarUrl: "" },
   };
@@ -80,7 +79,7 @@ test("show delete button", async () => {
     issueStatus: {
       id: "id",
       name: "name",
-      statusCategory: StatusCategory.DONE,
+      statusCategory: "DONE",
     },
     issueType: { id: "id", name: "Task", avatarUrl: "" },
   };

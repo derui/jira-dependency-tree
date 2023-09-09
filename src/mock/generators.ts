@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
-import { ApiCredential } from "./model/event";
-import { Issue } from "./model/issue";
-import { ApiIssue } from "./apis/mapper/issue";
+import { ApiCredential } from "@/model/event";
+import { Issue } from "@/model/issue";
+import { ApiIssue } from "@/apis/mapper/issue";
 
 export const MOCK_BASE_URL = "https://mock.example.com";
 

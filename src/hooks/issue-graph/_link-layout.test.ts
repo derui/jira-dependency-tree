@@ -48,8 +48,8 @@ test("get same row link", () => {
   expect(layout).toHaveLength(2);
 
   const sortedLayout = layout.sort((v1, v2) => v1.meta.startIssue.localeCompare(v2.meta.startIssue));
-  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,35 h 50`);
-  expect(sortedLayout[1].pathCommands.trim()).toEqual(`M 450,35 h 50`);
+  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,36 h 50`);
+  expect(sortedLayout[1].pathCommands.trim()).toEqual(`M 450,36 h 50`);
 });
 
 test("get upper link", () => {
@@ -71,10 +71,10 @@ test("get upper link", () => {
   expect(layout).toHaveLength(2);
 
   const sortedLayout = layout.sort((v1, v2) => v1.meta.startIssue.localeCompare(v2.meta.startIssue));
-  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,35 h 50`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,121.4 h 21`);
+  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,36 h 50`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,124.8 h 21`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`s 4,0 4,0 4,-4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`v -78.4`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`v -80.8`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`s 0,-4 0,-4 4,-4`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`h 21`);
 });
@@ -98,10 +98,10 @@ test("get lower link", () => {
   expect(layout).toHaveLength(2);
 
   const sortedLayout = layout.sort((v1, v2) => v1.meta.startIssue.localeCompare(v2.meta.startIssue));
-  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,35 h 50`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,35 h 21`);
+  expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,36 h 50`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,36 h 21`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`s 4,0 4,0 4,4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`v 78.4`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`v 80.8`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`s 0,4 0,4 4,4`);
   expect(sortedLayout[1].pathCommands.trim()).toContain(`h 21`);
 });

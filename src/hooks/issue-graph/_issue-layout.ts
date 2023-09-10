@@ -3,7 +3,7 @@ import { Size } from "@/type";
 import { IssueModel } from "@/view-models/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 
-export const ISSUE_SIZE: Size = { width: 200, height: 72 };
+export const ISSUE_SIZE: Size = { width: 200, height: 74 };
 export const ISSUE_X_GAP = ISSUE_SIZE.width * 0.25;
 export const ISSUE_Y_GAP = ISSUE_SIZE.height * 0.2;
 

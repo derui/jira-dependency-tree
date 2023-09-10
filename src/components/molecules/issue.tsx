@@ -58,7 +58,15 @@ const Styles = {
   },
   placeholderText: classNames("font-bold", "text-primary-100"),
 
-  summary: classNames("text-sm", "mb-2"),
+  summary: classNames(
+    "text-sm",
+    "mb-2",
+    "inline-block",
+    "whitespace-nowrap",
+    "overflow-hidden",
+    "text-ellipsis",
+    "w-full",
+  ),
   information: classNames("flex", "flex-row", "items-center", "space-x-2", "w-full"),
   issueType: classNames("w-3", "h-3", "inline-block", "overflow-hidden"),
   issueStatus: (category?: string) => {

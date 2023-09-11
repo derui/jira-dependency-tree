@@ -13,6 +13,23 @@ export const difference = function difference<T>(a: Set<T>, b: Set<T>): Set<T> {
   return diff;
 };
 
+/**
+   Make intersect between two sets.
+
+   Return new Set
+ */
+export const intercect = function intercect<T>(a: Set<T>, b: Set<T>): Set<T> {
+  const diff = new Set<T>();
+
+  for (const v of a) {
+    if (a.has(v) && b.has(v)) {
+      diff.add(v);
+    }
+  }
+
+  return diff;
+};
+
 // check constraint and throw error if constraint is broken.
 export const constraint = function constraint(condition: boolean, message?: string) {
   const revisedMessage = message ?? "Detect invalid constraint";

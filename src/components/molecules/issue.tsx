@@ -9,17 +9,17 @@ import { IssueModel } from "@/view-models/issue";
 export interface Props extends BaseProps {
   issue?: IssueModel;
   loading?: boolean;
-  selected?: boolean;
   onDelete?: (key: string) => void;
   onClick?: (key: string) => void;
   placeholder?: boolean;
 }
 
 const Styles = {
-  root: (clickable: boolean, selected: boolean) => {
+  root: (clickable: boolean) => {
     return classNames(
       "rounded",
       "flex",
+      "flex-auto",
       "flex-col",
       "border",
       "hover:border-complement-300",
@@ -31,11 +31,6 @@ const Styles = {
       "bg-white",
       {
         "cursor-pointer": clickable,
-      },
-      {
-        "bg-gradient-to-r": selected,
-        "from-complement-200/10": selected,
-        "to-complement-200/10": selected,
       },
     );
   },
@@ -148,7 +143,7 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
 // eslint-disable-next-line func-style
 export function Issue(props: Props) {
   const gen = generateTestId(props.testid);
-  const { issue, onClick, loading, onDelete, selected, placeholder } = props;
+  const { issue, onClick, loading, onDelete, placeholder } = props;
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick && issue) {
@@ -187,12 +182,7 @@ export function Issue(props: Props) {
   }
 
   return (
-    <li
-      className={classNames(Styles.root(!!onClick, !!selected))}
-      onClick={handleClick}
-      data-testid={gen("root")}
-      data-selected={!!selected}
-    >
+    <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
       <span className={classNames(Styles.summary)} data-testid={gen("summary")}>
         {issue.summary}
       </span>

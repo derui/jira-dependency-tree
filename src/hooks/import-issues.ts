@@ -14,7 +14,7 @@ interface UseImportIssuesResult {
   /**
    * select issues at once. This method does not toggle, only select
    */
-  selectMulti: (keys: IssueKey[]) => void;
+  toggleMulti: (keys: IssueKey[]) => void;
 
   /**
    * execute importing
@@ -54,9 +54,17 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
     });
   }, []);
 
-  const selectMulti = (keys: IssueKey[]) => {
+  const toggleMulti = (keys: IssueKey[]) => {
     mutate((state) => {
-      const set = new Set(state.concat(keys));
+      const set = new Set(state);
+
+      for (const key of keys) {
+        if (set.has(key)) {
+          set.delete(key);
+        } else {
+          set.add(key);
+        }
+      }
 
       return Array.from(set);
     });
@@ -79,5 +87,5 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
     }
   }, [state, apiCredential]);
 
-  return { execute, toggle, selectMulti, selectedIssues: state, error, isLoading: loading };
+  return { execute, toggle, toggleMulti, selectedIssues: state, error, isLoading: loading };
 };

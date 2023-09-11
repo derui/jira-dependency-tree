@@ -158,8 +158,8 @@ test("display issues when API returns some issues", async () => {
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
 
-  expect(screen.getAllByTestId("issue-list/issue/root")).toHaveLength(1);
-  expect(screen.getAllByTestId("issue-list/issue/root")[0].textContent).toContain("key");
+  expect(screen.getAllByTestId("issue-list/key/root")).toHaveLength(1);
+  expect(screen.getAllByTestId("issue-list/key/root")[0].textContent).toContain("key");
 });
 
 test("disable backward pagination after initial search", async () => {
@@ -221,7 +221,7 @@ test("change page after search", async () => {
   expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("false");
   expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
   expect(screen.getByTestId("paginator/page").textContent).toContain("Page 2");
-  expect(screen.getByTestId("issue-list/issue/root").textContent).toContain("key2");
+  expect(screen.getByTestId("issue-list/key2/root").textContent).toContain("key2");
 });
 
 test("select issue to mark to import after", async () => {
@@ -243,13 +243,13 @@ test("select issue to mark to import after", async () => {
 
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
-  await user.click(screen.getByTestId("issue-list/issue/root"));
+  await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId("issue-list/issue/root").dataset["selected"]).toEqual("true");
+  expect(screen.getByTestId("issue-list/check-key/root").getAttribute("aria-selected")).toEqual("true");
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
-  await user.click(screen.getByTestId("issue-list/issue/root"));
+  await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId("issue-list/issue/root").dataset["selected"]).toEqual("false");
+  expect(screen.getByTestId("issue-list/check-key/root").getAttribute("aria-selected")).toEqual("false");
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
 });
 
@@ -280,6 +280,6 @@ test("execute import when some issues are selected", async () => {
 
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
-  await user.click(screen.getByTestId("issue-list/issue/root"));
+  await user.click(screen.getByTestId("issue-list/key/root"));
   await user.click(screen.getByTestId("paginator/import"));
 });

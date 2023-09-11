@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
 import { createStore } from "@/status/store";
-import { MOCK_BASE_URL, randomCredential } from "@/mock/generators";
+import { MOCK_BASE_URL, randomApiIssue, randomCredential } from "@/mock/generators";
 import { submitApiCredentialFulfilled } from "@/status/actions";
 
 const meta = {
@@ -94,26 +94,7 @@ export const DisplayIssues: Story = {
     msw: {
       handlers: [
         rest.post(`${MOCK_BASE_URL}/search-issues`, (_, res, ctx) => {
-          return res(
-            ctx.delay(300),
-            ctx.json([
-              {
-                key: "key",
-                summary: "summary",
-                status: {
-                  id: "",
-                  name: "name",
-                  statusCategory: "To  do",
-                },
-                issueType: {
-                  id: "",
-                  name: "name",
-                },
-                links: [],
-                subtasks: [],
-              },
-            ]),
-          );
+          return res(ctx.delay(300), ctx.json([randomApiIssue(), randomApiIssue(), randomApiIssue()]));
         }),
       ],
     },

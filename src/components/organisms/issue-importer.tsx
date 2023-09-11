@@ -6,8 +6,11 @@ import { iconize } from "../atoms/iconize";
 import { QueryInput } from "../molecules/query-input";
 import { Issue as IssueComponent } from "../molecules/issue";
 import { Panel } from "../molecules/panel";
+import { Checkbox } from "../atoms/checkbox";
 import { useImportIssues, useSearchIssues } from "@/hooks";
 import { IssueModel } from "@/view-models/issue";
+import { difference, intercect } from "@/utils/basic";
+import { getTargetIssuePositionInSVG } from "@/drivers/issue-graph/issue";
 
 export interface Props extends BaseProps {
   opened?: boolean;
@@ -54,28 +57,41 @@ const Styles = {
   headerKey: classNames("text-base"),
   headerButtonContainer: classNames("flex", "top-3", "right-2"),
   main: classNames("flex", "flex-col", "overflow-hidden", "h-full"),
-  issueList: classNames(
-    "flex",
-    "flex-col",
-    "pt-3",
-    "gap-y-3",
-    "px-3",
-    "border-t",
-    "border-t-lightgray",
-    "h-full",
-    "overflow-y-auto",
-  ),
-  emptyIssuesArea: classNames(
-    "flex",
-    "items-center",
-    "mt-0",
-    "m-3",
-    "p-4",
-    "rounded",
-    "border",
-    "border-complement-200",
-    "text-secondary2-500",
-  ),
+  issueList: {
+    root: classNames(
+      "flex",
+      "flex-col",
+      "pt-3",
+      "gap-y-3",
+      "px-3",
+      "border-t",
+      "border-t-lightgray",
+      "h-full",
+      "overflow-y-auto",
+    ),
+    empty: classNames(
+      "flex",
+      "items-center",
+      "mt-0",
+      "m-3",
+      "p-4",
+      "rounded",
+      "border",
+      "border-complement-200",
+      "text-secondary2-500",
+    ),
+    checkableIssue: classNames("flex", "flex-row", "items-center"),
+    allSelector: classNames(
+      "flex",
+      "flex-row",
+      "items-center",
+      "font-bold",
+      "text-secondary2-400",
+      "rounded",
+      "bg-secondary2-200/20",
+      "cursor-pointer",
+    ),
+  },
 
   paginator: {
     root: classNames(
@@ -114,19 +130,48 @@ const Styles = {
   },
 };
 
+const AllIssueSelector = (props: {
+  onChange: (value: boolean) => void;
+  issuesInPage: IssueModel[];
+  selectedIssues: string[];
+}) => {
+  const diffSet = difference(new Set(props.issuesInPage.map((v) => v.key)), new Set(props.selectedIssues));
+
+  const checked = diffSet.size === 0;
+
+  return (
+    <li className={Styles.issueList.allSelector} onClick={() => props.onChange(!checked)}>
+      <Checkbox checked={checked} onChange={props.onChange} /> Select all{" "}
+    </li>
+  );
+};
+
 const IssueList = (props: {
   issues: IssueModel[];
   selectedIssues: string[];
   loading: boolean;
   testid: string;
   onToggleMark: (key: string) => void;
+  onToggleMulti: (keys: string[]) => void;
 }) => {
   const gen = generateTestId(props.testid);
   const selectedIssueKeys = new Set(props.selectedIssues);
+  const handleSelected = (value: boolean) => {
+    const keys = new Set(props.issues.map((v) => v.key));
+    const selected = new Set(props.selectedIssues);
+    let diff: Set<string>;
+
+    if (value) {
+      diff = difference(keys, selected);
+    } else {
+      diff = intercect(selected, keys);
+    }
+    props.onToggleMulti(Array.from(diff));
+  };
 
   if (props.loading) {
     return (
-      <ul className={Styles.issueList}>
+      <ul className={Styles.issueList.root}>
         <IssueComponent loading testid={gen("skeleton")} />
         <IssueComponent loading testid={gen("skeleton")} />
         <IssueComponent loading testid={gen("skeleton")} />
@@ -136,8 +181,8 @@ const IssueList = (props: {
 
   if (props.issues.length === 0) {
     return (
-      <ul className={Styles.issueList}>
-        <div className={Styles.emptyIssuesArea} data-testid={gen("empty")}>
+      <ul className={Styles.issueList.root}>
+        <div className={Styles.issueList.empty} data-testid={gen("empty")}>
           No issues. Please search with valid JQL first.
         </div>
       </ul>
@@ -145,15 +190,19 @@ const IssueList = (props: {
   }
 
   return (
-    <ul className={Styles.issueList}>
+    <ul className={Styles.issueList.root}>
+      <AllIssueSelector onChange={handleSelected} issuesInPage={props.issues} selectedIssues={props.selectedIssues} />
       {props.issues.map((v) => (
-        <IssueComponent
-          key={v.key}
-          issue={v}
-          testid={gen("issue")}
-          selected={selectedIssueKeys.has(v.key)}
-          onClick={props.onToggleMark}
-        />
+        <ul key={v.key} className={Styles.issueList.checkableIssue}>
+          <li>
+            <Checkbox
+              checked={selectedIssueKeys.has(v.key)}
+              onChange={() => props.onToggleMark(v.key)}
+              testid={gen(`check-${v.key}`)}
+            />
+          </li>
+          <IssueComponent key={v.key} issue={v} testid={gen(`${v.key}`)} onClick={props.onToggleMark} />
+        </ul>
       ))}
     </ul>
   );
@@ -272,6 +321,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
         loading={loading}
         testid={gen("issue-list")}
         onToggleMark={handleToggleMark}
+        onToggleMulti={importer.toggleMulti}
       />
       <Paginator
         onChangePage={handleChangePage}

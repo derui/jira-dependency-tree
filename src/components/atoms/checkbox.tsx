@@ -11,7 +11,7 @@ export interface Props extends BaseProps {
 
 const Styles = {
   wrapper: (checked: boolean, disabled: boolean) =>
-    classNames("flex-none", iconize({ type: checked ? "square-check" : "square", disabled, size: "s" }), {
+    classNames("flex-none", "m-2", iconize({ type: checked ? "square-check" : "square", disabled, size: "m" }), {
       "cursor-not-allowed": disabled,
       "cursor-pointer": !disabled,
     }),
@@ -49,6 +49,7 @@ export function Checkbox(props: Props) {
     <span
       className={Styles.wrapper(checked, props.disabled ?? false)}
       aria-disabled={props.disabled ?? false}
+      aria-selected={checked}
       onClick={handleClick}
       data-testid={gen("root")}
     >

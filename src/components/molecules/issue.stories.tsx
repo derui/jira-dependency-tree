@@ -72,6 +72,12 @@ export const DONE: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    loading: true,
+  },
+};
+
 export const Placeholder: Story = {
   args: {
     placeholder: true,

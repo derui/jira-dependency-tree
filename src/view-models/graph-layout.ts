@@ -1,5 +1,5 @@
 import { IssueModel } from "./issue";
-import { IssueKey, Position, Size } from "@/type";
+import { IssueKey, IssueRelationId, Position, Size } from "@/type";
 
 export interface IssueModelWithLayout {
   issue: IssueModel;
@@ -34,6 +34,7 @@ export interface LinkLayoutModel {
    * metadata for debugging.
    */
   meta: {
+    relationId: IssueRelationId;
     startIssue: IssueKey;
     endIssue: IssueKey;
   };

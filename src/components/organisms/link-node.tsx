@@ -9,5 +9,12 @@ export interface Props extends BaseProps {
 export function LinkNode(props: Props) {
   const gen = generateTestId(props.testid);
 
-  return <path d={props.layout.pathCommands} fill="none" className="stroke-secondary1-300" data-testid={gen("link")} />;
+  return (
+    <path
+      d={props.layout.pathCommands}
+      fill="none"
+      className="stroke-secondary1-300"
+      data-testid={gen(`link-${props.layout.meta.relationId}`)}
+    />
+  );
 }

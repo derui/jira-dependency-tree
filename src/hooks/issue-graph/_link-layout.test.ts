@@ -72,11 +72,11 @@ test("get upper link", () => {
 
   const sortedLayout = layout.sort((v1, v2) => v1.meta.startIssue.localeCompare(v2.meta.startIssue));
   expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,36 h 50`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,124.8 h 21`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`s 4,0 4,0 4,-4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`v -80.8`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`s 0,-4 0,-4 4,-4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`h 21`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,124.8 h 17`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`c 8,0 8,0 8,-8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`v -72.8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`c 0,-8 0,-8 8,-8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`h 17`);
 });
 
 test("get lower link", () => {
@@ -99,9 +99,9 @@ test("get lower link", () => {
 
   const sortedLayout = layout.sort((v1, v2) => v1.meta.startIssue.localeCompare(v2.meta.startIssue));
   expect(sortedLayout[0].pathCommands.trim()).toEqual(`M 200,36 h 50`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,36 h 21`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`s 4,0 4,0 4,4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`v 80.8`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`s 0,4 0,4 4,4`);
-  expect(sortedLayout[1].pathCommands.trim()).toContain(`h 21`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`M 200,36 h 17`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`c 8,0 8,0 8,8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`v 72.8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`c 0,8 0,8 8,8`);
+  expect(sortedLayout[1].pathCommands.trim()).toContain(`h 17`);
 });

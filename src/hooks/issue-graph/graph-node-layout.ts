@@ -30,7 +30,7 @@ const selectRelations = createDraftSafeSelector(
 /**
  * calculation logic for issue graph layout.
  */
-export const useGraphLayout = function useGraphLayout(): Result {
+export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
   const issues = useAppSelector(selectIssues);
   const relations = useAppSelector(selectRelations);
 

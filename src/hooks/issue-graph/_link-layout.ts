@@ -7,7 +7,7 @@ import { IssueModelWithLayout, LinkLayoutModel } from "@/view-models/graph-layou
 // width of stroke in pixel.
 const STROKE_WIDTH = 2;
 // rounding size in pixel
-const ROUNDING_SIZE = 4;
+const ROUNDING_SIZE = 8;
 
 const makePathCommand = function makePathCommand(
   relation: Relation,
@@ -34,16 +34,16 @@ const makePathCommand = function makePathCommand(
   // outward is located after row from inward
   if (diffY > 0) {
     pathCommands = `M ${position.x},${position.y} h ${lengthX - ISSUE_X_GAP / 2 - ROUNDING_SIZE}
-s ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},${ROUNDING_SIZE}
+c ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},${ROUNDING_SIZE}
 v ${lengthY - ROUNDING_SIZE * 2}
-s 0,${ROUNDING_SIZE} 0,${ROUNDING_SIZE} ${ROUNDING_SIZE},${ROUNDING_SIZE}
+c 0,${ROUNDING_SIZE} 0,${ROUNDING_SIZE} ${ROUNDING_SIZE},${ROUNDING_SIZE}
 h ${ISSUE_X_GAP / 2 - ROUNDING_SIZE}
 `;
   } else if (diffY < 0) {
     pathCommands = `M ${position.x},${position.y} h ${lengthX - ISSUE_X_GAP / 2 - ROUNDING_SIZE}
-s ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},-${ROUNDING_SIZE}
+c ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},0 ${ROUNDING_SIZE},-${ROUNDING_SIZE}
 v -${lengthY - ROUNDING_SIZE * 2}
-s 0,-${ROUNDING_SIZE} 0,-${ROUNDING_SIZE} ${ROUNDING_SIZE},-${ROUNDING_SIZE}
+c 0,-${ROUNDING_SIZE} 0,-${ROUNDING_SIZE} ${ROUNDING_SIZE},-${ROUNDING_SIZE}
 h ${ISSUE_X_GAP / 2 - ROUNDING_SIZE}
 `;
   } else {
@@ -53,6 +53,7 @@ h ${ISSUE_X_GAP / 2 - ROUNDING_SIZE}
   return {
     pathCommands: pathCommands,
     meta: {
+      relationId: relation.id,
       startIssue: inward.issue.key,
       endIssue: outward.issue.key,
     },

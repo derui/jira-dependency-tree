@@ -3,9 +3,9 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { Issue } from "../molecules/issue";
 import { SearchInput } from "../molecules/search-input";
+import { IssueKey } from "@/type";
 import { useFilterIssues } from "@/hooks/filter-issues";
 import { useFocusIssue } from "@/hooks/focus-issue";
-import { IssueKey } from "@/type";
 
 export type Props = BaseProps;
 

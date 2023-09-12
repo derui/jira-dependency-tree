@@ -15,6 +15,7 @@ test("initial view box", () => {
 
   expect(result.current.state).toEqual({
     viewBox: [0, 0, 0, 0],
+    pan: { x: 0, y: 0 },
   });
 });
 
@@ -29,6 +30,7 @@ test("calculate view box", () => {
   // Assert
   expect(result.current.state).toEqual({
     viewBox: [0, 0, 100, 150],
+    pan: { x: 0, y: 0 },
   });
 });
 
@@ -44,6 +46,7 @@ test("calculate view box with pan", () => {
   // Assert
   expect(result.current.state).toEqual({
     viewBox: [7.5, 12.5, 100, 150],
+    pan: { x: 7.5, y: 12.5 },
   });
 });
 
@@ -60,5 +63,6 @@ test("calculate view box with zoom", () => {
   // Assert
   expect(result.current.state).toEqual({
     viewBox: [-100, -125, 200, 300],
+    pan: { x: -50, y: -50 },
   });
 });

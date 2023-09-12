@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { RegistrarContext } from "@/registrar-context";
+import { useAppDispatch } from "./_internal-hooks";
 import { IssueKey } from "@/type";
+import { attentionIssue } from "@/status/actions";
 
 /**
  * get function to focus issue
  */
 export const useFocusIssue = function useFocusIssue(): (key: IssueKey) => void {
-  const registrar = useContext(RegistrarContext);
+  const dispatch = useAppDispatch();
 
-  return (key: IssueKey) => registrar.resolve("sendCommandTo")({ kind: "AttentionIssue", key });
+  return (key: IssueKey) => dispatch(attentionIssue(key));
 };

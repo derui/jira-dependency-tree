@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { changeGraphLayout } from "../actions";
-import { GraphLayout } from "@/drivers/issue-graph/type";
+import { GraphLayout } from "@/type";
 
 interface GraphLayoutState {
   layout: GraphLayout;

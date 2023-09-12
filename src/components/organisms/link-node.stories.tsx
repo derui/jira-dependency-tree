@@ -1,12 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useEffect } from "react";
 import { Provider } from "react-redux";
 import { IssueNode } from "./issue-node";
 import { LinkNode } from "./link-node";
 import { randomIssue } from "@/mock/generators";
 import { createStore } from "@/status/store";
 import { importIssues } from "@/status/actions";
-import { useGraphLayout } from "@/hooks/issue-graph/graph-layout";
+import { useGraphNodeLayout } from "@/hooks";
 
 const meta = {
   title: "Organisms/Link Node",
@@ -22,7 +21,7 @@ export const Default: Story = {
   args: {
     layout: {
       pathCommands: "",
-      meta: { endIssue: "", startIssue: "" },
+      meta: { relationId: "1", endIssue: "", startIssue: "" },
     },
   },
   render() {
@@ -38,7 +37,7 @@ export const Default: Story = {
     );
 
     const Comp = () => {
-      const data = useGraphLayout();
+      const data = useGraphNodeLayout();
 
       return (
         <svg width="100%" height="100%">

@@ -28,3 +28,9 @@ export type Position = {
 export type IssueRelationId = string;
 
 export type DeltaId = string;
+
+export const GraphLayout = {
+  Vertical: "vertical",
+  Horizontal: "horizontal",
+} as const;
+export type GraphLayout = typeof GraphLayout[keyof typeof GraphLayout];

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch } from "./_internal-hooks";
-import { GraphLayout } from "@/drivers/issue-graph/type";
 import { changeGraphLayout } from "@/status/actions";
+import { GraphLayout } from "@/type";
 
 interface UseGraphLayoutResult {
   /**

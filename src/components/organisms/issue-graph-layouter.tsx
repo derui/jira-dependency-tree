@@ -2,8 +2,8 @@ import { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
-import { GraphLayout } from "@/drivers/issue-graph/type";
 import { useGraphLayout } from "@/hooks";
+import { GraphLayout } from "@/type";
 
 export type Props = BaseProps;
 

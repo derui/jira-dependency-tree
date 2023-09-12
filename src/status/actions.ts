@@ -1,9 +1,8 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential } from "@/models/event";
 import { Issue, Relation } from "@/models/issue";
-import { DeltaId, IssueKey, IssueRelationId } from "@/type";
+import { DeltaId, GraphLayout, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/models/relation-delta";
-import { GraphLayout } from "@/drivers/issue-graph/type";
 
 type ApiCredentialPayload = {
   token: string;

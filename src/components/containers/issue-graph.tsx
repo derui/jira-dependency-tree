@@ -122,7 +122,6 @@ export function IssueGraphContainer(props: Props) {
   }, [props.attension]);
 
   const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
     const delta = e.deltaY > 0 ? 1 : -1;
 
     if (delta > 0) {

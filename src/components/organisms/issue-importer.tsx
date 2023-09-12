@@ -10,7 +10,6 @@ import { Checkbox } from "../atoms/checkbox";
 import { useImportIssues, useSearchIssues } from "@/hooks";
 import { IssueModel } from "@/view-models/issue";
 import { difference, intercect } from "@/utils/basic";
-import { getTargetIssuePositionInSVG } from "@/drivers/issue-graph/issue";
 
 export interface Props extends BaseProps {
   opened?: boolean;

@@ -7,6 +7,7 @@ import { ZoomSlider } from "./components/molecules/zoom-slider";
 import { SideToolbar } from "./components/containers/side-toolbar";
 import { TopToolbar } from "./components/containers/top-toolbar";
 import { useZoom } from "./hooks/zoom";
+import { IssueGraphContainer } from "./components/containers/issue-graph";
 
 export type Props = BaseProps;
 
@@ -38,6 +39,7 @@ export const App: React.FC<Props> = () => {
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />
       <SideToolbar testid="side-toolbar" />
+      <IssueGraphContainer testid="issue-graph" />
     </div>
   );
 };

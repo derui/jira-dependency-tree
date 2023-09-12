@@ -1,16 +1,49 @@
 import classNames from "classnames";
-import { useEffect, useLayoutEffect, useRef, useState, WheelEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, WheelEvent } from "react";
 import { fromEvent, take, takeUntil } from "rxjs";
 import { BaseProps, generateTestId } from "../helper";
 import { IssueNode } from "../organisms/issue-node";
 import { LinkNode } from "../organisms/link-node";
 import { useGraphNodeLayout, useViewBox } from "@/hooks";
 import { Rect } from "@/utils/basic";
+import { simpleTransit } from "@/utils/transition";
+import { IssueModelWithLayout } from "@/view-models/graph-layout";
+import { Position } from "@/type";
+import { cubicBezier } from "@/utils/bezier";
 
-type Props = BaseProps;
+interface Props extends BaseProps {
+  attension?: string;
+}
 
 const Styles = {
   root: classNames("max-h-full", "height-auto", "absolute"),
+  arrowhead: classNames("stroke-secondary1-300", "fill-secondary1-300"),
+};
+
+const attentionIssue = (
+  pan: Position,
+  targetIssueKey: string,
+  issues: IssueModelWithLayout[],
+  callback: (pos: Position) => void,
+) => {
+  const targetIssue = issues.find((i) => i.issue.key === targetIssueKey);
+
+  if (!targetIssue) return;
+
+  const center = {
+    x: targetIssue.position.x + targetIssue.size.width / 2,
+    y: targetIssue.position.y + targetIssue.size.height / 2,
+  };
+  const vector = { x: center.x - pan.x, y: center.y - pan.y };
+  const bezier = cubicBezier([0, 0.1, 0.75, 1.0]);
+
+  const interpolatePosition = (time: number) => {
+    const rate = bezier(time);
+
+    callback({ x: pan.x + vector.x * rate, y: pan.y + vector.y * rate });
+  };
+
+  simpleTransit(250)(interpolatePosition);
 };
 
 // eslint-disable-next-line func-style
@@ -80,6 +113,14 @@ export function IssueGraphContainer(props: Props) {
     return () => totalSubscription.unsubscribe();
   }, [ref.current]);
 
+  useEffect(() => {
+    if (props.attension) {
+      attentionIssue(viewBox.state.pan, props.attension, graph.layout.issues, (p) => {
+        viewBox.movePan(p);
+      });
+    }
+  }, [props.attension]);
+
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 1 : -1;
@@ -100,8 +141,16 @@ export function IssueGraphContainer(props: Props) {
       onWheel={handleWheel}
     >
       <defs>
-        <marker id="arrowhead" markerWidth={10} markerHeight={7} refX={10} refY={3.5} orient="auto">
-          <polygon points="0 0, 10 3.5, 0.7" />
+        <marker
+          id="arrowhead"
+          className={Styles.arrowhead}
+          markerWidth={10}
+          markerHeight={7}
+          refX={10}
+          refY={3.5}
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" />
         </marker>
       </defs>
       {issues}

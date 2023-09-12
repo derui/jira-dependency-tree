@@ -14,6 +14,7 @@ export function LinkNode(props: Props) {
       d={props.layout.pathCommands}
       fill="none"
       className="stroke-secondary1-300"
+      markerEnd="url(#arrowhead)"
       data-testid={gen(`link-${props.layout.meta.relationId}`)}
     />
   );

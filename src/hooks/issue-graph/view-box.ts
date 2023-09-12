@@ -28,6 +28,8 @@ type Result = {
      * calculated view box for <svg>
      */
     viewBox: number[];
+
+    pan: Position;
   };
 };
 
@@ -74,5 +76,5 @@ export const useViewBox = function useViewBox(): Result {
     setSize(size);
   }, []);
 
-  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox } };
+  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox, pan } };
 };

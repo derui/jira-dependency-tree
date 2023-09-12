@@ -8,6 +8,7 @@ import { SideToolbar } from "./components/containers/side-toolbar";
 import { TopToolbar } from "./components/containers/top-toolbar";
 import { useZoom } from "./hooks/zoom";
 import { IssueGraphContainer } from "./components/containers/issue-graph";
+import { useFocusedIssue } from "./hooks/focused-issue";
 
 export type Props = BaseProps;
 
@@ -28,6 +29,7 @@ const Styles = {
 
 export const App: React.FC<Props> = () => {
   const zoom = useZoom();
+  const focusedIssue = useFocusedIssue();
 
   return (
     <div className={Styles.root}>
@@ -39,7 +41,7 @@ export const App: React.FC<Props> = () => {
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />
       <SideToolbar testid="side-toolbar" />
-      <IssueGraphContainer testid="issue-graph" />
+      <IssueGraphContainer testid="issue-graph" attension={focusedIssue} />
     </div>
   );
 };

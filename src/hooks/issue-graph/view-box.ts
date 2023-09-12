@@ -1,6 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAppDispatch } from "../_internal-hooks";
 import { Position } from "@/type";
 import { Rect } from "@/utils/basic";
+import { changeZoom } from "@/status/actions";
 
 type Result = {
   /**
@@ -30,6 +32,7 @@ type Result = {
     viewBox: number[];
 
     pan: Position;
+    zoom: number;
   };
 };
 
@@ -37,6 +40,8 @@ export const useViewBox = function useViewBox(): Result {
   const [zoom, setZoom] = useState(100.0);
   const [pan, setPan] = useState<Position>({ x: 0, y: 0 });
   const [size, setSize] = useState<Rect>(Rect.empty());
+  const dispatch = useAppDispatch();
+
   const viewBox = useMemo<Result["state"]["viewBox"]>(() => {
     const scale = 100 / zoom;
     const zoomedWidth = size.width * scale;
@@ -50,9 +55,13 @@ export const useViewBox = function useViewBox(): Result {
     return [newMinX, newMinY, zoomedWidth, zoomedHeight];
   }, [pan, size, zoom]);
 
+  useEffect(() => {
+    dispatch(changeZoom(zoom));
+  }, [zoom]);
+
   const movePan = useCallback<Result["movePan"]>((delta) => {
     setPan((pan) => {
-      return { x: pan.x + (delta.x * (100 / zoom)) / 2, y: pan.y + (delta.y * (100 / zoom)) / 2 };
+      return { x: pan.x + delta.x * (100 / zoom), y: pan.y + delta.y * (100 / zoom) };
     });
   }, []);
 
@@ -76,5 +85,5 @@ export const useViewBox = function useViewBox(): Result {
     setSize(size);
   }, []);
 
-  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox, pan } };
+  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox, pan, zoom } };
 };

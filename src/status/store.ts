@@ -8,6 +8,7 @@ import * as relations from "./slices/relations";
 import * as graphLayout from "./slices/graph-layout";
 
 import * as relationDelta from "./slices/relation-delta";
+import * as attentionIssue from "./slices/attention-issue";
 
 // INJECT EPIC IMPORT HERE
 
@@ -23,6 +24,8 @@ const reducers = {
   issues: issues.reducer,
 
   apiCredential: apiCredential.reducer,
+
+  attentionIssue: attentionIssue.reducer,
   // do not format this structure.
 } as const;
 

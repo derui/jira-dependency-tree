@@ -40,7 +40,9 @@ const attentionIssue = (
   const interpolatePosition = (time: number) => {
     const rate = bezier(time);
 
-    callback({ x: pan.x + vector.x * rate, y: pan.y + vector.y * rate });
+    callback({ x: vector.x * rate, y: vector.y * rate });
+    vector.x -= vector.x * rate;
+    vector.y -= vector.y * rate;
   };
 
   simpleTransit(250)(interpolatePosition);

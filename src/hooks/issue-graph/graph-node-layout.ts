@@ -1,14 +1,21 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
-import { useAppSelector } from "../_internal-hooks";
+import { useAppDispatch, useAppSelector } from "../_internal-hooks";
 import { makeIssueGraph } from "./_graph-calculation";
 import { calculateIssueLayout } from "./_issue-layout";
 import { calculateLinkLayout } from "./_link-layout";
 import { IssueModelWithLayout, LinkLayoutModel } from "@/view-models/graph-layout";
 import { RootState } from "@/status/store";
 import { issueToIssueModel } from "@/view-models/issue";
+import { IssueKey } from "@/type";
+import { selectIssueInGraph } from "@/status/actions";
 
 type Result = {
+  /**
+   * select issue in layout
+   */
+  select: (key: IssueKey) => void;
+
   layout: {
     issues: IssueModelWithLayout[];
     links: LinkLayoutModel[];
@@ -31,6 +38,7 @@ const selectRelations = createDraftSafeSelector(
  * calculation logic for issue graph layout.
  */
 export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
+  const dispatch = useAppDispatch();
   const issues = useAppSelector(selectIssues);
   const relations = useAppSelector(selectRelations);
 
@@ -41,12 +49,14 @@ export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
     const links = calculateLinkLayout(relations, issueLayouts);
 
     return {
-      layout: {
-        issues: issueLayouts,
-        links,
-      },
+      issues: issueLayouts,
+      links,
     };
   }, [issues, relations]);
 
-  return state;
+  const select = (key: IssueKey) => {
+    dispatch(selectIssueInGraph(key));
+  };
+
+  return { layout: state, select };
 };

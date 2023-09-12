@@ -10,8 +10,7 @@
 
 html,
 body,
-#root,
-#graph-root {
+#root {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -35,18 +34,4 @@ body,
   top: 0;
   right: 0;
   height: 100%;
-}
-
-#graph-root {
-  position: absolute;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-}
-
-/* SVG's special class */
-.graph-issue {
-  font-size: 13.5px;
-  font-family: "Noto Sans JP";
-  dominant-baseline: text-before-edge;
 }

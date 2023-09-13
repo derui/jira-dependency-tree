@@ -1,15 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { importIssues, relations } from "../actions";
+import { highlightRelatedNodes, importIssues, relations, resetHighlightRelationNodes } from "../actions";
 import { IssueRelationId } from "@/type";
 import { Relation } from "@/models/issue";
 
 interface RelationsState {
   relations: Record<IssueRelationId, Relation>;
+  highlightedRelations: Record<IssueRelationId, Relation>;
   term?: string;
 }
 
 const initialState = {
   relations: {},
+  highlightedRelations: {},
   term: undefined,
 } as RelationsState satisfies RelationsState;
 
@@ -49,6 +51,18 @@ const slice = createSlice({
       state.term = undefined;
 
       return state;
+    });
+
+    builder.addCase(highlightRelatedNodes, (state, { payload }) => {
+      const related = Object.values(state.relations).filter((r) => {
+        return r.inwardIssue === payload || r.outwardIssue === payload;
+      });
+
+      state.highlightedRelations = Object.fromEntries(related.map((r) => [r.id, r]));
+    });
+
+    builder.addCase(resetHighlightRelationNodes, (state) => {
+      state.highlightedRelations = {};
     });
   },
 });

@@ -25,6 +25,10 @@ export const narrowExpandedIssue = createAction("narrowExpandedIssue");
 
 export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
 
+// highlight issues/link
+export const highlightRelatedNodes = createAction<string>("highlightRelationNodes");
+export const resetHighlightRelationNodes = createAction<string>("resetHighlightRelationNodes");
+
 // action to import issues
 export const importIssues = createAction<{ issues: Issue[] }>("importIssues");
 

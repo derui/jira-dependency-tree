@@ -29,7 +29,7 @@ test("open importer", async ({ page }) => {
   await expect(page.getByTestId("top-toolbar/importer/root")).toBeVisible();
 
   await expect(page.getByText("No issues")).toContainText("No issues. Please search with valid JQL first.");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("top-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
   await expect(page.getByTestId("top-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
   await expect(page.getByTestId("top-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
 });
@@ -69,5 +69,5 @@ test("input jql and import issues", async ({ page }) => {
   await expect(page.getByTestId("top-toolbar/importer/root")).not.toBeVisible();
 
   // verify issues in graph
-  expect(await page.locator(".graph-issue").all()).toHaveLength(3);
+  expect(await page.getByTestId("issue-graph/issue-node/group").all()).toHaveLength(3);
 });

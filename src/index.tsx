@@ -7,7 +7,7 @@ import { install } from "@twind/core";
 import { SettingArgument } from "./models/setting";
 import { makeStorageDriver, StorageSink } from "./drivers/storage";
 import { env } from "./env";
-import { createStore } from "./status/store";
+import { createStore, RootState } from "./status/store";
 import { createDependencyRegistrar } from "./utils/dependency-registrar";
 import { Dependencies } from "./dependencies";
 import { restoreApiCredential } from "./status/actions";
@@ -47,6 +47,27 @@ storageDriver(storageSubject)
       );
     }
   });
+
+const selectCredential = createDraftSafeSelector(
+  (state: RootState) => state,
+  (state) => state.apiCredential.credential,
+);
+
+store.subscribe(() => {
+  const credential = selectCredential(store.getState());
+
+  if (credential) {
+    storageSubject.next({
+      settings: {
+        userDomain: credential.userDomain,
+        credentials: {
+          email: credential.email,
+          jiraToken: credential.token,
+        },
+      },
+    } as SettingArgument);
+  }
+});
 
 install(config, process.env.NODE_ENV === "production");
 

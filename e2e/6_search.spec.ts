@@ -102,5 +102,5 @@ test("move point to task if result clicked", async ({ page }) => {
   await page.getByTestId("issue-searcher/issue/root").click();
 
   // verify
-  await expect(page.locator('[data-issue-key="TES-51"]')).toBeVisible();
+  await expect(page.getByTestId("issue-graph/issue-node/issue-TES-51/root")).toBeVisible();
 });

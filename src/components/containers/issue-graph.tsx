@@ -56,11 +56,11 @@ export function IssueGraphContainer(props: Props) {
   const ref = useRef<SVGSVGElement | null>(null);
 
   const issues = graph.layout.issues.map((v) => {
-    return <IssueNode key={v.issue.key} layout={v} />;
+    return <IssueNode key={v.issue.key} layout={v} testid={gen("issue-node")} />;
   });
 
   const links = graph.layout.links.map((v) => {
-    return <LinkNode key={v.meta.relationId} layout={v} />;
+    return <LinkNode key={v.meta.relationId} layout={v} testid={gen("link-node")} />;
   });
 
   useLayoutEffect(() => {

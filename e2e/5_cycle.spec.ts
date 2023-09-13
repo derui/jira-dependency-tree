@@ -29,5 +29,5 @@ test("show cycle", async ({ page }) => {
 
   await page.getByTestId("top-toolbar/importer/close").click();
 
-  expect(await page.locator(".graph-issue").all()).toHaveLength(3);
+  expect(await page.getByTestId("issue-graph/issue-node/group").all()).toHaveLength(3);
 });

@@ -14,10 +14,14 @@ export function IssueNode(props: Props) {
   const selectNode = useSelectNode();
 
   return (
-    <g>
+    <g data-testid={gen("group")}>
       <Translate {...props.layout.position}>
         <foreignObject width={props.layout.size.width} height={props.layout.size.height}>
-          <Issue issue={props.layout.issue} testid={gen("issue")} onClick={selectNode.select} />
+          <Issue
+            issue={props.layout.issue}
+            testid={gen(`issue-${props.layout.issue.key}`)}
+            onClick={selectNode.select}
+          />
         </foreignObject>
       </Translate>
     </g>

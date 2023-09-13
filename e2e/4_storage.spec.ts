@@ -52,7 +52,6 @@ test("store local storage submitted settings", async ({ page }) => {
 
   expect(actual).toEqual({
     settings: {
-      issueNodeSize: { width: 160, height: 80 },
       userDomain: "domain",
       credentials: {
         email: "email",

@@ -100,16 +100,20 @@ const gridToGraphLayout = function gridToGraphLayout(
 export const calculateIssueLayout = (graph: DirectedGraph, issues: IssueModel[]) => {
   const issueMap = new Map(issues.map((v) => [v.key, v]));
   const graphKey = new Set<string>();
-  const subgraphs = getSubgraphs(graph).filter((g) => {
-    const key = Array.from(g.vertices).sort().join("$");
+  const subgraphs = getSubgraphs(graph)
+    .filter((g) => {
+      const key = Array.from(g.vertices).sort().join("$");
 
-    if (graphKey.has(key)) {
-      return false;
-    } else {
-      graphKey.add(key);
-      return true;
-    }
-  });
+      if (graphKey.has(key)) {
+        return false;
+      } else {
+        graphKey.add(key);
+        return true;
+      }
+    })
+    .sort((v1, v2) => {
+      return v2.vertices.length - v1.vertices.length;
+    });
 
   const layoutedIssues = new Set<string>();
   let accumulatedGridHeight = 0;

@@ -1,7 +1,20 @@
-import { test, expect } from "vitest";
+import { test, expect, vi, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
+import { useAppDispatch } from "../_internal-hooks";
 import { useViewBox } from "./view-box";
 import { Rect } from "@/utils/basic";
+import { changeZoom } from "@/status/actions";
+
+vi.mock("../_internal-hooks", () => {
+  const mock = vi.fn();
+  return {
+    useAppDispatch: () => mock,
+  };
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 /**
  * utility function
@@ -15,7 +28,7 @@ test("initial view box", () => {
 
   expect(result.current.state).toEqual({
     viewBox: [0, 0, 0, 0],
-    pan: { x: 0, y: 0 },
+    center: { x: 0, y: 0 },
   });
 });
 
@@ -30,7 +43,7 @@ test("calculate view box", () => {
   // Assert
   expect(result.current.state).toEqual({
     viewBox: [0, 0, 100, 150],
-    pan: { x: 0, y: 0 },
+    center: { x: 50, y: 75 },
   });
 });
 
@@ -45,8 +58,8 @@ test("calculate view box with pan", () => {
 
   // Assert
   expect(result.current.state).toEqual({
-    viewBox: [7.5, 12.5, 100, 150],
-    pan: { x: 7.5, y: 12.5 },
+    viewBox: [15, 25, 100, 150],
+    center: { x: 65, y: 100 },
   });
 });
 
@@ -61,8 +74,10 @@ test("calculate view box with zoom", () => {
   rerender();
 
   // Assert
+  const mocked = vi.mocked(useAppDispatch());
   expect(result.current.state).toEqual({
-    viewBox: [-100, -125, 200, 300],
-    pan: { x: -50, y: -50 },
+    viewBox: [-150, -175, 200, 300],
+    center: { x: -50, y: -25 },
   });
+  expect(mocked).toBeCalledWith(changeZoom(50));
 });

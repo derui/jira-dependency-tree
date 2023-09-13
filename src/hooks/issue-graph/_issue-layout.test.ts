@@ -132,3 +132,32 @@ test("layout subgraphs", () => {
     meta: { colIndex: 1, rowIndex: 1 },
   });
 });
+
+test("should layout large subgraph to top", () => {
+  // arrange
+  const graph = emptyDirectedGraph()
+    .addVertices(["a", "b", "c", "d", "e"])
+    .directTo("a", "b")
+    .directTo("d", "c")
+    .directTo("d", "e");
+  const issues = [
+    randomIssue({ key: "a" }),
+    randomIssue({ key: "b" }),
+    randomIssue({ key: "c" }),
+    randomIssue({ key: "d" }),
+    randomIssue({ key: "e" }),
+  ];
+
+  // do
+  const layout = calculateIssueLayout(graph, issues);
+
+  // verify
+  expect(layout).toHaveLength(5);
+
+  const sortedLayout = layout.sort((v1, v2) => v1.issue.key.localeCompare(v2.issue.key));
+  expect(sortedLayout[0].meta).toEqual({ colIndex: 0, rowIndex: 2 });
+  expect(sortedLayout[1].meta).toEqual({ colIndex: 1, rowIndex: 2 });
+  expect(sortedLayout[2].meta).toEqual({ colIndex: 1, rowIndex: 0 });
+  expect(sortedLayout[3].meta).toEqual({ colIndex: 0, rowIndex: 0 });
+  expect(sortedLayout[4].meta).toEqual({ colIndex: 1, rowIndex: 1 });
+});

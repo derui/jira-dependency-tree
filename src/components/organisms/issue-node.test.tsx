@@ -24,7 +24,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-const issue = issueToIssueModel(randomIssue());
+const issue = issueToIssueModel(randomIssue({ key: "key" }));
 const layout: IssueModelWithLayout = {
   issue,
   position: { x: 1, y: 2 },
@@ -44,7 +44,7 @@ test("should be able to render", () => {
     </Provider>,
   );
 
-  const opener = screen.queryAllByTestId("issue/root");
+  const opener = screen.queryAllByTestId("issue-key/root");
 
   expect(opener).toHaveLength(1);
 });
@@ -60,7 +60,7 @@ test("call select when issue clicked", async () => {
     </Provider>,
   );
 
-  await user.click(screen.getByTestId("issue/root"));
+  await user.click(screen.getByTestId("issue-key/root"));
 
   expect(mock).toBeCalledWith(issue.key);
 });

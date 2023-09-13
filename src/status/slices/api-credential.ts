@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { restoreApiCredential, submitApiCredentialFulfilled } from "../actions";
+import { restoreApiCredential, submitApiCredential } from "../actions";
 import { ApiCredential } from "@/models/event";
 
 interface ApiCredentialState {
@@ -14,7 +14,7 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     // applying api credential
-    builder.addCase(submitApiCredentialFulfilled, (state, action) => {
+    builder.addCase(submitApiCredential, (state, action) => {
       state.credential = action.payload;
     });
 

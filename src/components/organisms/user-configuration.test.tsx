@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { UserConfiguration } from "./user-configuration";
 import { createStore } from "@/status/store";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 import { createDependencyRegistrar } from "@/utils/dependency-registrar";
 import { Dependencies } from "@/dependencies";
 import { RegistrarContext } from "@/registrar-context";
@@ -63,7 +63,7 @@ test("initial payload is empty", () => {
 test("initial payload inputted", () => {
   const store = createStore();
   store.dispatch(
-    submitApiCredentialFulfilled({
+    submitApiCredential({
       apiBaseUrl: "url",
       apiKey: "key",
       email: "email",

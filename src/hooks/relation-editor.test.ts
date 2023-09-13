@@ -5,7 +5,7 @@ import { useRelationEditor } from "./relation-editor";
 import { useGenerateId } from "./_generate-id";
 import { createStore } from "@/status/store";
 import { createDeleting } from "@/models/relation-delta";
-import { importIssues, selectIssueInGraph, submitApiCredentialFulfilled } from "@/status/actions";
+import { importIssues, selectIssueInGraph, submitApiCredential } from "@/status/actions";
 import { randomCredential, randomIssue } from "@/mock/generators";
 import { issueToIssueModel } from "@/view-models/issue";
 import { Apis } from "@/apis/api";
@@ -140,7 +140,7 @@ test("apply remove and append delta", async () => {
   ];
   const credentail = randomCredential();
   store.dispatch(importIssues({ issues }));
-  store.dispatch(submitApiCredentialFulfilled(credentail));
+  store.dispatch(submitApiCredential(credentail));
   vi.mocked(useGenerateId).mockReturnValue(() => "id");
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });

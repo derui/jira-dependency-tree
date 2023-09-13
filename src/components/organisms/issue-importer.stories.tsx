@@ -4,7 +4,7 @@ import { rest } from "msw";
 import { IssueImporter } from "./issue-importer";
 import { createStore } from "@/status/store";
 import { MOCK_BASE_URL, randomApiIssue, randomCredential } from "@/mock/generators";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 
 const meta = {
   title: "Organisms/Issue Importer",
@@ -50,7 +50,7 @@ export const Loading: Story = {
   },
   render(args) {
     const store = createStore();
-    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitApiCredential(randomCredential()));
 
     return (
       <Provider store={store}>
@@ -76,7 +76,7 @@ export const Error: Story = {
   },
   render(args) {
     const store = createStore();
-    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitApiCredential(randomCredential()));
 
     return (
       <Provider store={store}>
@@ -101,7 +101,7 @@ export const DisplayIssues: Story = {
   },
   render(args) {
     const store = createStore();
-    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitApiCredential(randomCredential()));
 
     return (
       <Provider store={store}>

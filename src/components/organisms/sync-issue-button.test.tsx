@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
 import { createStore } from "@/status/store";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 import { randomCredential } from "@/mock/generators";
 import { Apis } from "@/apis/api";
 
@@ -38,7 +38,7 @@ test("initial state is disabled all", () => {
 
 test("do not disable if setup finished", () => {
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   render(
     <Provider store={store}>
@@ -56,7 +56,7 @@ test("dispatch action when click action", async () => {
   const user = userEvent.setup();
   const store = createStore();
   const cred = randomCredential();
-  store.dispatch(submitApiCredentialFulfilled(cred));
+  store.dispatch(submitApiCredential(cred));
 
   render(
     <Provider store={store}>

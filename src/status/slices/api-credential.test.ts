@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { restoreApiCredential, submitApiCredentialFulfilled } from "../actions";
+import { restoreApiCredential, submitApiCredential } from "../actions";
 import { getInitialState, reducer } from "./api-credential";
 
 test("initial state", () => {
@@ -15,7 +15,7 @@ test("apply fulfilled api credential", () => {
     userDomain: "domain",
   };
 
-  const ret = reducer(getInitialState(), submitApiCredentialFulfilled(payload));
+  const ret = reducer(getInitialState(), submitApiCredential(payload));
 
   expect(ret).toEqual({ credential: payload });
 });

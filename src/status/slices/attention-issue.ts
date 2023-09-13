@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { attentionIssue, attentionIssueFulfilled } from "../actions";
+import { payAttentionIssue } from "../actions";
 import { IssueKey } from "@/type";
 
 interface State {
@@ -13,12 +13,8 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(attentionIssue, (state, { payload }) => {
+    builder.addCase(payAttentionIssue, (state, { payload }) => {
       state.focusedIssueKey = payload;
-    });
-
-    builder.addCase(attentionIssueFulfilled, (state) => {
-      state.focusedIssueKey = undefined;
     });
   },
 });

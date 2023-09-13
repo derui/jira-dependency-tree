@@ -6,7 +6,7 @@ import Sinon from "sinon";
 import { IssueImporter } from "./issue-importer";
 import { createStore } from "@/status/store";
 import { setupMockServer } from "@/mock/server";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 import { randomApiIssue, randomCredential } from "@/mock/generators";
 
 const server = setupMockServer();
@@ -68,7 +68,7 @@ test("open and close panel", async () => {
 test("change loading state of input query and search", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -93,7 +93,7 @@ test("change loading state of input query and search", async () => {
 test("display empty list", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -117,7 +117,7 @@ test("display empty list", async () => {
 test("display error when API is failed", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -141,7 +141,7 @@ test("display error when API is failed", async () => {
 test("display issues when API returns some issues", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -165,7 +165,7 @@ test("display issues when API returns some issues", async () => {
 test("disable backward pagination after initial search", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -189,7 +189,7 @@ test("disable backward pagination after initial search", async () => {
 test("change page after search", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -227,7 +227,7 @@ test("change page after search", async () => {
 test("select issue to mark to import after", async () => {
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>
@@ -258,7 +258,7 @@ test("execute import when some issues are selected", async () => {
 
   const user = userEvent.setup();
   const store = createStore();
-  store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+  store.dispatch(submitApiCredential(randomCredential()));
 
   renderWrapper(
     <Provider store={store}>

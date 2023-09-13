@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import { useGetApiCredential } from "./get-api-credential";
 import { getWrapper } from "./hook-test-util";
 import { createStore } from "@/status/store";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 
 test("get undefined if credential is not setupped", () => {
   const store = createStore();
@@ -28,7 +28,7 @@ test("get api credential", () => {
 
   expect(ret.result.current).toBeUndefined();
 
-  store.dispatch(submitApiCredentialFulfilled(credential));
+  store.dispatch(submitApiCredential(credential));
   ret.rerender();
 
   expect(ret.result.current).toEqual(credential);

@@ -2,7 +2,7 @@ import { useCallback, useContext } from "react";
 import { useAppDispatch } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { ApiCredential } from "@/models/event";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 import { FirstArg } from "@/utils/type-tool";
 import { RegistrarContext } from "@/registrar-context";
 
@@ -33,7 +33,7 @@ export const useUserConfiguration = function useUserConfiguration(): Result {
     (args: FirstArg<Result["apply"]>) => {
       const cred = { ...args, ...env };
 
-      dispatch(submitApiCredentialFulfilled(cred));
+      dispatch(submitApiCredential(cred));
     },
     [env],
   );

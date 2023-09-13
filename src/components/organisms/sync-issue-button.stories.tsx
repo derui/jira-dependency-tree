@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Provider } from "react-redux";
 import { SyncIssueButton } from "./sync-issue-button";
 import { createStore } from "@/status/store";
-import { submitApiCredentialFulfilled } from "@/status/actions";
+import { submitApiCredential } from "@/status/actions";
 import { randomCredential } from "@/mock/generators";
 
 const meta = {
@@ -31,7 +31,7 @@ export const Default: Story = {
 export const Enabled: Story = {
   render() {
     const store = createStore();
-    store.dispatch(submitApiCredentialFulfilled(randomCredential()));
+    store.dispatch(submitApiCredential(randomCredential()));
 
     return (
       <Provider store={store}>

@@ -21,7 +21,7 @@ const Styles = {
 };
 
 const attentionIssue = (
-  pan: Position,
+  center: Position,
   targetIssueKey: string,
   issues: IssueModelWithLayout[],
   callback: (pos: Position) => void,
@@ -30,11 +30,11 @@ const attentionIssue = (
 
   if (!targetIssue) return;
 
-  const center = {
+  const targetPosition = {
     x: targetIssue.position.x + targetIssue.size.width / 2,
     y: targetIssue.position.y + targetIssue.size.height / 2,
   };
-  const vector = { x: center.x - pan.x, y: center.y - pan.y };
+  const vector = { x: targetPosition.x - center.x, y: targetPosition.y - center.y };
   const bezier = cubicBezier([0, 0.1, 0.75, 1.0]);
 
   const interpolatePosition = (time: number) => {
@@ -117,7 +117,7 @@ export function IssueGraphContainer(props: Props) {
 
   useEffect(() => {
     if (props.attension) {
-      attentionIssue(viewBox.state.pan, props.attension, graph.layout.issues, (p) => {
+      attentionIssue(viewBox.state.center, props.attension, graph.layout.issues, (p) => {
         viewBox.movePan(p);
       });
     }

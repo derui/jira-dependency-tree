@@ -31,8 +31,7 @@ type Result = {
      */
     viewBox: number[];
 
-    pan: Position;
-    zoom: number;
+    center: Position;
   };
 };
 
@@ -41,6 +40,10 @@ export const useViewBox = function useViewBox(): Result {
   const [pan, setPan] = useState<Position>({ x: 0, y: 0 });
   const [size, setSize] = useState<Rect>(Rect.empty());
   const dispatch = useAppDispatch();
+
+  const center = useMemo<Result["state"]["center"]>(() => {
+    return { x: pan.x + size.width / 2, y: pan.y + size.height / 2 };
+  }, [pan, size]);
 
   const viewBox = useMemo<Result["state"]["viewBox"]>(() => {
     const scale = 100 / zoom;
@@ -85,5 +88,5 @@ export const useViewBox = function useViewBox(): Result {
     setSize(size);
   }, []);
 
-  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox, pan, zoom } };
+  return { movePan, resize, zoomIn, zoomOut, state: { viewBox: viewBox, center } };
 };

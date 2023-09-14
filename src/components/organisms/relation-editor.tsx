@@ -108,7 +108,7 @@ export function RelationEditor(props: Props) {
   });
 
   return (
-    <Panel opened={props.opened} onClose={props.onClose} title="Relations">
+    <Panel opened={props.opened} onClose={props.onClose} title="Relations" testid={gen("panel")}>
       <div className={Styles.root} data-testid={gen("root")}>
         <div className={Styles.header} data-testid={gen("title")}>
           <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />

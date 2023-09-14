@@ -1,3 +1,4 @@
+import deepEqual from "fast-deep-equal";
 import { AdjacentMatrix, Edge, Vertex } from "./type";
 import { DirectedGraph } from "./main";
 import { constraint } from "@/utils/basic";
@@ -191,4 +192,11 @@ export const emptyUndirectedGraph = () => {
  */
 export const fromDirectedGraph = (graph: DirectedGraph): UndirectedGraph => {
   return makeGraph(graph.vertices, graph.edges);
+};
+
+/**
+ * check equality between g1 and g2
+ */
+export const isSameUndirectGraph = function isSameUndirectGraph(g1: UndirectedGraph, g2: UndirectedGraph) {
+  return deepEqual(g1.vertices.sort(), g2.vertices.sort()) && deepEqual(g1.edges.flat().sort(), g2.edges.flat().sort());
 };

@@ -28,6 +28,7 @@ export const NoInward: Story = {
             relations: [
               { id: "2", inwardIssue: "b", outwardIssue: "c" },
               { id: "1", inwardIssue: "a", outwardIssue: "b" },
+              { id: "6", inwardIssue: "b", outwardIssue: "g" },
             ],
           }),
           randomIssue({
@@ -40,6 +41,7 @@ export const NoInward: Story = {
           randomIssue({ key: "d", relations: [{ id: "4", inwardIssue: "d", outwardIssue: "c" }] }),
           randomIssue({ key: "e", relations: [{ id: "5", inwardIssue: "e", outwardIssue: "f" }] }),
           randomIssue({ key: "f", relations: [{ id: "5", inwardIssue: "e", outwardIssue: "f" }] }),
+          randomIssue({ key: "g", relations: [{ id: "6", inwardIssue: "b", outwardIssue: "g" }] }),
         ],
       }),
     );

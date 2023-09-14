@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("view relations between imported issues", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/relation-editor.har", {
+  await page.routeFromHAR("./e2e/fixtures/relation-editor.zip", {
     url: "http://localhost:3000/**",
-    update: true,
+    update: false,
     updateMode: "minimal",
   });
 

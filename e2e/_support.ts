@@ -1,11 +1,24 @@
 import { Page } from "@playwright/test";
 
-export const inputCredential = async function inputCredential(page: Page) {
+type Credentials = Readonly<{
+  domain: string;
+  email: string;
+  token: string;
+}>;
+
+export const inputCredential = async function inputCredential(
+  page: Page,
+  cred: Credentials = {
+    domain: "domain",
+    email: "email",
+    token: "token",
+  },
+) {
   // Input credentials
   await page.getByTestId("user-configuration/opener").click();
-  await page.getByTestId("user-configuration/form/user-domain").fill("domain");
-  await page.getByTestId("user-configuration/form/email").fill("email");
-  await page.getByTestId("user-configuration/form/token").fill("token");
+  await page.getByTestId("user-configuration/form/user-domain").fill(cred.domain);
+  await page.getByTestId("user-configuration/form/email").fill(cred.email);
+  await page.getByTestId("user-configuration/form/token").fill(cred.token);
   await page.getByTestId("user-configuration/form/submit").click();
 };
 

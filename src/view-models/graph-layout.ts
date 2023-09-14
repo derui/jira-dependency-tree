@@ -2,25 +2,25 @@ import { IssueModel } from "./issue";
 import { IssueKey, IssueRelationId, Position, Size } from "@/type";
 
 export interface IssueModelWithLayout {
-  issue: IssueModel;
+  readonly issue: IssueModel;
   /**
    * position of issue. This position points left-top of it.
    */
-  position: Position;
+  readonly position: Position;
   /**
    * size of issue.
    */
-  size: Size;
-  meta: {
+  readonly size: Size;
+  readonly meta: {
     /**
      * row index of grid.
      */
-    rowIndex: number;
+    readonly rowIndex: number;
 
     /**
      * column index of grip
      */
-    colIndex: number;
+    readonly colIndex: number;
   };
 }
 
@@ -28,14 +28,14 @@ export interface LinkLayoutModel {
   /**
    * commands for path. User can pass this command to `d` attribute of <path> directly.
    */
-  pathCommands: string;
+  readonly pathCommands: string;
 
   /**
    * metadata for debugging.
    */
-  meta: {
-    relationId: IssueRelationId;
-    startIssue: IssueKey;
-    endIssue: IssueKey;
+  readonly meta: {
+    readonly relationId: IssueRelationId;
+    readonly startIssue: IssueKey;
+    readonly endIssue: IssueKey;
   };
 }

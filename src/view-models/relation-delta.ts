@@ -4,16 +4,16 @@ import { RelationModel } from "@/view-models/relation";
 import { AppendingRelationDelta, DeletingRelationDelta } from "@/models/relation-delta";
 
 export type AppendingRelationDeltaModel = {
-  kind: "append";
-  deltaId: DeltaId;
-  inwardIssue: IssueModel;
-  outwardIssue: IssueModel;
+  readonly kind: "append";
+  readonly deltaId: DeltaId;
+  readonly inwardIssue: IssueModel;
+  readonly outwardIssue: IssueModel;
 };
 
 export type DeletingRelationDeltaModel = {
-  kind: "delete";
-  deltaId: DeltaId;
-  relation: RelationModel;
+  readonly kind: "delete";
+  readonly deltaId: DeltaId;
+  readonly relation: RelationModel;
 };
 
 export type RelationDeltaModel = AppendingRelationDeltaModel | DeletingRelationDeltaModel;

@@ -5,10 +5,10 @@ import { IssueKey, IssueStatus, IssueType } from "@/type";
  * A view model for issue
  */
 export interface IssueModel {
-  key: IssueKey;
-  summary: string;
-  issueStatus?: IssueStatus;
-  issueType?: IssueType;
+  readonly key: IssueKey;
+  readonly summary: string;
+  readonly issueStatus?: IssueStatus;
+  readonly issueType?: IssueType;
 }
 
 /**

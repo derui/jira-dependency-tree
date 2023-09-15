@@ -29,6 +29,8 @@ const Styles = {
       "relative",
       "transition",
       "bg-white",
+      "overflow-hidden",
+      "w-full",
       {
         "cursor-pointer": clickable,
       },
@@ -68,9 +70,18 @@ const Styles = {
     const base = stringToColour(category ?? "");
     const highContrast = stringToHighContrastColor(category ?? "");
 
-    return classNames("inline-block", "px-2", "py-1", "text-sm", `bg-[${base}]`, `text-[${highContrast}]`, "text-bold");
+    return classNames(
+      "inline-block",
+      "px-2",
+      "py-1",
+      "text-sm",
+      `bg-[${base}]`,
+      `text-[${highContrast}]`,
+      "text-bold",
+      "whitespace-nowrap",
+    );
   },
-  key: classNames("mx-3"),
+  key: classNames("mx-3", "whitespace-nowrap"),
   skeletonRoot: classNames(
     "animate-pulse",
     "flex",

@@ -2,10 +2,8 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../_internal-hooks";
 import { RootState } from "@/status/store";
-import { IssueKey } from "@/type";
+import { HighlightState, IssueKey } from "@/type";
 import { highlightRelatedNodes, resetHighlightRelationNodes } from "@/status/actions";
-
-type HighlightState = "normal" | "highlighted" | "obscured";
 
 type Result = {
   enterHover: () => void;

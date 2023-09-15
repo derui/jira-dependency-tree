@@ -34,3 +34,8 @@ export const GraphLayout = {
   Horizontal: "horizontal",
 } as const;
 export type GraphLayout = typeof GraphLayout[keyof typeof GraphLayout];
+
+/**
+ * status of highlighting nodes
+ */
+export type HighlightState = "normal" | "highlighted" | "obscured";

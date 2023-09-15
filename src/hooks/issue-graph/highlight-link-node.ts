@@ -2,9 +2,7 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
 import { useAppSelector } from "../_internal-hooks";
 import { RootState } from "@/status/store";
-import { IssueRelationId } from "@/type";
-
-type HighlightState = "normal" | "highlighted" | "obscured";
+import { HighlightState, IssueRelationId } from "@/type";
 
 const selectHighlightedRelations = createDraftSafeSelector(
   (state: RootState) => state,

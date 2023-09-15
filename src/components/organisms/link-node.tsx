@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { useHighlightLinkNode } from "@/hooks/issue-graph/highlight-link-node";
+import { useHighlightLinkNode } from "@/hooks";
 import { LinkLayoutModel } from "@/view-models/graph-layout";
 import { HighlightState } from "@/type";
 

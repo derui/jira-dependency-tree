@@ -3,8 +3,7 @@ import { BaseProps, generateTestId } from "../helper";
 import { Translate } from "../atoms/svg-translate";
 import { Issue } from "../molecules/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
-import { useSelectNode } from "@/hooks";
-import { useHightlightIssueNode } from "@/hooks/issue-graph/highlight-issue-node";
+import { useSelectNode, useHighlightIssueNode } from "@/hooks";
 import { HighlightState } from "@/type";
 
 export interface Props extends BaseProps {
@@ -22,7 +21,7 @@ const Styles = {
 export function IssueNode(props: Props) {
   const gen = generateTestId(props.testid);
   const selectNode = useSelectNode();
-  const highlight = useHightlightIssueNode(props.layout.issue.key);
+  const highlight = useHighlightIssueNode(props.layout.issue.key);
 
   return (
     <g

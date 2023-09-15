@@ -21,7 +21,7 @@ const selectHighlightedIssues = createDraftSafeSelector(
   },
 );
 
-export const useHightlightIssueNode = function useHightlightIssueNode(key: IssueKey): Result {
+export const useHighlightIssueNode = function useHightlightIssueNode(key: IssueKey): Result {
   const highlightedIssues = useAppSelector(selectHighlightedIssues);
   const dispatch = useAppDispatch();
 

@@ -6,15 +6,23 @@ import { Provider } from "react-redux";
 import { IssueNode } from "./issue-node";
 import { createStore } from "@/status/store";
 import { randomIssue } from "@/mock/generators";
-import { useSelectNode } from "@/hooks";
+import { useHighlightIssueNode, useSelectNode } from "@/hooks";
 import { issueToIssueModel } from "@/view-models/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 
 vi.mock("@/hooks", () => {
   const select = vi.fn();
+  const enterHover = vi.fn();
+  const leaveHover = vi.fn();
+
   return {
     useSelectNode: () => ({
       select,
+    }),
+    useHighlightIssueNode: () => ({
+      enterHover,
+      leaveHover,
+      state: "obscure",
     }),
   };
 });
@@ -63,4 +71,22 @@ test("call select when issue clicked", async () => {
   await user.click(screen.getByTestId("issue-key/root"));
 
   expect(mock).toBeCalledWith(issue.key);
+});
+
+test("call leave/enter hover", async () => {
+  const user = userEvent.setup();
+  const store = createStore();
+  const mock = vi.mocked(useHighlightIssueNode)(layout.issue.key);
+
+  render(
+    <Provider store={store}>
+      <IssueNode layout={layout} />
+    </Provider>,
+  );
+
+  await user.hover(screen.getByTestId("group"));
+  await user.unhover(screen.getByTestId("group"));
+
+  expect(mock.enterHover).toBeCalledTimes(1);
+  expect(mock.leaveHover).toBeCalledTimes(1);
 });

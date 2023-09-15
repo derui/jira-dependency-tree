@@ -64,17 +64,15 @@ export function IssueGraphContainer(props: Props) {
   });
 
   useLayoutEffect(() => {
-    const f = () => {
-      const rect = document.body.getBoundingClientRect();
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0].contentRect;
       viewBox.resize(Rect.fromDOMRect(rect));
-    };
-    document.body.addEventListener("resize", f);
+    });
 
-    // reset size initially
-    f();
+    observer.observe(document.body);
 
     return () => {
-      document.body.removeEventListener("resize", f);
+      observer.disconnect();
     };
   }, []);
 

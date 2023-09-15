@@ -48,8 +48,9 @@ export const NoInward: Story = {
 
     return (
       <Provider store={store}>
-        {" "}
-        <IssueGraphContainer />
+        <div className="w-full h-72">
+          <IssueGraphContainer />
+        </div>
       </Provider>
     );
   },

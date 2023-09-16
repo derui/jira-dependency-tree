@@ -19,7 +19,7 @@ export interface CompletionProps extends BaseProps {
 const Styles = {
   root: classNames("relative", "flex-auto"),
   selectedLabel: (selected: boolean) =>
-    classNames("absolute", "top-2", "left-3", "text-sm", {
+    classNames("absolute", "top-2", "left-4", "text-sm", {
       hidden: !selected,
     }),
   input: classNames(

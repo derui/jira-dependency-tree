@@ -40,14 +40,14 @@ export function OptionListContainer(props: OptionContainerProps) {
 
   if (props.options.length === 0) {
     return (
-      <div className={Styles.root(props.shown ?? false)} data-testid={gen("option-list-container")}>
+      <div className={Styles.root(props.shown ?? false)} data-testid={gen("root")}>
         <div className={Styles.noOption}>No Options</div>
       </div>
     );
   }
 
   return (
-    <div className={Styles.root(props.shown ?? false)} data-testid={gen("option-list-container")}>
+    <div className={Styles.root(props.shown ?? false)} data-testid={gen("root")}>
       {props.options.map((opt) => (
         <OptionContainer key={opt.label} option={opt} onSelect={props.onSelect} components={props.components} />
       ))}

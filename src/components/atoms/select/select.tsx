@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../../helper";
 import { iconize } from "../iconize";
 import { SelectComponents, SelectOption } from "./type";
-import { OptionContainer } from "./option-container";
+import { Option } from "./option";
 import { Completion } from "./completion";
 import { OptionListContainer } from "./option-list-container";
 import { Indicators } from "./indicators";
@@ -65,7 +65,7 @@ const Styles = {
 } as const;
 
 const defaultComponents = {
-  optionContainer: OptionContainer,
+  option: Option,
   optionListContainer: OptionListContainer,
   completion: Completion,
   indicators: Indicators,
@@ -112,16 +112,18 @@ export function Select(props: SelectProps) {
       onBlur={handleBlur}
       data-testid={gen("select-root")}
     >
-      <div className={Styles.completionContainer} data-testid={gen("control")}>
+      <div className={Styles.completionContainer}>
         <components.completion
           labels={labels}
           onFilterLabel={handleFilterLabel}
           selectedLabel={selectedOption?.label}
+          testid={gen("completions")}
         />
         <components.indicators
           focused={focused !== "notFocused"}
           selected={selectedOption !== null}
           onReset={handleReset}
+          testid={gen("indicators")}
         />
       </div>
       <div className={Styles.optionContainerWrapper(rootRef.current)}>
@@ -130,6 +132,7 @@ export function Select(props: SelectProps) {
           onSelect={handleSelect}
           shown={focused === "opened"}
           components={components}
+          testid={gen("option-list-container")}
         />
       </div>
     </div>

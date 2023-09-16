@@ -24,6 +24,12 @@ export const Default: Story = {
   },
 };
 
+export const Empty: Story = {
+  args: {
+    options: [],
+  },
+};
+
 const Sample = (props: OptionProps) => {
   return <span className="text-primary-400">{props.option.label}</span>;
 };

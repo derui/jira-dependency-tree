@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React, { useMemo, useState } from "react";
-import { BaseProps } from "@/components/helper";
+import { BaseProps, generateTestId } from "@/components/helper";
 
 export interface CompletionProps extends BaseProps {
   /**
@@ -38,6 +38,7 @@ const Styles = {
 
 // eslint-disable-next-line func-style
 export function Completion(props: CompletionProps) {
+  const gen = generateTestId(props.testid);
   const [value, setValue] = useState("");
   const displayLabel = useMemo<boolean>(() => {
     if (value) {
@@ -64,8 +65,17 @@ export function Completion(props: CompletionProps) {
 
   return (
     <div className={Styles.root}>
-      <div className={Styles.selectedLabel(displayLabel)}>{props.selectedLabel}</div>
-      <input placeholder={placeholder} className={Styles.input} type="text" value={value} onChange={handleChange} />
+      <div className={Styles.selectedLabel(displayLabel)} data-testid={gen("display")}>
+        {props.selectedLabel}
+      </div>
+      <input
+        placeholder={placeholder}
+        className={Styles.input}
+        type="text"
+        value={value}
+        onChange={handleChange}
+        data-testid={gen("input")}
+      />
     </div>
   );
 }

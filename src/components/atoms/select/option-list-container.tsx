@@ -37,7 +37,6 @@ const Styles = {
 // eslint-disable-next-line func-style
 export function OptionListContainer(props: OptionContainerProps) {
   const gen = generateTestId(props.testid);
-  const Container = props.components.optionContainer ?? OptionContainer;
 
   if (props.options.length === 0) {
     return (
@@ -50,7 +49,7 @@ export function OptionListContainer(props: OptionContainerProps) {
   return (
     <div className={Styles.root(props.shown ?? false)} data-testid={gen("option-list-container")}>
       {props.options.map((opt) => (
-        <Container key={opt.label} option={opt} onSelect={props.onSelect} />
+        <OptionContainer key={opt.label} option={opt} onSelect={props.onSelect} components={props.components} />
       ))}
     </div>
   );

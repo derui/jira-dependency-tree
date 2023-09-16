@@ -1,6 +1,6 @@
 import { Completion } from "./completion";
 import { Indicators } from "./indicators";
-import { OptionContainer } from "./option-container";
+import { Option } from "./option";
 import { OptionListContainer } from "./option-list-container";
 
 export type SelectOption = {
@@ -12,7 +12,7 @@ export type SelectOption = {
  * component list for select
  */
 export type SelectComponents = {
-  optionContainer?: typeof OptionContainer;
+  option?: typeof Option;
   optionListContainer?: typeof OptionListContainer;
   completion?: typeof Completion;
   indicators?: typeof Indicators;

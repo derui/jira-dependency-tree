@@ -1,17 +1,20 @@
 import classNames from "classnames";
-import { SelectOption } from "./type";
+import { SelectComponents, SelectOption } from "./type";
+import { Option } from "./option";
 import { BaseProps, generateTestId } from "@/components/helper";
 
 export interface OptionContainerProps extends BaseProps {
   /**
    * an option to render option
    */
-  option: SelectOption;
+  readonly option: SelectOption;
 
   /**
    * callback when option selected
    */
-  onSelect: (option: SelectOption) => void;
+  readonly onSelect: (option: SelectOption) => void;
+
+  readonly components: SelectComponents;
 }
 
 const Styles = {
@@ -26,9 +29,11 @@ export function OptionContainer(props: OptionContainerProps) {
     props.onSelect(props.option);
   };
 
+  const Display = props.components.option ?? Option;
+
   return (
     <div className={Styles.root} onMouseDown={handleClick} data-testid={gen(`option-container-${props.option.label}`)}>
-      {props.option.label}
+      <Display option={props.option} />
     </div>
   );
 }

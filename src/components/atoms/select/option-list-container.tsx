@@ -27,15 +27,25 @@ export interface OptionContainerProps extends BaseProps {
 
 const Styles = {
   root: (shown: boolean) =>
-    classNames("flex", "flex-col", "rounded", "border", "border-secondary1-300", "w-full", {
+    classNames("flex", "flex-col", "rounded", "border", "border-secondary1-300", "w-full", "shadow-lg", {
       hidden: !shown,
     }),
+
+  noOption: classNames("flex-auto", "text-center", "text-gray", "px-3", "py-2"),
 };
 
 // eslint-disable-next-line func-style
 export function OptionListContainer(props: OptionContainerProps) {
   const gen = generateTestId(props.testid);
   const Container = props.components.optionContainer ?? OptionContainer;
+
+  if (props.options.length === 0) {
+    return (
+      <div className={Styles.root(props.shown ?? false)} data-testid={gen("option-list-container")}>
+        <div className={Styles.noOption}>No Options</div>
+      </div>
+    );
+  }
 
   return (
     <div className={Styles.root(props.shown ?? false)} data-testid={gen("option-list-container")}>

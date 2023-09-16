@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import React from "react";
 import { SelectOption } from "./type";
 import { BaseProps, generateTestId } from "@/components/helper";
 

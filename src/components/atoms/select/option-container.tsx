@@ -18,7 +18,16 @@ export interface OptionContainerProps extends BaseProps {
 }
 
 const Styles = {
-  root: classNames("cursor-pointer", "px-3", "py-2", "transition-colors", "text-sm", "hover:bg-complement-200/50"),
+  root: classNames(
+    "flex",
+    "flex-auto",
+    "cursor-pointer",
+    "px-3",
+    "py-2",
+    "transition-colors",
+    "text-sm",
+    "hover:bg-complement-200/50",
+  ),
 } as const;
 
 // eslint-disable-next-line func-style

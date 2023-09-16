@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BaseProps, generateTestId } from "@/components/helper";
 
 export interface CompletionProps extends BaseProps {
@@ -49,6 +49,12 @@ export function Completion(props: CompletionProps) {
 
     return false;
   }, [props.selectedLabel, value]);
+
+  useEffect(() => {
+    if (props.selectedLabel) {
+      setValue("");
+    }
+  }, [props.selectedLabel]);
 
   const placeholder = props.selectedLabel ? "" : "Select";
 

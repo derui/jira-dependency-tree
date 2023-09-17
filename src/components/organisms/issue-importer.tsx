@@ -118,7 +118,6 @@ const Styles = {
           "cursor-pointer": !disabled,
         },
         "transition",
-        "transition-border",
       ),
     icons: classNames("flex"),
     forwardIcon: (disabled: boolean) =>

@@ -16,7 +16,7 @@ interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classNames("max-h-full", "height-auto", "absolute"),
+  root: classNames("max-h-full", "h-auto", "absolute"),
   arrowhead: classNames("stroke-secondary1-300", "fill-secondary1-300"),
 };
 

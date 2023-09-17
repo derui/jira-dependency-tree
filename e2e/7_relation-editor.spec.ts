@@ -6,7 +6,7 @@ const testidOf = function testidOf(id: string) {
 };
 
 test("view relations between imported issues", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/relation-editor.zip", {
+  await page.routeFromHAR("./e2e/fixtures/relation-editor/basic.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
 import { Input } from "../atoms/input";
 import { Button } from "../atoms/button";
+import { Loader_2, Search } from "../atoms/icons";
 
 export interface Props extends BaseProps {
   loading?: boolean;
@@ -16,23 +16,9 @@ const Styles = {
     return classNames("flex", "flex-row", "gap-x-2", "px-4", "py-2", "relative");
   },
   icon: (loading?: boolean) => {
-    const iconFor = loading
-      ? iconize({ type: "loader-2", color: "secondary2", size: "s" })
-      : iconize({ type: "search", color: "secondary2", size: "s" });
-
     const animation = loading ? "animate-spin" : "";
 
-    return classNames(
-      "rounded",
-      "flex",
-      "h-6",
-      "w-6",
-      "border",
-      "border-transparent",
-      "items-center",
-      animation,
-      iconFor,
-    );
+    return classNames("flex", "items-center", animation);
   },
 
   inputWrapper: classNames("relative", "w-full"),
@@ -80,6 +66,8 @@ export function QueryInput(props: Props) {
     setQuery(value);
   };
 
+  const icon = loading ? <Loader_2 /> : <Search />;
+
   return (
     <form className={Styles.root()} onSubmit={handleSubmit} data-testid={gen("root")}>
       <div className={Styles.inputWrapper}>
@@ -87,7 +75,7 @@ export function QueryInput(props: Props) {
         <Error error={error} loading={loading} testid={gen("error")} />
       </div>
       <Button schema="secondary2" type="submit" size="s" disabled={loading} testid={gen("button")}>
-        <span className={Styles.icon(loading)}></span>
+        <span className={Styles.icon(loading)}>{icon}</span>
       </Button>
     </form>
   );

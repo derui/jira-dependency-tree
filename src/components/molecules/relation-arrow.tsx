@@ -1,7 +1,7 @@
 import type React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
+import { X } from "../atoms/icons";
 
 export interface Props extends BaseProps {
   draft?: boolean;
@@ -63,18 +63,16 @@ const Styles = {
   deleter: classNames(
     "absolute",
     "rounded-full",
-    "w-6",
-    "h-6",
     "border",
     "border-primary-300",
     "bg-white",
     "top-1/3",
     "-left-1/2",
-    iconize({ type: "x", size: "s", color: "primary", active: true }),
     "opacity-0",
     "cursor-pointer",
-    "group-hover:opacity-100",
-    "transition-opacity",
+    "hover:opacity-100",
+    "transition",
+    "active:bg-primary-200",
   ),
 };
 
@@ -94,7 +92,9 @@ export function RelationArrow(props: Props) {
   };
 
   const Deleter = props.onClick ? (
-    <span className={Styles.deleter} onClick={handleClick} data-testid={gen("deleter")} />
+    <span className={Styles.deleter} onClick={handleClick} data-testid={gen("deleter")}>
+      <X color="primary" size="s" />
+    </span>
   ) : null;
 
   return (

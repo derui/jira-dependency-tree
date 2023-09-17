@@ -14,8 +14,14 @@ export * from "./square-check";
 export * from "./square";
 export * from "./transfer-in";
 export * from "./x";
+export * from "./check";
+export * from "./layout-distribute-horizontal";
+export * from "./layout-distribute-vertical";
 
-import { Icon } from "./_base";
+import { BaseIconProps, Icon } from "./_base";
 export { Icon };
 
 export { IconType } from "./type";
+
+// support prop type
+export type IconProps = Omit<BaseIconProps, "iconType">;

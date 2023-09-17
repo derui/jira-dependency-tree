@@ -1,7 +1,6 @@
 import { PropsWithChildren, useRef, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../../helper";
-import { iconize } from "../iconize";
 import { SelectComponents, SelectOption } from "./type";
 import { Option } from "./option";
 import { Completion } from "./completion";
@@ -42,13 +41,6 @@ const Styles = {
       "border-secondary1-300": options.focused,
     }),
   completionContainer: classNames("flex", "flex-row", "flex-auto", "items-center"),
-  dropDown: (options: StyleOption) =>
-    classNames(
-      "flex",
-      "flex-1",
-      "mx-2",
-      iconize({ type: "chevron-down", color: options.focused ? "secondary1" : "gray", active: options.focused }),
-    ),
   completionDivider: (options: StyleOption) =>
     classNames("flex-1", "py-3", "border-l", "border-l-lightgray", {
       "border-l-secondary1-300": options.focused,

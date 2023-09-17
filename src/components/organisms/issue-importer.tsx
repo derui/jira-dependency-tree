@@ -2,11 +2,12 @@ import classNames from "classnames";
 import { useState } from "react";
 import { Button } from "../atoms/button";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
 import { QueryInput } from "../molecules/query-input";
 import { Issue as IssueComponent } from "../molecules/issue";
 import { Panel } from "../molecules/panel";
 import { Checkbox } from "../atoms/checkbox";
+import { ChevronLeft, ChevronRight } from "../atoms/icons";
+import { IconButton } from "../atoms/icon-button";
 import { useImportIssues, useSearchIssues } from "@/hooks";
 import { IssueModel } from "@/view-models/issue";
 import { difference, intercect } from "@/utils/basic";
@@ -107,23 +108,7 @@ const Styles = {
     ),
     pagingskeleton: classNames("animate-pulse", "flex", "h-4", "w-12", "bg-lightgray"),
     buttonSkeleton: classNames("animate-pulse", "bg-lightgray", "h-10", "w-20"),
-    pagingButton: (disabled: boolean) =>
-      classNames(
-        "group",
-        "border-b",
-        "border-b-transparent",
-        "border-b-2",
-        {
-          "hover:border-b-gray": !disabled,
-          "cursor-pointer": !disabled,
-        },
-        "transition",
-      ),
-    icons: classNames("flex"),
-    forwardIcon: (disabled: boolean) =>
-      classNames(iconize({ type: "chevron-right", color: "gray", group: "group", disabled })),
-    backwardIcon: (disabled: boolean) =>
-      classNames(iconize({ type: "chevron-left", color: "gray", group: "group", disabled })),
+    icons: classNames("flex", "gap-3"),
     pageDisplay: classNames("text-sm", "bg-complement-200/50", "text-secondary1-500", "px-2", "py-1", "rounded"),
   },
 };
@@ -234,24 +219,22 @@ const Paginator = (props: {
   return (
     <div className={Styles.paginator.root} data-testid={gen("root")}>
       <div className={Styles.paginator.icons}>
-        <button
-          className={Styles.paginator.pagingButton(backwardDisabled)}
+        <IconButton
+          color="gray"
           disabled={backwardDisabled}
-          aria-disabled={backwardDisabled}
-          data-testid={gen("backward")}
+          testid={gen("backward")}
           onClick={() => props.onChangePage(props.page - 1)}
         >
-          <span className={Styles.paginator.backwardIcon(backwardDisabled)} />
-        </button>
-        <button
-          className={Styles.paginator.pagingButton(forwardDisabled)}
+          <ChevronLeft />
+        </IconButton>
+        <IconButton
+          color="gray"
           disabled={forwardDisabled}
-          aria-disabled={forwardDisabled}
-          data-testid={gen("forward")}
+          testid={gen("forward")}
           onClick={() => props.onChangePage(props.page + 1)}
         >
-          <span className={Styles.paginator.forwardIcon(forwardDisabled)} />
-        </button>
+          <ChevronRight />
+        </IconButton>
       </div>
       <div className={Styles.paginator.pageDisplay} data-testid={gen("page")}>
         Page {props.page}

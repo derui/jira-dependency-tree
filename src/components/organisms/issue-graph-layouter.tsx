@@ -1,24 +1,25 @@
 import { useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
-import { useGraphLayout } from "@/hooks";
+import { LayoutDistributeHorizontal, LayoutDistributeVertical, Layout_2 } from "../atoms/icons";
+import { IconButton } from "../atoms/icon-button";
 import { GraphLayout } from "@/type";
+import { useGraphLayout } from "@/hooks";
 
 export type Props = BaseProps;
 
 const Styles = {
-  graphLayout: (opened: boolean) =>
+  graphLayout: () =>
     classNames(
+      "flex",
+      "items-center",
+      "justify-center",
       "relative",
       "flex-none",
       "bg-white",
-      "transition-colors",
       "cursor-pointer",
-      "p-2",
       "w-10",
       "h-10",
-      iconize({ type: "layout-2", size: "m", color: "secondary1", active: opened }),
     ),
   graphLayouter: (opened: boolean) => {
     return classNames(
@@ -32,35 +33,12 @@ const Styles = {
       "shadow-lg",
       "transition-opacity",
       "opacity-0",
-      "px-1",
+      "px-2",
+      "py-1",
       opened ? ["opacity-100", "visible"] : [],
       !opened ? "invisible" : "",
     );
   },
-  iconButton: (layout: GraphLayout, active: boolean) =>
-    classNames(
-      "flex-none",
-      "bg-white",
-      "m-2",
-      "cursor-pointer",
-      "rounded",
-      {
-        [iconize({
-          type: "layout-distribute-horizontal",
-          size: "m",
-          color: "secondary1",
-          active: active,
-        })]: layout === GraphLayout.Horizontal,
-      },
-      {
-        [iconize({
-          type: "layout-distribute-vertical",
-          size: "m",
-          color: "secondary1",
-          active: active,
-        })]: layout === GraphLayout.Vertical,
-      },
-    ),
 };
 
 // eslint-disable-next-line func-style
@@ -74,24 +52,20 @@ export function IssueGraphLayouter(props: Props) {
 
   return (
     <li
-      className={Styles.graphLayout(opened)}
+      className={Styles.graphLayout()}
       data-testid={gen("graph-layout")}
       onClick={() => setOpened(!opened)}
       data-active={opened}
+      data-layout={state}
     >
+      <Layout_2 color={opened ? "secondary1" : "gray"} />
       <div className={Styles.graphLayouter(opened)} data-testid={gen("layouter")}>
-        <span
-          className={Styles.iconButton(GraphLayout.Horizontal, horizontalActive)}
-          onClick={changeToHorizontal}
-          data-testid={gen("horizontal-layouter")}
-          data-active={horizontalActive}
-        ></span>
-        <span
-          className={Styles.iconButton(GraphLayout.Vertical, verticalActive)}
-          onClick={changeToVertical}
-          data-testid={gen("vertical-layouter")}
-          data-active={verticalActive}
-        ></span>
+        <IconButton color="secondary1" onClick={changeToHorizontal} testid={gen("horizontal-layouter")}>
+          <LayoutDistributeHorizontal color={horizontalActive ? "secondary1" : "gray"} />
+        </IconButton>
+        <IconButton color="secondary1" onClick={changeToVertical} testid={gen("vertical-layouter")}>
+          <LayoutDistributeVertical color={verticalActive ? "secondary1" : "gray"} />
+        </IconButton>
       </div>
     </li>
   );

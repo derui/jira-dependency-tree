@@ -1,7 +1,8 @@
 import React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
+import { X } from "../atoms/icons";
+import { IconButton } from "../atoms/icon-button";
 import { IssueStatus, IssueType } from "@/type";
 import { stringToColour, stringToHighContrastColor } from "@/utils/color";
 import { IssueModel } from "@/view-models/issue";
@@ -100,21 +101,7 @@ const Styles = {
   skeletonType: classNames("w-3", "h-3", "bg-lightgray", "flex-none"),
   skeletonKey: classNames("w-16", "h-3", "bg-lightgray", "flex-none"),
   skeletonStatus: classNames("w-8", "h-3", "bg-lightgray", "flex-none"),
-  deleteButton: classNames(
-    "rounded",
-    "flex",
-    "absolute",
-    "h-5",
-    "w-5",
-    "border",
-    "border-transparent",
-    "hover:border-lightgray",
-    "right-1",
-    "top-1",
-    "transition",
-    "items-center",
-    iconize({ type: "x", color: "primary", size: "s" }),
-  ),
+  deleteButton: classNames("absolute", "flex", "right-1", "top-1", "items-center"),
 };
 
 // eslint-disable-next-line func-style
@@ -141,14 +128,17 @@ const IssueStatusDisplay: React.FC<{ value: IssueStatus | undefined; testid: str
 };
 
 const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onClick, testid }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const handleClick = () => {
     onClick();
   };
 
-  return <button className={classNames(Styles.deleteButton)} data-testid={testid} onClick={handleClick}></button>;
+  return (
+    <div className={classNames(Styles.deleteButton)}>
+      <IconButton color="gray" size="s" testid={testid} onClick={handleClick}>
+        <X size="s" />
+      </IconButton>
+    </div>
+  );
 };
 
 // eslint-disable-next-line func-style

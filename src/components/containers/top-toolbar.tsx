@@ -3,26 +3,15 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { SyncIssueButton } from "../organisms/sync-issue-button";
 import { IssueImporter } from "../organisms/issue-importer";
-import { iconize } from "../atoms/iconize";
 import { RelationEditor } from "../organisms/relation-editor";
+import { BinaryTree, TransferIn } from "../atoms/icons";
+import { IconButton } from "../atoms/icon-button";
 
 export type Props = BaseProps;
 
 const Styles = {
   root: classNames("flex", "flex-row", "bg-white", "shadow-md", "justify-center", "items-center", "px-2"),
   iconContainer: classNames("flex", "ml-2", "w-8", "h-8", "items-center", "first-of-type:"),
-  importerOpenerIcon: (disabled: boolean) =>
-    classNames(
-      "inline-block",
-      "cursor-pointer",
-      iconize({ type: "transfer-in", size: "m", color: "complement", disabled }),
-    ),
-  relationEditorOpenerIcon: (disabled: boolean) =>
-    classNames(
-      "inline-block",
-      "cursor-pointer",
-      iconize({ type: "binary-tree", size: "m", color: "complement", disabled }),
-    ),
 };
 
 type Opened = "none" | "importer" | "relation-editor";
@@ -35,20 +24,24 @@ export function TopToolbar(props: Props) {
   return (
     <div className={Styles.root}>
       <div className={Styles.iconContainer}>
-        <span
-          className={Styles.importerOpenerIcon(opened !== "none")}
-          aria-disabled={opened !== "none"}
-          data-testid={gen("importer-opener")}
+        <IconButton
+          color="gray"
+          disabled={opened !== "none"}
           onClick={() => setOpened("importer")}
-        />
+          testid={gen("importer-opener")}
+        >
+          <TransferIn color="gray" />
+        </IconButton>
       </div>
       <div className={Styles.iconContainer}>
-        <span
-          className={Styles.relationEditorOpenerIcon(opened !== "none")}
-          aria-disabled={opened !== "none"}
-          data-testid={gen("relation-editor-opener")}
+        <IconButton
+          color="gray"
+          disabled={opened !== "none"}
           onClick={() => setOpened("relation-editor")}
-        />
+          testid={gen("relation-editor-opener")}
+        >
+          <BinaryTree color="gray" />
+        </IconButton>
       </div>
 
       <SyncIssueButton testid="sync-issue-button" />

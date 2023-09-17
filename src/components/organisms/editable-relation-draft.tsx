@@ -3,7 +3,7 @@ import { BaseProps, generateTestId } from "../helper";
 import { Issue } from "../molecules/issue";
 import { RelationArrow } from "../molecules/relation-arrow";
 import { Button } from "../atoms/button";
-import { iconize } from "../atoms/iconize";
+import { ArrowBack } from "../atoms/icons";
 import { Draft } from "@/hooks/relation-editor";
 import { DeltaId, IssueRelationId } from "@/type";
 
@@ -16,8 +16,7 @@ export interface Props extends BaseProps {
 const Styles = {
   root: classNames("flex", "flex-col", "items-center", "p-2"),
   touchedRoot: () => classNames(Styles.root, "bg-primary-200/10", "relative"),
-  undoButton: classNames("absolute", "-left-36", "group"),
-  undoIcon: classNames(iconize({ type: "arrow-back" }), "mr-2"),
+  undoButton: classNames("absolute", "-left-36"),
 
   arrowWithUndo: classNames("flex", "flex-row", "items-center", "justify-center", "relative"),
 };
@@ -43,8 +42,8 @@ export function EditableRelationDraft(props: Props) {
         <ul className={Styles.arrowWithUndo}>
           <span className={Styles.undoButton}>
             <Button schema="primary" size="s" onClick={handleClick} testid={gen("undo")}>
-              <span className={Styles.undoIcon} />
-              undo
+              <ArrowBack color="primary" />
+              Undo
             </Button>
           </span>
           <RelationArrow draft={delta.kind === "delete"} />

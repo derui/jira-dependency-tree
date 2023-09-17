@@ -1,9 +1,9 @@
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { iconize } from "../atoms/iconize";
 import { Button } from "../atoms/button";
 import { BaseProps, generateTestId } from "../helper";
+import { X } from "../atoms/icons";
 
 export interface Props extends BaseProps, React.PropsWithChildren {
   selector?: string;
@@ -83,7 +83,7 @@ export function Panel(props: Props) {
         <h4 className={classNames(Styles.headerText)}>{props.title}</h4>
         <span className={classNames(Styles.headerButtonContainer)}>
           <Button size="s" onClick={handleClick} testid={gen("close")} schema="gray">
-            <span className={iconize({ type: "x", size: "s", color: "gray" })}></span>
+            <X size="s" />
           </Button>
         </span>
       </header>

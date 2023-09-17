@@ -17,6 +17,7 @@ export const IconType = {
   "chevron-right": "before:[mask-image:url(/svg/tabler-icons/chevron-right.svg)]",
   "transfer-in": "before:[mask-image:url(/svg/tabler-icons/transfer-in.svg)]",
   "binary-tree": "before:[mask-image:url(/svg/tabler-icons/binary-tree.svg)]",
+  check: "before:[mask-image:url(/svg/tabler-icons/check.svg)]",
 } as const;
 export type IconType = keyof typeof IconType;
 

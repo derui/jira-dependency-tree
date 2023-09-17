@@ -3,7 +3,8 @@ import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { UserConfigurationForm, Props as UserConfigurationFormProps } from "../molecules/user-configuration-form";
 import { Dialog } from "../atoms/dialog";
-import { iconize } from "../atoms/iconize";
+import { IconButton } from "../atoms/icon-button";
+import { Settings } from "../atoms/icons";
 import { FirstArg } from "@/utils/type-tool";
 import { useUserConfiguration } from "@/hooks/user-configuration";
 
@@ -15,19 +16,14 @@ const Styles = {
     "flex",
     "relative",
     "flex-auto",
-    "flex-col",
     "bg-white",
     "rounded",
     "shadow-md",
     "w-12",
     "h-12",
-    "p-3",
     "items-center",
     "justify-center",
   ),
-  opener: () => {
-    return classNames("relative", "outline-none", "bg-white", "border-none", "flex-auto", "flex", "w-7", "h-7");
-  },
   marker: (show: boolean) => {
     return classNames("flex", "w-2", "h-2", "left-2", "top-2", "absolute", !show ? "invisible" : "visible");
   },
@@ -52,11 +48,8 @@ export function UserConfiguration(props: Props) {
   return (
     <div ref={ref} className={Styles.root}>
       <div className={Styles.toolbar}>
-        <button
-          className={(Styles.opener(), iconize({ type: "settings", color: "complement", size: "l" }))}
-          data-testid={gen("opener")}
-          onClick={() => setOpened(!opened)}
-        >
+        <IconButton color="complement" size="l" testid={gen("opener")} onClick={() => setOpened(!opened)}>
+          <Settings size="l" color="complement" />
           <span
             className={Styles.marker(!state.setupFinished)}
             aria-hidden={state.setupFinished}
@@ -65,7 +58,7 @@ export function UserConfiguration(props: Props) {
             <span className={Styles.markerPing}></span>
             <span className={Styles.markerInner}></span>
           </span>
-        </button>
+        </IconButton>
       </div>
       <Dialog
         testid="container"

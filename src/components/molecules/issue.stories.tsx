@@ -83,3 +83,23 @@ export const Placeholder: Story = {
     placeholder: true,
   },
 };
+
+export const Deletable: Story = {
+  args: {
+    onDelete: () => {},
+    issue: {
+      key: "key",
+      summary: "summary of issue",
+      issueStatus: {
+        id: "id",
+        name: "Status",
+        statusCategory: "To Do",
+      },
+      issueType: {
+        id: "id",
+        avatarUrl: "",
+        name: "type",
+      },
+    },
+  },
+};

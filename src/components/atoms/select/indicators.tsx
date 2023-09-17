@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { iconize } from "../iconize";
+import { ChevronDown } from "../icons";
 import { BaseProps, generateTestId } from "@/components/helper";
 
 export interface IndicatorsProps extends BaseProps {
@@ -26,24 +26,7 @@ type StyleOption = Readonly<{
 
 const Styles = {
   root: () => classNames("flex", "flex-row", "items-center"),
-  dropDown: (options: StyleOption) =>
-    classNames(
-      "flex",
-      "flex-1",
-      "mx-2",
-      iconize({ type: "chevron-down", color: options.focused ? "secondary1" : "gray", active: options.focused }),
-    ),
-  reset: (options: StyleOption) =>
-    classNames(
-      "flex",
-      "flex-1",
-      "mx-2",
-      "cursor-pointer",
-      {
-        hidden: !options.selected,
-      },
-      iconize({ type: "x", color: "primary" }),
-    ),
+  dropDown: classNames("flex", "flex-1", "mx-2"),
   divider: (options: StyleOption) =>
     classNames("flex-1", "py-3", "border-l", "border-l-lightgray", {
       "border-l-secondary1-300": options.focused,
@@ -57,8 +40,10 @@ export function Indicators(props: IndicatorsProps) {
 
   return (
     <div className={Styles.root()} data-testid={gen("indicator")}>
-      <div className={Styles.divider(styleOption)}></div>
-      <div className={Styles.dropDown(styleOption)} data-testid={gen("drop-down")}></div>
+      <div className={Styles.divider(styleOption)}> </div>
+      <div className={Styles.dropDown} data-testid={gen("drop-down")}>
+        <ChevronDown color={styleOption.focused ? "secondary1" : "gray"} />
+      </div>
     </div>
   );
 }

@@ -1,14 +1,15 @@
 import type React from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
+import { ArrowBack } from "../atoms/icons";
 import { useGraphUnroll } from "@/hooks/graph-unroll";
 
 export type Props = BaseProps;
 
 const Styles = {
-  unroller: (active: boolean) =>
+  unroller: () =>
     classNames(
+      "flex",
       "relative",
       "flex-none",
       "bg-white",
@@ -17,7 +18,6 @@ const Styles = {
       "p-2",
       "w-10",
       "h-10",
-      iconize({ type: "arrow-back", color: "secondary1", active, disabled: !active }),
     ),
 };
 
@@ -35,11 +35,13 @@ export function GraphUnroller(props: Props) {
 
   return (
     <li
-      className={Styles.unroller(active)}
+      className={Styles.unroller()}
       data-testid={gen("unroller")}
       onClick={handleClick}
       aria-disabled={!active}
       data-active={active}
-    ></li>
+    >
+      <ArrowBack color={!active ? "gray" : "secondary1"} />
+    </li>
   );
 }

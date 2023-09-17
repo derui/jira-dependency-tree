@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
+import { IconButton } from "../atoms/icon-button";
+import { Search, X } from "../atoms/icons";
 
 export interface Props extends BaseProps {
   loading?: boolean;
@@ -21,62 +22,7 @@ const Styles = {
 
   term: () => classNames("outline-none", "w-full", "pl-2"),
   searcher: classNames("h-12", "flex", "items-center", "justify-center", "max-w-fit"),
-  issue: classNames(
-    "flex",
-    "flex-col",
-    "align-center",
-    "border-b",
-    "last:border-b-0",
-    "border-b-secondary1-300/50",
-    "transition",
-    "py-2",
-    "px-2",
-    "cursor-pointer",
-    "hover:text-secondary1-300",
-    "hover:bg-secondary1-200/10",
-  ),
-  issueKey: classNames("text-gray", "flex-none"),
-  issueSummary: classNames("font-sm", "flex-none", "w-full", "overflow-hidden", "text-ellipsis", "whitespace-nowrap"),
-  issueList: (haveIssues: boolean) => {
-    return classNames(
-      "max-h-64",
-      "overflow-y-auto",
-      "shadow-lg",
-      "p-2",
-      "mt-2",
-      "flex",
-      "flex-col",
-      "absolute",
-      "top-12",
-      "left-0",
-      "w-96",
-      "bg-white",
-      "space-y-2",
-      {
-        hidden: !haveIssues,
-      },
-    );
-  },
-  searchButton: (searching: boolean) =>
-    classNames(
-      "flex-none",
-      "w-6",
-      "h-6",
-      "items-center",
-      "justify-center",
-      "flex",
-      iconize({ type: "search", color: "complement", active: searching }),
-    ),
-
-  cancelButton: (status: Status, active: boolean) =>
-    classNames(
-      "flex-none",
-      "w-6",
-      "h-6",
-      "flex",
-      { hidden: status !== "Searching" },
-      iconize({ type: "x", color: "primary", active }),
-    ),
+  searchButtonWrapepr: () => classNames("items-center", "justify-center", "flex"),
 };
 
 // eslint-disable-next-line func-style
@@ -117,13 +63,17 @@ export function SearchInput(props: Props) {
 
   return (
     <div className={Styles.searcher}>
-      <button
-        type="button"
-        className={Styles.searchButton(status === "Searching")}
-        data-testid={gen("opener")}
-        aria-disabled={status === "BeforePrepared"}
-        onClick={handleOpenerClicked}
-      ></button>
+      <div className={Styles.searchButtonWrapepr()}>
+        <IconButton
+          color={status === "Searching" ? "secondary2" : "gray"}
+          size="s"
+          testid={gen("opener")}
+          disabled={status === "BeforePrepared"}
+          onClick={handleOpenerClicked}
+        >
+          <Search color={status === "Searching" ? "secondary2" : "gray"} size="s" />
+        </IconButton>
+      </div>
       <div className={Styles.input(status)} aria-hidden={status !== "Searching"} data-testid={gen("input-wrapper")}>
         <input
           className={Styles.term()}
@@ -133,11 +83,9 @@ export function SearchInput(props: Props) {
           onChange={(e) => handleTermInputted(e.target.value)}
           data-testid={gen("input")}
         />
-        <button
-          className={Styles.cancelButton(status, !!term)}
-          data-testid={gen("cancel")}
-          onClick={handleCancelClicked}
-        ></button>
+        <IconButton color={term ? "primary" : "gray"} size="s" onClick={handleCancelClicked} testid={gen("cancel")}>
+          <X color={term ? "primary" : "gray"} size="s" />
+        </IconButton>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
 import { SearchInput } from "../molecules/search-input";
 import { Button } from "../atoms/button";
 import { Panel } from "../molecules/panel";
+import { Plus } from "../atoms/icons";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
@@ -41,7 +41,6 @@ const Styles = {
     "scroll-smooth",
   ),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
-  appenderButton: classNames("flex", "flex-row", "items-center", "w-full", iconize({ type: "plus", color: "gray" })),
   footer: classNames("flex-none", "py-2"),
 
   appender: {
@@ -57,7 +56,6 @@ const Styles = {
       "transition",
     ),
     text: classNames("flex", "flex-row", "text-primary-400", "items-center", "justify-center"),
-    icon: classNames(iconize({ type: "plus", active: true })),
   },
   preparation: {
     root: classNames("mt-3"),
@@ -74,7 +72,7 @@ function Appender(props: { show?: boolean; onClick?: () => void; testid: string 
   return (
     <div className={Styles.appender.root} onClick={props.onClick} data-testid={gen("root")}>
       <p className={Styles.appender.text}>
-        <span className={Styles.appender.icon} />
+        <Plus color="primary" />
         Click to add relation
       </p>
     </div>

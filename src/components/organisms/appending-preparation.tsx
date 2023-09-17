@@ -4,8 +4,8 @@ import { produce } from "immer";
 import { BaseProps, generateTestId } from "../helper";
 import { RelationArrow } from "../molecules/relation-arrow";
 import { IssueSelect } from "../molecules/issue-select";
-import { Button } from "../atoms/button";
-import { iconize } from "../atoms/iconize";
+import { IconButton } from "../atoms/icon-button";
+import { Check, X } from "../atoms/icons";
 import { IssueModel } from "@/view-models/issue";
 import { IssueKey } from "@/type";
 import { useCurrentIssues } from "@/hooks/current-issues";
@@ -18,8 +18,7 @@ export interface Props extends BaseProps {
 const Styles = {
   root: classNames("relative", "flex", "flex-col", "items-center"),
   submit: classNames("flex-none", "mt-3"),
-  cancelWrapper: classNames("absolute", "right-3", "top-3"),
-  cancelButton: classNames("cursor-pointer", iconize({ type: "x", color: "primary" })),
+  buttonContainer: classNames("flex", "flex-auto", "items-center", "justify-end", "mt-2", "w-full"),
 };
 
 // eslint-disable-next-line func-style
@@ -60,16 +59,16 @@ export function AppendingPreparation(props: Props) {
 
   return (
     <ul className={Styles.root} data-testid={gen("root")}>
-      <li className={Styles.cancelWrapper}>
-        <span role="button" className={Styles.cancelButton} onClick={handleCancel} />
-      </li>
       <IssueSelect key="inward" issues={issues} onSelect={handleInwardSelect} testid={gen("inward")} />
       <RelationArrow draft />
       <IssueSelect key="outward" issues={issues} onSelect={handleOutwardSelect} testid={gen("outward")} />
-      <li className={Styles.submit}>
-        <Button schema="secondary2" onClick={handleSubmit} disabled={disabled}>
-          Submit
-        </Button>
+      <li className={Styles.buttonContainer}>
+        <IconButton size="s" color="complement" onClick={handleSubmit} disabled={disabled}>
+          <Check size="s" color="complement" />
+        </IconButton>
+        <IconButton color="gray" size="s" onClick={handleCancel}>
+          <X size="s" />
+        </IconButton>
       </li>
     </ul>
   );

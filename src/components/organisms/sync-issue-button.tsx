@@ -1,17 +1,16 @@
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "../atoms/iconize";
+import { IconButton } from "../atoms/icon-button";
+import { Refresh } from "../atoms/icons";
 import { useSynchronize } from "@/hooks";
 
 export type Props = BaseProps;
 
 const Styles = {
-  root: classNames("flex", "justify-center", "relative", "w-12", "items-center"),
-  icon: (syncing: boolean, syncable: boolean) => {
-    return classNames("w-8", "h-8", iconize({ type: "refresh", size: "l", color: "complement", disabled: !syncable }), {
+  root: (syncing: boolean) =>
+    classNames("flex", "justify-center", "relative", "w-12", "items-center", {
       "animate-spin": syncing,
-    });
-  },
+    }),
 };
 
 // eslint-disable-next-line func-style
@@ -20,16 +19,17 @@ export function SyncIssueButton(props: Props) {
   const { isEnabled, sync, isLoading } = useSynchronize();
 
   return (
-    <div className={Styles.root} data-testid={gen("root")}>
-      <button
-        className={Styles.icon(isLoading, isEnabled)}
+    <div className={Styles.root(isLoading)} data-testid={gen("root")}>
+      <IconButton
+        color="complement"
         disabled={!isEnabled}
-        aria-disabled={!isEnabled}
-        data-testid={gen("button")}
+        testid={gen("button")}
         onClick={() => {
           sync();
         }}
-      ></button>
+      >
+        <Refresh color={isEnabled ? "complement" : "gray"} />
+      </IconButton>
     </div>
   );
 }

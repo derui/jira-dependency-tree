@@ -22,8 +22,7 @@ const colors: Record<ColorSchema, string> = {
 
 const Styles = {
   button: classNames(
-    "flex-1",
-    "self-end",
+    "flex-none",
     "p-1",
     "flex",
     "justify-center",
@@ -50,6 +49,15 @@ const Styles = {
 export function IconButton(props: Props) {
   const classes = classNames(Styles.button, Styles.color(props.color), Styles.width(props.size));
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (props.onClick) {
+      props.onClick();
+    }
+  };
+
   const type = props.type === "submit" ? "submit" : "button";
   return (
     <button
@@ -58,7 +66,7 @@ export function IconButton(props: Props) {
       disabled={props.disabled ?? false}
       aria-disabled={props.disabled ?? false}
       data-testid={props.testid ?? "button"}
-      onClick={props.onClick}
+      onClick={handleClick}
     >
       {props.children}
     </button>

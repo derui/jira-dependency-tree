@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
-import { iconize } from "./iconize";
+import { Square, SquareCheck } from "./icons";
 
 export interface Props extends BaseProps {
   checked?: boolean;
@@ -10,8 +10,8 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  wrapper: (checked: boolean, disabled: boolean) =>
-    classNames("flex-none", "m-2", iconize({ type: checked ? "square-check" : "square", disabled, size: "m" }), {
+  wrapper: (disabled: boolean) =>
+    classNames("flex-none", "m-2", {
       "cursor-not-allowed": disabled,
       "cursor-pointer": !disabled,
     }),
@@ -45,14 +45,17 @@ export function Checkbox(props: Props) {
     ref.current?.click();
   };
 
+  const icon = checked ? <SquareCheck /> : <Square />;
+
   return (
     <span
-      className={Styles.wrapper(checked, props.disabled ?? false)}
+      className={Styles.wrapper(props.disabled ?? false)}
       aria-disabled={props.disabled ?? false}
       aria-selected={checked}
       onClick={handleClick}
       data-testid={gen("root")}
     >
+      {icon}
       <input
         ref={ref}
         className={Styles.input}

@@ -4,16 +4,16 @@ import { Option } from "./option";
 import { OptionListContainer } from "./option-list-container";
 
 export type SelectOption = {
-  label: string;
-  value: unknown;
+  readonly label: string;
+  readonly value: unknown;
 };
 
 /**
  * component list for select
  */
 export type SelectComponents = {
-  option?: typeof Option;
-  optionListContainer?: typeof OptionListContainer;
-  completion?: typeof Completion;
-  indicators?: typeof Indicators;
+  readonly option?: typeof Option;
+  readonly optionListContainer?: typeof OptionListContainer;
+  readonly completion?: typeof Completion;
+  readonly indicators?: typeof Indicators;
 };

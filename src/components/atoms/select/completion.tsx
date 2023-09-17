@@ -6,7 +6,7 @@ export interface CompletionProps extends BaseProps {
   /**
    * labels for completion
    */
-  readonly labels: string[];
+  readonly labels: ReadonlyArray<string>;
 
   /**
    * labels filtered by user input

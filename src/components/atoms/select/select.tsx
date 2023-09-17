@@ -12,22 +12,22 @@ export interface SelectProps extends PropsWithChildren, BaseProps {
   /**
    * options to display
    */
-  options: SelectOption[];
+  readonly options: ReadonlyArray<SelectOption>;
 
   /**
    * callback after change value
    */
-  onChange?: (option: SelectOption) => void;
+  readonly onChange?: (option: SelectOption) => void;
 
   /**
    * disable element
    */
-  disabled?: boolean;
+  readonly disabled?: boolean;
 
   /**
    * components for select
    */
-  components?: SelectComponents;
+  readonly components?: SelectComponents;
 }
 
 type StyleOption = {

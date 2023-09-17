@@ -5,7 +5,7 @@ export interface OptionProps extends BaseProps {
   /**
    * an option to render option
    */
-  option: SelectOption;
+  readonly option: SelectOption;
 }
 
 // eslint-disable-next-line func-style

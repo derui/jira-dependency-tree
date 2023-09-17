@@ -7,22 +7,22 @@ export interface OptionContainerProps extends BaseProps {
   /**
    * display list or not
    */
-  shown?: boolean;
+  readonly shown?: boolean;
 
   /**
    * options to render list
    */
-  options: SelectOption[];
+  readonly options: ReadonlyArray<SelectOption>;
 
   /**
    * callback when option selected
    */
-  onSelect: (option: SelectOption) => void;
+  readonly onSelect: (option: SelectOption) => void;
 
   /**
    * components
    */
-  components: SelectComponents;
+  readonly components: SelectComponents;
 }
 
 const Styles = {

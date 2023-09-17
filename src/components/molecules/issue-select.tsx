@@ -5,8 +5,8 @@ import { IssueModel } from "@/view-models/issue";
 import { stringToColour } from "@/utils/color";
 
 export interface Props extends BaseProps {
-  issues?: IssueModel[];
-  onSelect?: (issue: IssueModel) => void;
+  readonly issues?: ReadonlyArray<IssueModel>;
+  readonly onSelect?: (issue: IssueModel) => void;
 }
 
 const Styles = {

@@ -21,11 +21,6 @@ export const IconType = {
 export type IconType = keyof typeof IconType;
 
 /**
- * color schema for icon
- */
-export type Color = "primary" | "secondary1" | "gray" | "secondary2" | "complement";
-
-/**
  * size of icons
  */
 export type IconSize = "s" | "m" | "l";

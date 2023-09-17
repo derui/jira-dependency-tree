@@ -1,10 +1,11 @@
 import classNames from "classnames";
-import { Color, IconSize, IconType } from "./type";
+import { IconSize, IconType } from "./type";
 import { BaseProps } from "@/components/helper";
+import { ColorSchema } from "@/components/type";
 
 export interface BaseIconProps extends BaseProps {
   readonly iconType: IconType;
-  readonly color?: Color;
+  readonly color?: ColorSchema;
   readonly size?: IconSize;
 }
 

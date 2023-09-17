@@ -42,5 +42,7 @@ export function IssueSelect(props: Props) {
     }
   };
 
-  return <Select options={options} onChange={handleChange} components={{ option: IssueOption }} />;
+  return (
+    <Select options={options} onChange={handleChange} components={{ option: IssueOption }} testid={props.testid} />
+  );
 }

@@ -88,14 +88,13 @@ function Preparation(props: {
   onAppend: (inward: IssueKey, outward: IssueKey) => void;
   onCancel: () => void;
 }) {
-  const gen = generateTestId(props.testid);
   if (!props.show) {
     return null;
   }
 
   return (
-    <div className={Styles.preparation.root} data-testid={gen("root")}>
-      <AppendingPreparation onAppend={props.onAppend} onCancel={props.onCancel} />
+    <div className={Styles.preparation.root}>
+      <AppendingPreparation onAppend={props.onAppend} onCancel={props.onCancel} testid={props.testid} />
     </div>
   );
 }

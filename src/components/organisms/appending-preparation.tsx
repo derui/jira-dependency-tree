@@ -59,13 +59,13 @@ export function AppendingPreparation(props: Props) {
   const disabled = !state.inward || !state.outward;
 
   return (
-    <ul className={Styles.root} data-testid={gen("unroller")}>
+    <ul className={Styles.root} data-testid={gen("root")}>
       <li className={Styles.cancelWrapper}>
-        <span aria-role="button" className={Styles.cancelButton} onClick={handleCancel} />
+        <span role="button" className={Styles.cancelButton} onClick={handleCancel} />
       </li>
-      <IssueSelect key="inward" issues={issues} onSelect={handleInwardSelect} />
+      <IssueSelect key="inward" issues={issues} onSelect={handleInwardSelect} testid={gen("inward")} />
       <RelationArrow draft />
-      <IssueSelect key="outward" issues={issues} onSelect={handleOutwardSelect} />
+      <IssueSelect key="outward" issues={issues} onSelect={handleOutwardSelect} testid={gen("outward")} />
       <li className={Styles.submit}>
         <Button schema="secondary2" onClick={handleSubmit} disabled={disabled}>
           Submit

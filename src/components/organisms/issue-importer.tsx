@@ -131,7 +131,7 @@ const Styles = {
 
 const AllIssueSelector = (props: {
   onChange: (value: boolean) => void;
-  issuesInPage: IssueModel[];
+  issuesInPage: ReadonlyArray<IssueModel>;
   selectedIssues: string[];
 }) => {
   const diffSet = difference(new Set(props.issuesInPage.map((v) => v.key)), new Set(props.selectedIssues));
@@ -146,7 +146,7 @@ const AllIssueSelector = (props: {
 };
 
 const IssueList = (props: {
-  issues: IssueModel[];
+  issues: ReadonlyArray<IssueModel>;
   selectedIssues: string[];
   loading: boolean;
   testid: string;
@@ -316,7 +316,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
       <QueryInput testid={gen("query-input")} loading={loading} error={error} onSearch={handleSearch} />
       <IssueList
         selectedIssues={importer.selectedIssues}
-        issues={data ?? []}
+        issues={data ?? ([] as ReadonlyArray<IssueModel>)}
         loading={loading}
         testid={gen("issue-list")}
         onToggleMark={handleToggleMark}

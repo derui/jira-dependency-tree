@@ -17,11 +17,21 @@ export interface CompletionProps extends BaseProps {
 }
 
 const Styles = {
-  root: classNames("relative", "flex-auto"),
+  root: classNames("relative", "flex-auto", "overflow-hidden", "w-full"),
   selectedLabel: (selected: boolean) =>
-    classNames("absolute", "top-2", "left-4", "text-sm", {
-      hidden: !selected,
-    }),
+    classNames(
+      "absolute",
+      "top-2",
+      "left-4",
+      "text-sm",
+      "whitespace-nowrap",
+      "overflow-hidden",
+      "text-ellipsis",
+      "w-10/12",
+      {
+        hidden: !selected,
+      },
+    ),
   input: classNames(
     "w-full",
     "flex-auto",

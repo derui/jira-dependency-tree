@@ -50,11 +50,9 @@ test("create delta with keys", () => {
   mock.mockReturnValue(() => "1");
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
-  result.current.startPreparationToAdd();
   rerender();
 
   expect(result.current.state.drafts).toEqual([]);
-  expect(result.current.state.preparationToAdd).toEqual({});
 });
 
 test("remove delta", () => {
@@ -110,9 +108,11 @@ test("undo delta", () => {
   const store = createStore();
   const mock = vi.mocked(useGenerateId);
   mock.mockReturnValue(() => "1");
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" })];
+  store.dispatch(importIssues({ issues }));
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
-  result.current.startPreparationToAdd();
+  result.current.append("a", "b");
   rerender();
   result.current.undo("1");
   rerender();
@@ -145,9 +145,7 @@ test("apply remove and append delta", async () => {
 
   const { result, rerender } = renderHook(() => useRelationEditor(), { wrapper: getWrapper(store) });
   result.current.remove("1");
-  result.current.startPreparationToAdd();
-  store.dispatch(selectIssueInGraph("key1"));
-  store.dispatch(selectIssueInGraph("key2"));
+  result.current.append("key1", "key2");
   rerender();
   result.current.apply();
   rerender();

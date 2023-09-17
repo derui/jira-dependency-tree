@@ -4,18 +4,18 @@ import { Apis } from "@/apis/api";
 import { IssueModel, issueToIssueModel } from "@/view-models/issue";
 
 interface UseSearchIssueState {
-  isLoading: boolean;
-  error?: string;
-  data?: IssueModel[];
+  readonly isLoading: boolean;
+  readonly error?: string;
+  readonly data?: ReadonlyArray<IssueModel>;
 }
 type search = (jql: string) => void;
 type paginate = (page: number) => void;
 
 type UseSearchIssueResult = {
-  state: UseSearchIssueState;
-  search: search;
-  paginate: paginate;
-  reset: () => void;
+  readonly state: UseSearchIssueState;
+  readonly search: search;
+  readonly paginate: paginate;
+  readonly reset: () => void;
 };
 
 /**

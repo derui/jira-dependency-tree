@@ -37,7 +37,6 @@ export const relations = {
   filter: createAction<string>("relations:filter"),
   clearFilter: createAction("relations:clearFilter"),
   reflect: createAction<{ appended: Relation[]; removed: IssueRelationId[] }>("reltions:editRelations"),
-  prepareToAdd: createAction<DeltaId>("relations:prepareToAdd"),
   appendDelta: createAction<RelationDelta>("relations:appendDelta"),
   deleteDelta: createAction<DeltaId>("relations:deleteDelta"),
   reset: createAction("relations:reset"),

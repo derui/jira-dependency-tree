@@ -26,7 +26,8 @@ const Styles = {
     "py-2",
     "transition-colors",
     "text-sm",
-    "hover:bg-complement-200/50",
+    "bg-white",
+    "hover:bg-complement-200",
   ),
 } as const;
 

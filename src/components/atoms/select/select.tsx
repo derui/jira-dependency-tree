@@ -57,9 +57,16 @@ const Styles = {
     if (el) {
       const rect = el.getBoundingClientRect();
 
-      return classNames("absolute", `left-0`, `top-[calc(${rect.bottom}px)]`, `w-[${rect.width}px]`, `max-w-72`);
+      return classNames(
+        "z-10",
+        "absolute",
+        `left-0`,
+        `top-[calc(${rect.height}px_+_0.5rem)]`,
+        `w-[${rect.width}px]`,
+        `max-w-72`,
+      );
     } else {
-      return classNames("absolute");
+      return classNames("z-10", "absolute");
     }
   },
 } as const;
@@ -77,7 +84,7 @@ export function Select(props: SelectProps) {
   // hooks
   const rootRef = useRef<HTMLDivElement>(null);
   const [selectedOption, setSelectedOption] = useState<SelectOption | null>(null);
-  const [filteredOptions, setFilteredOptions] = useState<SelectOption[]>(props.options);
+  const [filteredOptions, setFilteredOptions] = useState<ReadonlyArray<SelectOption>>(props.options);
   const [focused, setFocused] = useState<SelectOpeningStatus>("notFocused");
 
   // local variables
@@ -94,6 +101,10 @@ export function Select(props: SelectProps) {
   const handleSelect = (option: SelectOption) => {
     setSelectedOption(option);
     setFocused("selected");
+
+    if (props.onChange) {
+      props.onChange(option);
+    }
   };
   const handleReset = () => {
     setSelectedOption(null);
@@ -108,6 +119,7 @@ export function Select(props: SelectProps) {
     <div
       ref={rootRef}
       className={Styles.root(styleOption)}
+      onClick={() => setFocused("opened")}
       onFocus={() => setFocused("opened")}
       onBlur={handleBlur}
       data-testid={gen("select-root")}

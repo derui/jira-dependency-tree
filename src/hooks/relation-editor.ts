@@ -6,10 +6,9 @@ import { useGetDelta } from "./_get-delta";
 import { useGenerateId } from "./_generate-id";
 import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import * as Actions from "@/status/actions";
-import { createDeleting } from "@/models/relation-delta";
+import { createAppending, createDeleting } from "@/models/relation-delta";
 import { Apis } from "@/apis/api";
 import { Relation } from "@/models/issue";
-import { IssueModel } from "@/view-models/issue";
 import { RelationDeltaModel, toAppendingModel, toDeletingModel } from "@/view-models/relation-delta";
 import { RelationModel } from "@/view-models/relation";
 
@@ -18,21 +17,17 @@ type NoTouched = { kind: "NoTouched"; relation: RelationModel };
 
 export type Draft = Touched | NoTouched;
 
-type PreparationToAdd = {
-  inward?: IssueModel;
-};
-
 interface State {
-  drafts: Draft[];
-  preparationToAdd?: PreparationToAdd;
-  appliable: boolean;
+  readonly drafts: Draft[];
+  readonly appliable: boolean;
 }
 
 interface UseEditRelationResult {
   /**
-   * add preparation to add relation
+   * add draft for relation between inward and outward
    */
-  startPreparationToAdd: () => void;
+  append: (inward: IssueKey, outward: IssueKey) => void;
+
   /**
    * remove relation between fromKey to toKey
    */
@@ -112,22 +107,6 @@ const mergeDeltaInDrafts = function mergeDraft(drafts: Draft[]): RelationDeltaMo
   return deltas;
 };
 
-const toPreparationToAdd = function toPreparationToAdd(
-  preparation: ReturnType<typeof useGetDelta>["preparation"] | undefined,
-  issues: Record<IssueKey, IssueModel>,
-) {
-  if (preparation === undefined) {
-    return;
-  }
-
-  const issue = issues[preparation.inward ?? ""];
-  if (issue === undefined) {
-    return {};
-  }
-
-  return { inward: issue };
-};
-
 /**
  * get methods to edit relation between issues
  */
@@ -140,11 +119,12 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const drafts = toDrafts(delta, relations);
-  const preparation = toPreparationToAdd(delta.preparation, relations.issues);
   const appliable = delta.hasDelta;
 
-  const startPreparationToAdd = () => {
-    dispatch(Actions.relations.prepareToAdd(generateId()));
+  const append = (inward: IssueKey, outward: IssueKey) => {
+    const delta = createAppending(generateId(), inward, outward);
+
+    dispatch(Actions.relations.appendDelta(delta));
   };
 
   const remove = (relationId: IssueRelationId) => {
@@ -202,12 +182,12 @@ export const useRelationEditor = function useRelationEditor(): UseEditRelationRe
   }, [drafts, apiCredential]);
 
   return {
-    startPreparationToAdd,
+    append,
     remove,
     undo,
     apply,
     isLoading: loading,
     error,
-    state: { drafts, preparationToAdd: preparation, appliable },
+    state: { drafts, appliable },
   };
 };

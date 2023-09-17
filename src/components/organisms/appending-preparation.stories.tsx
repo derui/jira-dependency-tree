@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Provider } from "react-redux";
 import { AppendingPreparation } from "./appending-preparation";
 import { randomIssue } from "@/mock/generators";
-import { issueToIssueModel } from "@/view-models/issue";
+import { createStore } from "@/status/store";
+import { importIssues } from "@/status/actions";
 
 const meta = {
   title: "Organisms/Appending Preparation",
@@ -13,14 +15,25 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const NoInward: Story = {
+export const Default: Story = {
   render() {
-    return <AppendingPreparation />;
-  },
-};
+    const store = createStore();
+    store.dispatch(
+      importIssues({
+        issues: [
+          randomIssue({ key: "key-1" }),
+          randomIssue({ key: "key-2" }),
+          randomIssue({ key: "key-3" }),
+          randomIssue({ key: "key-4" }),
+          randomIssue({ key: "key-5" }),
+        ],
+      }),
+    );
 
-export const HasInward: Story = {
-  render() {
-    return <AppendingPreparation inward={issueToIssueModel(randomIssue())} />;
+    return (
+      <Provider store={store}>
+        <AppendingPreparation />
+      </Provider>
+    );
   },
 };

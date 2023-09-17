@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
 import { iconize } from "../atoms/iconize";
 import { SearchInput } from "../molecules/search-input";
@@ -7,8 +8,8 @@ import { Panel } from "../molecules/panel";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
-import { IssueModel } from "@/view-models/issue";
 import { useRelationFiltering } from "@/hooks/relation-filtering";
+import { IssueKey } from "@/type";
 
 export interface Props extends BaseProps {
   opened?: boolean;
@@ -81,7 +82,12 @@ function Appender(props: { show?: boolean; onClick?: () => void; testid: string 
 }
 
 // eslint-disable-next-line func-style
-function Preparation(props: { show?: boolean; inward?: IssueModel; testid: string }) {
+function Preparation(props: {
+  show?: boolean;
+  testid: string;
+  onAppend: (inward: IssueKey, outward: IssueKey) => void;
+  onCancel: () => void;
+}) {
   const gen = generateTestId(props.testid);
   if (!props.show) {
     return null;
@@ -89,7 +95,7 @@ function Preparation(props: { show?: boolean; inward?: IssueModel; testid: strin
 
   return (
     <div className={Styles.preparation.root} data-testid={gen("root")}>
-      <AppendingPreparation inward={props.inward} />
+      <AppendingPreparation onAppend={props.onAppend} onCancel={props.onCancel} />
     </div>
   );
 }
@@ -97,8 +103,14 @@ function Preparation(props: { show?: boolean; inward?: IssueModel; testid: strin
 // eslint-disable-next-line func-style
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
-  const { state, remove, undo, startPreparationToAdd, apply, isLoading } = useRelationEditor();
+  const { state, remove, undo, append, apply, isLoading } = useRelationEditor();
   const { filter, clear } = useRelationFiltering();
+  const [showAppendDraft, setShowAppendDraft] = useState(false);
+
+  const handleAppend = (inward: IssueKey, outward: IssueKey) => {
+    setShowAppendDraft(false);
+    append(inward, outward);
+  };
 
   const draftList = state.drafts.map((draft) => {
     const key = draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
@@ -114,13 +126,16 @@ export function RelationEditor(props: Props) {
           <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />
         </div>
         <Appender
-          show={state.preparationToAdd === undefined}
-          onClick={startPreparationToAdd}
+          show={!showAppendDraft}
+          onClick={() => {
+            setShowAppendDraft(true);
+          }}
           testid={gen("appender")}
         />
         <Preparation
-          show={state.preparationToAdd !== undefined}
-          inward={state.preparationToAdd?.inward}
+          show={showAppendDraft}
+          onCancel={() => setShowAppendDraft(false)}
+          onAppend={handleAppend}
           testid={gen("preparation")}
         />
         <div className={Styles.main}>{draftList}</div>

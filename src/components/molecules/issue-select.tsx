@@ -34,7 +34,7 @@ const IssueOption = (props: OptionProps) => {
 
 // eslint-disable-next-line func-style
 export function IssueSelect(props: Props) {
-  const options = (props.issues ?? []).map((v) => ({ label: v.summary, value: v }));
+  const options = (props.issues ?? []).map((v) => ({ label: `${v.key} ${v.summary}`, value: v }));
 
   const handleChange = (option: SelectOption) => {
     if (props.onSelect) {

@@ -1,17 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { relations, selectIssueInGraph } from "../actions";
-import { AppendingRelationDelta, DeletingRelationDelta, RelationDelta, createAppending } from "@/models/relation-delta";
-import { DeltaId, IssueKey } from "@/type";
-
-interface PreparationToAdd {
-  deltaId: string;
-  inward?: IssueKey;
-}
+import { relations } from "../actions";
+import { AppendingRelationDelta, DeletingRelationDelta, RelationDelta } from "@/models/relation-delta";
+import { DeltaId } from "@/type";
 
 interface RelationDeltaState {
   appendingDelta: Record<DeltaId, AppendingRelationDelta>;
   deletingDelta: Record<DeltaId, DeletingRelationDelta>;
-  preparationToAdd?: PreparationToAdd;
 }
 
 const initialState = {
@@ -66,26 +60,6 @@ const slice = createSlice({
 
     builder.addCase(relations.reset, () => {
       return { appendingDelta: {}, deletingDelta: {} };
-    });
-
-    builder.addCase(relations.prepareToAdd, (state, { payload }) => {
-      state.preparationToAdd = { deltaId: payload };
-
-      return state;
-    });
-
-    builder.addCase(selectIssueInGraph, (state, { payload }) => {
-      if (state.preparationToAdd !== undefined) {
-        const deltaId = state.preparationToAdd.deltaId;
-        if (state.preparationToAdd.inward === undefined) {
-          state.preparationToAdd.inward = payload;
-        } else {
-          state.appendingDelta[deltaId] = createAppending(deltaId, state.preparationToAdd.inward, payload);
-          state.preparationToAdd = undefined;
-        }
-      }
-
-      return state;
     });
   },
 });

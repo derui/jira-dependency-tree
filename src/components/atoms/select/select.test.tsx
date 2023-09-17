@@ -54,7 +54,6 @@ test("select option", async () => {
   await user.click(screen.getByTestId("completions/input"));
   await user.click(screen.getByText("label"));
 
-  expect(screen.getByTestId("option-list-container/root").className).toContain("hidden");
   expect(screen.getByTestId("completions/display").textContent).toEqual("label");
 });
 

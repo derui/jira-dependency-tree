@@ -43,18 +43,25 @@ const Styles = {
   footer: classNames("flex-none", "py-2"),
 
   appender: {
-    root: classNames(
-      "rounded",
-      "mt-3",
-      "p-4",
-      "border-4",
+    root: classNames("flex", "justify-center", "mt-3"),
+    text: classNames(
+      "flex",
+      "flex-row",
+      "rounded-full",
+      "px-3",
+      "py-2",
+      "border-2",
       "border-dashed",
       "border-primary-300",
+      "hover:border-solid",
       "hover:bg-primary-200/20",
       "cursor-pointer",
       "transition",
+
+      "text-primary-400",
+      "items-center",
+      "justify-center",
     ),
-    text: classNames("flex", "flex-row", "text-primary-400", "items-center", "justify-center"),
   },
   preparation: {
     root: classNames("mt-3"),
@@ -72,7 +79,7 @@ function Appender(props: { show?: boolean; onClick?: () => void; testid: string 
     <div className={Styles.appender.root} onClick={props.onClick} data-testid={gen("root")}>
       <p className={Styles.appender.text}>
         <Plus color="primary" />
-        Click to add relation
+        Add relation
       </p>
     </div>
   );

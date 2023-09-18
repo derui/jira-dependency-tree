@@ -37,7 +37,6 @@ const Styles = {
     "overflow-hidden",
     "overflow-y-auto",
     "space-y-2",
-    "pr-2",
     "scroll-smooth",
   ),
   skeleton: classNames("flex-auto", "m-2", "h-full", "animate-pulse", "bg-lightgray"),
@@ -109,12 +108,15 @@ export function RelationEditor(props: Props) {
     append(inward, outward);
   };
 
-  const draftList = state.drafts.map((draft) => {
-    const key = draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
-    return (
-      <EditableRelationDraft key={key} draft={draft} onUndo={undo} onRequestDelete={remove} testid={gen("draft")} />
-    );
-  });
+  const draftList = showAppendDraft
+    ? []
+    : state.drafts.map((draft) => {
+        const key =
+          draft.kind === "Touched" ? `delta-${draft.delta.deltaId}` : `nontouched-${draft.relation.relationId}`;
+        return (
+          <EditableRelationDraft key={key} draft={draft} onUndo={undo} onRequestDelete={remove} testid={gen("draft")} />
+        );
+      });
 
   return (
     <Panel opened={props.opened} onClose={props.onClose} title="Relations" testid={gen("panel")}>

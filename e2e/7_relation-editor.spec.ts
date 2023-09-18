@@ -75,7 +75,7 @@ test("append and remove relation", async ({ page }) => {
   await page.getByTestId(testidOf("preparation/inward/select-root")).getByText("TES-52").click();
   await page.getByTestId(testidOf("preparation/outward/select-root")).click();
   await page.getByTestId(testidOf("preparation/outward/select-root")).getByText("TES-51").click();
-  await page.getByRole("button", { name: "Submit" }).click();
+  await page.getByTestId(testidOf("preparation/submit")).click();
 
   await expect(page.getByTestId(testidOf("draft/touched"))).toHaveCount(2);
   await expect(page.getByTestId(testidOf("draft/inward/root")).nth(1)).toContainText("TES-52");

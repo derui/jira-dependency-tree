@@ -18,7 +18,7 @@ export interface Props extends BaseProps {
 const Styles = {
   root: classNames("relative", "flex", "flex-col", "items-center"),
   submit: classNames("flex-none", "mt-3"),
-  buttonContainer: classNames("flex", "flex-auto", "items-center", "justify-end", "mt-2", "w-full"),
+  buttonContainer: classNames("flex", "flex-auto", "items-center", "justify-end", "mt-2", "w-full", "gap-2"),
 };
 
 // eslint-disable-next-line func-style
@@ -63,7 +63,7 @@ export function AppendingPreparation(props: Props) {
       <RelationArrow draft />
       <IssueSelect key="outward" issues={issues} onSelect={handleOutwardSelect} testid={gen("outward")} />
       <li className={Styles.buttonContainer}>
-        <IconButton size="s" color="complement" onClick={handleSubmit} disabled={disabled}>
+        <IconButton size="s" color="complement" onClick={handleSubmit} disabled={disabled} testid={gen("submit")}>
           <Check size="s" color="complement" />
         </IconButton>
         <IconButton color="gray" size="s" onClick={handleCancel}>

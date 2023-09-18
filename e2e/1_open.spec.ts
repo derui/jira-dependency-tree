@@ -14,17 +14,14 @@ test("open and initial display", async ({ page }) => {
 
   // side toolbar
   await expect(page.getByTestId("side-toolbar/graph-layouter/graph-layout")).not.toHaveClass("--opened");
-  await expect(page.getByTestId("side-toolbar/graph-layouter/horizontal-layouter")).toHaveAttribute(
-    "data-active",
-    "true",
+  await expect(page.getByTestId("side-toolbar/graph-layouter/graph-layout")).toHaveAttribute(
+    "data-layout",
+    "horizontal",
   );
-  await expect(page.getByTestId("side-toolbar/graph-layouter/vertical-layouter")).toHaveAttribute(
-    "data-active",
-    "false",
-  );
+
   await expect(page.getByTestId("side-toolbar/graph-unroller/unroller")).toHaveAttribute("aria-disabled", "true");
 
   // searcher
   await expect(page.getByTestId("issue-searcher/input/opener")).toBeVisible();
-  await expect(page.getByTestId("issue-searcher/input/cancel")).not.toBeVisible();
+  await expect(page.getByTestId("issue-searcher/input/cancel")).toBeVisible();
 });

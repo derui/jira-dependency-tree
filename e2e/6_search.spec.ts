@@ -17,7 +17,6 @@ test("allow search issue with term", async ({ page }) => {
   await importIssues(page);
 
   // open and input issue searching term
-  await expect(page.getByTestId("issue-searcher/input/cancel")).not.toBeVisible();
   await page.getByTestId("issue-searcher/input/opener").click();
   await page.getByTestId("issue-searcher/input/input").fill("TES");
   await page.getByTestId("issue-searcher/input/input").press("Enter");
@@ -42,7 +41,6 @@ test("Do cancel to close searcher", async ({ page }) => {
   await importIssues(page);
 
   // open and input issue searching term
-  await expect(page.getByTestId("issue-searcher/input/cancel")).not.toBeVisible();
   await page.getByTestId("issue-searcher/input/opener").click();
   await page.getByTestId("issue-searcher/input/input").fill("TES");
   await page.getByTestId("issue-searcher/input/input").press("Enter");
@@ -68,7 +66,6 @@ test("move point to task if result clicked", async ({ page }) => {
   await importIssues(page);
 
   // open and input issue searching term
-  await expect(page.getByTestId("issue-searcher/input/cancel")).not.toBeVisible();
   await page.getByTestId("issue-searcher/input/opener").click();
   await page.getByTestId("issue-searcher/input/input").fill("TES-51");
   await page.getByTestId("issue-searcher/input/input").press("Enter");

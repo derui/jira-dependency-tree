@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use base64::{engine::general_purpose, Engine as _};
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone, Debug)]
@@ -29,7 +30,7 @@ impl JiraUrl for JiraAuhtorization {
 
         map.insert(
             String::from("authorization"),
-            format!("Basic {}", base64::encode(auth)),
+            format!("Basic {}", general_purpose::URL_SAFE.encode(auth)),
         );
 
         map

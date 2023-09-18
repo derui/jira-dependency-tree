@@ -15,16 +15,16 @@ edition = "2021"
 # and it will keep the alphabetic ordering for you.
 
 [dependencies]
-base64 = "0.13.0"
+base64 = "0.21.4"
 isahc = {version = "1.7.2", default-features = true, features = ["json"] }
-lambda_http = { version = "0.6.0", default-features = false, features = ["apigw_rest"] }
-lambda_runtime = "0.6.0"
-serde = "1.0.143"
-serde_json = "1.0.83"
+lambda_http = { version = "0.6.2", default-features = false, features = ["apigw_rest"] }
+lambda_runtime = "0.6.1"
+serde = "1.0.188"
+serde_json = "1.0.107"
 tokio = { version = "1", features = ["macros"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
-url = "2.3.1"
+url = "2.4.1"
 
 [dev-dependencies]
-httpmock = "0.6.6"
+httpmock = "0.6.8"

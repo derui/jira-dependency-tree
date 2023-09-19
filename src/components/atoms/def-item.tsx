@@ -7,17 +7,9 @@ export interface Props extends BaseProps, PropsWithChildren {
 }
 
 const Styles = {
-  root: classNames("flex", "flex-col"),
+  root: classNames("flex", "flex-col", "last:border-b-0", "border-b", "border-b-secondary1-200"),
   title: classNames("flex", "flex-none", "text-sm", "items-center", "text-darkgray"),
-  description: classNames(
-    "flex-1",
-    "pl-3",
-    "py-1",
-    "items-center",
-    "border-b",
-    "border-b-secondary1-200",
-    "break-words",
-  ),
+  description: classNames("flex-1", "pl-3", "py-1", "items-center", "break-words"),
 } as const;
 
 export const DefItem: React.FC<Props> = (props) => {

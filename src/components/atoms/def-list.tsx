@@ -9,5 +9,9 @@ const Styles = {
 } as const;
 
 export const DefList: React.FC<Props> = (props) => {
-  return <dl className={Styles.root}>{props.children}</dl>;
+  return (
+    <dl className={Styles.root} data-testid={props.testid}>
+      {props.children}
+    </dl>
+  );
 };

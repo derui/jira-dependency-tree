@@ -20,12 +20,12 @@ test("should be able to render", () => {
   expect(screen.queryByText(issue.issueType?.name ?? "")).not.toBeNull();
 });
 
-test("call delete handler", async () => {
+test("call remove handler", async () => {
   const user = userEvent.setup();
   const mock = Sinon.fake();
   render(<IssueDetail issue={issue} onRemove={mock} />);
 
-  await user.click(screen.getByTestId("deleter"));
+  await user.click(screen.getByTestId("remover"));
 
   expect(mock.calledWith(issue.key)).toBeTruthy();
 });

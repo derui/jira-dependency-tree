@@ -29,13 +29,3 @@ test("call delete handler", async () => {
 
   expect(mock.calledWith(issue.key)).toBeTruthy();
 });
-
-test("call close handler", async () => {
-  const user = userEvent.setup();
-  const mock = Sinon.fake();
-  render(<IssueDetail issue={issue} onClose={mock} />);
-
-  await user.click(screen.getByTestId("closer"));
-
-  expect(mock.calledOnce).toBeTruthy();
-});

@@ -12,6 +12,7 @@ type Result = {
   layout: {
     issues: IssueModelWithLayout[];
     links: LinkLayoutModel[];
+    selectedIssue: IssueModelWithLayout | undefined;
   };
 };
 
@@ -27,12 +28,18 @@ const selectRelations = createDraftSafeSelector(
   (state) => Object.values(state.relations.relations),
 );
 
+const selectCurrentIssueKey = createDraftSafeSelector(
+  (state: RootState) => state,
+  (state) => state.graphLayout.selectedIssue,
+);
+
 /**
  * calculation logic for issue graph layout.
  */
 export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
   const issues = useAppSelector(selectIssues);
   const relations = useAppSelector(selectRelations);
+  const currentSelectedIssueKey = useAppSelector(selectCurrentIssueKey);
 
   const state = useMemo(() => {
     const graph = makeIssueGraph(issues, relations);
@@ -43,8 +50,11 @@ export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
     return {
       issues: issueLayouts,
       links,
+      selectedIssue: currentSelectedIssueKey
+        ? issueLayouts.find((v) => v.issue.key === currentSelectedIssueKey)
+        : undefined,
     };
-  }, [issues, relations]);
+  }, [issues, relations, currentSelectedIssueKey]);
 
   return { layout: state };
 };

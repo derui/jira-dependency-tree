@@ -1,12 +1,17 @@
 import { useAppDispatch } from "../_internal-hooks";
 import { IssueKey } from "@/type";
-import { selectIssueInGraph } from "@/status/actions";
+import { deselectIssueInGraph, selectIssueInGraph } from "@/status/actions";
 
 type Result = {
   /**
    * select issue in layout
    */
   select: (key: IssueKey) => void;
+
+  /**
+   * deselect issue in layout
+   */
+  deselect: (key: IssueKey) => void;
 };
 
 /**
@@ -19,5 +24,9 @@ export const useSelectNode = function useSelectNode(): Result {
     dispatch(selectIssueInGraph(key));
   };
 
-  return { select };
+  const deselect = (key: IssueKey) => {
+    dispatch(deselectIssueInGraph(key));
+  };
+
+  return { select, deselect };
 };

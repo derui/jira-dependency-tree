@@ -15,7 +15,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classNames("relative", "pt-2"),
+  root: classNames("relative", "pt-2", "bg-white"),
   issueType: (issueType?: IssueType) => {
     const color = stringToColour(issueType?.name ?? "");
 

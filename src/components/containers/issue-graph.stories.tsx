@@ -48,7 +48,7 @@ export const NoInward: Story = {
 
     return (
       <Provider store={store}>
-        <div className="w-full h-72">
+        <div className="w-96 h-96">
           <IssueGraphContainer />
         </div>
       </Provider>

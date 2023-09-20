@@ -4,6 +4,7 @@ import { fromEvent, take, takeUntil } from "rxjs";
 import { BaseProps, generateTestId } from "../helper";
 import { IssueNode } from "../organisms/issue-node";
 import { LinkNode } from "../organisms/link-node";
+import { IssueDetailViewer } from "../organisms/issue-detail-viewer";
 import { useGraphNodeLayout, useViewBox } from "@/hooks";
 import { Rect } from "@/utils/basic";
 import { simpleTransit } from "@/utils/transition";
@@ -54,14 +55,6 @@ export function IssueGraphContainer(props: Props) {
   const graph = useGraphNodeLayout();
   const viewBox = useViewBox();
   const ref = useRef<SVGSVGElement | null>(null);
-
-  const issues = graph.layout.issues.map((v) => {
-    return <IssueNode key={v.issue.key} layout={v} testid={gen("issue-node")} />;
-  });
-
-  const links = graph.layout.links.map((v) => {
-    return <LinkNode key={v.meta.relationId} layout={v} testid={gen("link-node")} />;
-  });
 
   useLayoutEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -121,6 +114,18 @@ export function IssueGraphContainer(props: Props) {
     }
   }, [props.attension]);
 
+  const issues = graph.layout.issues.map((v) => {
+    return <IssueNode key={v.issue.key} layout={v} testid={gen("issue-node")} />;
+  });
+
+  const links = graph.layout.links.map((v) => {
+    return <LinkNode key={v.meta.relationId} layout={v} testid={gen("link-node")} />;
+  });
+
+  const detail = graph.layout.selectedIssue ? (
+    <IssueDetailViewer layout={graph.layout.selectedIssue} testid={gen("detail")} />
+  ) : null;
+
   const handleWheel = (e: WheelEvent) => {
     const delta = e.deltaY > 0 ? 1 : -1;
 
@@ -154,6 +159,7 @@ export function IssueGraphContainer(props: Props) {
       </defs>
       {issues}
       {links}
+      {detail}
     </svg>
   );
 }

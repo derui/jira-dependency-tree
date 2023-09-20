@@ -23,7 +23,7 @@ test("should be able to render", () => {
 test("call delete handler", async () => {
   const user = userEvent.setup();
   const mock = Sinon.fake();
-  render(<IssueDetail issue={issue} onDelete={mock} />);
+  render(<IssueDetail issue={issue} onRemove={mock} />);
 
   await user.click(screen.getByTestId("deleter"));
 

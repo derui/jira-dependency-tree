@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue } from "../actions";
+import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue, removeNode } from "../actions";
 import { Issue } from "@/models/issue";
 import { IssueKey } from "@/type";
 import { filterEmptyString } from "@/utils/basic";
@@ -61,6 +61,10 @@ const slice = createSlice({
 
     builder.addCase(clearIssueFilter, (state) => {
       state.matchedIssues = [];
+    });
+
+    builder.addCase(removeNode, (state, { payload }) => {
+      delete state.issues[payload];
     });
 
     builder.addCase(expandIssue, (state, { payload }) => {

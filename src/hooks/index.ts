@@ -9,5 +9,6 @@ export * from "./issue-graph/view-box";
 export * from "./issue-graph/select-node";
 export * from "./issue-graph/highlight-link-node";
 export * from "./issue-graph/highlight-issue-node";
+export * from "./issue-graph/remove-node";
 
 export { useSynchronize, useGetApiCredential, useGraphLayout, useImportIssues, useSearchIssues };

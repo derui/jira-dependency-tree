@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { highlightRelatedNodes, importIssues, relations } from "../actions";
+import { highlightRelatedNodes, importIssues, relations, removeNode } from "../actions";
 import { getInitialState, reducer } from "./relations";
 import { randomIssue } from "@/mock/generators";
 
@@ -61,4 +61,31 @@ test("highlight related relations", () => {
   state = reducer(state, highlightRelatedNodes("b"));
 
   expect(state.highlightedRelations).toEqual({ "1": { id: "1", inwardIssue: "b", outwardIssue: "a" } });
+});
+
+test("remove issue from layout", () => {
+  let state = reducer(
+    getInitialState(),
+    importIssues({
+      issues: [
+        randomIssue({ key: "a", relations: [{ id: "1", inwardIssue: "b", outwardIssue: "a" }] }),
+        randomIssue({
+          key: "b",
+          relations: [
+            { id: "1", inwardIssue: "b", outwardIssue: "a" },
+            { id: "2", inwardIssue: "b", outwardIssue: "c" },
+          ],
+        }),
+        randomIssue({ key: "c", relations: [{ id: "2", inwardIssue: "b", outwardIssue: "c" }] }),
+      ],
+    }),
+  );
+  expect(state.relations).toEqual({
+    "1": { id: "1", inwardIssue: "b", outwardIssue: "a" },
+    "2": { id: "2", inwardIssue: "b", outwardIssue: "c" },
+  });
+
+  state = reducer(state, removeNode("c"));
+
+  expect(state.relations).toEqual({ "1": { id: "1", inwardIssue: "b", outwardIssue: "a" } });
 });

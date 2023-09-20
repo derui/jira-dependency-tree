@@ -10,7 +10,7 @@ import { IssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
   issue: IssueModel;
-  onDelete?: (key: IssueKey) => void;
+  onRemove?: (key: IssueKey) => void;
   onClose?: () => void;
 }
 
@@ -40,7 +40,7 @@ export const IssueDetail: React.FC<Props> = (props) => {
   const { issue, testid } = props;
   const gen = generateTestId(testid);
 
-  const handleDelete = () => props.onDelete?.(issue.key);
+  const handleRemove = () => props.onRemove?.(issue.key);
 
   return (
     <div className={Styles.root}>
@@ -63,8 +63,8 @@ export const IssueDetail: React.FC<Props> = (props) => {
       </div>
       <ul className={Styles.operations}>
         <li className={Styles.operation}>
-          <Button schema="gray" type="normal" size="s" onClick={handleDelete} testid={gen("deleter")}>
-            Delete from graph
+          <Button schema="gray" type="normal" size="s" onClick={handleRemove} testid={gen("remover")}>
+            Remove from graph
           </Button>
         </li>
       </ul>

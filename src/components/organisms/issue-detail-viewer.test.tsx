@@ -6,17 +6,19 @@ import { Provider } from "react-redux";
 import { IssueDetailViewer } from "./issue-detail-viewer";
 import { createStore } from "@/status/store";
 import { randomIssue } from "@/mock/generators";
-import { useSelectNode } from "@/hooks";
+import { useRemoveNode, useSelectNode } from "@/hooks";
 import { issueToIssueModel } from "@/view-models/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 
 vi.mock("@/hooks", () => {
   const deselect = vi.fn();
+  const remove = vi.fn();
 
   return {
     useSelectNode: () => ({
       deselect,
     }),
+    useRemoveNode: () => ({ remove }),
   };
 });
 
@@ -62,6 +64,22 @@ test("call deselect when closer clicked", async () => {
   );
 
   await user.click(screen.getByTestId("closer"));
+
+  expect(mock).toBeCalledWith(issue.key);
+});
+
+test("call remove when remove clicked", async () => {
+  const user = userEvent.setup();
+  const store = createStore();
+  const mock = vi.mocked(useRemoveNode)().remove;
+
+  render(
+    <Provider store={store}>
+      <IssueDetailViewer layout={layout} />
+    </Provider>,
+  );
+
+  await user.click(screen.getByTestId("issue-key/remover"));
 
   expect(mock).toBeCalledWith(issue.key);
 });

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { highlightRelatedNodes, importIssues, relations, resetHighlightRelationNodes } from "../actions";
+import { highlightRelatedNodes, importIssues, relations, removeNode, resetHighlightRelationNodes } from "../actions";
 import { IssueRelationId } from "@/type";
 import { Relation } from "@/models/issue";
 
@@ -63,6 +63,16 @@ const slice = createSlice({
 
     builder.addCase(resetHighlightRelationNodes, (state) => {
       state.highlightedRelations = {};
+    });
+
+    builder.addCase(removeNode, (state, { payload }) => {
+      for (const key of Object.keys(state.relations)) {
+        const relation = state.relations[key];
+
+        if (relation.inwardIssue === payload || relation.outwardIssue === payload) {
+          delete state.relations[key];
+        }
+      }
     });
   },
 });

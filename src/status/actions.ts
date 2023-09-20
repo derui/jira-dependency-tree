@@ -25,6 +25,7 @@ export const narrowExpandedIssue = createAction("narrowExpandedIssue");
 
 export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
 export const deselectIssueInGraph = createAction<string>("deselectIssueInGraph");
+export const removeNode = createAction<string>("removeNode");
 
 // highlight issues/link
 export const highlightRelatedNodes = createAction<string>("highlightRelationNodes");

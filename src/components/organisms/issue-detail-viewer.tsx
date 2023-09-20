@@ -4,7 +4,7 @@ import { Translate } from "../atoms/svg-translate";
 import { IssueDetail } from "../molecules/issue-detail";
 import { IconButton } from "../atoms/icon-button";
 import { X } from "../atoms/icons";
-import { useSelectNode } from "@/hooks";
+import { useRemoveNode, useSelectNode } from "@/hooks";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 
 export interface Props extends BaseProps {
@@ -42,6 +42,7 @@ const Consts = {
 export function IssueDetailViewer(props: Props) {
   const gen = generateTestId(props.testid);
   const { deselect } = useSelectNode();
+  const { remove } = useRemoveNode();
   const position = {
     x: props.layout.position.x,
     y: props.layout.position.y - Consts.Y_OFFSET - Consts.SIZE.height,
@@ -54,13 +55,19 @@ export function IssueDetailViewer(props: Props) {
     y2: Consts.SIZE.height,
   };
 
+  const handleRemove = remove;
+
   return (
     <Translate {...position}>
       <circle cx={line.x1} cy={line.y1} r={Consts.RADIUS} className="fill-complement-300" />
       <line {...line} className="stroke-complement-300" />
       <foreignObject width={Consts.SIZE.width} height={Consts.SIZE.height} className={Styles.foreign}>
         <div className={Styles.root}>
-          <IssueDetail issue={props.layout.issue} testid={gen(`issue-${props.layout.issue.key}`)} />
+          <IssueDetail
+            issue={props.layout.issue}
+            testid={gen(`issue-${props.layout.issue.key}`)}
+            onRemove={handleRemove}
+          />
         </div>
         <span className={Styles.closer}>
           <IconButton color="gray" onClick={() => deselect(props.layout.issue.key)} testid={gen("closer")}>

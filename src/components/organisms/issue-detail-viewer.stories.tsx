@@ -23,7 +23,7 @@ export const Default: Story = {
         colIndex: 0,
         rowIndex: 0,
       },
-      position: { x: 100, y: 100 },
+      position: { x: 100, y: 400 },
       size: { width: 160, height: 100 },
     },
   },

@@ -58,7 +58,7 @@ export function IssueDetailViewer(props: Props) {
   const handleRemove = remove;
 
   return (
-    <Translate {...position} testid={gen("root")}>
+    <Translate {...position} testid={gen("root")} doNotPropagateMouseEvents>
       <circle cx={line.x1} cy={line.y1} r={Consts.RADIUS} className="fill-complement-300" />
       <line {...line} className="stroke-complement-300" />
       <foreignObject width={Consts.SIZE.width} height={Consts.SIZE.height} className={Styles.foreign}>

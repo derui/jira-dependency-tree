@@ -245,11 +245,11 @@ test("select issue to mark to import after", async () => {
   await user.click(screen.getByTestId("query-input/button"));
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId("issue-list/check-key/root").getAttribute("aria-selected")).toEqual("true");
+  expect(screen.getByTestId<HTMLInputElement>("issue-list/check-key/checkbox").checked).toEqual(true);
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId("issue-list/check-key/root").getAttribute("aria-selected")).toEqual("false");
+  expect(screen.getByTestId<HTMLInputElement>("issue-list/check-key/checkbox").checked).toEqual(false);
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
 });
 

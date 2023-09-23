@@ -30,7 +30,7 @@ const Styles = {
     "rounded-full",
     "transition-colors",
     "disabled:text-gray",
-    "disabled:bg-lightgray",
+    "disabled:bg-lightgray/30",
     "disabled:border-gray",
   ),
 

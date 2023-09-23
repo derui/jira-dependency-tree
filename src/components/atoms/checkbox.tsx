@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
 import { Square, SquareCheck } from "./icons";
+import { IconButton } from "./icon-button";
 
 export interface Props extends BaseProps {
   checked?: boolean;
@@ -38,23 +39,14 @@ export function Checkbox(props: Props) {
     }
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-
+  const handleClick = () => {
     ref.current?.click();
   };
 
   const icon = checked ? <SquareCheck /> : <Square />;
 
   return (
-    <span
-      className={Styles.wrapper(props.disabled ?? false)}
-      aria-disabled={props.disabled ?? false}
-      aria-selected={checked}
-      onClick={handleClick}
-      data-testid={gen("root")}
-    >
+    <IconButton color="gray" disabled={props.disabled} onClick={handleClick} testid={gen("root")}>
       {icon}
       <input
         ref={ref}
@@ -66,6 +58,6 @@ export function Checkbox(props: Props) {
         onChange={handleChange}
         data-testid={gen("checkbox")}
       />
-    </span>
+    </IconButton>
   );
 }

@@ -157,8 +157,8 @@ export function IssueGraphContainer(props: Props) {
           <polygon points="0 0, 10 3.5, 0 7" />
         </marker>
       </defs>
-      {issues}
       {links}
+      {issues}
       {detail}
     </svg>
   );

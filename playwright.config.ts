@@ -20,7 +20,7 @@ export default defineConfig({
      */
     timeout: 5000,
   },
-  workers: 4,
+  workers: 1,
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -51,8 +51,10 @@ export default defineConfig({
   // outputDir: 'test-results/',
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   port: 3000,
-  // },
+  webServer: process.env.CI
+    ? {
+        command: "pnpm run start",
+        port: 5173,
+      }
+    : undefined,
 });

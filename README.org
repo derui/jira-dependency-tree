@@ -3,7 +3,10 @@ This project provides web-app to display dependency tree of issues in JIRA with 
 
 ** Features
 - Show dendency graph between JIRA issues
+  - Construction of graph is completely automatic
   - only outward link
+  - Show details of issue
+  - Highlight issue/link that are related hovered it
 - Switch layout
   - horizontal/vertical
 - Import issues via JQL
@@ -11,10 +14,7 @@ This project provides web-app to display dependency tree of issues in JIRA with 
 - Search issue and view it in application
 - Edit relations
   - Multiple Delete/Append at one time
-- Expand/Narrow issue/subtasks
-  - Default graph doesn't display subtasks
-  - Display subtasks when notification of a parent issue clicked
-  - All operation targets are restricted in subtasks of parent issue
+  - Filter relations
 
 ** Motivation
 We wanted to use Advanced Roadmap in my work, but it is too expensive for us. So we decided to build dependency tree by hand.

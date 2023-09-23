@@ -1,9 +1,8 @@
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
+import { useZoom } from "@/hooks/zoom";
 
-export interface Props extends BaseProps {
-  zoom: number;
-}
+type Props = BaseProps;
 
 const Styles = {
   root: classNames("absolute", "flex", "right-4", "bottom-4", "p-4", "bg-white", "z-10", "w-20", "text-center"),
@@ -11,8 +10,9 @@ const Styles = {
 };
 
 // eslint-disable-next-line func-style
-export function ZoomSlider({ zoom, testid }: Props) {
+export function ZoomSlider({ testid }: Props) {
   const gen = generateTestId(testid);
+  const zoom = useZoom();
 
   return (
     <div className={Styles.root}>

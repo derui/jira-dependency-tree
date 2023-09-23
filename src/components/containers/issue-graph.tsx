@@ -11,10 +11,9 @@ import { simpleTransit } from "@/utils/transition";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 import { Position } from "@/type";
 import { cubicBezier } from "@/utils/bezier";
+import { useFocusedIssue } from "@/hooks/focused-issue";
 
-interface Props extends BaseProps {
-  attension?: string;
-}
+type Props = BaseProps;
 
 const Styles = {
   root: classNames("max-h-full", "h-auto", "absolute"),
@@ -55,6 +54,7 @@ export function IssueGraphContainer(props: Props) {
   const graph = useGraphNodeLayout();
   const viewBox = useViewBox();
   const ref = useRef<SVGSVGElement | null>(null);
+  const focusedIssue = useFocusedIssue();
 
   useLayoutEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -107,12 +107,12 @@ export function IssueGraphContainer(props: Props) {
   }, [ref.current]);
 
   useEffect(() => {
-    if (props.attension) {
-      attentionIssue(viewBox.state.center, props.attension, graph.layout.issues, (p) => {
+    if (focusedIssue) {
+      attentionIssue(viewBox.state.center, focusedIssue, graph.layout.issues, (p) => {
         viewBox.movePan(p);
       });
     }
-  }, [props.attension]);
+  }, [focusedIssue]);
 
   const issues = graph.layout.issues.map((v) => {
     return <IssueNode key={v.issue.key} layout={v} testid={gen("issue-node")} />;

@@ -121,6 +121,7 @@ export function Select(props: SelectProps) {
           labels={labels}
           onFilterLabel={handleFilterLabel}
           selectedLabel={selectedOption?.label}
+          focused={focused === "opened"}
           testid={gen("completions")}
         />
         <components.indicators

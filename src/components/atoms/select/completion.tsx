@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BaseProps, generateTestId } from "@/components/helper";
 
 export interface CompletionProps extends BaseProps {
@@ -14,6 +14,8 @@ export interface CompletionProps extends BaseProps {
   readonly onFilterLabel: (labels: string[]) => void;
 
   readonly selectedLabel?: string;
+
+  readonly focused?: boolean;
 }
 
 const Styles = {
@@ -50,6 +52,7 @@ const Styles = {
 export function Completion(props: CompletionProps) {
   const gen = generateTestId(props.testid);
   const [value, setValue] = useState("");
+  const ref = useRef<HTMLInputElement | null>(null);
   const displayLabel = useMemo<boolean>(() => {
     if (value) {
       return false;
@@ -62,9 +65,16 @@ export function Completion(props: CompletionProps) {
 
   useEffect(() => {
     if (props.selectedLabel) {
+      console.log("reset");
       setValue("");
     }
   }, [props.selectedLabel]);
+
+  useEffect(() => {
+    if (props.focused && ref.current) {
+      ref.current.focus();
+    }
+  }, [ref.current, props.focused]);
 
   const placeholder = props.selectedLabel ? "" : "Select";
 
@@ -85,6 +95,7 @@ export function Completion(props: CompletionProps) {
         {props.selectedLabel}
       </div>
       <input
+        ref={ref}
         placeholder={placeholder}
         className={Styles.input}
         type="text"

@@ -76,3 +76,20 @@ test("close menu before select", async () => {
 
   expect(screen.getByTestId("option-list-container/root").className).toContain("hidden");
 });
+
+test("auto focus input when opened", async () => {
+  const user = userEvent.setup();
+  render(
+    <Select
+      options={[
+        { label: "label", value: 1 },
+        { label: "new", value: 2 },
+      ]}
+    />,
+  );
+
+  await user.click(screen.getByTestId("select-root"));
+
+  const el = screen.getByTestId<HTMLInputElement>("completions/input");
+  expect(el.matches(":focus")).toEqual(true);
+});

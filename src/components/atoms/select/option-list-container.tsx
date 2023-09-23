@@ -27,11 +27,11 @@ export interface OptionContainerProps extends BaseProps {
 
 const Styles = {
   root: (shown: boolean) =>
-    classNames("flex", "flex-col", "rounded", "border", "border-secondary1-300", "w-full", "shadow-lg", {
+    classNames("flex", "flex-col", "rounded", "border", "border-secondary1-300", "w-full", "py-1", "shadow-lg", {
       hidden: !shown,
     }),
 
-  noOption: classNames("flex-auto", "text-center", "text-gray", "px-3", "py-2"),
+  noOption: classNames("flex-auto", "text-center", "text-gray", "px-3", "py-2", "bg-white"),
 };
 
 // eslint-disable-next-line func-style

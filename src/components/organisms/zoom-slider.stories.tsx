@@ -1,20 +1,27 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Provider } from "react-redux";
 import { ZoomSlider } from "./zoom-slider";
+import { createStore } from "@/status/store";
 
 const meta = {
-  title: "Molecules/Zoom Slider",
+  title: "Organisms/Zoom Slider",
   component: ZoomSlider,
   tags: ["autodocs"],
-  argTypes: {
-    zoom: { control: "number" },
-  },
+  argTypes: {},
 } satisfies Meta<typeof ZoomSlider>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    zoom: 100,
+  args: {},
+  render() {
+    const store = createStore();
+
+    return (
+      <Provider store={store}>
+        <ZoomSlider />
+      </Provider>
+    );
   },
 };

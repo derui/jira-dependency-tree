@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { BaseProps } from "./components/helper";
 import { IssueSearcher } from "./components/organisms/issue-searcher";
 import { UserConfiguration } from "./components/organisms/user-configuration";
-import { ZoomSlider } from "./components/molecules/zoom-slider";
+import { ZoomSlider } from "./components/organisms/zoom-slider";
 import { SideToolbar } from "./components/containers/side-toolbar";
 import { TopToolbar } from "./components/containers/top-toolbar";
 import { IssueGraphContainer } from "./components/containers/issue-graph";

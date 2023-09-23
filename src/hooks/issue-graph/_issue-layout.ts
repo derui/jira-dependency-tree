@@ -1,9 +1,11 @@
 import { produce } from "immer";
+import * as LayoutGrid from "./_layout-grid";
 import { DirectedGraph } from "@/libs/depgraph/main";
 import { Size } from "@/type";
 import { IssueModel } from "@/view-models/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 import { UndirectedGraph, fromDirectedGraph, isSameUndirectGraph } from "@/libs/depgraph/undirected";
+import { filterUndefined } from "@/utils/basic";
 
 export const ISSUE_SIZE: Size = { width: 200, height: 74 };
 export const ISSUE_X_GAP = ISSUE_SIZE.width * 0.25;
@@ -34,7 +36,7 @@ const getSubgraphs = (graph: DirectedGraph): DirectedGraph[] => {
     .map(([, sg]) => sg);
 };
 
-const getMaximumRowIndexOfGrid = (grid: unknown[][]): number => {
+const getMaximumRowIndexOfGrid = (grid: ReadonlyArray<ReadonlyArray<unknown>>): number => {
   let maximumHeightIndex = 0;
 
   for (const col of grid) {
@@ -51,30 +53,45 @@ const getMaximumRowIndexOfGrid = (grid: unknown[][]): number => {
   return maximumHeightIndex;
 };
 
-const getHeightOfGrid = (grid: unknown[][]): number => {
+const getHeightOfGrid = (grid: ReadonlyArray<ReadonlyArray<unknown>>): number => {
   const maximumRowIndex = getMaximumRowIndexOfGrid(grid);
 
   return maximumRowIndex * (ISSUE_Y_GAP + ISSUE_SIZE.height);
 };
 
-const layoutGridOfSubgraph = function layoutGridOfSubgraph(
-  graph: DirectedGraph,
-  layoutedIssues: Set<string>,
-  issueMap: Map<string, IssueModel>,
-) {
+const layoutGridOfSubgraph = function layoutGridOfSubgraph(graph: DirectedGraph, issueMap: Map<string, IssueModel>) {
   const largestDepth = graph.maxDepth() - 1;
-  const layout: string[][] = new Array(largestDepth);
+  let layout = LayoutGrid.make(graph);
+  const depthMap = new Map<string, number>();
 
   // make layout grid of graph.
   for (let depth = largestDepth; depth >= 0; depth--) {
+    for (const v of graph.levelAt(depth)) {
+      depthMap.set(v, depth);
+    }
+  }
+
+  for (let depth = 0; depth <= largestDepth; depth++) {
     for (const vertex of graph.levelAt(depth)) {
-      if (layoutedIssues.has(vertex) || !issueMap.has(vertex)) {
+      if (!issueMap.has(vertex)) {
         break;
       }
 
-      const verticesInLevel = (layout[depth] ??= []);
-      verticesInLevel.push(vertex);
-      layoutedIssues.add(vertex);
+      const adjacent = graph
+        .adjacent(vertex)
+        .map((v) => {
+          return [depthMap.get(v)!, v] as const;
+        })
+        .sort(([v1], [v2]) => v2 - v1);
+
+      if (adjacent.length == 0) {
+        layout = layout.place({ level: depth, vertex });
+        break;
+      }
+
+      for (const [depth, adj] of adjacent) {
+        layout = layout.placeDirectedWith({ level: depthMap.get(vertex)!, vertex }, { level: depth, vertex: adj });
+      }
     }
   }
 
@@ -82,14 +99,19 @@ const layoutGridOfSubgraph = function layoutGridOfSubgraph(
 };
 
 const gridToGraphLayout = function gridToGraphLayout(
-  layout: string[][],
+  layout: LayoutGrid.T,
   issueMap: Map<string, IssueModel>,
   baseY: number,
   baseRowIndex: number,
 ): IssueModelWithLayout[] {
-  return layout
+  return layout.layout
     .map((v, colIdx) => {
-      return v.map((issueKey, rowIdx) => {
+      return v.map((placement, rowIdx) => {
+        if (LayoutGrid.isEmpty(placement)) {
+          return;
+        }
+        const issueKey = placement.vertex;
+
         const issue = issueMap.get(issueKey);
 
         if (!issue) {
@@ -110,7 +132,8 @@ const gridToGraphLayout = function gridToGraphLayout(
         };
       });
     })
-    .flat();
+    .flat()
+    .filter(filterUndefined);
 };
 
 /**
@@ -122,16 +145,15 @@ export const calculateIssueLayout = (graph: DirectedGraph, issues: IssueModel[])
     return v2.vertices.length - v1.vertices.length;
   });
 
-  const layoutedIssues = new Set<string>();
   let accumulatedGridHeight = 0;
   let baseRowIndex = 0;
 
   return subgraphs.flatMap((g) => {
-    const grid = layoutGridOfSubgraph(g, layoutedIssues, issueMap);
+    const grid = layoutGridOfSubgraph(g, issueMap);
     const layout = gridToGraphLayout(grid, issueMap, accumulatedGridHeight, baseRowIndex);
 
-    accumulatedGridHeight += getHeightOfGrid(grid);
-    baseRowIndex += getMaximumRowIndexOfGrid(grid);
+    accumulatedGridHeight += getHeightOfGrid(grid.layout);
+    baseRowIndex += getMaximumRowIndexOfGrid(grid.layout);
     return layout;
   });
 };

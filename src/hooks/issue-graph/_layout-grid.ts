@@ -18,7 +18,12 @@ export type T = {
   /**
    * place vertices to grid. return new instance of [T]
    */
-  place(from: VertexWithLevel, to: VertexWithLevel): T;
+  placeDirectedWith(from: VertexWithLevel, to: VertexWithLevel): T;
+
+  /**
+   * place vertex on the level
+   */
+  place(v: VertexWithLevel): T;
 
   /**
    * get vertex of position specified
@@ -67,7 +72,20 @@ const newLayoutGrid = function newLayoutGrid(layout: T["layout"]): T {
       }
     },
 
-    place(from, to) {
+    place(v) {
+      const { vertex: _vertex, level } = v;
+
+      const edited = produce(layout, (draft) => {
+        if (!layoutedVertices.has(_vertex)) {
+          draft[level].push({ kind: vertex, vertex: _vertex });
+          layoutedVertices.add(_vertex);
+        }
+      });
+
+      return newLayoutGrid(edited);
+    },
+
+    placeDirectedWith(from, to) {
       const { vertex: fromV, level: fromL } = from;
       const { vertex: toV, level: toL } = to;
 

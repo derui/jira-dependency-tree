@@ -66,12 +66,11 @@ export function SearchInput(props: Props) {
       <div className={Styles.searchButtonWrapepr()}>
         <IconButton
           color={status === "Searching" ? "secondary2" : "gray"}
-          size="s"
           testid={gen("opener")}
           disabled={status === "BeforePrepared"}
           onClick={handleOpenerClicked}
         >
-          <Search color={status === "Searching" ? "secondary2" : "gray"} size="s" />
+          <Search color={status === "Searching" ? "secondary2" : "gray"} />
         </IconButton>
       </div>
       <div className={Styles.input(status)} aria-hidden={status !== "Searching"} data-testid={gen("input-wrapper")}>

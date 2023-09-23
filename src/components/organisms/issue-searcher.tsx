@@ -15,7 +15,7 @@ const Styles = {
     "flex-col",
     "bg-white",
     "rounded",
-    "px-3",
+    "px-2",
     "mr-3",
     "shadow-md",
     "relative",

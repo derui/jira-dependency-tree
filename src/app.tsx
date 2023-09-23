@@ -36,7 +36,7 @@ export const App: React.FC<Props> = () => {
       <div className={Styles.topToolbars}>
         <TopToolbar testid="top-toolbar" />
         <IssueSearcher testid="issue-searcher" />
-        <div></div>
+        <div className="pointer-events-none"></div>
         <UserConfiguration testid="user-configuration" />
       </div>
       <ZoomSlider testid="zoom-slider" zoom={zoom} />

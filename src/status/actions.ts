@@ -43,3 +43,11 @@ export const relations = {
   deleteDelta: createAction<DeltaId>("relations:deleteDelta"),
   reset: createAction("relations:reset"),
 } as const;
+
+// actions for issue set
+export const issueSet = {
+  create: createAction<string>("issueSet:create"),
+  delete: createAction<string>("issueSet:delete"),
+  rename: createAction<{ from: string; to: string }>("issueSet:rename"),
+  select: createAction<string>("issueSet:select"),
+} as const;

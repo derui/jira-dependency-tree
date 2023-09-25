@@ -5,6 +5,8 @@ import * as zoom from "./slices/zoom";
 import * as relations from "./slices/relations";
 
 // INJECT REDUCER IMPORT HERE
+import * as issueSet from "./slices/issue-set";
+
 import * as graphLayout from "./slices/graph-layout";
 
 import * as relationDelta from "./slices/relation-delta";
@@ -13,6 +15,8 @@ import * as attentionIssue from "./slices/attention-issue";
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  issueSet: issueSet.reducer,
+
   graphLayout: graphLayout.reducer,
 
   relationDelta: relationDelta.reducer,

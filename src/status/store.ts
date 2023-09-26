@@ -11,6 +11,7 @@ import * as graphLayout from "./slices/graph-layout";
 
 import * as relationDelta from "./slices/relation-delta";
 import * as attentionIssue from "./slices/attention-issue";
+import { createDexieMiddleware } from "./middlewares/dexie";
 
 // INJECT EPIC IMPORT HERE
 
@@ -36,8 +37,11 @@ const reducers = {
 /**
  * create pure store. This store does not have any epic/thunk based process. To use for test.
  */
-export const createStore = () => {
-  return configureStore({ reducer: reducers });
+export const createStore = (enabled: boolean = false) => {
+  return configureStore({
+    reducer: reducers,
+    middleware: (gDM) => gDM().concat([createDexieMiddleware({ enabled })]),
+  });
 };
 
 // export type of application state.

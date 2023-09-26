@@ -21,7 +21,7 @@ const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("env", env);
 registrar.register("generateId", () => v4());
 
-const store = createStore();
+const store = createStore(true);
 
 // wiring storage driver
 const storageDriver = makeStorageDriver("jiraDependencyTree", localStorage);

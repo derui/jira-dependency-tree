@@ -43,7 +43,7 @@ export const createDexieMiddleware = function createDexieMiddleware(options: Opt
   let timeout: NodeJS.Timeout | null = null;
   const db = new Dexie(databaseName);
 
-  db.version(1).stores({ caches: "++id, cache" });
+  db.version(1).stores({ caches: "++id" });
 
   return ({ getState }) => {
     return (next) => async (action) => {

@@ -24,6 +24,20 @@ interface Options {
 }
 
 /**
+ * get latest cache from database if exists. Return `undefined` if no cache is exists.
+ */
+export const getLatestCache = async function getLatestCache<T>(
+  databaseName = "JiraDependencyTreeDatabase",
+): Promise<T | undefined> {
+  const db = new Dexie(databaseName);
+  db.version(1).stores({ caches: "++id" });
+
+  const cache = await db.table("caches").orderBy("id").reverse().first();
+
+  return cache?.cache as T;
+};
+
+/**
  * create middleware to store state into dexie
  */
 export const createDexieMiddleware = function createDexieMiddleware(options: Options): Middleware {

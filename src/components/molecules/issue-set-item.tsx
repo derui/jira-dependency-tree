@@ -16,7 +16,6 @@ type DeletingState = "deleting" | "pre";
 const Styles = {
   root: classNames(
     "relative",
-    "pt-2",
     "bg-white",
     "flex",
     "items-center",

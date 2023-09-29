@@ -17,6 +17,7 @@ export * from "./x";
 export * from "./check";
 export * from "./layout-distribute-horizontal";
 export * from "./layout-distribute-vertical";
+export * from "./trash";
 
 import { BaseIconProps, Icon } from "./_base";
 export { Icon };

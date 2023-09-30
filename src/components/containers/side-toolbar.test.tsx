@@ -7,16 +7,70 @@ import { createStore } from "@/status/store";
 
 afterEach(cleanup);
 
-test("should be able to render", () => {
+const renderWrapper = (comp: React.ReactElement) => {
+  return render(
+    <>
+      <div id="panel-root" />
+      {comp}
+    </>,
+  );
+};
+
+test("should be able to render", async () => {
   const store = createStore();
 
-  render(
+  renderWrapper(
     <Provider store={store}>
       <SideToolbar />
     </Provider>,
   );
 
-  const layouter = screen.queryByTestId("graph-layouter/root");
+  const panel = screen.getByTestId("importer/root");
+  const button = screen.getByTestId("importer-opener");
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
 
-  expect(layouter).toBeNull();
+  expect(panel.getAttribute("aria-hidden")).toBe("true");
+  expect(button.getAttribute("aria-disabled")).toEqual("false");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toEqual("false");
+});
+
+test("open panel after clicked", async () => {
+  const store = createStore();
+
+  renderWrapper(
+    <Provider store={store}>
+      <SideToolbar />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("importer-opener"));
+
+  const panel = screen.getByTestId("importer/root");
+  const button = screen.getByTestId("importer-opener");
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
+
+  expect(button.getAttribute("aria-disabled")).toBe("true");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toBe("true");
+  expect(panel.getAttribute("aria-hidden")).toBe("false");
+});
+
+test("close panel", async () => {
+  const store = createStore();
+
+  renderWrapper(
+    <Provider store={store}>
+      <SideToolbar />
+    </Provider>,
+  );
+
+  await userEvent.click(screen.getByTestId("importer-opener"));
+  await userEvent.click(screen.getByTestId("importer/close"));
+
+  const panel = screen.getByTestId("importer/root");
+  const button = screen.getByTestId("importer-opener");
+  const relationEditorButton = screen.getByTestId("relation-editor-opener");
+
+  expect(button.getAttribute("aria-disabled")).toBe("false");
+  expect(relationEditorButton.getAttribute("aria-disabled")).toBe("false");
+  expect(panel.getAttribute("aria-hidden")).toBe("true");
 });

@@ -25,6 +25,7 @@ const Styles = {
     "items-center",
     "overflow-hidden",
     "border",
+    "border-secondary1-400",
     "rounded",
     "px-3",
     "py-2",

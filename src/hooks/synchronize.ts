@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
+import deepEqual from "fast-deep-equal";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
 import { importIssues } from "@/status/actions";
@@ -30,7 +31,7 @@ interface UseSynchronizeResult {
 
 const currentIssueKeys = createDraftSafeSelector(
   (state: RootState) => state,
-  (state) => Object.keys(state.issues.issues),
+  (state) => Object.keys(state.issueSet.issueSets[state.issueSet.currentIssueSetKey]?.issueKeys ?? {}),
 );
 
 /**
@@ -39,7 +40,7 @@ const currentIssueKeys = createDraftSafeSelector(
 export const useSynchronize = function useSynchronize(): UseSynchronizeResult {
   const apiCredential = useGetApiCredential();
   const dispatch = useAppDispatch();
-  const issueKeys = useAppSelector(currentIssueKeys);
+  const issueKeys = useAppSelector(currentIssueKeys, deepEqual);
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
 

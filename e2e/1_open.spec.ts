@@ -9,17 +9,8 @@ test("open and initial display", async ({ page }) => {
   await expect(page.getByTestId("user-configuration/opener")).not.toHaveClass("opened");
   await expect(page.getByTestId("user-configuration/marker")).toHaveAttribute("aria-hidden", "false");
   await expect(page.getByTestId("zoom-slider/current-zoom")).toContainText("100%");
-  await expect(page.getByTestId("top-toolbar/importer-opener")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("top-toolbar/relation-editor-opener")).toHaveAttribute("aria-disabled", "false");
-
-  // side toolbar
-  await expect(page.getByTestId("side-toolbar/graph-layouter/graph-layout")).not.toHaveClass("--opened");
-  await expect(page.getByTestId("side-toolbar/graph-layouter/graph-layout")).toHaveAttribute(
-    "data-layout",
-    "horizontal",
-  );
-
-  await expect(page.getByTestId("side-toolbar/graph-unroller/unroller")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer-opener")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("side-toolbar/relation-editor-opener")).toHaveAttribute("aria-disabled", "false");
 
   // searcher
   await expect(page.getByTestId("issue-searcher/input/opener")).toBeVisible();

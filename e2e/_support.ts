@@ -23,13 +23,13 @@ export const inputCredential = async function inputCredential(
 };
 
 export const importIssues = async function importIssues(page: Page, keys: string[] = ["TES-54", "TES-52", "TES-51"]) {
-  await page.getByTestId("top-toolbar/importer-opener").click();
+  await page.getByTestId("side-toolbar/importer-opener").click();
 
   // search issues with JQL
-  await page.getByTestId("top-toolbar/importer/query-input/input").fill('project = "TES" ORDER BY created DESC');
-  await page.getByTestId("top-toolbar/importer/query-input/button").click();
+  await page.getByTestId("side-toolbar/importer/query-input/input").fill('project = "TES" ORDER BY created DESC');
+  await page.getByTestId("side-toolbar/importer/query-input/button").click();
 
-  const locator = page.getByTestId("top-toolbar/importer/root");
+  const locator = page.getByTestId("side-toolbar/importer/root");
 
   // select issues and import
   for (const key of keys) {
@@ -38,5 +38,5 @@ export const importIssues = async function importIssues(page: Page, keys: string
 
   await page.getByRole("button", { name: "Import 3 issues" }).click();
 
-  await page.getByTestId("top-toolbar/importer/close").click();
+  await page.getByTestId("side-toolbar/importer/close").click();
 };

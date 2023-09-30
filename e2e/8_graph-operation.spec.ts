@@ -1,10 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
-const testidOf = function testidOf(id: string) {
-  return `top-toolbar/relation-editor/${id}`;
-};
-
 test("view issue details in graph", async ({ page }) => {
   await page.routeFromHAR("./e2e/fixtures/normal.har", {
     url: "http://localhost:3000/**",

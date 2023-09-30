@@ -11,15 +11,15 @@ test("show cycle", async ({ page }) => {
 
   // Input credentials
   await page.getByTestId("user-configuration/opener").click();
-  await page.getByTestId("user-configuration/form/user-domain").type("domain");
-  await page.getByTestId("user-configuration/form/email").type("email");
-  await page.getByTestId("user-configuration/form/token").type("token");
+  await page.getByTestId("user-configuration/form/user-domain").fill("domain");
+  await page.getByTestId("user-configuration/form/email").fill("email");
+  await page.getByTestId("user-configuration/form/token").fill("token");
   await page.getByTestId("user-configuration/form/submit").click();
 
   // import issues
-  await page.getByTestId("top-toolbar/importer-opener").click();
-  await page.getByTestId("top-toolbar/importer/query-input/input").type('project = "TES" ORDER BY created DESC');
-  await page.getByTestId("top-toolbar/importer/query-input/button").click();
+  await page.getByTestId("side-toolbar/importer-opener").click();
+  await page.getByTestId("side-toolbar/importer/query-input/input").fill('project = "TES" ORDER BY created DESC');
+  await page.getByTestId("side-toolbar/importer/query-input/button").click();
   await page.getByText("TES-54").click();
   await page.getByText("TES-52").click();
   await page.getByText("TES-51").click();
@@ -27,7 +27,7 @@ test("show cycle", async ({ page }) => {
   await page.getByRole("button", { name: "Import 3 issues" }).click();
   await expect(page.getByRole("button", { name: "Import 3 issues" })).toBeVisible();
 
-  await page.getByTestId("top-toolbar/importer/close").click();
+  await page.getByTestId("side-toolbar/importer/close").click();
 
   expect(await page.getByTestId("issue-graph/issue-node/group").all()).toHaveLength(3);
 });

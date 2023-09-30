@@ -1,13 +1,5 @@
-import { test, expect, Page } from "@playwright/test";
-
-const inputCredential = async function inputCredential(page: Page) {
-  // Input credentials
-  await page.getByTestId("user-configuration/opener").click();
-  await page.getByTestId("user-configuration/form/user-domain").type("domain");
-  await page.getByTestId("user-configuration/form/email").type("email");
-  await page.getByTestId("user-configuration/form/token").type("token");
-  await page.getByTestId("user-configuration/form/submit").click();
-};
+import { test, expect } from "@playwright/test";
+import { inputCredential } from "./_support";
 
 test("open importer", async ({ page }) => {
   await page.goto("/");
@@ -15,8 +7,8 @@ test("open importer", async ({ page }) => {
   await inputCredential(page);
 
   // open importer
-  const importerButton = page.getByTestId("top-toolbar/importer-opener");
-  const editorButton = page.getByTestId("top-toolbar/relation-editor-opener");
+  const importerButton = page.getByTestId("side-toolbar/importer-opener");
+  const editorButton = page.getByTestId("side-toolbar/relation-editor-opener");
 
   await expect(importerButton).toHaveAttribute("aria-disabled", "false");
   await expect(editorButton).toHaveAttribute("aria-disabled", "false");
@@ -25,13 +17,13 @@ test("open importer", async ({ page }) => {
 
   await expect(importerButton).toHaveAttribute("aria-disabled", "true");
   await expect(editorButton).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("top-toolbar/importer/query-input/input")).toHaveValue("");
-  await expect(page.getByTestId("top-toolbar/importer/root")).toBeVisible();
+  await expect(page.getByTestId("side-toolbar/importer/query-input/input")).toHaveValue("");
+  await expect(page.getByTestId("side-toolbar/importer/root")).toBeVisible();
 
   await expect(page.getByText("No issues")).toContainText("No issues. Please search with valid JQL first.");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
 });
 
 test("input jql and import issues", async ({ page }) => {
@@ -46,16 +38,16 @@ test("input jql and import issues", async ({ page }) => {
   await inputCredential(page);
 
   // open importer
-  const importerButton = page.getByTestId("top-toolbar/importer-opener");
+  const importerButton = page.getByTestId("side-toolbar/importer-opener");
   await importerButton.click();
 
   // search issues with JQL
-  await page.getByTestId("top-toolbar/importer/query-input/input").type('project = "TES" ORDER BY created DESC');
-  await page.getByTestId("top-toolbar/importer/query-input/button").click();
+  await page.getByTestId("side-toolbar/importer/query-input/input").fill('project = "TES" ORDER BY created DESC');
+  await page.getByTestId("side-toolbar/importer/query-input/button").click();
 
-  await expect(page.getByTestId("top-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("top-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
 
   // select issues and import
   await page.getByText("TES-54").click();
@@ -65,8 +57,8 @@ test("input jql and import issues", async ({ page }) => {
   await page.getByRole("button", { name: "Import 3 issues" }).click();
   await expect(page.getByRole("button", { name: "Import 3 issues" })).toBeVisible();
 
-  await page.getByTestId("top-toolbar/importer/close").click();
-  await expect(page.getByTestId("top-toolbar/importer/root")).not.toBeVisible();
+  await page.getByTestId("side-toolbar/importer/close").click();
+  await expect(page.getByTestId("side-toolbar/importer/root")).not.toBeVisible();
 
   // verify issues in graph
   expect(await page.getByTestId("issue-graph/issue-node/group").all()).toHaveLength(3);

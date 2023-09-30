@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 const testidOf = function testidOf(id: string) {
-  return `top-toolbar/relation-editor/${id}`;
+  return `side-toolbar/relation-editor/${id}`;
 };
 
 test("view relations between imported issues", async ({ page }) => {
@@ -21,23 +21,23 @@ test("view relations between imported issues", async ({ page }) => {
   await importIssues(page);
 
   // Open relation editor
-  await page.getByTestId("top-toolbar/relation-editor-opener").click();
+  await page.getByTestId("side-toolbar/relation-editor-opener").click();
 });
 
 test("open and close panel", async ({ page }) => {
   await page.goto("/");
 
   // Open relation editor
-  await page.getByTestId("top-toolbar/relation-editor-opener").click();
+  await page.getByTestId("side-toolbar/relation-editor-opener").click();
 
   // show only appender
-  await expect(page.getByTestId("top-toolbar/relation-editor/panel/root")).toBeVisible();
-  await expect(page.getByTestId("top-toolbar/relation-editor/appender/root")).toBeVisible();
-  await expect(page.getByTestId("top-toolbar/relation-editor/draft/no-touched")).toHaveCount(0);
+  await expect(page.getByTestId("side-toolbar/relation-editor/panel/root")).toBeVisible();
+  await expect(page.getByTestId("side-toolbar/relation-editor/appender/root")).toBeVisible();
+  await expect(page.getByTestId("side-toolbar/relation-editor/draft/no-touched")).toHaveCount(0);
 
   // close relation editor
-  await page.getByTestId("top-toolbar/relation-editor/panel/close").click();
-  await expect(page.getByTestId("top-toolbar/relation-editor/panel/root")).toBeHidden();
+  await page.getByTestId("side-toolbar/relation-editor/panel/close").click();
+  await expect(page.getByTestId("side-toolbar/relation-editor/panel/root")).toBeHidden();
 });
 
 test("append and remove relation", async ({ page }) => {
@@ -56,7 +56,7 @@ test("append and remove relation", async ({ page }) => {
   await importIssues(page);
 
   // Open relation editor
-  await page.getByTestId("top-toolbar/relation-editor-opener").click();
+  await page.getByTestId("side-toolbar/relation-editor-opener").click();
 
   // Check relation
   await expect(page.getByTestId(testidOf("draft/no-touched"))).toBeVisible();

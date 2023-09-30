@@ -32,6 +32,7 @@ const Styles = {
       "rounded-lg",
       "shadow-lg",
       "overflow-hidden",
+      "align-stretch",
       "flex-col",
       {
         hidden: !opened,
@@ -70,7 +71,7 @@ const Styles = {
     "border-b",
     "border-b-gray",
   ),
-  main: classNames("flex", "flex-auto", "m-1", "h-full"),
+  main: classNames("flex", "flex-1", "min-h-0"),
   closer: classNames("absolute", "right-2", "top-2"),
 };
 

@@ -12,7 +12,7 @@ export interface Props extends BaseProps {
 }
 
 const Styles = {
-  root: classNames("relative", "bg-white", "flex", "items-center", "overflow-hidden", "transition-shadow"),
+  root: classNames("relative", "bg-white", "flex", "flex-none", "items-center", "overflow-hidden", "transition-shadow"),
   form: classNames("flex", "flex-auto", "items-center"),
   input: classNames("flex-auto"),
   name: classNames("flex-auto", "hover:underline", "cursor-pointer"),

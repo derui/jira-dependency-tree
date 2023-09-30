@@ -61,6 +61,8 @@ export const createDexieMiddleware = function createDexieMiddleware(options: Opt
 
   return ({ getState }) => {
     return (next) => async (action) => {
+      next(action);
+
       const state = getState();
 
       if (timeout) {
@@ -77,8 +79,6 @@ export const createDexieMiddleware = function createDexieMiddleware(options: Opt
           }
         });
       }, correctedThrottle);
-
-      return next(action);
     };
   };
 };

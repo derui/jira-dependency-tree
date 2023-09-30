@@ -1,4 +1,3 @@
-import React from "react"; // eslint-disable-line @typescript-eslint/no-unused-vars
 import classNames from "classnames";
 import { BaseProps } from "./components/helper";
 import { IssueSearcher } from "./components/organisms/issue-searcher";

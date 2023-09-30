@@ -78,7 +78,7 @@ const Styles = {
       "text-sm",
       `bg-[${base}]`,
       `text-[${highContrast}]`,
-      "text-bold",
+      "font-bold",
       "whitespace-nowrap",
     );
   },

@@ -1,6 +1,4 @@
 import { createRoot } from "react-dom/client";
-import { BehaviorSubject } from "rxjs";
-import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { v4 } from "uuid";
 import { install } from "@twind/core";
@@ -20,7 +18,9 @@ const registrar = createDependencyRegistrar<Dependencies>();
 registrar.register("env", env);
 registrar.register("generateId", () => v4());
 
-const store = createStore(true);
+const state = await getLatestCache();
+
+const store = createStore(true, state);
 
 const restoreCache = async function restoreCache() {
   const cache = await getLatestCache<RootState>();

@@ -55,6 +55,7 @@ export function IssueGraphContainer(props: Props) {
   const viewBox = useViewBox();
   const ref = useRef<SVGSVGElement | null>(null);
   const focusedIssue = useFocusedIssue();
+  const movePan = viewBox.movePan;
 
   useLayoutEffect(() => {
     const observer = new ResizeObserver((entries) => {
@@ -95,7 +96,7 @@ export function IssueGraphContainer(props: Props) {
           prevX = moveEvent.clientX;
           prevY = moveEvent.clientY;
 
-          viewBox.movePan({ x: deltaX, y: deltaY });
+          movePan({ x: deltaX, y: deltaY });
         },
         complete() {
           subscription.unsubscribe();
@@ -104,7 +105,7 @@ export function IssueGraphContainer(props: Props) {
     });
 
     return () => totalSubscription.unsubscribe();
-  }, [ref.current]);
+  }, [ref.current, movePan]);
 
   useEffect(() => {
     if (focusedIssue) {

@@ -37,8 +37,10 @@ const reducers = {
 /**
  * create pure store. This store does not have any epic/thunk based process. To use for test.
  */
-export const createStore = (enabled: boolean = false) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createStore = (enabled: boolean = false, initialState: any | undefined = undefined) => {
   return configureStore({
+    preloadedState: initialState,
     reducer: reducers,
     middleware: (gDM) => gDM().concat([createDexieMiddleware({ enabled })]),
   });

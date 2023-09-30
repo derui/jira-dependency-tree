@@ -1,5 +1,4 @@
 import { useGetApiCredential } from "./get-api-credential";
-import { useGraphLayout } from "./graph-layout";
 import { useImportIssues } from "./import-issues";
 import { useSearchIssues } from "./search-issues";
 import { useSynchronize } from "./synchronize";
@@ -12,4 +11,4 @@ export * from "./issue-graph/highlight-link-node";
 export * from "./issue-graph/highlight-issue-node";
 export * from "./issue-graph/remove-node";
 
-export { useSynchronize, useGetApiCredential, useGraphLayout, useImportIssues, useSearchIssues, useIssueSet };
+export { useSynchronize, useGetApiCredential, useImportIssues, useSearchIssues, useIssueSet };

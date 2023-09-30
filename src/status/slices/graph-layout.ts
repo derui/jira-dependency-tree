@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { changeGraphLayout, deselectIssueInGraph, selectIssueInGraph } from "../actions";
+import { deselectIssueInGraph, selectIssueInGraph } from "../actions";
 import { GraphLayout, IssueKey } from "@/type";
 
 interface GraphLayoutState {
@@ -16,15 +16,11 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(changeGraphLayout, (state, { payload }) => {
-      state.layout = payload;
-    });
-
     builder.addCase(selectIssueInGraph, (state, { payload }) => {
       state.selectedIssue = payload;
     });
 
-    builder.addCase(deselectIssueInGraph, (state, { payload }) => {
+    builder.addCase(deselectIssueInGraph, (state) => {
       state.selectedIssue = undefined;
     });
   },

@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential } from "@/models/event";
 import { Issue, Relation } from "@/models/issue";
-import { DeltaId, GraphLayout, IssueKey, IssueRelationId } from "@/type";
+import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/models/relation-delta";
 
 // actions for api credentail
@@ -11,9 +11,6 @@ export const restoreApiCredential = createAction<ApiCredential>("restoreApiCrede
 // filter issues
 export const filterIssues = createAction<string>("filterIssues");
 export const clearIssueFilter = createAction("clearIssueFilter");
-
-// graph layout (internal use)
-export const changeGraphLayout = createAction<GraphLayout>("changeGraphLayout:internal");
 
 // actions for issue graph
 export const payAttentionIssue = createAction<string>("payAttentionIssue");

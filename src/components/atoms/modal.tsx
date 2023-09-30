@@ -103,7 +103,7 @@ export function Modal(props: Props) {
         <header className={Styles.header}>
           {title}
           <span className={Styles.closer}>
-            <IconButton onClick={handleClose} color="gray">
+            <IconButton onClick={handleClose} color="gray" testid={gen("closer")}>
               <X />
             </IconButton>
           </span>

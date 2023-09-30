@@ -87,7 +87,7 @@ export function IssueSetItem(props: Props) {
   };
 
   return (
-    <li className={Styles.root}>
+    <li className={Styles.root} data-testid={gen("root")}>
       <div className={Styles.selectedMarker(selected)}></div>
       <div className={Styles.container}>
         <div className={Styles.name} onClick={handleSelect} data-testid={gen("name")}>

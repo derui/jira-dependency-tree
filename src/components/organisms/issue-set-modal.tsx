@@ -12,7 +12,17 @@ import { useIssueSet } from "@/hooks";
 type Props = BaseProps;
 
 const Styles = {
-  opener: classNames("flex", "items-center", "justify-center", "h-8", "px-2", "py-1"),
+  opener: classNames(
+    "flex",
+    "items-center",
+    "h-8",
+    "px-2",
+    "py-1",
+    "whitespace-nowrap",
+    "w-32",
+    "overflow-hidden",
+    "text-ellipsis",
+  ),
   textLink: classNames("cursor-pointer", "hover:underline"),
   issueSetList: classNames("flex", "flex-auto", "flex-col", "gap-1", "px-3", "py-2", "h-full", "overflow-y-auto"),
   appender: classNames(
@@ -125,7 +135,7 @@ export function IssueSetModal(props: Props) {
       <div className={Styles.opener} onClick={handleOpenerClick} data-testid={gen("opener")}>
         <span className={Styles.textLink}> {name}</span>
       </div>
-      <Modal size="l" opened={opened} title="Issue set" onClose={handleClose}>
+      <Modal size="l" opened={opened} title="Issue set" onClose={handleClose} testid={gen("modal")}>
         <ul className={Styles.issueSetList}>
           {issueSets}
           <IssueSetCreator onCreate={issueSet.create} testid={gen("creator")} />

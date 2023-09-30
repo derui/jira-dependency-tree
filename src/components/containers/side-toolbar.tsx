@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
 import { IconButton } from "../atoms/icon-button";
-import { BinaryTree, TransferIn } from "../atoms/icons";
+import { BinaryTree, CloudSearch } from "../atoms/icons";
 import { IssueImporter } from "../organisms/issue-importer";
 import { RelationEditor } from "../organisms/relation-editor";
 
@@ -43,7 +43,7 @@ export function SideToolbar(props: Props) {
           onClick={() => setOpened("importer")}
           testid={gen("importer-opener")}
         >
-          <TransferIn color="gray" />
+          <CloudSearch color="gray" />
         </IconButton>
       </div>
       <div className={Styles.iconContainer}>

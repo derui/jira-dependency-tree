@@ -15,7 +15,7 @@ export const IconType = {
   "loader-2": "before:[mask-image:url(/svg/tabler-icons/loader-2.svg)]",
   "chevron-left": "before:[mask-image:url(/svg/tabler-icons/chevron-left.svg)]",
   "chevron-right": "before:[mask-image:url(/svg/tabler-icons/chevron-right.svg)]",
-  "transfer-in": "before:[mask-image:url(/svg/tabler-icons/transfer-in.svg)]",
+  "cloud-search": "before:[mask-image:url(/svg/tabler-icons/cloud-search.svg)]",
   "binary-tree": "before:[mask-image:url(/svg/tabler-icons/binary-tree.svg)]",
   check: "before:[mask-image:url(/svg/tabler-icons/check.svg)]",
   trash: "before:[mask-image:url(/svg/tabler-icons/trash.svg)]",

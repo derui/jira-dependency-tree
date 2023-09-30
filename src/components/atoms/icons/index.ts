@@ -12,7 +12,7 @@ export * from "./search";
 export * from "./settings";
 export * from "./square-check";
 export * from "./square";
-export * from "./transfer-in";
+export * from "./cloud-search";
 export * from "./x";
 export * from "./check";
 export * from "./layout-distribute-horizontal";

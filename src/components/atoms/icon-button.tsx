@@ -50,7 +50,9 @@ export function IconButton(props: Props) {
   const classes = classNames(Styles.button, Styles.color(props.color), Styles.width(props.size));
 
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+    if (props.type != "submit") {
+      e.preventDefault();
+    }
     e.stopPropagation();
 
     if (props.onClick) {

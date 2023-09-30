@@ -26,6 +26,7 @@ test("call handler after submit", async () => {
     />,
   );
 
+  await user.clear(screen.getByTestId("input"));
   await user.type(screen.getByTestId("input"), "renamed");
   await user.click(screen.getByTestId("submit"));
 });

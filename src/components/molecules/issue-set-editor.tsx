@@ -26,7 +26,6 @@ export function IssueSetEditor(props: Props) {
   const [value, setValue] = useState(name);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.stopPropagation();
     e.preventDefault();
 
     onRename?.(name, value);
@@ -36,7 +35,7 @@ export function IssueSetEditor(props: Props) {
 
   return (
     <li className={Styles.root}>
-      <form className={Styles.form} method="dialog" onSubmit={handleSubmit}>
+      <form className={Styles.form} onSubmit={handleSubmit}>
         <div className={Styles.input}>
           <Input value={value} onInput={setValue} testid={gen("input")} />
         </div>

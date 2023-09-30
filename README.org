@@ -32,15 +32,13 @@ This feature that display issue dependency is one of the most pain point of JIRA
 [[file:doc/screenshot2.png]]
 
 ** Architecture
-JIRA Dependency Tree has frontend and server.
+JIRA Dependency Tree has frontend and backend server applications.
 
 - Frontend
-  - Built on React.js and redux-observable
+  - Built on React.js and hooks
   - Built and bundled by [[https://vitejs.dev/][vite]]
-  - Built denedency graph by [[https://d3js.org][D3.js]]
 - Test
-  - Using [[https://docs.cypress.io/][Cypress]] to run test on browser
-  - Using [[https://mswjs.io/][msw]] to mock server response
+  - Using [[https://playwright.dev/][Playwright]] to run test on browser
   - Using vitest to run unit test
   - Using testing-library to test component without browser
 - Server
@@ -103,7 +101,7 @@ Some developers does not have personal macOS. We think this application might ru
   # Run all CI with headless browser
   $ pnpm run it:run
 
-  # Run CI with cypress. To use developing test, debugging
+  # Run CI with playwright. To use developing test, debugging
   $ pnpm run it:serve
 #+end_src
 

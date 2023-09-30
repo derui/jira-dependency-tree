@@ -7,6 +7,7 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     name: { control: "text" },
+    selected: { control: "boolean", defaultValue: false },
   },
 } satisfies Meta<typeof IssueSetItem>;
 

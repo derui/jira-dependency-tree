@@ -6,6 +6,7 @@ import { Check, Pencil, Trash, X } from "../atoms/icons";
 
 export interface Props extends BaseProps {
   name: string;
+  selected?: boolean;
   onDelete?: () => void;
   onRenameRequested?: () => void;
   onSelect?: () => void;
@@ -14,10 +15,13 @@ export interface Props extends BaseProps {
 type DeletingState = "deleting" | "pre";
 
 const Styles = {
-  root: classNames(
+  root: classNames("relative", "flex", "flex-none", "items-center"),
+  container: classNames(
     "relative",
     "bg-white",
     "flex",
+    "h-12",
+    "flex-auto",
     "items-center",
     "overflow-hidden",
     "border",
@@ -51,11 +55,16 @@ const Styles = {
       },
     ),
   confirmation: classNames("text-primary-400", "text-sm", "mx-2"),
+  selectedMarker: (selected: boolean) =>
+    classNames("mr-3", "rounded-full", "w-3", "h-3", "border", "border-complement-200", "transition-colors", {
+      "bg-white": !selected,
+      "bg-complement-300": selected,
+    }),
 } as const;
 
 // eslint-disable-next-line func-style
 export function IssueSetItem(props: Props) {
-  const { name, onDelete, onRenameRequested, onSelect, testid } = props;
+  const { name, onDelete, onRenameRequested, onSelect, testid, selected = false } = props;
   const gen = generateTestId(testid);
   const [deleting, setDeleting] = useState<DeletingState>("pre");
 
@@ -71,34 +80,39 @@ export function IssueSetItem(props: Props) {
     e.preventDefault();
     e.stopPropagation();
 
-    onSelect?.();
+    if (!selected) {
+      onSelect?.();
+    }
   };
 
   return (
     <li className={Styles.root}>
-      <div className={Styles.name} onClick={handleSelect} data-testid={gen("name")}>
-        {name}
-      </div>
-      <div className={Styles.operationContainer(deleting != "deleting")}>
-        <IconButton color="secondary2" size="s" onClick={handleRenameRequested} testid={gen("rename-requester")}>
-          <Pencil color="secondary2" />
-        </IconButton>
-        <IconButton color="primary" size="s" onClick={handleDeleting} testid={gen("delete-requester")}>
-          <Trash color="primary" />
-        </IconButton>
-      </div>
-      <div
-        className={Styles.deletingContainer(deleting == "deleting")}
-        data-testid={gen("confirmation")}
-        aria-disabled={deleting != "deleting"}
-      >
-        <span className={Styles.confirmation}>Can we delete?</span>
-        <IconButton color="secondary2" size="s" onClick={handleDelete} testid={gen("delete-confirm")}>
-          <Check color="secondary2" />
-        </IconButton>
-        <IconButton color="primary" size="s" onClick={handleCancelDeleting} testid={gen("delete-canceler")}>
-          <X color="primary" />
-        </IconButton>
+      <div className={Styles.selectedMarker(selected)}></div>
+      <div className={Styles.container}>
+        <div className={Styles.name} onClick={handleSelect} data-testid={gen("name")}>
+          {name}
+        </div>
+        <div className={Styles.operationContainer(deleting != "deleting")}>
+          <IconButton color="secondary2" size="s" onClick={handleRenameRequested} testid={gen("rename-requester")}>
+            <Pencil color="secondary2" />
+          </IconButton>
+          <IconButton color="primary" size="s" onClick={handleDeleting} testid={gen("delete-requester")}>
+            <Trash color="primary" />
+          </IconButton>
+        </div>
+        <div
+          className={Styles.deletingContainer(deleting == "deleting")}
+          data-testid={gen("confirmation")}
+          aria-disabled={deleting != "deleting"}
+        >
+          <span className={Styles.confirmation}>Can we delete?</span>
+          <IconButton color="secondary2" size="s" onClick={handleDelete} testid={gen("delete-confirm")}>
+            <Check color="secondary2" />
+          </IconButton>
+          <IconButton color="primary" size="s" onClick={handleCancelDeleting} testid={gen("delete-canceler")}>
+            <X color="primary" />
+          </IconButton>
+        </div>
       </div>
     </li>
   );

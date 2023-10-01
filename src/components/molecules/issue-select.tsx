@@ -1,6 +1,8 @@
 import classNames from "classnames";
+import { useRef } from "react";
 import { BaseProps } from "../helper";
 import { OptionProps, Select, SelectOption } from "../atoms/select";
+import { Tooltip } from "../atoms/tooltip";
 import { IssueModel } from "@/view-models/issue";
 import { stringToColour } from "@/utils/color";
 
@@ -23,12 +25,16 @@ const Styles = {
 
 const IssueOption = (props: OptionProps) => {
   const issue = props.option.value as IssueModel;
+  const ref = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className={Styles.option.root}>
-      <div className={Styles.option.issueType(issue.issueType?.name)}></div>
-      <div className={Styles.option.summary}>{props.option.label}</div>
-    </div>
+    <>
+      <div ref={ref} className={Styles.option.root}>
+        <div className={Styles.option.issueType(issue.issueType?.name)}></div>
+        <div className={Styles.option.summary}>{props.option.label}</div>
+      </div>
+      <Tooltip target={ref}>{props.option.label}</Tooltip>
+    </>
   );
 };
 

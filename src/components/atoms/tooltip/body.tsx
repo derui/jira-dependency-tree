@@ -19,7 +19,7 @@ interface Props extends BaseProps {
 
 const Styles = {
   root: ({ display, position }: TooltipPosition) =>
-    classNames("absolute", "transition-[transform,opacity]", {
+    classNames("absolute", "z-50", "transition-[transform,opacity]", {
       "-left-[99999px]": !display,
       "scale-90": !display,
       "opacity-50": !display,

@@ -46,7 +46,7 @@ export const useViewBox = function useViewBox(): Result {
 
   const center = useMemo<Result["state"]["center"]>(() => {
     return { x: panZoom.pan.x + size.width / 2, y: panZoom.pan.y + size.height / 2 };
-  }, [panZoom]);
+  }, [panZoom, size]);
 
   const viewBox = useMemo<Result["state"]["viewBox"]>(() => {
     const scale = 100 / panZoom.zoom;

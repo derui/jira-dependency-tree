@@ -94,21 +94,51 @@ const newLayoutGrid = function newLayoutGrid(layout: T["layout"]): T {
       }
 
       const edited = produce(layout, (draft) => {
-        const levelDiff = toL - fromL - 1;
-
-        // Fill in the empty if the levels are not different by one
-        for (let l = 1; l <= levelDiff; l++) {
-          draft[fromL + l].push({ kind: empty });
+        // get largest depth in current layout
+        let maximumDepth = 0;
+        for (let i = fromL + 1; i < toL; i++) {
+          maximumDepth = Math.max(draft[i].length, maximumDepth);
         }
 
         if (!layoutedVertices.has(fromV)) {
+          maximumDepth = Math.max(draft[fromL].length, maximumDepth);
+        }
+
+        if (!layoutedVertices.has(toV)) {
+          maximumDepth = Math.max(draft[toL].length, maximumDepth);
+        }
+
+        // fill gap with empty
+        if (!layoutedVertices.has(fromV)) {
+          Array(Math.max(0, maximumDepth - draft[fromL].length))
+            .fill(0)
+            .forEach(() => {
+              draft[fromL].push({ kind: empty });
+            });
+
           draft[fromL].push({ kind: vertex, vertex: fromV });
           layoutedVertices.add(fromV);
         }
 
         if (!layoutedVertices.has(toV)) {
+          Array(Math.max(0, maximumDepth - draft[toL].length))
+            .fill(0)
+            .forEach(() => {
+              draft[toL].push({ kind: empty });
+            });
           draft[toL].push({ kind: vertex, vertex: toV });
           layoutedVertices.add(toV);
+        }
+
+        const levelDiff = toL - fromL - 1;
+
+        // Fill in the empty if the levels are not different by one
+        for (let l = 1; l <= levelDiff; l++) {
+          Array(Math.max(1, maximumDepth - draft[fromL + l].length))
+            .fill(0)
+            .forEach(() => {
+              draft[fromL + l].push({ kind: empty });
+            });
         }
       });
 

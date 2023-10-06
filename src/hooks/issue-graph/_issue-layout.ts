@@ -6,6 +6,7 @@ import { IssueModel } from "@/view-models/issue";
 import { IssueModelWithLayout } from "@/view-models/graph-layout";
 import { UndirectedGraph, fromDirectedGraph, isSameUndirectGraph } from "@/libs/depgraph/undirected";
 import { filterUndefined } from "@/utils/basic";
+import { Vertex } from "@/libs/depgraph/type";
 
 export const ISSUE_SIZE: Size = { width: 200, height: 74 };
 export const ISSUE_X_GAP = ISSUE_SIZE.width * 0.25;
@@ -62,37 +63,37 @@ const getHeightOfGrid = (grid: ReadonlyArray<ReadonlyArray<unknown>>): number =>
 const layoutGridOfSubgraph = function layoutGridOfSubgraph(graph: DirectedGraph, issueMap: Map<string, IssueModel>) {
   const largestDepth = graph.maxDepth() - 1;
   let layout = LayoutGrid.make(graph);
-  const depthMap = new Map<string, number>();
+  const levelMap = new Map<string, number>();
 
   // make layout grid of graph.
-  for (let depth = largestDepth; depth >= 0; depth--) {
-    for (const v of graph.levelAt(depth)) {
-      depthMap.set(v, depth);
+  for (let level = largestDepth; level >= 0; level--) {
+    for (const v of graph.levelAt(level)) {
+      levelMap.set(v, level);
     }
   }
 
-  for (let depth = 0; depth <= largestDepth; depth++) {
-    for (const vertex of graph.levelAt(depth)) {
-      if (!issueMap.has(vertex)) {
-        break;
-      }
+  const dfs = (from: Vertex) => {
+    for (const adj of graph.adjacent(from)) {
+      layout = layout.placeDirectedWith(
+        { level: levelMap.get(from)!, vertex: from },
+        { level: levelMap.get(adj)!, vertex: adj },
+      );
 
-      const adjacent = graph
-        .adjacent(vertex)
-        .map((v) => {
-          return [depthMap.get(v)!, v] as const;
-        })
-        .sort(([v1], [v2]) => v2 - v1);
-
-      if (adjacent.length == 0) {
-        layout = layout.place({ level: depth, vertex });
-        break;
-      }
-
-      for (const [depth, adj] of adjacent) {
-        layout = layout.placeDirectedWith({ level: depthMap.get(vertex)!, vertex }, { level: depth, vertex: adj });
-      }
+      dfs(adj);
     }
+  };
+
+  for (const vertex of graph.levelAt(0)) {
+    if (!issueMap.has(vertex)) {
+      continue;
+    }
+
+    if (graph.adjacent(vertex).length == 0) {
+      layout = layout.place({ level: 0, vertex });
+      continue;
+    }
+
+    dfs(vertex);
   }
 
   return layout;

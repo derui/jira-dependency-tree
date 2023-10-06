@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useEffect, useLayoutEffect, useRef, WheelEvent } from "react";
-import { fromEvent, take, takeUntil } from "rxjs";
+import { fromEvent, merge, take, takeUntil } from "rxjs";
 import { BaseProps, generateTestId } from "../helper";
 import { IssueNode } from "../organisms/issue-node";
 import { LinkNode } from "../organisms/link-node";
@@ -15,8 +15,10 @@ import { useFocusedIssue } from "@/hooks/focused-issue";
 
 type Props = BaseProps;
 
+type PrevCache = { x: number; y: number; diff: number };
+
 const Styles = {
-  root: classNames("max-h-full", "h-auto", "absolute"),
+  root: classNames("max-h-full", "h-auto", "absolute", "touch-none", "select-none"),
   arrowhead: classNames("stroke-secondary1-300", "fill-secondary1-300"),
 };
 
@@ -48,6 +50,64 @@ const attentionIssue = (
   simpleTransit(250)(interpolatePosition);
 };
 
+const GESTURE_THRESHOLD = 100;
+
+const handlePointerMove = function handlePointerMove(
+  events: PointerEvent[],
+  prevCache: PrevCache,
+  movePan: ReturnType<typeof useViewBox>["movePan"],
+  zoomIn: ReturnType<typeof useViewBox>["zoomIn"],
+  zoomOut: ReturnType<typeof useViewBox>["zoomOut"],
+) {
+  // handle for mouse
+  if (events.length == 1 && events[0].pointerType == "mouse") {
+    const event = events[0];
+
+    const deltaX = prevCache.x - event.clientX;
+    const deltaY = prevCache.y - event.clientY;
+    prevCache.x = event.clientX;
+    prevCache.y = event.clientY;
+
+    movePan({ x: deltaX, y: deltaY });
+    // handle for gesture
+  } else if (events.length == 2) {
+    const diff = Math.sqrt(
+      Math.pow(events[1].clientX - events[0].clientX, 2) + Math.pow(events[1].clientY - events[0].clientY, 2),
+    );
+
+    // If the distance between two fingers is less than or equal to the threshold, it is considered PAN
+    if (diff <= GESTURE_THRESHOLD) {
+      const centerX = (events[1].clientX + events[0].clientX) / 2;
+      const centerY = (events[1].clientY - events[0].clientY) / 2;
+
+      let doPan = true;
+      if (prevCache.x == 0 && prevCache.y == 0) {
+        doPan = false;
+      }
+      const deltaX = prevCache.x - centerX;
+      const deltaY = prevCache.y - centerY;
+      prevCache.x = centerX;
+      prevCache.y = centerY;
+
+      if (doPan) {
+        movePan({ x: deltaX, y: deltaY });
+      }
+    } else {
+      if (prevCache.diff == 0) {
+        prevCache.diff = diff;
+      } else {
+        const scale = prevCache.diff / diff;
+
+        if (scale > 1.0) {
+          zoomOut(1);
+        } else {
+          zoomIn(1);
+        }
+      }
+    }
+  }
+};
+
 // eslint-disable-next-line func-style
 export function IssueGraphContainer(props: Props) {
   const gen = generateTestId(props.testid);
@@ -75,28 +135,47 @@ export function IssueGraphContainer(props: Props) {
       return;
     }
 
-    const mousedown$ = fromEvent(ref.current, "mousedown");
-    const mouseup$ = fromEvent(ref.current, "mouseup");
-    const mousemove$ = fromEvent(ref.current, "mousemove");
+    const pointerdown$ = fromEvent<PointerEvent>(ref.current, "pointerdown");
+    const pointerup$ = fromEvent<PointerEvent>(ref.current, "pointerup");
+    const pointercancel$ = fromEvent<PointerEvent>(ref.current, "pointercancel");
+    const pointermove$ = fromEvent<PointerEvent>(ref.current, "pointermove");
 
-    let prevX = 0;
-    let prevY = 0;
+    let prevCache: PrevCache = { x: 0, y: 0, diff: 0 };
+    const evCache: PointerEvent[] = [];
 
-    const totalSubscription = mousedown$.subscribe((e) => {
-      prevX = (e as MouseEvent).clientX;
-      prevY = (e as MouseEvent).clientY;
+    const totalSubscription = pointerdown$.subscribe((e) => {
+      evCache.push(e);
 
-      const subscription = mousemove$.pipe(takeUntil(mouseup$.pipe(take(1)))).subscribe({
+      prevCache.x = e.clientX;
+      prevCache.y = e.clientY;
+
+      const pointerUpSubscription = merge(pointercancel$, pointerup$)
+        .pipe(take(1))
+        .subscribe({
+          next(e) {
+            for (let i = 0; i < evCache.length; i++) {
+              if (evCache[i].pointerId == e.pointerId) {
+                evCache.splice(i, 1);
+                break;
+              }
+            }
+          },
+          complete() {
+            prevCache = { x: 0, y: 0, diff: 0 };
+            pointerUpSubscription.unsubscribe();
+          },
+        });
+
+      const subscription = pointermove$.pipe(takeUntil(pointerup$.pipe(take(1)))).subscribe({
         next(mm) {
-          mm.preventDefault();
-          const moveEvent = mm as MouseEvent;
+          for (let i = 0; i < evCache.length; i++) {
+            if (evCache[i].pointerId == mm.pointerId) {
+              evCache[i] = mm;
+              break;
+            }
+          }
 
-          const deltaX = prevX - moveEvent.clientX;
-          const deltaY = prevY - moveEvent.clientY;
-          prevX = moveEvent.clientX;
-          prevY = moveEvent.clientY;
-
-          movePan({ x: deltaX, y: deltaY });
+          handlePointerMove(evCache, prevCache, movePan, viewBox.zoomIn, viewBox.zoomOut);
         },
         complete() {
           subscription.unsubscribe();

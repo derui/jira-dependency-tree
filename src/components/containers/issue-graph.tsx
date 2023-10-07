@@ -50,6 +50,7 @@ const attentionIssue = (
   simpleTransit(250)(interpolatePosition);
 };
 
+const RIGHT_BUTTON = 2;
 const GESTURE_THRESHOLD = 100;
 
 const handlePointerMove = function handlePointerMove(
@@ -60,7 +61,7 @@ const handlePointerMove = function handlePointerMove(
   zoomOut: ReturnType<typeof useViewBox>["zoomOut"],
 ) {
   // handle for mouse
-  if (events.length == 1 && events[0].pointerType == "mouse") {
+  if (events.length == 1 && events[0].pointerType == "mouse" && events[0].buttons & RIGHT_BUTTON) {
     const event = events[0];
 
     const deltaX = prevCache.x - event.clientX;
@@ -223,6 +224,7 @@ export function IssueGraphContainer(props: Props) {
       data-testid={gen("root")}
       className={Styles.root}
       onWheel={handleWheel}
+      onContextMenu={(e) => e.preventDefault()}
     >
       <defs>
         <marker

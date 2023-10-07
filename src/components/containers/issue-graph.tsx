@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useEffect, useLayoutEffect, useRef, WheelEvent } from "react";
-import { fromEvent, merge, take, takeUntil } from "rxjs";
+import { fromEvent, merge, take, takeUntil, throttleTime } from "rxjs";
 import { BaseProps, generateTestId } from "../helper";
 import { IssueNode } from "../organisms/issue-node";
 import { LinkNode } from "../organisms/link-node";
@@ -51,16 +51,15 @@ const attentionIssue = (
 };
 
 const RIGHT_BUTTON = 2;
+const MIN_MOUSE_WHEEL_TICK = 50; // minimum tick to detect trackpad
 
 const handlePointerMove = function handlePointerMove(
-  events: PointerEvent[],
+  event: PointerEvent,
   prevCache: PrevCache,
   movePan: ReturnType<typeof useViewBox>["movePan"],
 ) {
   // handle for mouse
-  if (events.length == 1 && events[0].pointerType == "mouse" && events[0].buttons & RIGHT_BUTTON) {
-    const event = events[0];
-
+  if (event.pointerType == "mouse" && event.buttons & RIGHT_BUTTON) {
     const deltaX = prevCache.x - event.clientX;
     const deltaY = prevCache.y - event.clientY;
     prevCache.x = event.clientX;
@@ -102,7 +101,7 @@ export function IssueGraphContainer(props: Props) {
     const pointercancel$ = fromEvent<PointerEvent>(ref.current, "pointercancel");
     const pointermove$ = fromEvent<PointerEvent>(ref.current, "pointermove");
 
-    let prevCache: PrevCache = { x: 0, y: 0, diff: 0 };
+    const prevCache: PrevCache = { x: 0, y: 0, diff: 0 };
     const evCache: PointerEvent[] = [];
 
     const totalSubscription = pointerdown$.subscribe((e) => {
@@ -111,33 +110,9 @@ export function IssueGraphContainer(props: Props) {
       prevCache.x = e.clientX;
       prevCache.y = e.clientY;
 
-      const pointerUpSubscription = merge(pointercancel$, pointerup$)
-        .pipe(take(1))
-        .subscribe({
-          next(e) {
-            for (let i = 0; i < evCache.length; i++) {
-              if (evCache[i].pointerId == e.pointerId) {
-                evCache.splice(i, 1);
-                break;
-              }
-            }
-          },
-          complete() {
-            prevCache = { x: 0, y: 0, diff: 0 };
-            pointerUpSubscription.unsubscribe();
-          },
-        });
-
-      const subscription = pointermove$.pipe(takeUntil(pointerup$.pipe(take(1)))).subscribe({
+      const subscription = pointermove$.pipe(takeUntil(merge(pointercancel$, pointerup$).pipe(take(1)))).subscribe({
         next(mm) {
-          for (let i = 0; i < evCache.length; i++) {
-            if (evCache[i].pointerId == mm.pointerId) {
-              evCache[i] = mm;
-              break;
-            }
-          }
-
-          handlePointerMove(evCache, prevCache, movePan);
+          handlePointerMove(mm, prevCache, movePan);
         },
         complete() {
           subscription.unsubscribe();
@@ -182,11 +157,16 @@ export function IssueGraphContainer(props: Props) {
   ) : null;
 
   const handleWheel = (e: WheelEvent) => {
-    const guessTouchpadZooming = e.deltaX != Math.trunc(e.deltaX) || e.deltaY != Math.trunc(e.deltaY);
+    const guessTouchpadZooming = e.deltaX < MIN_MOUSE_WHEEL_TICK || e.deltaY < MIN_MOUSE_WHEEL_TICK;
 
     if (guessTouchpadZooming && !e.ctrlKey) {
       movePan({ x: e.deltaX, y: e.deltaY });
     } else {
+      // does not zoom if deltaY is -0/0
+      if (e.deltaY == 0) {
+        return;
+      }
+
       const delta = e.deltaY > 0 ? 1 : -1;
 
       if (delta > 0) {

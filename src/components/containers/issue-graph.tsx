@@ -51,14 +51,11 @@ const attentionIssue = (
 };
 
 const RIGHT_BUTTON = 2;
-const GESTURE_THRESHOLD = 100;
 
 const handlePointerMove = function handlePointerMove(
   events: PointerEvent[],
   prevCache: PrevCache,
   movePan: ReturnType<typeof useViewBox>["movePan"],
-  zoomIn: ReturnType<typeof useViewBox>["zoomIn"],
-  zoomOut: ReturnType<typeof useViewBox>["zoomOut"],
 ) {
   // handle for mouse
   if (events.length == 1 && events[0].pointerType == "mouse" && events[0].buttons & RIGHT_BUTTON) {
@@ -71,41 +68,6 @@ const handlePointerMove = function handlePointerMove(
 
     movePan({ x: deltaX, y: deltaY });
     // handle for gesture
-  } else if (events.length == 2) {
-    const diff = Math.sqrt(
-      Math.pow(events[1].clientX - events[0].clientX, 2) + Math.pow(events[1].clientY - events[0].clientY, 2),
-    );
-
-    // If the distance between two fingers is less than or equal to the threshold, it is considered PAN
-    if (diff <= GESTURE_THRESHOLD) {
-      const centerX = (events[1].clientX + events[0].clientX) / 2;
-      const centerY = (events[1].clientY - events[0].clientY) / 2;
-
-      let doPan = true;
-      if (prevCache.x == 0 && prevCache.y == 0) {
-        doPan = false;
-      }
-      const deltaX = prevCache.x - centerX;
-      const deltaY = prevCache.y - centerY;
-      prevCache.x = centerX;
-      prevCache.y = centerY;
-
-      if (doPan) {
-        movePan({ x: deltaX, y: deltaY });
-      }
-    } else {
-      if (prevCache.diff == 0) {
-        prevCache.diff = diff;
-      } else {
-        const scale = prevCache.diff / diff;
-
-        if (scale > 1.0) {
-          zoomOut(1);
-        } else {
-          zoomIn(1);
-        }
-      }
-    }
   }
 };
 
@@ -176,7 +138,7 @@ export function IssueGraphContainer(props: Props) {
             }
           }
 
-          handlePointerMove(evCache, prevCache, movePan, viewBox.zoomIn, viewBox.zoomOut);
+          handlePointerMove(evCache, prevCache, movePan);
         },
         complete() {
           subscription.unsubscribe();
@@ -208,12 +170,18 @@ export function IssueGraphContainer(props: Props) {
   ) : null;
 
   const handleWheel = (e: WheelEvent) => {
-    const delta = e.deltaY > 0 ? 1 : -1;
+    const guessTouchpadZooming = e.deltaX != Math.trunc(e.deltaX) || e.deltaY != Math.trunc(e.deltaY);
 
-    if (delta > 0) {
-      viewBox.zoomOut(1);
+    if (guessTouchpadZooming && !e.ctrlKey) {
+      console.log("detected");
     } else {
-      viewBox.zoomIn(1);
+      const delta = e.deltaY > 0 ? 1 : -1;
+
+      if (delta > 0) {
+        viewBox.zoomOut(1);
+      } else {
+        viewBox.zoomIn(1);
+      }
     }
   };
 

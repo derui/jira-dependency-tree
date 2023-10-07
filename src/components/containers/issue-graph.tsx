@@ -67,7 +67,6 @@ const handlePointerMove = function handlePointerMove(
     prevCache.y = event.clientY;
 
     movePan({ x: deltaX, y: deltaY });
-    // handle for gesture
   }
 };
 
@@ -150,6 +149,19 @@ export function IssueGraphContainer(props: Props) {
   }, [ref.current, movePan]);
 
   useEffect(() => {
+    const current = ref.current;
+    if (!current) {
+      return;
+    }
+
+    const handler = (e: Event) => e.preventDefault();
+
+    current.addEventListener("wheel", handler, { passive: false });
+
+    return () => current.removeEventListener("wheel", handler);
+  }, [ref.current]);
+
+  useEffect(() => {
     if (focusedIssue) {
       attentionIssue(viewBox.state.center, focusedIssue, graph.layout.issues, (p) => {
         viewBox.movePan(p);
@@ -173,7 +185,7 @@ export function IssueGraphContainer(props: Props) {
     const guessTouchpadZooming = e.deltaX != Math.trunc(e.deltaX) || e.deltaY != Math.trunc(e.deltaY);
 
     if (guessTouchpadZooming && !e.ctrlKey) {
-      console.log("detected");
+      movePan({ x: e.deltaX, y: e.deltaY });
     } else {
       const delta = e.deltaY > 0 ? 1 : -1;
 

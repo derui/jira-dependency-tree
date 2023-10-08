@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("show cycle", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/cycle.har", {
+  await page.routeFromHAR("./e2e/fixtures/cycle.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",

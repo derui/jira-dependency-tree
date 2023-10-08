@@ -13,9 +13,9 @@ test("open editor and apply state", async ({ page }) => {
   const email = page.getByTestId("user-configuration/form/email");
   const token = page.getByTestId("user-configuration/form/token");
 
-  await userDomain.type("domain");
-  await email.type("email");
-  await token.type("token");
+  await userDomain.fill("domain");
+  await email.fill("email");
+  await token.fill("token");
   await expect(userDomain).toHaveValue("domain");
   await expect(email).toHaveValue("email");
   await expect(token).toHaveValue("token");
@@ -45,9 +45,9 @@ test("restore state when reopened", async ({ page }) => {
   const email = page.getByTestId("user-configuration/form/email");
   const token = page.getByTestId("user-configuration/form/token");
 
-  await userDomain.type("domain");
-  await email.type("email");
-  await token.type("token");
+  await userDomain.fill("domain");
+  await email.fill("email");
+  await token.fill("token");
   await submit.click();
 
   await page.getByTestId("user-configuration/opener").click();

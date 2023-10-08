@@ -31,7 +31,7 @@ interface UseSynchronizeResult {
 
 const currentIssueKeys = createDraftSafeSelector(
   (state: RootState) => state,
-  (state) => Object.keys(state.issueSet.issueSets[state.issueSet.currentIssueSetKey]?.issueKeys ?? {}),
+  (state) => state.issueSet.issueSets[state.issueSet.currentIssueSetKey]?.issueKeys ?? [],
 );
 
 /**

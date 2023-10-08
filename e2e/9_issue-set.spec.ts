@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("view issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -23,7 +23,7 @@ test("view issue set", async ({ page }) => {
 });
 
 test("create, rename, delete issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -78,7 +78,7 @@ test("create, rename, delete issue set", async ({ page }) => {
 });
 
 test("restore issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -110,6 +110,18 @@ test("restore issue set", async ({ page }) => {
 
   // expect restored data
   await expect(page.getByTestId("issue-set/opener")).toContainText("renamed");
+  await expect(page.getByTestId("issue-graph/issue-node/issue-TES-54/root")).toBeVisible();
+  await expect(page.getByTestId("issue-graph/issue-node/issue-TES-52/root")).toBeVisible();
+  await expect(page.getByTestId("issue-graph/issue-node/issue-TES-51/root")).toBeVisible();
+
+  // Expect to be able to re-sync issues in set
+  const waitForResponse = page.waitForResponse(async (r) => {
+    return r.url().includes("get-issues") && r.status() == 200;
+  });
+  await page.getByTestId("sync-issue-button/button").click();
+  await waitForResponse;
+
+  await expect(page.getByTestId("sync-issue-button/root")).toHaveAttribute("data-syncing", "false");
   await expect(page.getByTestId("issue-graph/issue-node/issue-TES-54/root")).toBeVisible();
   await expect(page.getByTestId("issue-graph/issue-node/issue-TES-52/root")).toBeVisible();
   await expect(page.getByTestId("issue-graph/issue-node/issue-TES-51/root")).toBeVisible();

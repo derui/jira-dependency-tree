@@ -8,7 +8,7 @@ import { IssueKey } from "@/type";
  */
 export const call = async function call(apiCredential: ApiCredential, targetIssueKeys: IssueKey[]): Promise<Issue[]> {
   const body = {
-    issues: targetIssueKeys,
+    issues: Array.from(targetIssueKeys).sort(),
   };
 
   const ret = await fetch(`${apiCredential.apiBaseUrl}/get-issues`, {

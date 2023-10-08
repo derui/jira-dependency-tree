@@ -19,7 +19,7 @@ export function SyncIssueButton(props: Props) {
   const { isEnabled, sync, isLoading } = useSynchronize();
 
   return (
-    <div className={Styles.root(isLoading)} data-testid={gen("root")}>
+    <div className={Styles.root(isLoading)} data-syncing={isLoading} data-testid={gen("root")}>
       <IconButton
         color="complement"
         disabled={!isEnabled}

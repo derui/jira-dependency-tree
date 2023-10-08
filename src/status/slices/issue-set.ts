@@ -24,7 +24,7 @@ const slice = createSlice({
         throw new Error(`Illegal state : not found current issue set | ${state.currentIssueSetKey}`);
       }
 
-      issueSet.issueKeys = Array.from(new Set([...issueSet.issueKeys, ...payload.issues.map((v) => v.key)]));
+      issueSet.issueKeys = Array.from(new Set(issueSet.issueKeys.concat(payload.issues.map((v) => v.key))));
     });
 
     builder.addCase(removeNode, (state, { payload }) => {

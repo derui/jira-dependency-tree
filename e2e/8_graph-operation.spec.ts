@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("view issue details in graph", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -20,9 +20,9 @@ test("view issue details in graph", async ({ page }) => {
   const svg = page.getByTestId("issue-graph/root");
   await svg.hover();
   await page.mouse.move(300, 300, { steps: 5 });
-  await page.mouse.down();
-  await page.mouse.move(600, 600, { steps: 5 });
-  await page.mouse.up();
+  await page.mouse.down({ button: "right" });
+  await page.mouse.move(600, 700, { steps: 5 });
+  await page.mouse.up({ button: "right" });
   await page.getByTestId("issue-graph/issue-node/issue-TES-51/root").click();
 
   await expect(page.getByTestId("issue-graph/detail/issue-TES-51/key/item")).toContainText("TES-51");
@@ -34,7 +34,7 @@ test("view issue details in graph", async ({ page }) => {
 });
 
 test("remove issue from graph", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -52,9 +52,9 @@ test("remove issue from graph", async ({ page }) => {
   const svg = page.getByTestId("issue-graph/root");
   await svg.hover();
   await page.mouse.move(300, 300, { steps: 5 });
-  await page.mouse.down();
-  await page.mouse.move(600, 600, { steps: 5 });
-  await page.mouse.up();
+  await page.mouse.down({ button: "right" });
+  await page.mouse.move(600, 700, { steps: 5 });
+  await page.mouse.up({ button: "right" });
   await page.getByTestId("issue-graph/issue-node/issue-TES-51/root").click();
 
   await expect(page.getByTestId("issue-graph/detail/issue-TES-51/key/item")).toContainText("TES-51");

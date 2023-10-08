@@ -2,7 +2,7 @@ import { test, expect, Page } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("allow search issue with term", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -28,7 +28,7 @@ test("allow search issue with term", async ({ page }) => {
 test("Do cancel to close searcher", async ({ page }) => {
   await page.goto("/");
 
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",
@@ -51,7 +51,7 @@ test("Do cancel to close searcher", async ({ page }) => {
 });
 
 test("move point to task if result clicked", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.har", {
+  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
     url: "http://localhost:3000/**",
     update: false,
     updateMode: "minimal",

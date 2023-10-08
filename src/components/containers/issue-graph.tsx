@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useEffect, useLayoutEffect, useRef, WheelEvent } from "react";
-import { fromEvent, merge, take, takeUntil, throttleTime } from "rxjs";
+import { fromEvent, merge, take, takeUntil } from "rxjs";
 import { BaseProps, generateTestId } from "../helper";
 import { IssueNode } from "../organisms/issue-node";
 import { LinkNode } from "../organisms/link-node";
@@ -102,11 +102,8 @@ export function IssueGraphContainer(props: Props) {
     const pointermove$ = fromEvent<PointerEvent>(ref.current, "pointermove");
 
     const prevCache: PrevCache = { x: 0, y: 0, diff: 0 };
-    const evCache: PointerEvent[] = [];
 
     const totalSubscription = pointerdown$.subscribe((e) => {
-      evCache.push(e);
-
       prevCache.x = e.clientX;
       prevCache.y = e.clientY;
 
@@ -157,7 +154,7 @@ export function IssueGraphContainer(props: Props) {
   ) : null;
 
   const handleWheel = (e: WheelEvent) => {
-    const guessTouchpadZooming = e.deltaX < MIN_MOUSE_WHEEL_TICK || e.deltaY < MIN_MOUSE_WHEEL_TICK;
+    const guessTouchpadZooming = Math.abs(e.deltaX) < MIN_MOUSE_WHEEL_TICK && Math.abs(e.deltaY) < MIN_MOUSE_WHEEL_TICK;
 
     if (guessTouchpadZooming && !e.ctrlKey) {
       movePan({ x: e.deltaX, y: e.deltaY });

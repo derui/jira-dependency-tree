@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import classNames from "classnames";
 import { BaseProps, generateTestId } from "../helper";
 import { X } from "../atoms/icons";
 import { IconButton } from "../atoms/icon-button";
+import { Tooltip } from "../atoms/tooltip";
 import { IssueStatus, IssueType } from "@/type";
 import { stringToColour, stringToHighContrastColor } from "@/utils/color";
 import { IssueModel } from "@/view-models/issue";
@@ -145,6 +146,7 @@ const DeleteButton: React.FC<{ onClick: () => void; testid: string }> = ({ onCli
 export function Issue(props: Props) {
   const gen = generateTestId(props.testid);
   const { issue, onClick, loading, onDelete, placeholder } = props;
+  const summaryRef = useRef<HTMLSpanElement | null>(null);
 
   const handleClick = (e: React.MouseEvent) => {
     if (onClick && issue) {
@@ -184,7 +186,10 @@ export function Issue(props: Props) {
 
   return (
     <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
-      <span className={classNames(Styles.summary)} data-testid={gen("summary")}>
+      <span ref={summaryRef} className={classNames(Styles.summary)} data-testid={gen("summary")}>
+        <Tooltip target={summaryRef} position="bottom">
+          {issue.summary}
+        </Tooltip>
         {issue.summary}
       </span>
       <span className={classNames(Styles.information)} data-testid={gen("information")}>

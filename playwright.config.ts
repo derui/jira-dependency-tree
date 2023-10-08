@@ -20,7 +20,7 @@ export default defineConfig({
      */
     timeout: 5000,
   },
-  workers: 1,
+  workers: 8,
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -43,10 +43,17 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+
+        // https://github.com/mifi/reactive-video/issues/11
+        // allow to set large number of large workers
+        launchOptions: {
+          ignoreDefaultArgs: ["--disable-dev-shm-usage"],
+        },
+      },
     },
   ],
-
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   // outputDir: 'test-results/',
 

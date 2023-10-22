@@ -63,6 +63,6 @@ test("rename issue set", async () => {
   await user.type(screen.getByTestId("renamer/input"), "renamed");
   await user.click(screen.getByTestId("renamer/submit"));
 
-  expect(screen.getAllByTestId("issue-set/name")).toHaveLength(1);
+  expect(screen.getAllByTestId("issue-set/name")).toHaveLength(2);
   expect(screen.queryByText("renamed")).toBeNull();
 });

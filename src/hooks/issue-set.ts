@@ -78,19 +78,22 @@ export const useIssueSet = function useIssueSet(): Hook {
     [names],
   );
 
-  const rename = useCallback<Hook["rename"]>((from, to) => {
-    if (!names.includes(from)) {
-      return "InvalidArgument";
-    }
+  const rename = useCallback<Hook["rename"]>(
+    (from, to) => {
+      if (!names.includes(from)) {
+        return "InvalidArgument";
+      }
 
-    const trimmed = to.trim();
-    if (trimmed.length < 1 || names.includes(trimmed)) {
-      return "InvalidArgument";
-    }
+      const trimmed = to.trim();
+      if (trimmed.length < 1 || names.includes(trimmed)) {
+        return "InvalidArgument";
+      }
 
-    dispatch(issueSet.rename({ from, to: trimmed }));
-    return "success";
-  }, []);
+      dispatch(issueSet.rename({ from, to: trimmed }));
+      return "success";
+    },
+    [names],
+  );
 
   const select = (name: string) => {
     dispatch(issueSet.select(name));

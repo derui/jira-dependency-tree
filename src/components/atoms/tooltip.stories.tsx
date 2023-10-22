@@ -21,9 +21,9 @@ const Wrapper = (props: PropsWithChildren<{ position?: TooltipPositionType }>) =
 
   return (
     <div className="w-96 h-96 relative">
-      <span className="h-10 absolute left-1/2 top-1/2 flex justify-center" ref={ref}>
+      <div className="absolute left-1/2 top-1/2 flex justify-center border" ref={ref}>
         Sample
-      </span>
+      </div>
       <Tooltip target={ref} position={props.position}>
         {props.children}
       </Tooltip>

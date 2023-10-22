@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Provider } from "react-redux";
 import { IssueNode } from "./issue-node";
 import { randomIssue } from "@/mock/generators";
 import { issueToIssueModel } from "@/view-models/issue";
+import { createStore } from "@/status/store";
+import { importIssues } from "@/status/actions";
 
 const meta = {
   title: "Organisms/Issue Node",
@@ -22,14 +25,27 @@ export const Default: Story = {
         rowIndex: 0,
       },
       position: { x: 10, y: 20 },
-      size: { width: 160, height: 100 },
+      size: { width: 200, height: 100 },
     },
   },
   render(args) {
+    const store = createStore();
+    store.dispatch(
+      importIssues({
+        issues: [
+          randomIssue({ key: "TES-10", summary: "summary" }),
+          randomIssue({ key: "TES-11", summary: "other" }),
+          randomIssue({ key: "OTHER-11", summary: "not match" }),
+        ],
+      }),
+    );
+
     return (
-      <svg width="100%" height="100%">
-        <IssueNode {...args} />
-      </svg>
+      <Provider store={store}>
+        <svg width="100%" height="100%">
+          <IssueNode {...args} />
+        </svg>
+      </Provider>
     );
   },
 };

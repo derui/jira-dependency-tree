@@ -186,10 +186,10 @@ export function Issue(props: Props) {
 
   return (
     <li className={classNames(Styles.root(!!onClick))} onClick={handleClick} data-testid={gen("root")}>
+      <Tooltip target={summaryRef} position="bottom">
+        {issue.summary}
+      </Tooltip>
       <span ref={summaryRef} className={classNames(Styles.summary)} data-testid={gen("summary")}>
-        <Tooltip target={summaryRef} position="bottom">
-          {issue.summary}
-        </Tooltip>
         {issue.summary}
       </span>
       <span className={classNames(Styles.information)} data-testid={gen("information")}>

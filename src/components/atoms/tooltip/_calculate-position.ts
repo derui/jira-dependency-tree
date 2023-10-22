@@ -46,7 +46,7 @@ const calculateBottomPosition = function calculateBottomPosition({ target, toolt
 
   return {
     x: tooltipLeft,
-    y: targetRect.bottom - MARGIN,
+    y: targetRect.bottom + MARGIN,
   };
 };
 

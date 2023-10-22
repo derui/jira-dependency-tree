@@ -48,3 +48,9 @@ export const issueSet = {
   rename: createAction<{ from: string; to: string }>("issueSet:rename"),
   select: createAction<string>("issueSet:select"),
 } as const;
+
+// actions to manage loading state
+export const loading = {
+  startImport: createAction("loading:startImport"),
+  finishImport: createAction("loading:finishImport"),
+} as const;

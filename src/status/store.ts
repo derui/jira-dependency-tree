@@ -5,6 +5,8 @@ import * as zoom from "./slices/zoom";
 import * as relations from "./slices/relations";
 
 // INJECT REDUCER IMPORT HERE
+import * as loading from "./slices/loading";
+
 import * as issueSet from "./slices/issue-set";
 
 import * as graphLayout from "./slices/graph-layout";
@@ -16,6 +18,8 @@ import { createDexieMiddleware } from "./middlewares/dexie";
 // INJECT EPIC IMPORT HERE
 
 const reducers = {
+  loading: loading.reducer,
+
   issueSet: issueSet.reducer,
 
   graphLayout: graphLayout.reducer,

@@ -1,13 +1,12 @@
 import { useCallback, useState } from "react";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import deepEqual from "fast-deep-equal";
-import { useAppDispatch, useAppSelector } from "./_internal-hooks";
+import { useAppSelector } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
-import { importIssues } from "@/status/actions";
-import { Apis } from "@/apis/api";
+import { useImportIssues } from "./_import-issues";
 import { RootState } from "@/status/store";
 
-interface UseSynchronizeResult {
+interface Hook {
   /**
    * synchronize issues and relations
    */
@@ -29,41 +28,34 @@ interface UseSynchronizeResult {
   isEnabled: boolean;
 }
 
+const rootState = (state: RootState) => state;
+
 const currentIssueKeys = createDraftSafeSelector(
-  (state: RootState) => state,
+  rootState,
   (state) => state.issueSet.issueSets[state.issueSet.currentIssueSetKey]?.issueKeys ?? [],
 );
+
+const selectLoading = createDraftSafeSelector(rootState, (state) => {
+  return state.loading.import.loading;
+});
+
+const selectError = createDraftSafeSelector(rootState, (state) => {
+  return state.loading.import.error;
+});
 
 /**
  * get methods to import issue and select/unselect issue to import
  */
-export const useSynchronize = function useSynchronize(): UseSynchronizeResult {
+export const useSynchronize = function useSynchronize(): Hook {
   const apiCredential = useGetApiCredential();
-  const dispatch = useAppDispatch();
   const issueKeys = useAppSelector(currentIssueKeys, deepEqual);
-  const [error, setError] = useState<string | undefined>();
-  const [loading, setLoading] = useState(false);
+  const error = useAppSelector(selectError);
+  const loading = useAppSelector(selectLoading);
+  const importIssues = useImportIssues();
 
   const sync = useCallback(() => {
-    if (!apiCredential) {
-      return;
-    }
-
-    setLoading(true);
-    setError(undefined);
-
-    Apis.getIssues
-      .call(apiCredential, issueKeys)
-      .then((issues) => {
-        dispatch(importIssues({ issues: issues }));
-      })
-      .catch(() => {
-        setError("Synchronizing failed");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [issueKeys, apiCredential]);
+    importIssues(issueKeys);
+  }, [issueKeys, importIssues]);
 
   return { sync, error, isLoading: loading, isEnabled: apiCredential !== undefined && !loading };
 };

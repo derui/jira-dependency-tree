@@ -24,13 +24,13 @@ export const useImportIssues = function useImportIssues(): Hook {
       }
 
       try {
-        dispatch(loading.startImport);
+        dispatch(loading.startImport());
         const issues = await Apis.getIssues.call(apiCredential, keys);
         dispatch(importIssues({ issues: issues }));
       } catch {
         dispatch(loading.errorImport("Import error"));
       } finally {
-        dispatch(loading.finishImport);
+        dispatch(loading.finishImport());
       }
     },
     [apiCredential],

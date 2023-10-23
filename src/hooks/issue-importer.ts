@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { useAppDispatch } from "./_internal-hooks";
+import { createDraftSafeSelector } from "@reduxjs/toolkit";
+import { useAppSelector } from "./_internal-hooks";
 import { useGetApiCredential } from "./get-api-credential";
+import { useImportIssues } from "./_import-issues";
 import { IssueKey } from "@/type";
-import { importIssues } from "@/status/actions";
-import { Apis } from "@/apis/api";
+import { RootState } from "@/status/store";
 
-interface UseImportIssuesResult {
+interface Hook {
   /**
    * toggle selecting an issue to import list
    */
@@ -30,15 +31,29 @@ interface UseImportIssuesResult {
   error?: string;
 }
 
+const selectLoading = createDraftSafeSelector(
+  (state: RootState) => state,
+  (state) => {
+    return state.loading.import.loading;
+  },
+);
+
+const selectError = createDraftSafeSelector(
+  (state: RootState) => state,
+  (state) => {
+    return state.loading.import.error;
+  },
+);
+
 /**
  * get methods to import issue and select/unselect issue to import
  */
-export const useImportIssues = function useImportIssues(): UseImportIssuesResult {
+export const useIssueImporter = function useIssueImporter(): Hook {
   const apiCredential = useGetApiCredential();
   const [state, mutate] = useState<IssueKey[]>([]);
-  const dispatch = useAppDispatch();
-  const [error, setError] = useState<string | undefined>();
-  const [loading, setLoading] = useState(false);
+  const importIssues = useImportIssues();
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
 
   const toggle = useCallback((key: IssueKey) => {
     mutate((state) => {
@@ -71,21 +86,8 @@ export const useImportIssues = function useImportIssues(): UseImportIssuesResult
   };
 
   const execute = useCallback(async () => {
-    if (!apiCredential) {
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(undefined);
-      const issues = await Apis.getIssues.call(apiCredential, state);
-      dispatch(importIssues({ issues: issues }));
-    } catch {
-      setError("Import error");
-    } finally {
-      setLoading(false);
-    }
-  }, [state, apiCredential]);
+    importIssues(state);
+  }, [state, apiCredential, importIssues]);
 
   return { execute, toggle, toggleMulti, selectedIssues: state, error, isLoading: loading };
 };

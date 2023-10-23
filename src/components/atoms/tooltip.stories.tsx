@@ -17,7 +17,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const Wrapper = (props: PropsWithChildren<{ position?: TooltipPositionType }>) => {
-  const ref = useRef<HTMLSpanElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   return (
     <div className="w-96 h-96 relative">

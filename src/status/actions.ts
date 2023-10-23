@@ -53,4 +53,5 @@ export const issueSet = {
 export const loading = {
   startImport: createAction("loading:startImport"),
   finishImport: createAction("loading:finishImport"),
+  errorImport: createAction<string>("loading:errorImport"),
 } as const;

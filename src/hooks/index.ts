@@ -1,5 +1,5 @@
 import { useGetApiCredential } from "./get-api-credential";
-import { useImportIssues } from "./import-issues";
+import { useIssueImporter as useImportIssues } from "./issue-importer";
 import { useSearchIssues } from "./search-issues";
 import { useSynchronize } from "./synchronize";
 import { useIssueSet } from "./issue-set";

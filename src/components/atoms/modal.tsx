@@ -71,7 +71,7 @@ const Styles = {
     "border-b",
     "border-b-gray",
   ),
-  main: classNames("flex", "flex-1", "min-h-0"),
+  main: classNames("flex", "flex-1", "min-h-0", "flex-col"),
   closer: classNames("absolute", "right-2", "top-2"),
 };
 

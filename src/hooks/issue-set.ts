@@ -1,6 +1,6 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import deepEqual from "fast-deep-equal";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { issueSet } from "@/status/actions";
 import { RootState } from "@/status/store";
@@ -25,10 +25,16 @@ type Hook = {
   /**
    * select issue set
    */
-  select(name: string): void;
+  change(name: string): void;
+
+  /**
+   * select the issue set changed
+   */
+  select(): void;
 
   readonly state: {
-    readonly current: IssueSetModel;
+    readonly changedIssueSetName: string;
+    readonly currentIssueSetName: string;
     readonly issueSets: ReadonlyArray<string>;
   };
 };
@@ -52,6 +58,7 @@ export const useIssueSet = function useIssueSet(): Hook {
   const dispatch = useAppDispatch();
   const names = useAppSelector(selectNames, deepEqual);
   const current = useAppSelector(selectCurrentIssueSet, deepEqual);
+  const [selected, setSelected] = useState(current.name);
 
   const create = useCallback<Hook["create"]>(
     (name) => {
@@ -95,17 +102,23 @@ export const useIssueSet = function useIssueSet(): Hook {
     [names],
   );
 
-  const select = (name: string) => {
-    dispatch(issueSet.select(name));
+  const change = (name: string) => {
+    setSelected(name);
   };
+
+  const select = useCallback<Hook["select"]>(() => {
+    dispatch(issueSet.select(selected));
+  }, [selected]);
 
   return {
     create,
     delete: delete_,
     rename,
+    change,
     select,
     state: {
-      current,
+      changedIssueSetName: selected,
+      currentIssueSetName: current.name,
       issueSets: names,
     },
   };

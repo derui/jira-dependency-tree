@@ -7,7 +7,9 @@ import { IssueSetItem } from "../molecules/issue-set-item";
 import { IconButton } from "../atoms/icon-button";
 import { Plus } from "../atoms/icons";
 import { IssueSetEditor } from "../molecules/issue-set-editor";
+import { Button } from "../atoms/button";
 import { useIssueSet } from "@/hooks";
+import { issueSetToIssueSetModel } from "@/view-models/issue-set";
 
 type Props = BaseProps;
 
@@ -24,7 +26,10 @@ const Styles = {
     "text-ellipsis",
   ),
   textLink: classNames("cursor-pointer", "hover:underline"),
-  issueSetList: classNames("flex", "flex-auto", "flex-col", "gap-1", "px-3", "py-2", "h-full", "overflow-y-auto"),
+  modal: {
+    list: classNames("flex", "flex-auto", "flex-col", "gap-1", "px-3", "py-2", "h-full", "overflow-y-auto"),
+    footer: classNames("border-t", "flex", "items-center", "justify-flex-end", "h-16", "px-3", "py-2"),
+  },
   appender: classNames(
     "flex",
     "flex-row",
@@ -72,7 +77,7 @@ export function IssueSetModal(props: Props) {
   const [opened, setOpened] = useState(false);
   const [renameRequested, setRenameRequested] = useState<string[]>([]);
 
-  const name = issueSet.state.current.name;
+  const name = issueSet.state.currentIssueSetName;
 
   const handleOpenerClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -115,7 +120,7 @@ export function IssueSetModal(props: Props) {
 
     return (
       <IssueSetItem
-        selected={issueSet.state.current.name == v}
+        selected={issueSet.state.changedIssueSetName == v}
         name={v}
         key={v}
         onRenameRequested={() =>
@@ -124,11 +129,16 @@ export function IssueSetModal(props: Props) {
           })
         }
         onDelete={() => issueSet.delete(v)}
-        onSelect={() => issueSet.select(v)}
+        onSelect={() => issueSet.change(v)}
         testid={gen("issue-set")}
       />
     );
   });
+
+  const handleSelect = () => {
+    issueSet.select();
+    setOpened(false);
+  };
 
   return (
     <>
@@ -136,10 +146,15 @@ export function IssueSetModal(props: Props) {
         <span className={Styles.textLink}> {name}</span>
       </div>
       <Modal size="l" opened={opened} title="Issue set" onClose={handleClose} testid={gen("modal")}>
-        <ul className={Styles.issueSetList}>
+        <ul className={Styles.modal.list}>
           {issueSets}
           <IssueSetCreator onCreate={issueSet.create} testid={gen("creator")} />
         </ul>
+        <footer className={Styles.modal.footer}>
+          <Button size="s" schema="primary" onClick={handleSelect}>
+            Select
+          </Button>
+        </footer>
       </Modal>
     </>
   );

@@ -1,16 +1,8 @@
 import { test, expect, vi, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { getWrapper } from "./hook-test-util";
-import { useRelationEditor } from "./relation-editor";
-import { useGenerateId } from "./_generate-id";
 import { useIssueSet } from "./issue-set";
 import { createStore } from "@/status/store";
-import { createDeleting } from "@/models/relation-delta";
-import { importIssues, submitApiCredential } from "@/status/actions";
-import { randomCredential, randomIssue } from "@/mock/generators";
-import { issueToIssueModel } from "@/view-models/issue";
-import { Apis } from "@/apis/api";
-import { toDeletingModel } from "@/view-models/relation-delta";
 
 afterEach(() => {
   vi.resetAllMocks();
@@ -21,7 +13,7 @@ test("initial hook state", () => {
 
   const ret = renderHook(() => useIssueSet(), { wrapper: getWrapper(store) });
 
-  expect(ret.result.current.state.current).toEqual({ name: "Default", keys: [] });
+  expect(ret.result.current.state.currentIssueSetName).toEqual("Default");
 });
 
 test("create issue set", () => {
@@ -30,10 +22,11 @@ test("create issue set", () => {
   const { result, rerender } = renderHook(() => useIssueSet(), { wrapper: getWrapper(store) });
   result.current.create("name");
   rerender();
-  result.current.select("name");
+  result.current.change("name");
   rerender();
 
-  expect(result.current.state.current).toEqual({ name: "name", keys: [] });
+  expect(result.current.state.currentIssueSetName).toEqual("Default");
+  expect(result.current.state.changedIssueSetName).toEqual("name");
 });
 
 test("delete issue set", () => {
@@ -55,7 +48,7 @@ test("rename issue set", () => {
   result.current.rename("Default", "renamed");
   rerender();
 
-  expect(result.current.state.current).toEqual({ name: "renamed", keys: [] });
+  expect(result.current.state.currentIssueSetName).toEqual("renamed");
 });
 
 test("select issue set", () => {
@@ -64,10 +57,13 @@ test("select issue set", () => {
   const { result, rerender } = renderHook(() => useIssueSet(), { wrapper: getWrapper(store) });
   result.current.create("new one");
   rerender();
-  result.current.select("new one");
+  result.current.change("new one");
+  rerender();
+  result.current.select();
   rerender();
 
-  expect(result.current.state.current).toEqual({ name: "new one", keys: [] });
+  expect(result.current.state.currentIssueSetName).toEqual("new one");
+  expect(result.current.state.changedIssueSetName).toEqual("new one");
 });
 
 test.each(["", "   ", "\n"])("invalid argument to create", (v) => {

@@ -8,7 +8,7 @@ import { Panel } from "../molecules/panel";
 import { Checkbox } from "../atoms/checkbox";
 import { ChevronLeft, ChevronRight } from "../atoms/icons";
 import { IconButton } from "../atoms/icon-button";
-import { useImportIssues, useSearchIssues } from "@/hooks";
+import { useIssueImporter, useSearchIssues } from "@/hooks";
 import { IssueModel } from "@/view-models/issue";
 import { difference, intercect } from "@/utils/basic";
 
@@ -264,7 +264,7 @@ export function IssueImporter({ opened, testid, onClose }: Props) {
     paginate,
     reset,
   } = useSearchIssues();
-  const importer = useImportIssues();
+  const importer = useIssueImporter();
 
   const handleClick = () => {
     reset();

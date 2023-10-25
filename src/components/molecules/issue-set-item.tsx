@@ -75,7 +75,11 @@ export function IssueSetItem(props: Props) {
   const handleCancelDeleting = () => {
     setDeleting("pre");
   };
-  const handleDelete = () => onDelete?.();
+  const handleDelete = () => {
+    if (!selected) {
+      onDelete?.();
+    }
+  };
   const handleRenameRequested = () => onRenameRequested?.();
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,9 +101,11 @@ export function IssueSetItem(props: Props) {
           <IconButton color="secondary2" size="s" onClick={handleRenameRequested} testid={gen("rename-requester")}>
             <Pencil color="secondary2" />
           </IconButton>
-          <IconButton color="primary" size="s" onClick={handleDeleting} testid={gen("delete-requester")}>
-            <Trash color="primary" />
-          </IconButton>
+          {!selected ? (
+            <IconButton color="primary" size="s" onClick={handleDeleting} testid={gen("delete-requester")}>
+              <Trash color="primary" />
+            </IconButton>
+          ) : null}
         </div>
         <div
           className={Styles.deletingContainer(deleting == "deleting")}

@@ -60,3 +60,9 @@ test("call select handler", async () => {
 
   expect(mock.calledOnce).toEqual(true);
 });
+
+test("do not show delete button if selected", async () => {
+  render(<IssueSetItem name="name" selected />);
+
+  expect(screen.queryByTestId("delete-requester")).toBeNull();
+});

@@ -28,7 +28,7 @@ const Styles = {
   textLink: classNames("cursor-pointer", "hover:underline"),
   modal: {
     list: classNames("flex", "flex-auto", "flex-col", "gap-1", "px-3", "py-2", "h-full", "overflow-y-auto"),
-    footer: classNames("border-t", "flex", "items-center", "justify-flex-end", "h-16", "px-3", "py-2"),
+    footer: classNames("border-t", "flex", "items-center", "justify-flex-end", "px-3", "py-2"),
   },
   appender: classNames(
     "flex",

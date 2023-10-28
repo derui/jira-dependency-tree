@@ -7,7 +7,8 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     error: { control: "text" },
-    loading: { control: "boolean" },
+    loading: { control: { type: "boolean" }, defaultValue: false },
+    incremental: { control: { type: "boolean" }, defaultValue: false },
   },
 } satisfies Meta<typeof QueryInput>;
 

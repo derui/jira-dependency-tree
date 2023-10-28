@@ -9,6 +9,7 @@ export interface Props extends BaseProps {
   loading?: boolean;
   error?: string;
   onSearch?: (query: string) => void;
+  incremental?: boolean;
 }
 
 const Styles = {
@@ -57,16 +58,23 @@ export function QueryInput(props: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (onSearch) {
-      onSearch(query);
-    }
+    onSearch?.(query);
   };
 
   const handleInput = (value: string) => {
     setQuery(value);
+
+    if (props.incremental) {
+      onSearch?.(value);
+    }
   };
 
   const icon = loading ? <Loader_2 /> : <Search />;
+  const button = props.incremental ? null : (
+    <Button schema="secondary2" type="submit" size="s" disabled={loading} testid={gen("button")}>
+      <span className={Styles.icon(loading)}>{icon}</span>
+    </Button>
+  );
 
   return (
     <form className={Styles.root()} onSubmit={handleSubmit} data-testid={gen("root")}>
@@ -74,9 +82,7 @@ export function QueryInput(props: Props) {
         <Input onInput={handleInput} value={query} placeholder="Input JQL" testid={gen("input")} />
         <Error error={error} loading={loading} testid={gen("error")} />
       </div>
-      <Button schema="secondary2" type="submit" size="s" disabled={loading} testid={gen("button")}>
-        <span className={Styles.icon(loading)}>{icon}</span>
-      </Button>
+      {button}
     </form>
   );
 }

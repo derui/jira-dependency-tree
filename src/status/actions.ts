@@ -17,9 +17,6 @@ export const payAttentionIssue = createAction<string>("payAttentionIssue");
 
 export const changeZoom = createAction<number>("changeZoom");
 
-export const expandIssue = createAction<IssueKey>("expandIssue");
-export const narrowExpandedIssue = createAction("narrowExpandedIssue");
-
 export const selectIssueInGraph = createAction<string>("selectIssueInGraph");
 export const deselectIssueInGraph = createAction<string>("deselectIssueInGraph");
 export const removeNode = createAction<string>("removeNode");

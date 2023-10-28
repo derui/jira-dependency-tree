@@ -1,22 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearIssueFilter, expandIssue, filterIssues, importIssues, narrowExpandedIssue, removeNode } from "../actions";
+import { clearIssueFilter, filterIssues, importIssues, issueSet, removeNode } from "../actions";
 import { Issue } from "@/models/issue";
 import { IssueKey } from "@/type";
 import { filterEmptyString } from "@/utils/basic";
 
-type ProjectionTarget = { kind: "Root" } | { kind: "InsideIssue"; issueKey: IssueKey };
-
 interface IssuesState {
   issues: Record<IssueKey, Issue>;
   matchedIssues: Issue[];
-  projectionTarget: ProjectionTarget;
   _originalIssues: Issue[];
 }
 
 const initialState = {
   issues: {},
   matchedIssues: [],
-  projectionTarget: { kind: "Root" },
   _originalIssues: [],
 } as IssuesState satisfies IssuesState;
 
@@ -28,25 +24,12 @@ const slice = createSlice({
     builder.addCase(importIssues, (state, action) => {
       state._originalIssues = action.payload.issues;
 
-      const target = state.projectionTarget;
-      switch (target.kind) {
-        case "Root":
-          state.issues = action.payload.issues
-            .filter((issue) => issue.parentIssue === undefined)
-            .reduce<IssuesState["issues"]>((accum, v) => {
-              accum[v.key] = v;
-              return accum;
-            }, {});
-          break;
-        case "InsideIssue":
-          state.issues = action.payload.issues
-            .filter((issue) => issue.parentIssue === target.issueKey)
-            .reduce<IssuesState["issues"]>((accum, v) => {
-              accum[v.key] = v;
-              return accum;
-            }, {});
-          break;
-      }
+      state.issues = action.payload.issues
+        .filter((issue) => issue.parentIssue === undefined)
+        .reduce<IssuesState["issues"]>((accum, v) => {
+          accum[v.key] = v;
+          return accum;
+        }, {});
     });
 
     builder.addCase(filterIssues, (state, { payload }) => {
@@ -67,25 +50,9 @@ const slice = createSlice({
       delete state.issues[payload];
     });
 
-    builder.addCase(expandIssue, (state, { payload }) => {
-      state.projectionTarget = { kind: "InsideIssue", issueKey: payload };
-      state.issues = state._originalIssues
-        .filter((issue) => issue.parentIssue === payload)
-        .reduce<IssuesState["issues"]>((accum, v) => {
-          accum[v.key] = v;
-          return accum;
-        }, {});
-    });
-
-    builder.addCase(narrowExpandedIssue, (state) => {
-      state.issues = state._originalIssues
-        .filter((issue) => issue.parentIssue === undefined)
-        .reduce<IssuesState["issues"]>((accum, v) => {
-          accum[v.key] = v;
-          return accum;
-        }, {});
-
-      state.projectionTarget = { kind: "Root" };
+    builder.addCase(issueSet.select, (state) => {
+      state.issues = {};
+      state.matchedIssues = [];
     });
   },
 });

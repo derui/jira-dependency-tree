@@ -58,8 +58,10 @@ test("create, rename, delete issue set", async ({ page }) => {
 
   // select new one
   await page.getByTestId("issue-set/issue-set/name").filter({ hasText: "new one" }).click();
+  await page.getByRole("button", { name: "Select" }).click();
 
   // delete renamed
+  await page.getByTestId("issue-set/opener").click();
   const roots = page.getByTestId("issue-set/issue-set/root");
   const targetRoot = roots.filter({ hasText: "renamed" });
   await targetRoot.getByTestId("issue-set/issue-set/delete-requester").click();

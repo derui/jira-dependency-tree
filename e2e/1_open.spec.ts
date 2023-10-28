@@ -9,8 +9,8 @@ test("open and initial display", async ({ page }) => {
   await expect(page.getByTestId("user-configuration/opener")).not.toHaveClass("opened");
   await expect(page.getByTestId("user-configuration/marker")).toHaveAttribute("aria-hidden", "false");
   await expect(page.getByTestId("zoom-slider/current-zoom")).toContainText("100%");
-  await expect(page.getByTestId("side-toolbar/importer-opener")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("side-toolbar/relation-editor-opener")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("side-toolbar/importer-opener")).toBeEnabled();
+  await expect(page.getByTestId("side-toolbar/relation-editor-opener")).toBeEnabled();
 
   // searcher
   await expect(page.getByTestId("issue-searcher/input/opener")).toBeVisible();

@@ -10,20 +10,20 @@ test("open importer", async ({ page }) => {
   const importerButton = page.getByTestId("side-toolbar/importer-opener");
   const editorButton = page.getByTestId("side-toolbar/relation-editor-opener");
 
-  await expect(importerButton).toHaveAttribute("aria-disabled", "false");
-  await expect(editorButton).toHaveAttribute("aria-disabled", "false");
+  await expect(importerButton).toBeEnabled();
+  await expect(editorButton).toBeEnabled();
 
   await importerButton.click();
 
-  await expect(importerButton).toHaveAttribute("aria-disabled", "true");
-  await expect(editorButton).toHaveAttribute("aria-disabled", "true");
+  await expect(importerButton).toBeDisabled();
+  await expect(editorButton).toBeDisabled();
   await expect(page.getByTestId("side-toolbar/importer/query-input/input")).toHaveValue("");
   await expect(page.getByTestId("side-toolbar/importer/root")).toBeVisible();
 
   await expect(page.getByText("No issues")).toContainText("No issues. Please search with valid JQL first.");
-  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toBeEnabled();
+  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toBeDisabled();
+  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toBeDisabled();
 });
 
 test("input jql and import issues", async ({ page }) => {
@@ -45,9 +45,9 @@ test("input jql and import issues", async ({ page }) => {
   await page.getByTestId("side-toolbar/importer/query-input/input").fill('project = "TES" ORDER BY created DESC');
   await page.getByTestId("side-toolbar/importer/query-input/button").click();
 
-  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toHaveAttribute("aria-disabled", "true");
+  await expect(page.getByTestId("side-toolbar/importer/paginator/forward")).toBeEnabled();
+  await expect(page.getByTestId("side-toolbar/importer/paginator/backward")).toBeDisabled();
+  await expect(page.getByTestId("side-toolbar/importer/paginator/import")).toBeDisabled();
 
   // select issues and import
   await page.getByText("TES-54").click();
@@ -55,7 +55,9 @@ test("input jql and import issues", async ({ page }) => {
   await page.getByText("TES-51").click();
 
   await page.getByRole("button", { name: "Import 3 issues" }).click();
-  await expect(page.getByRole("button", { name: "Import 3 issues" })).toBeVisible();
+  const resettedButton = page.getByRole("button", { name: "Select issues" });
+  await expect(resettedButton).toBeVisible();
+  await expect(resettedButton).toBeDisabled();
 
   await page.getByTestId("side-toolbar/importer/close").click();
   await expect(page.getByTestId("side-toolbar/importer/root")).not.toBeVisible();

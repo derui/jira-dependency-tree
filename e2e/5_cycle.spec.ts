@@ -25,7 +25,7 @@ test("show cycle", async ({ page }) => {
   await page.getByText("TES-51").click();
 
   await page.getByRole("button", { name: "Import 3 issues" }).click();
-  await expect(page.getByRole("button", { name: "Import 3 issues" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Select issues" })).toBeVisible();
 
   await page.getByTestId("side-toolbar/importer/close").click();
 

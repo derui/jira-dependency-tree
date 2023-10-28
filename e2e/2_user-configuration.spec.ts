@@ -7,7 +7,7 @@ test("open editor and apply state", async ({ page }) => {
 
   // initial is disabled
   const submit = page.getByTestId("user-configuration/form/submit");
-  await expect(submit).toHaveAttribute("aria-disabled", "true");
+  await expect(submit).toBeDisabled();
 
   const userDomain = page.getByTestId("user-configuration/form/user-domain");
   const email = page.getByTestId("user-configuration/form/email");
@@ -39,7 +39,7 @@ test("restore state when reopened", async ({ page }) => {
 
   // initial is disabled
   const submit = page.getByTestId("user-configuration/form/submit");
-  await expect(submit).toHaveAttribute("aria-disabled", "true");
+  await expect(submit).toBeDisabled();
 
   const userDomain = page.getByTestId("user-configuration/form/user-domain");
   const email = page.getByTestId("user-configuration/form/email");

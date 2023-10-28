@@ -10,6 +10,7 @@ export interface Props extends BaseProps {
   error?: string;
   onSearch?: (query: string) => void;
   incremental?: boolean;
+  placeholder?: string;
 }
 
 const Styles = {
@@ -75,11 +76,12 @@ export function QueryInput(props: Props) {
       <span className={Styles.icon(loading)}>{icon}</span>
     </Button>
   );
+  const placeholder = props.placeholder ?? "Input JQL";
 
   return (
     <form className={Styles.root()} onSubmit={handleSubmit} data-testid={gen("root")}>
       <div className={Styles.inputWrapper}>
-        <Input onInput={handleInput} value={query} placeholder="Input JQL" testid={gen("input")} />
+        <Input onInput={handleInput} value={query} placeholder={placeholder} testid={gen("input")} />
         <Error error={error} loading={loading} testid={gen("error")} />
       </div>
       {button}

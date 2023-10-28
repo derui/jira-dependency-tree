@@ -87,6 +87,7 @@ export const useIssueImporter = function useIssueImporter(): Hook {
 
   const execute = useCallback(async () => {
     importIssues(state);
+    mutate([]);
   }, [state, apiCredential, importIssues]);
 
   return { execute, toggle, toggleMulti, selectedIssues: state, error, isLoading: loading };

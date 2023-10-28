@@ -254,7 +254,7 @@ test("select issue to mark to import after", async () => {
 });
 
 test("execute import when some issues are selected", async () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const user = userEvent.setup();
   const store = createStore();
@@ -282,4 +282,6 @@ test("execute import when some issues are selected", async () => {
   await user.click(screen.getByTestId("query-input/button"));
   await user.click(screen.getByTestId("issue-list/key/root"));
   await user.click(screen.getByTestId("paginator/import"));
+
+  expect(screen.queryAllByRole("checkbox", { checked: true })).toHaveLength(0);
 });

@@ -31,9 +31,9 @@ test("initial state is disabled all", () => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("button") as HTMLBaseElement;
+  const button = screen.getByTestId<HTMLButtonElement>("button");
 
-  expect(button.getAttribute("aria-disabled")).toBe("true");
+  expect(button.disabled).toBe(true);
 });
 
 test("do not disable if setup finished", () => {
@@ -46,8 +46,8 @@ test("do not disable if setup finished", () => {
     </Provider>,
   );
 
-  const button = screen.getByTestId("button") as HTMLBaseElement;
-  expect(button.getAttribute("aria-disabled")).toBe("false");
+  const button = screen.getByTestId<HTMLButtonElement>("button");
+  expect(button.disabled).toBe(false);
 });
 
 test("dispatch action when click action", async () => {

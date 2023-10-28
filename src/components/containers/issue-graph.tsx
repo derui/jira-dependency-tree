@@ -51,7 +51,7 @@ const attentionIssue = (
 };
 
 const RIGHT_BUTTON = 2;
-const MIN_MOUSE_WHEEL_TICK = 50; // minimum tick to detect trackpad
+const MIN_MOUSE_WHEEL_TICK = 40; // minimum tick to detect trackpad
 
 const handlePointerMove = function handlePointerMove(
   event: PointerEvent,

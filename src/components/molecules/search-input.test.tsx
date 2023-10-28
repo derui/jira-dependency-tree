@@ -9,17 +9,17 @@ afterEach(cleanup);
 test("should be able to render", () => {
   render(<SearchInput loading />);
 
-  const opener = screen.getByTestId("opener");
+  const opener = screen.getByTestId<HTMLButtonElement>("opener");
 
-  expect(opener.getAttribute("aria-disabled")).toBe("true");
+  expect(opener.disabled).toBe(true);
 });
 
 test("should be clickable after setup finished", async () => {
   render(<SearchInput />);
 
-  const opener = screen.getByTestId("opener");
+  const opener = screen.getByRole<HTMLButtonElement>("button");
 
-  expect(opener.getAttribute("aria-disabled")).toBe("false");
+  expect(opener.disabled).toBe(false);
   expect(screen.getByTestId("input-wrapper").getAttribute("aria-hidden")).toBe("true");
 });
 

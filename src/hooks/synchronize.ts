@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import deepEqual from "fast-deep-equal";
 import { useAppSelector } from "./_internal-hooks";

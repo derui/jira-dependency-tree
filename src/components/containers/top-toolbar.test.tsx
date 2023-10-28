@@ -1,6 +1,5 @@
-import { test, expect, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { test, afterEach } from "vitest";
+import { render, cleanup } from "@testing-library/react";
 
 import { Provider } from "react-redux";
 import { TopToolbar } from "./top-toolbar";

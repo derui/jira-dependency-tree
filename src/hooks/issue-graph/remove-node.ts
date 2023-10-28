@@ -1,6 +1,6 @@
 import { useAppDispatch } from "../_internal-hooks";
 import { IssueKey } from "@/type";
-import { deselectIssueInGraph, removeNode, selectIssueInGraph } from "@/status/actions";
+import { removeNode } from "@/status/actions";
 
 type Result = {
   /**

@@ -1,13 +1,12 @@
 import { test, expect } from "vitest";
 
 import { calculateLinkLayout } from "./_link-layout";
-import { ISSUE_SIZE, calculateIssueLayout } from "./_issue-layout";
+import { calculateIssueLayout } from "./_issue-layout";
 import { emptyDirectedGraph } from "@/libs/depgraph/main";
 import { randomIssue } from "@/mock/generators";
 
 test("do not layout if given graph is empty", () => {
   // arrange
-  const graph = emptyDirectedGraph();
 
   // do
   const layouts = calculateLinkLayout([], []);

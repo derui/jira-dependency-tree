@@ -53,6 +53,7 @@ const slice = createSlice({
     builder.addCase(issueSet.select, (state) => {
       state.issues = {};
       state.matchedIssues = [];
+      state._originalIssues = [];
     });
   },
 });

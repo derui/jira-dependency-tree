@@ -8,7 +8,6 @@ test("initial state", () => {
   expect(getInitialState()).toEqual({
     issues: {},
     matchedIssues: [],
-    _originalIssues: [],
   });
 });
 
@@ -35,6 +34,7 @@ test("loaded issues", () => {
   const ret = reducer(getInitialState(), importIssues({ issues: [issue] }));
 
   expect(ret.issues).toEqual({ key: issue });
+  expect(ret.matchedIssues).toEqual([issue]);
 });
 
 test("get issue matched", () => {

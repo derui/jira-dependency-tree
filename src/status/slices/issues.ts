@@ -7,13 +7,11 @@ import { filterEmptyString } from "@/utils/basic";
 interface IssuesState {
   issues: Record<IssueKey, Issue>;
   matchedIssues: Issue[];
-  _originalIssues: Issue[];
 }
 
 const initialState = {
   issues: {},
   matchedIssues: [],
-  _originalIssues: [],
 } as IssuesState satisfies IssuesState;
 
 const slice = createSlice({
@@ -22,22 +20,25 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(importIssues, (state, action) => {
-      state._originalIssues = action.payload.issues;
-
       state.issues = action.payload.issues
         .filter((issue) => issue.parentIssue === undefined)
         .reduce<IssuesState["issues"]>((accum, v) => {
           accum[v.key] = v;
           return accum;
         }, {});
+
+      state.matchedIssues = Object.values(state.issues);
     });
 
     builder.addCase(filterIssues, (state, { payload }) => {
       if (!filterEmptyString(payload)) {
-        state.matchedIssues = [];
+        state.matchedIssues = Object.values(state.issues);
       } else {
+        const searchString = payload.toLowerCase();
+
         state.matchedIssues = Object.values(state.issues).filter(
-          (issue) => issue.key.includes(payload) || issue.summary.includes(payload),
+          (issue) =>
+            issue.key.toLowerCase().includes(searchString) || issue.summary.toLowerCase().includes(searchString),
         );
       }
     });
@@ -53,7 +54,6 @@ const slice = createSlice({
     builder.addCase(issueSet.select, (state) => {
       state.issues = {};
       state.matchedIssues = [];
-      state._originalIssues = [];
     });
   },
 });

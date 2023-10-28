@@ -135,7 +135,7 @@ test("display error when API is failed", async () => {
   await user.click(screen.getByTestId("query-input/button"));
 
   expect(screen.getByTestId<HTMLButtonElement>("query-input/button").disabled).toBe(false);
-  expect(screen.findByText("invalid syntax")).not.toBeNull();
+  expect(screen.queryByText(/invalid syntax/)).not.toBeNull();
 });
 
 test("display issues when API returns some issues", async () => {
@@ -245,11 +245,11 @@ test("select issue to mark to import after", async () => {
   await user.click(screen.getByTestId("query-input/button"));
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.findByRole("checkbox", { checked: true })).not.toBeNull();
+  expect(screen.queryAllByRole("checkbox", { checked: true })).toHaveLength(2);
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.findByRole("checkbox", { checked: false })).not.toBeNull();
+  expect(screen.queryAllByRole("checkbox", { checked: false })).toHaveLength(2);
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
 });
 

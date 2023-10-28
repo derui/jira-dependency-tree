@@ -124,7 +124,7 @@ const AllIssueSelector = (props: {
 
   return (
     <li className={Styles.issueList.allSelector} onClick={() => props.onChange(!checked)}>
-      <Checkbox checked={checked} onChange={props.onChange} /> Select all{" "}
+      <Checkbox checked={checked} onChange={props.onChange} /> Select all
     </li>
   );
 };

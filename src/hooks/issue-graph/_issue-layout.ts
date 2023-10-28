@@ -46,9 +46,7 @@ const getMaximumRowIndexOfGrid = (grid: ReadonlyArray<ReadonlyArray<unknown>>): 
       continue;
     }
 
-    if (col.length > maximumHeightIndex) {
-      maximumHeightIndex = col.length;
-    }
+    maximumHeightIndex = Math.max(col.length, maximumHeightIndex);
   }
 
   return maximumHeightIndex;
@@ -94,6 +92,7 @@ const layoutGridOfSubgraph = function layoutGridOfSubgraph(graph: DirectedGraph,
     }
 
     dfs(vertex);
+    layout = layout.alignAsSquareGrid();
   }
 
   return layout;

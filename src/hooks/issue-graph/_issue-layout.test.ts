@@ -186,7 +186,7 @@ test("layout complex subgraph", () => {
   expect(sortedLayout[0].meta).toEqual({ colIndex: 0, rowIndex: 0 });
   expect(sortedLayout[1].meta).toEqual({ colIndex: 1, rowIndex: 0 });
   expect(sortedLayout[2].meta).toEqual({ colIndex: 2, rowIndex: 0 });
-  expect(sortedLayout[3].meta).toEqual({ colIndex: 0, rowIndex: 1 });
+  expect(sortedLayout[3].meta).toEqual({ colIndex: 0, rowIndex: 2 });
   expect(sortedLayout[4].meta).toEqual({ colIndex: 2, rowIndex: 1 });
 });
 
@@ -217,4 +217,37 @@ test("layout skip-contained graph", () => {
   expect(sortedLayout[2].meta).toEqual({ colIndex: 3, rowIndex: 0 });
   expect(sortedLayout[3].meta).toEqual({ colIndex: 2, rowIndex: 1 });
   expect(sortedLayout[4].meta).toEqual({ colIndex: 2, rowIndex: 2 });
+});
+
+test("layout 2-subgraphs graph", () => {
+  // arrange
+  const graph = emptyDirectedGraph()
+    .addVertices(["a", "b", "c", "d", "e", "f"])
+    .directTo("a", "b")
+    .directTo("b", "c")
+    .directTo("b", "d")
+    .directTo("d", "c")
+    .directTo("e", "c")
+    .directTo("c", "f")
+    .directTo("e", "f");
+  const issues = [
+    randomIssue({ key: "a" }),
+    randomIssue({ key: "b" }),
+    randomIssue({ key: "c" }),
+    randomIssue({ key: "d" }),
+    randomIssue({ key: "e" }),
+    randomIssue({ key: "f" }),
+  ];
+
+  // do
+  const layout = calculateIssueLayout(graph, issues);
+
+  // verify
+  const sortedLayout = layout.sort((v1, v2) => v1.issue.key.localeCompare(v2.issue.key));
+  expect(sortedLayout[0].meta).toEqual({ colIndex: 0, rowIndex: 0 });
+  expect(sortedLayout[1].meta).toEqual({ colIndex: 1, rowIndex: 0 });
+  expect(sortedLayout[2].meta).toEqual({ colIndex: 3, rowIndex: 0 });
+  expect(sortedLayout[3].meta).toEqual({ colIndex: 2, rowIndex: 1 });
+  expect(sortedLayout[4].meta).toEqual({ colIndex: 0, rowIndex: 2 });
+  expect(sortedLayout[5].meta).toEqual({ colIndex: 4, rowIndex: 0 });
 });

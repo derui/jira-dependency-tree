@@ -78,6 +78,7 @@ export const SkippedDepthGraph: Story = {
             relations: [
               { id: "2", inwardIssue: "b", outwardIssue: "c" },
               { id: "4", inwardIssue: "d", outwardIssue: "c" },
+              { id: "9", inwardIssue: "f", outwardIssue: "c" },
             ],
           }),
           randomIssue({
@@ -88,7 +89,13 @@ export const SkippedDepthGraph: Story = {
             ],
           }),
           randomIssue({ key: "e", relations: [{ id: "5", inwardIssue: "e", outwardIssue: "f" }] }),
-          randomIssue({ key: "f", relations: [{ id: "5", inwardIssue: "e", outwardIssue: "f" }] }),
+          randomIssue({
+            key: "f",
+            relations: [
+              { id: "5", inwardIssue: "e", outwardIssue: "f" },
+              { id: "9", inwardIssue: "f", outwardIssue: "c" },
+            ],
+          }),
           randomIssue({ key: "g", relations: [{ id: "6", inwardIssue: "b", outwardIssue: "g" }] }),
         ],
       }),

@@ -31,6 +31,11 @@ export type T = {
   position(col: number, row: number): string | undefined;
 
   /**
+   * align each rows as square grid.
+   */
+  alignAsSquareGrid(): T;
+
+  /**
    * layouted grid
    */
   readonly layout: ReadonlyArray<ReadonlyArray<Placement>>;
@@ -96,22 +101,24 @@ const newLayoutGrid = function newLayoutGrid(layout: T["layout"]): T {
       const edited = produce(layout, (draft) => {
         // get largest depth in current layout
         let maximumDepth = 0;
+        let needFillBetweenLevels = false;
         for (let i = fromL + 1; i < toL; i++) {
           maximumDepth = Math.max(draft[i].length, maximumDepth);
         }
 
         if (!layoutedVertices.has(fromV)) {
           maximumDepth = Math.max(draft[fromL].length, maximumDepth);
+          needFillBetweenLevels = true;
         }
 
         if (!layoutedVertices.has(toV)) {
           maximumDepth = Math.max(draft[toL].length, maximumDepth);
+          needFillBetweenLevels = true;
         }
 
         // fill gap with empty
         if (!layoutedVertices.has(fromV)) {
-          draft[fromL].push(...Array(Math.max(0, maximumDepth - draft[fromL].length)).fill({ kind: empty } as Empty));
-
+          draft[fromL].push(...Array(Math.max(0, maximumDepth - draft[fromL].length)).fill({ kind: empty }));
           draft[fromL].push({ kind: vertex, vertex: fromV });
           layoutedVertices.add(fromV);
         }
@@ -122,13 +129,29 @@ const newLayoutGrid = function newLayoutGrid(layout: T["layout"]): T {
           layoutedVertices.add(toV);
         }
 
-        const levelDiff = toL - fromL - 1;
+        if (!needFillBetweenLevels) {
+          return;
+        }
 
         // Fill in the empty if the levels are not different by one
-        for (let l = 1; l <= levelDiff; l++) {
-          draft[fromL + l].push(
-            ...Array(Math.max(1, maximumDepth - draft[fromL + l].length + 1)).fill({ kind: empty }),
-          );
+        for (let l = fromL + 1; l < toL; l++) {
+          draft[l].push(...Array(Math.max(1, maximumDepth - draft[l].length + 1)).fill({ kind: empty }));
+        }
+      });
+
+      return newLayoutGrid(edited);
+    },
+
+    alignAsSquareGrid() {
+      const edited = produce(layout, (draft) => {
+        let maximumRow = 0;
+        for (const col of draft) {
+          maximumRow = Math.max(maximumRow, col.length);
+        }
+
+        // fill empty to each rows of column
+        for (let i = 0; i < draft.length; i++) {
+          draft[i].push(...Array(Math.max(0, maximumRow - draft[i].length)).fill({ kind: empty }));
         }
       });
 

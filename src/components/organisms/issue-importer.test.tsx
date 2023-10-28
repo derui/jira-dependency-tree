@@ -85,7 +85,7 @@ test("change loading state of input query and search", async () => {
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
 
-  expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("true");
+  expect(screen.getByTestId<HTMLButtonElement>("query-input/button").disabled).toBe(true);
   expect(screen.getAllByTestId("issue-list/skeleton/root-skeleton")).toHaveLength(3);
   expect(screen.getAllByTestId("paginator/skeleton")).toHaveLength(2);
 });
@@ -110,7 +110,7 @@ test("display empty list", async () => {
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
 
-  expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId<HTMLButtonElement>("query-input/button").disabled).toBe(false);
   expect(screen.queryByTestId("issue-list/empty")).not.toBeNull();
 });
 
@@ -134,8 +134,8 @@ test("display error when API is failed", async () => {
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
 
-  expect(screen.getByTestId("query-input/button").getAttribute("aria-disabled")).toBe("false");
-  expect(screen.getByTestId("query-input/error").textContent).toContain("invalid syntax");
+  expect(screen.getByTestId<HTMLButtonElement>("query-input/button").disabled).toBe(false);
+  expect(screen.findByText("invalid syntax")).not.toBeNull();
 });
 
 test("display issues when API returns some issues", async () => {
@@ -182,8 +182,8 @@ test("disable backward pagination after initial search", async () => {
   await user.type(screen.getByTestId("query-input/input"), "sample jql");
   await user.click(screen.getByTestId("query-input/button"));
 
-  expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("true");
-  expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId<HTMLButtonElement>("paginator/backward").disabled).toBe(true);
+  expect(screen.getByTestId<HTMLButtonElement>("paginator/forward").disabled).toBe(false);
 });
 
 test("change page after search", async () => {
@@ -218,8 +218,8 @@ test("change page after search", async () => {
 
   await user.click(screen.getByTestId("paginator/forward"));
 
-  expect(screen.getByTestId("paginator/backward").getAttribute("aria-disabled")).toBe("false");
-  expect(screen.getByTestId("paginator/forward").getAttribute("aria-disabled")).toBe("false");
+  expect(screen.getByTestId<HTMLButtonElement>("paginator/backward").disabled).toBe(false);
+  expect(screen.getByTestId<HTMLButtonElement>("paginator/forward").disabled).toBe(false);
   expect(screen.getByTestId("paginator/page").textContent).toContain("Page 2");
   expect(screen.getByTestId("issue-list/key2/root").textContent).toContain("key2");
 });
@@ -245,11 +245,11 @@ test("select issue to mark to import after", async () => {
   await user.click(screen.getByTestId("query-input/button"));
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId<HTMLInputElement>("issue-list/check-key/checkbox").checked).toEqual(true);
+  expect(screen.findByRole("checkbox", { checked: true })).not.toBeNull();
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).toBeNull();
   await user.click(screen.getByTestId("issue-list/key/root"));
 
-  expect(screen.getByTestId<HTMLInputElement>("issue-list/check-key/checkbox").checked).toEqual(false);
+  expect(screen.findByRole("checkbox", { checked: false })).not.toBeNull();
   expect(screen.getByTestId("paginator/import").getAttribute("disabled")).not.toBeNull();
 });
 

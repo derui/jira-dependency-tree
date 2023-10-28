@@ -80,7 +80,6 @@ export function Button(props: Props) {
       className={classes}
       type={type}
       disabled={props.disabled ?? false}
-      aria-disabled={props.disabled ?? false}
       data-testid={props.testid ?? "button"}
       onClick={props.onClick}
     >

@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./_internal-hooks";
 import { issueSet } from "@/status/actions";
 import { RootState } from "@/status/store";
-import { IssueSetModel, issueSetToIssueSetModel } from "@/view-models/issue-set";
+import { issueSetToIssueSetModel } from "@/view-models/issue-set";
 
 type Hook = {
   /**

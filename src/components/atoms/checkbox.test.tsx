@@ -11,38 +11,37 @@ afterEach(() => {
 test("should be able to render", () => {
   render(<Checkbox />);
 
-  const element = screen.getByTestId<HTMLInputElement>("checkbox");
+  const element = screen.getByRole("checkbox");
 
   expect(element.getAttribute("aria-disabled")).toBe("false");
-  expect(element.disabled).toBe(false);
-  expect(element.checked).toBe(false);
+  expect(element.getAttribute("aria-checked")).toBe("false");
 });
 
 test("disable checkbox", () => {
   render(<Checkbox disabled />);
 
-  const element = screen.getByTestId<HTMLInputElement>("checkbox");
+  const element = screen.getByRole("checkbox");
 
   expect(element.getAttribute("aria-disabled")).toBe("true");
-  expect(element.disabled).toBe(true);
-  expect(element.checked).toBe(false);
+  expect(element.getAttribute("aria-checked")).toBe("false");
 });
+
 test("checked checkbox", () => {
   render(<Checkbox checked />);
 
-  const element = screen.getByTestId<HTMLInputElement>("checkbox");
+  const element = screen.getByRole("checkbox");
 
   expect(element.getAttribute("aria-disabled")).toBe("false");
-  expect(element.disabled).toBe(false);
-  expect(element.checked).toBe(true);
+  expect(element.getAttribute("aria-checked")).toBe("true");
 });
+
 test("toggle checkbox", async () => {
   const user = userEvent.setup();
   const spy = Sinon.fake();
 
   render(<Checkbox onChange={spy} />);
 
-  const element = screen.getByTestId("root");
+  const element = screen.getByRole("checkbox");
 
   await user.click(element);
 
@@ -55,7 +54,7 @@ test("toggle checkbox with checked", async () => {
 
   render(<Checkbox onChange={spy} checked />);
 
-  const element = screen.getByTestId("root");
+  const element = screen.getByRole("checkbox");
 
   await user.click(element);
 

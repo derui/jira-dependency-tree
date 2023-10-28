@@ -93,8 +93,8 @@ export function IssueSetItem(props: Props) {
   return (
     <li className={Styles.root} data-testid={gen("root")}>
       <div className={Styles.selectedMarker(selected)}></div>
-      <div className={Styles.container}>
-        <div className={Styles.name} onClick={handleSelect} data-testid={gen("name")}>
+      <div className={Styles.container} onClick={handleSelect}>
+        <div className={Styles.name} data-testid={gen("name")}>
           {name}
         </div>
         <div className={Styles.operationContainer(deleting != "deleting")}>

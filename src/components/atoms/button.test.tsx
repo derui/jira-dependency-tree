@@ -13,7 +13,7 @@ test("should be able to render", () => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  expect(element.getAttribute("aria-disabled")).toBe("false");
+  expect(element.disabled).toBe(false);
   expect(element.type).toBe("button");
 });
 
@@ -22,7 +22,7 @@ test("render submit button", () => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  expect(element.getAttribute("aria-disabled")).toBe("false");
+  expect(element.disabled).toBe(false);
   expect(element.type).toBe("submit");
 });
 
@@ -54,7 +54,7 @@ test("change disabled", () => {
 
   const element = screen.getByTestId<HTMLButtonElement>("button");
 
-  expect(element.getAttribute("aria-disabled")).toBeTruthy();
+  expect(element.disabled).toBeTruthy();
 });
 
 test("use given testid directly", () => {

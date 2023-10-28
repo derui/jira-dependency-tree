@@ -50,14 +50,15 @@ export function IconButton(props: Props) {
   const classes = classNames(Styles.button, Styles.color(props.color), Styles.width(props.size));
 
   const handleClick = (e: React.MouseEvent) => {
+    if (!props.onClick) {
+      return;
+    }
+
     if (props.type != "submit") {
       e.preventDefault();
     }
     e.stopPropagation();
-
-    if (props.onClick) {
-      props.onClick();
-    }
+    props.onClick();
   };
 
   const type = props.type === "submit" ? "submit" : "button";
@@ -66,7 +67,6 @@ export function IconButton(props: Props) {
       className={classes}
       type={type}
       disabled={props.disabled ?? false}
-      aria-disabled={props.disabled ?? false}
       data-testid={props.testid ?? "button"}
       onClick={handleClick}
     >

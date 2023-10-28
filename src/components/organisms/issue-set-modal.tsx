@@ -9,7 +9,6 @@ import { Plus } from "../atoms/icons";
 import { IssueSetEditor } from "../molecules/issue-set-editor";
 import { Button } from "../atoms/button";
 import { useIssueSet } from "@/hooks";
-import { issueSetToIssueSetModel } from "@/view-models/issue-set";
 
 type Props = BaseProps;
 
@@ -64,7 +63,7 @@ function IssueSetCreator(props: { onCreate: (name: string) => "InvalidArgument" 
       <li className={Styles.appender}>
         <IconButton color="secondary1" onClick={() => setCreating(true)} testid={gen("button")}>
           <Plus />
-        </IconButton>{" "}
+        </IconButton>
       </li>
     );
   }

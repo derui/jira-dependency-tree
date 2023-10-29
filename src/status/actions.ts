@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential } from "@/models/event";
 import { Issue, Relation } from "@/models/issue";
-import { DeltaId, IssueKey, IssueRelationId } from "@/type";
+import { DeltaId, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/models/relation-delta";
 
 // actions for api credentail

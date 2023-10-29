@@ -41,7 +41,7 @@ function IssueDisplayList(props: { issues: IssueModel[]; testid: string; onIssue
 // eslint-disable-next-line func-style
 export function IssueList(props: Props) {
   const gen = generateTestId(props.testid);
-  const { state, filter, clear } = useFilterIssues();
+  const { state, filter } = useFilterIssues();
   const focus = useFocusIssue();
 
   const handleSearch = (term: string) => {

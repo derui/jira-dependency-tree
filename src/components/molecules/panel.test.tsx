@@ -23,9 +23,15 @@ test("should be able to render", () => {
 });
 
 test("render children", () => {
-  renderWrapper(<Panel>render children</Panel>);
+  renderWrapper(<Panel opened>render children</Panel>);
 
   expect(screen.getByText("render", { exact: false }).textContent).toEqual("render children");
+});
+
+test("do not render children if panel is not opened", () => {
+  renderWrapper(<Panel>render children</Panel>);
+
+  expect(screen.queryByText("render", { exact: false })).toBeNull();
 });
 
 test("render title", () => {

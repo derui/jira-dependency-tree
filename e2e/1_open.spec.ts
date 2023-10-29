@@ -11,8 +11,5 @@ test("open and initial display", async ({ page }) => {
   await expect(page.getByTestId("zoom-slider/current-zoom")).toContainText("100%");
   await expect(page.getByTestId("side-toolbar/importer-opener")).toBeEnabled();
   await expect(page.getByTestId("side-toolbar/relation-editor-opener")).toBeEnabled();
-
-  // searcher
-  await expect(page.getByTestId("issue-searcher/input/opener")).toBeVisible();
-  await expect(page.getByTestId("issue-searcher/input/cancel")).toBeVisible();
+  await expect(page.getByLabel("issue-list")).toBeEnabled();
 });

@@ -87,7 +87,7 @@ export function Panel(props: Props) {
           </Button>
         </span>
       </header>
-      <main className={classNames(Styles.main)}>{props.children}</main>
+      <main className={classNames(Styles.main)}>{opened ? props.children : null}</main>
     </div>
   );
 

@@ -33,7 +33,7 @@ test("should be able to render", async () => {
   const store = createStore();
   renderWrapper(
     <Provider store={store}>
-      <RelationEditor />
+      <RelationEditor opened />
     </Provider>,
   );
 
@@ -49,7 +49,7 @@ test("show preparation after click appender", async () => {
 
   renderWrapper(
     <Provider store={store}>
-      <RelationEditor />
+      <RelationEditor opened />
     </Provider>,
   );
 
@@ -73,7 +73,7 @@ test("show draft if relation exists", async () => {
 
   renderWrapper(
     <Provider store={store}>
-      <RelationEditor />
+      <RelationEditor opened />
     </Provider>,
   );
 
@@ -95,7 +95,7 @@ test("enable apply button when any draft is appeared", async () => {
 
   renderWrapper(
     <Provider store={store}>
-      <RelationEditor />
+      <RelationEditor opened />
     </Provider>,
   );
 
@@ -123,14 +123,13 @@ test("filter relation which contains search term", async () => {
 
   renderWrapper(
     <Provider store={store}>
-      <RelationEditor />
+      <RelationEditor opened />
     </Provider>,
   );
 
-  await user.click(screen.getByTestId("search-input/opener"));
   expect(screen.queryAllByTestId("draft/no-touched")).toHaveLength(2);
 
-  await user.type(screen.getByTestId("search-input/input"), "key4");
+  await user.type(screen.getByPlaceholderText("filter relations"), "key4");
 
   expect(screen.queryAllByTestId("draft/no-touched")).toHaveLength(1);
 });

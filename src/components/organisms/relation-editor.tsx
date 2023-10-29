@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { useState } from "react";
 import { BaseProps, generateTestId } from "../helper";
-import { SearchInput } from "../molecules/search-input";
 import { Button } from "../atoms/button";
 import { Panel } from "../molecules/panel";
 import { Plus } from "../atoms/icons";
+import { QueryInput } from "../molecules/query-input";
 import { EditableRelationDraft } from "./editable-relation-draft";
 import { AppendingPreparation } from "./appending-preparation";
 import { useRelationEditor } from "@/hooks/relation-editor";
@@ -107,7 +107,7 @@ function Preparation(props: {
 export function RelationEditor(props: Props) {
   const gen = generateTestId(props.testid);
   const { state, remove, undo, append, apply, isLoading } = useRelationEditor();
-  const { filter, clear } = useRelationFiltering();
+  const { filter } = useRelationFiltering();
   const [showAppendDraft, setShowAppendDraft] = useState(false);
 
   const handleAppend = (inward: IssueKey, outward: IssueKey) => {
@@ -129,7 +129,7 @@ export function RelationEditor(props: Props) {
     <Panel opened={props.opened} onClose={props.onClose} title="Relations" testid={gen("panel")}>
       <div className={Styles.root} data-testid={gen("root")}>
         <div className={Styles.header} data-testid={gen("title")}>
-          <SearchInput onSearch={filter} onCancel={clear} testid={gen("search-input")} />
+          <QueryInput incremental onSearch={filter} testid={gen("search-input")} placeholder="filter relations" />
         </div>
         <Appender
           show={!showAppendDraft}

@@ -80,7 +80,7 @@ export default defineConfig({
         'fill': 'fill',
       },
       gridTemplateColumns: {
-        'top-toolbar': 'min-content min-content 1fr min-content',
+        'top-toolbar': 'min-content 1fr min-content',
         'project-toolbar': '20rem 1px 10rem 3rem',
       },
     },

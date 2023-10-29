@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { BaseProps } from "./components/helper";
-import { IssueSearcher } from "./components/organisms/issue-searcher";
 import { UserConfiguration } from "./components/organisms/user-configuration";
 import { ZoomSlider } from "./components/organisms/zoom-slider";
 import { SideToolbar } from "./components/containers/side-toolbar";
@@ -30,7 +29,6 @@ export function App() {
     <div className={Styles.root}>
       <div className={Styles.topToolbars}>
         <TopToolbar testid="top-toolbar" />
-        <IssueSearcher testid="issue-searcher" />
         <div className="pointer-events-none"></div>
         <UserConfiguration testid="user-configuration" />
       </div>

@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("allow search issue with term", async ({ page }) => {

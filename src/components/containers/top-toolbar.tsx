@@ -11,7 +11,7 @@ const Styles = {
 };
 
 // eslint-disable-next-line func-style
-export function TopToolbar() {
+export function TopToolbar(_: Props) {
   return (
     <div className={Styles.root}>
       <IssueSetModal testid="issue-set" />

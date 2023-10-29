@@ -24,7 +24,8 @@ const Styles = {
   ),
 };
 
-export const App: React.FC<Props> = () => {
+// eslint-disable-next-line func-style
+export function App() {
   return (
     <div className={Styles.root}>
       <div className={Styles.topToolbars}>
@@ -38,4 +39,4 @@ export const App: React.FC<Props> = () => {
       <IssueGraphContainer testid="issue-graph" />
     </div>
   );
-};
+}

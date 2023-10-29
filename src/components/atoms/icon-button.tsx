@@ -9,6 +9,7 @@ export interface Props extends PropsWithChildren, BaseProps {
   size?: "l" | "m" | "s";
   disabled?: boolean;
   onClick?: () => void;
+  name?: string;
 }
 
 const colors: Record<ColorSchema, string> = {
@@ -66,6 +67,7 @@ export function IconButton(props: Props) {
     <button
       className={classes}
       type={type}
+      aria-label={props.name}
       disabled={props.disabled ?? false}
       data-testid={props.testid ?? "button"}
       onClick={handleClick}

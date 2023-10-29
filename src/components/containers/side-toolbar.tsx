@@ -59,12 +59,7 @@ export function SideToolbar(props: Props) {
         </IconButton>
       </div>
       <div className={Styles.iconContainer}>
-        <IconButton
-          color="gray"
-          disabled={opened !== "none"}
-          onClick={() => setOpened("issue-list")}
-          testid={gen("issue-list-opener")}
-        >
+        <IconButton color="gray" disabled={opened !== "none"} onClick={() => setOpened("issue-list")} name="issue-list">
           <ListSearch color="gray" />
         </IconButton>
       </div>

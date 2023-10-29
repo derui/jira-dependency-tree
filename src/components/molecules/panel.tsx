@@ -78,7 +78,7 @@ export function Panel(props: Props) {
   };
 
   const container = (
-    <div className={classNames(Styles.root(opened))} aria-hidden={!opened} data-testid={gen("root")}>
+    <div className={classNames(Styles.root(opened))} role="dialog" aria-hidden={!opened} data-testid={gen("root")}>
       <header className={classNames(Styles.header)} data-testid={gen("header")}>
         <h4 className={classNames(Styles.headerText)}>{props.title}</h4>
         <span className={classNames(Styles.headerButtonContainer)}>

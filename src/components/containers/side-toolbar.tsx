@@ -5,6 +5,8 @@ import { IconButton } from "../atoms/icon-button";
 import { BinaryTree, CloudSearch } from "../atoms/icons";
 import { IssueImporter } from "../organisms/issue-importer";
 import { RelationEditor } from "../organisms/relation-editor";
+import { ListSearch } from "../atoms/icons/list-search";
+import { IssueList } from "../organisms/issue-list";
 
 export type Props = BaseProps;
 
@@ -27,7 +29,7 @@ const Styles = {
   iconContainer: classNames("flex", "w-8", "h-8", "items-center", "first-of-type:"),
 };
 
-type Opened = "none" | "importer" | "relation-editor";
+type Opened = "none" | "importer" | "relation-editor" | "issue-list";
 
 // eslint-disable-next-line func-style
 export function SideToolbar(props: Props) {
@@ -56,6 +58,16 @@ export function SideToolbar(props: Props) {
           <BinaryTree color="gray" />
         </IconButton>
       </div>
+      <div className={Styles.iconContainer}>
+        <IconButton
+          color="gray"
+          disabled={opened !== "none"}
+          onClick={() => setOpened("issue-list")}
+          testid={gen("issue-list-opener")}
+        >
+          <ListSearch color="gray" />
+        </IconButton>
+      </div>
 
       <IssueImporter opened={opened === "importer"} testid={gen("importer")} onClose={() => setOpened("none")} />
       <RelationEditor
@@ -63,6 +75,7 @@ export function SideToolbar(props: Props) {
         testid={gen("relation-editor")}
         onClose={() => setOpened("none")}
       />
+      <IssueList opened={opened === "issue-list"} testid={gen("issue-list")} onClose={() => setOpened("none")} />
     </div>
   );
 }

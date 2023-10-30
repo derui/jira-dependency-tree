@@ -41,7 +41,7 @@ function IssueDisplayList(props: { issues: IssueModel[]; testid: string; onIssue
 // eslint-disable-next-line func-style
 export function IssueList(props: Props) {
   const gen = generateTestId(props.testid);
-  const { state, filter } = useFilterIssues();
+  const { state, filter, clear } = useFilterIssues();
   const focus = useFocusIssue();
 
   const handleSearch = (term: string) => {
@@ -52,8 +52,13 @@ export function IssueList(props: Props) {
     focus(key);
   };
 
+  const handleClose = () => {
+    clear();
+    props.onClose?.();
+  };
+
   return (
-    <Panel opened={props.opened} title="Issues in graph" onClose={props.onClose}>
+    <Panel opened={props.opened} title="Issues in graph" onClose={handleClose}>
       <div className={Styles.root} data-testid={gen("root")}>
         <QueryInput onSearch={handleSearch} testid={gen("input")} incremental placeholder="Filtering Issues" />
         <IssueDisplayList issues={state.issues} onIssueClick={handleIssueClick} testid={gen("issue-list")} />

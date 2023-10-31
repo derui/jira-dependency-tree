@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { ApiCredential } from "@/models/event";
 import { Issue, Relation } from "@/models/issue";
-import { DeltaId, IssueRelationId } from "@/type";
+import { DeltaId, IssueKey, IssueRelationId } from "@/type";
 import { RelationDelta } from "@/models/relation-delta";
 
 // actions for api credentail
@@ -48,7 +48,7 @@ export const issueSet = {
 
 // actions to manage loading state
 export const loading = {
-  startImport: createAction("loading:startImport"),
-  finishImport: createAction("loading:finishImport"),
+  startImport: createAction<IssueKey[]>("loading:startImport"),
+  finishImport: createAction<IssueKey[]>("loading:finishImport"),
   errorImport: createAction<string>("loading:errorImport"),
 } as const;

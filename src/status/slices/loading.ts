@@ -1,32 +1,45 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { loading } from "../actions";
+import { IssueKey } from "@/type";
 
 interface LoadingState {
   import: { loading: boolean; error?: string };
+  issues: Record<IssueKey, boolean>;
 }
 
-const initialState = {
+const initialState: LoadingState = {
   import: {
     loading: false,
   },
-} as LoadingState;
+  issues: {},
+};
 
 const slice = createSlice({
   name: "loading",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(loading.startImport, (state) => {
+    builder.addCase(loading.startImport, (state, { payload }) => {
       state.import.loading = true;
       state.import.error = undefined;
+
+      for (const issue of payload) {
+        state.issues[issue] = true;
+      }
     });
 
-    builder.addCase(loading.finishImport, (state) => {
+    builder.addCase(loading.finishImport, (state, { payload }) => {
       state.import.loading = false;
+
+      for (const issue of payload) {
+        delete state.issues[issue];
+      }
     });
 
     builder.addCase(loading.errorImport, (state, { payload }) => {
       state.import.error = payload;
+
+      state.issues = {};
     });
   },
 });

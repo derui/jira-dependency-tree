@@ -1,6 +1,7 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { RootState } from "@/status/store";
-import { issueToIssueModel, makeLoadingIssue } from "@/view-models/issue";
+import { IssueModel, issueToIssueModel, makeLoadingIssue } from "@/view-models/issue";
+import { IssueKey } from "@/type";
 
 const selectRootState = (state: RootState) => state;
 
@@ -11,10 +12,20 @@ const selectIssuesState = createDraftSafeSelector(selectRootState, (state) => {
 /**
  * return current loaded issues as model
  */
-export const selectCurrentIsues = createDraftSafeSelector(selectIssuesState, (issues) => {
-  return Object.values(issues.issues).map((v) => {
-    return issueToIssueModel(v);
-  });
+export const selectCurrentIssueRecord = createDraftSafeSelector(selectIssuesState, (issues) => {
+  const ret: Record<IssueKey, IssueModel> = {};
+  for (const [key, issue] of Object.entries(issues.issues)) {
+    ret[key] = issueToIssueModel(issue);
+  }
+
+  return ret;
+});
+
+/**
+ * return current loaded issues as model
+ */
+export const selectCurrentIssues = createDraftSafeSelector(selectCurrentIssueRecord, (issues) => {
+  return Object.values(issues);
 });
 
 const selectLoadingState = createDraftSafeSelector(selectRootState, (state) => {
@@ -23,7 +34,7 @@ const selectLoadingState = createDraftSafeSelector(selectRootState, (state) => {
 
 export const selectCurrentAndLoadingIssues = createDraftSafeSelector(
   selectLoadingState,
-  selectCurrentIsues,
+  selectCurrentIssues,
   (loading, issues) => {
     const loadingIssues = Object.entries(loading)
       .filter(([_, b]) => b)

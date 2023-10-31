@@ -1,7 +1,8 @@
 import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useAppSelector } from "./_internal-hooks";
+import { selectCurrentIssueRecord } from "./_selectors/current-issues";
 import { RootState } from "@/status/store";
-import { IssueModel, issueToIssueModel } from "@/view-models/issue";
+import { IssueModel } from "@/view-models/issue";
 import { IssueKey, IssueRelationId } from "@/type";
 import { RelationModel } from "@/view-models/relation";
 import { mapValue } from "@/utils/record";
@@ -24,18 +25,6 @@ const relations = createDraftSafeSelector(
   },
 );
 
-const issues = createDraftSafeSelector(
-  (state: RootState) => state,
-  (state): Record<IssueKey, IssueModel> => {
-    const ret: Record<IssueKey, IssueModel> = {};
-    for (const [key, issue] of Object.entries(state.issues.issues)) {
-      ret[key] = issueToIssueModel(issue);
-    }
-
-    return ret;
-  },
-);
-
 interface Result {
   issues: Record<IssueKey, IssueModel>;
   relations: RelationModel[];
@@ -47,7 +36,7 @@ interface Result {
  */
 export const useGetRelations = function useGetRelations(): Result {
   const relationRecord = useAppSelector(relations);
-  const issueRecord = useAppSelector(issues);
+  const issueRecord = useAppSelector(selectCurrentIssueRecord);
   const entries = mapValue(relationRecord, (relation): RelationModel | undefined => {
     const inward = issueRecord[relation.inwardIssue];
     const outward = issueRecord[relation.outwardIssue];

@@ -2,12 +2,12 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import { useMemo } from "react";
 import deepEqual from "fast-deep-equal";
 import { useAppSelector } from "../_internal-hooks";
+import { selectCurrentAndLoadingIssues } from "../_selectors/current-issues";
 import { makeIssueGraph } from "./_graph-calculation";
 import { calculateIssueLayout } from "./_issue-layout";
 import { calculateLinkLayout } from "./_link-layout";
 import { IssueModelWithLayout, LinkLayoutModel } from "@/view-models/graph-layout";
 import { RootState } from "@/status/store";
-import { issueToIssueModel } from "@/view-models/issue";
 
 type Result = {
   layout: {
@@ -17,20 +17,11 @@ type Result = {
   };
 };
 
-const selectIssues = createDraftSafeSelector(
-  (state: RootState) => state,
-  (state) =>
-    Object.values(state.issues.issues).map((v) => {
-      return issueToIssueModel(v);
-    }),
-);
+const selectRootState = (state: RootState) => state;
 
-const selectRelations = createDraftSafeSelector(
-  (state: RootState) => state,
-  (state) => {
-    return state.relations.relations;
-  },
-);
+const selectRelations = createDraftSafeSelector(selectRootState, (state) => {
+  return state.relations.relations;
+});
 
 const selectRelationValues = createDraftSafeSelector(selectRelations, (state) => Object.values(state));
 
@@ -43,7 +34,7 @@ const selectCurrentIssueKey = createDraftSafeSelector(
  * calculation logic for issue graph layout.
  */
 export const useGraphNodeLayout = function useGraphNodeLayout(): Result {
-  const issues = useAppSelector(selectIssues, deepEqual);
+  const issues = useAppSelector(selectCurrentAndLoadingIssues, deepEqual);
   const relations = useAppSelector(selectRelationValues, deepEqual);
   const currentSelectedIssueKey = useAppSelector(selectCurrentIssueKey);
 

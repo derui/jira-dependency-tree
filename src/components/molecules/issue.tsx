@@ -6,7 +6,7 @@ import { IconButton } from "../atoms/icon-button";
 import { Tooltip } from "../atoms/tooltip";
 import { IssueStatus, IssueType } from "@/type";
 import { stringToColour, stringToHighContrastColor } from "@/utils/color";
-import { IssueModel } from "@/view-models/issue";
+import { IssueModel, isLoadingIssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
   issue?: IssueModel;
@@ -171,9 +171,9 @@ export function Issue(props: Props) {
     );
   }
 
-  if (loading || !issue) {
+  if (loading || !issue || isLoadingIssueModel(issue)) {
     return (
-      <li className={classNames(Styles.skeletonRoot)} data-testid={gen("root-skeleton")}>
+      <li className={classNames(Styles.skeletonRoot)} role="alert" aria-busy="true" data-testid={gen("root-skeleton")}>
         <span className={classNames(Styles.skeletonSummary)}></span>
         <span className={classNames(Styles.information)}>
           <span className={classNames(Styles.skeletonType)}></span>

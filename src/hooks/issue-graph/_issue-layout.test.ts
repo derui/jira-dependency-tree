@@ -3,6 +3,7 @@ import { test, expect } from "vitest";
 import { ISSUE_SIZE, ISSUE_X_GAP, ISSUE_Y_GAP, calculateIssueLayout } from "./_issue-layout";
 import { emptyDirectedGraph } from "@/libs/depgraph/main";
 import { randomIssue } from "@/mock/generators";
+import { issueToIssueModel } from "@/view-models/issue";
 
 test("do not layout if given graph is empty", () => {
   // arrange
@@ -18,7 +19,9 @@ test("do not layout if given graph is empty", () => {
 test("layout graphs having only an issue", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]);
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -50,7 +53,9 @@ test("layout graphs having only an issue", () => {
 test("layout directed graph", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]).directTo("a", "b").directTo("c", "b");
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -92,7 +97,7 @@ test("layout subgraphs", () => {
     randomIssue({ key: "c" }),
     randomIssue({ key: "d" }),
     randomIssue({ key: "e" }),
-  ];
+  ].map(issueToIssueModel);
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -146,7 +151,7 @@ test("should layout large subgraph to top", () => {
     randomIssue({ key: "c" }),
     randomIssue({ key: "d" }),
     randomIssue({ key: "e" }),
-  ];
+  ].map(issueToIssueModel);
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -176,7 +181,7 @@ test("layout complex subgraph", () => {
     randomIssue({ key: "c" }),
     randomIssue({ key: "d" }),
     randomIssue({ key: "e" }),
-  ];
+  ].map(issueToIssueModel);
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -205,7 +210,7 @@ test("layout skip-contained graph", () => {
     randomIssue({ key: "c" }),
     randomIssue({ key: "d" }),
     randomIssue({ key: "e" }),
-  ];
+  ].map(issueToIssueModel);
 
   // do
   const layout = calculateIssueLayout(graph, issues);
@@ -237,7 +242,7 @@ test("layout 2-subgraphs graph", () => {
     randomIssue({ key: "d" }),
     randomIssue({ key: "e" }),
     randomIssue({ key: "f" }),
-  ];
+  ].map(issueToIssueModel);
 
   // do
   const layout = calculateIssueLayout(graph, issues);

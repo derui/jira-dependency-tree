@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Issue } from "./issue";
+import { issueToIssueModel, makeLoadingIssue } from "@/view-models/issue";
+import { randomIssue } from "@/mock/generators";
 
 const meta = {
   title: "Molecules/Issue",
@@ -17,58 +19,64 @@ type Story = StoryObj<typeof meta>;
 
 export const TODO: Story = {
   args: {
-    issue: {
-      key: "key",
-      summary: "summary of issue",
-      issueStatus: {
-        id: "id",
-        name: "Status",
-        statusCategory: "To Do",
-      },
-      issueType: {
-        id: "id",
-        avatarUrl: "",
-        name: "type",
-      },
-    },
+    issue: issueToIssueModel(
+      randomIssue({
+        key: "key",
+        summary: "summary of issue",
+        status: {
+          id: "id",
+          name: "Status",
+          statusCategory: "To Do",
+        },
+        type: {
+          id: "id",
+          avatarUrl: "",
+          name: "type",
+        },
+      }),
+    ),
   },
 };
 
 export const InProgress: Story = {
   args: {
-    issue: {
-      key: "key",
-      summary: "summary of issue",
-      issueStatus: {
-        id: "id",
-        name: "Status",
-        statusCategory: "In progress",
-      },
-      issueType: {
-        id: "id",
-        avatarUrl: "",
-        name: "type",
-      },
-    },
+    issue: issueToIssueModel(
+      randomIssue({
+        key: "key",
+        summary: "summary of issue",
+        status: {
+          id: "id",
+          name: "Status",
+          statusCategory: "In progress",
+        },
+        type: {
+          id: "id",
+          avatarUrl: "",
+          name: "type",
+        },
+      }),
+    ),
   },
 };
 
 export const DONE: Story = {
   args: {
-    issue: {
-      key: "key",
-      summary: "summary of issue",
-      issueStatus: {
-        id: "id",
-        name: "Status",
-        statusCategory: "Done",
-      },
-      issueType: {
-        id: "id",
-        avatarUrl: "",
-        name: "type",
-      },
-    },
+    issue: issueToIssueModel(
+      randomIssue({
+        key: "key",
+        summary: "summary of issue",
+        status: {
+          id: "id",
+          name: "Status",
+          statusCategory: "Done",
+        },
+        type: {
+          id: "id",
+          avatarUrl: "",
+          name: "type",
+        },
+      }),
+    ),
   },
 };
 
@@ -78,28 +86,30 @@ export const Loading: Story = {
   },
 };
 
-export const Placeholder: Story = {
+export const LoadingFromIssue: Story = {
   args: {
-    placeholder: true,
+    issue: makeLoadingIssue("key"),
   },
 };
 
 export const Deletable: Story = {
   args: {
     onDelete: () => {},
-    issue: {
-      key: "key",
-      summary: "summary of issue",
-      issueStatus: {
-        id: "id",
-        name: "Status",
-        statusCategory: "To Do",
-      },
-      issueType: {
-        id: "id",
-        avatarUrl: "",
-        name: "type",
-      },
-    },
+    issue: issueToIssueModel(
+      randomIssue({
+        key: "key",
+        summary: "summary of issue",
+        status: {
+          id: "id",
+          name: "Status",
+          statusCategory: "To Do",
+        },
+        type: {
+          id: "id",
+          avatarUrl: "",
+          name: "type",
+        },
+      }),
+    ),
   },
 };

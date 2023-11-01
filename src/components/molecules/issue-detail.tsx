@@ -6,7 +6,7 @@ import { DefItem } from "../atoms/def-item";
 import { Button } from "../atoms/button";
 import { stringToColour } from "@/utils/color";
 import { IssueKey, IssueType } from "@/type";
-import { IssueModel } from "@/view-models/issue";
+import { IssueModel, isLoadingIssueModel } from "@/view-models/issue";
 
 export interface Props extends BaseProps {
   issue: IssueModel;
@@ -41,6 +41,10 @@ export const IssueDetail: React.FC<Props> = (props) => {
   const gen = generateTestId(testid);
 
   const handleRemove = () => props.onRemove?.(issue.key);
+
+  if (isLoadingIssueModel(issue)) {
+    return null;
+  }
 
   return (
     <div className={Styles.root}>

@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { BaseProps } from "../helper";
 import { OptionProps, Select, SelectOption } from "../atoms/select";
 import { Tooltip } from "../atoms/tooltip";
-import { IssueModel } from "@/view-models/issue";
+import { IssueModel, isLoadedIssueModel } from "@/view-models/issue";
 import { stringToColour } from "@/utils/color";
 
 export interface Props extends BaseProps {
@@ -27,6 +27,10 @@ const IssueOption = (props: OptionProps) => {
   const issue = props.option.value as IssueModel;
   const ref = useRef<HTMLDivElement | null>(null);
 
+  if (!isLoadedIssueModel(issue)) {
+    return <></>;
+  }
+
   return (
     <>
       <div ref={ref} className={Styles.option.root}>
@@ -40,7 +44,8 @@ const IssueOption = (props: OptionProps) => {
 
 // eslint-disable-next-line func-style
 export function IssueSelect(props: Props) {
-  const options = (props.issues ?? []).map((v) => ({ label: `${v.key} ${v.summary}`, value: v }));
+  const issues = (props.issues ?? []).filter(isLoadedIssueModel);
+  const options = issues.map((v) => ({ label: `${v.key} ${v.summary}`, value: v }));
 
   const handleChange = (option: SelectOption) => {
     if (props.onSelect) {

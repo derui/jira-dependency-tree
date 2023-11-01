@@ -4,6 +4,7 @@ import { calculateLinkLayout } from "./_link-layout";
 import { calculateIssueLayout } from "./_issue-layout";
 import { emptyDirectedGraph } from "@/libs/depgraph/main";
 import { randomIssue } from "@/mock/generators";
+import { issueToIssueModel } from "@/view-models/issue";
 
 test("do not layout if given graph is empty", () => {
   // arrange
@@ -18,7 +19,9 @@ test("do not layout if given graph is empty", () => {
 test("does not get layout if relation is empty", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]);
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
   const issueLayouts = calculateIssueLayout(graph, issues);
 
   // do
@@ -31,7 +34,9 @@ test("does not get layout if relation is empty", () => {
 test("get same row link", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]).directTo("a", "b").directTo("b", "c");
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
   const issueLayouts = calculateIssueLayout(graph, issues);
 
   // do
@@ -54,7 +59,9 @@ test("get same row link", () => {
 test("get upper link", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]).directTo("a", "b").directTo("c", "b");
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
   const issueLayouts = calculateIssueLayout(graph, issues);
 
   // do
@@ -81,7 +88,9 @@ test("get upper link", () => {
 test("get lower link", () => {
   // arrange
   const graph = emptyDirectedGraph().addVertices(["a", "b", "c"]).directTo("a", "b").directTo("a", "c");
-  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })];
+  const issues = [randomIssue({ key: "a" }), randomIssue({ key: "b" }), randomIssue({ key: "c" })].map(
+    issueToIssueModel,
+  );
   const issueLayouts = calculateIssueLayout(graph, issues);
 
   // do

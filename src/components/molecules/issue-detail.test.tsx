@@ -9,21 +9,21 @@ import { randomIssue } from "@/mock/generators";
 
 afterEach(cleanup);
 
-const issue = issueToIssueModel(randomIssue({ key: "key", summary: "this is summary" }));
+const issue = randomIssue({ key: "key", summary: "this is summary" });
 
 test("should be able to render", () => {
-  render(<IssueDetail issue={issue} />);
+  render(<IssueDetail issue={issueToIssueModel(issue)} />);
 
   expect(screen.queryByText("key")).not.toBeNull();
   expect(screen.queryByText("this is summary")).not.toBeNull();
-  expect(screen.queryByText(issue.issueStatus?.name ?? "")).not.toBeNull();
-  expect(screen.queryByText(issue.issueType?.name ?? "")).not.toBeNull();
+  expect(screen.queryByText(issue.status?.name ?? "")).not.toBeNull();
+  expect(screen.queryByText(issue.type?.name ?? "")).not.toBeNull();
 });
 
 test("call remove handler", async () => {
   const user = userEvent.setup();
   const mock = Sinon.fake();
-  render(<IssueDetail issue={issue} onRemove={mock} />);
+  render(<IssueDetail issue={issueToIssueModel(issue)} onRemove={mock} />);
 
   await user.click(screen.getByTestId("remover"));
 

@@ -3,11 +3,13 @@ import { render, screen, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Issue } from "./issue";
+import { issueToIssueModel, makeLoadingIssue } from "@/view-models/issue";
+import { randomIssue } from "@/mock/generators";
 
 afterEach(cleanup);
 
 test("should be able to render", () => {
-  const issue = { key: "key", summary: "summary of issue" };
+  const issue = issueToIssueModel(randomIssue({ key: "key", summary: "summary of issue" }));
 
   render(<Issue issue={issue} />);
 
@@ -18,7 +20,7 @@ test("should be able to render", () => {
 
 test("do not call onclick when it was not passed", async () => {
   expect.assertions(0);
-  const issue = { key: "key", summary: "summary of issue" };
+  const issue = issueToIssueModel(randomIssue({ key: "key", summary: "summary of issue" }));
 
   render(<Issue issue={issue} />);
 
@@ -27,7 +29,7 @@ test("do not call onclick when it was not passed", async () => {
 
 test("call onclick", async () => {
   expect.assertions(1);
-  const issue = { key: "key", summary: "summary of issue" };
+  const issue = issueToIssueModel(randomIssue({ key: "key", summary: "summary of issue" }));
 
   render(<Issue issue={issue} onClick={(key) => expect(key).toBe("key")} />);
 
@@ -35,7 +37,14 @@ test("call onclick", async () => {
 });
 
 test("do not value issue type and status when there were not send", async () => {
-  const issue = { key: "key", summary: "summary of issue" };
+  const issue = issueToIssueModel(
+    randomIssue({
+      key: "key",
+      summary: "summary of issue",
+      status: { id: "", name: "", statusCategory: "" },
+      type: { id: "", name: "", avatarUrl: "" },
+    }),
+  );
 
   render(<Issue issue={issue} onClick={(key) => expect(key).toBe("key")} />);
 
@@ -51,38 +60,41 @@ test("do not value issue type and status when there were not send", async () => 
 });
 
 test("display value for type and status", async () => {
-  const issue = {
-    key: "key",
-    summary: "summary of issue",
-    issueStatus: {
-      id: "id",
-      name: "name",
-      statusCategory: "DONE",
-    },
-    issueType: { id: "id", name: "Task", avatarUrl: "" },
-  };
+  const issue = issueToIssueModel(
+    randomIssue({
+      key: "key",
+      summary: "summary of issue",
+      status: {
+        id: "id",
+        name: "name",
+        statusCategory: "DONE",
+      },
+      type: { id: "id", name: "Task", avatarUrl: "" },
+    }),
+  );
 
   render(<Issue issue={issue} onClick={(key) => expect(key).toBe("key")} />);
 
   const key = screen.getByTestId("key");
   const status = screen.getByTestId("status");
-
   expect(key.textContent).toContain("key");
   expect(status.textContent).toBe("DONE");
 });
 
 test("show delete button", async () => {
   expect.assertions(1);
-  const issue = {
-    key: "key",
-    summary: "summary of issue",
-    issueStatus: {
-      id: "id",
-      name: "name",
-      statusCategory: "DONE",
-    },
-    issueType: { id: "id", name: "Task", avatarUrl: "" },
-  };
+  const issue = issueToIssueModel(
+    randomIssue({
+      key: "key",
+      summary: "summary of issue",
+      status: {
+        id: "id",
+        name: "name",
+        statusCategory: "DONE",
+      },
+      type: { id: "id", name: "Task", avatarUrl: "" },
+    }),
+  );
 
   render(<Issue issue={issue} onDelete={(key) => expect(key).toBe("key")} />);
 
@@ -94,7 +106,7 @@ test("show delete button", async () => {
 test("do not propagate after click delete", async () => {
   expect.assertions(1);
 
-  const issue = { key: "key", summary: "summary of issue" };
+  const issue = issueToIssueModel(randomIssue({ key: "key", summary: "summary of issue" }));
 
   render(
     <Issue
@@ -109,4 +121,13 @@ test("do not propagate after click delete", async () => {
   const deleteButton = screen.getByTestId("delete");
 
   await userEvent.click(deleteButton);
+});
+
+test("show skeleton if model is loading", async () => {
+  const issue = makeLoadingIssue("key");
+
+  render(<Issue issue={issue} />);
+
+  expect(screen.queryByText("key")).toBeNull();
+  expect(screen.getByRole("alert").getAttribute("aria-busy")).toEqual("true");
 });

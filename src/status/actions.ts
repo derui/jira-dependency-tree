@@ -8,10 +8,6 @@ import { RelationDelta } from "@/models/relation-delta";
 export const submitApiCredential = createAction<ApiCredential>("submitApiCredential");
 export const restoreApiCredential = createAction<ApiCredential>("restoreApiCredential");
 
-// filter issues
-export const filterIssues = createAction<string>("filterIssues");
-export const clearIssueFilter = createAction("clearIssueFilter");
-
 // actions for issue graph
 export const payAttentionIssue = createAction<string>("payAttentionIssue");
 

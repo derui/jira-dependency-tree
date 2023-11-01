@@ -1,8 +1,8 @@
-import { createDraftSafeSelector } from "@reduxjs/toolkit";
-import { useAppDispatch, useAppSelector } from "./_internal-hooks";
-import { IssueModel, issueToIssueModel } from "@/view-models/issue";
-import { RootState } from "@/status/store";
-import { clearIssueFilter, filterIssues } from "@/status/actions";
+import { useMemo, useState } from "react";
+import deepEqual from "fast-deep-equal";
+import { useAppSelector } from "./_internal-hooks";
+import { selectCurrentIssues } from "./_selectors/current-issues";
+import { IssueModel, isLoadedIssueModel } from "@/view-models/issue";
 
 type UseFilterIssueResult = {
   state: {
@@ -18,24 +18,27 @@ type UseFilterIssueResult = {
   clear: () => void;
 };
 
-const selectRootState = (state: RootState) => state;
-const selectMatchedIssues = createDraftSafeSelector(selectRootState, (state) => {
-  return state.issues.matchedIssues.map(issueToIssueModel);
-});
-
 /**
  * control filtering issues
  */
 export const useFilterIssues = function useFilterIssues(): UseFilterIssueResult {
-  const dispatch = useAppDispatch();
-  const matchedIssues = useAppSelector(selectMatchedIssues);
+  const currentIssues = useAppSelector(selectCurrentIssues, { equalityFn: deepEqual });
+  const [term, setTerm] = useState("");
+
+  const matchedIssues = useMemo(() => {
+    const revisedTerm = term.toLowerCase();
+
+    return currentIssues.filter(isLoadedIssueModel).filter((v) => {
+      return v.key.toLowerCase().includes(revisedTerm) || v.summary.toLowerCase().includes(revisedTerm);
+    });
+  }, [term, currentIssues]);
 
   const filter = (term: string) => {
-    dispatch(filterIssues(term));
+    setTerm(term);
   };
 
   const clear = () => {
-    dispatch(clearIssueFilter());
+    setTerm("");
   };
 
   return { state: { issues: matchedIssues }, filter, clear };

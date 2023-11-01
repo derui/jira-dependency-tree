@@ -1,17 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { clearIssueFilter, filterIssues, importIssues, issueSet, removeNode } from "../actions";
+import { importIssues, issueSet, removeNode } from "../actions";
 import { Issue } from "@/models/issue";
 import { IssueKey } from "@/type";
-import { filterEmptyString } from "@/utils/basic";
 
 interface IssuesState {
   issues: Record<IssueKey, Issue>;
-  matchedIssues: Issue[];
 }
 
 const initialState = {
   issues: {},
-  matchedIssues: [],
 } as IssuesState satisfies IssuesState;
 
 const slice = createSlice({
@@ -26,25 +23,6 @@ const slice = createSlice({
           accum[v.key] = v;
           return accum;
         }, {});
-
-      state.matchedIssues = Object.values(state.issues);
-    });
-
-    builder.addCase(filterIssues, (state, { payload }) => {
-      if (!filterEmptyString(payload)) {
-        state.matchedIssues = Object.values(state.issues);
-      } else {
-        const searchString = payload.toLowerCase();
-
-        state.matchedIssues = Object.values(state.issues).filter(
-          (issue) =>
-            issue.key.toLowerCase().includes(searchString) || issue.summary.toLowerCase().includes(searchString),
-        );
-      }
-    });
-
-    builder.addCase(clearIssueFilter, (state) => {
-      state.matchedIssues = [];
     });
 
     builder.addCase(removeNode, (state, { payload }) => {
@@ -53,7 +31,6 @@ const slice = createSlice({
 
     builder.addCase(issueSet.select, (state) => {
       state.issues = {};
-      state.matchedIssues = [];
     });
   },
 });

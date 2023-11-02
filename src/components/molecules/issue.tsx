@@ -87,7 +87,7 @@ const Styles = {
   skeletonRoot: classNames(
     "animate-pulse",
     "flex",
-    "h-12",
+    "h-18",
     "w-full",
     "items-center",
     "px-4",
@@ -99,9 +99,9 @@ const Styles = {
     "space-y-2",
   ),
   skeletonSummary: classNames("w-full", "h-6", "bg-lightgray", "flex-auto"),
-  skeletonType: classNames("w-3", "h-3", "bg-lightgray", "flex-none"),
-  skeletonKey: classNames("w-16", "h-3", "bg-lightgray", "flex-none"),
-  skeletonStatus: classNames("w-8", "h-3", "bg-lightgray", "flex-none"),
+  skeletonType: classNames("w-3", "h-6", "bg-lightgray", "flex-none"),
+  skeletonKey: classNames("w-16", "h-6", "bg-lightgray", "flex-none"),
+  skeletonStatus: classNames("w-8", "h-6", "bg-lightgray", "flex-none"),
   deleteButton: classNames("absolute", "flex", "right-1", "top-1", "items-center"),
 };
 

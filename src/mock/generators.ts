@@ -8,13 +8,13 @@ export const MOCK_BASE_URL = "https://mock.example.com";
 /**
  * get random api credential
  */
-export const randomCredential = (): ApiCredential => {
+export const randomCredential = (v: Partial<ApiCredential> = {}): ApiCredential => {
   return {
-    apiBaseUrl: MOCK_BASE_URL,
-    apiKey: faker.internet.password(),
-    email: faker.internet.email(),
-    token: faker.internet.password(),
-    userDomain: faker.internet.domainSuffix(),
+    apiBaseUrl: v.apiBaseUrl ?? MOCK_BASE_URL,
+    apiKey: v.apiKey ?? faker.internet.password(),
+    email: v.email ?? faker.internet.email(),
+    token: v.token ?? faker.internet.password(),
+    userDomain: v.userDomain ?? faker.internet.domainSuffix(),
   };
 };
 

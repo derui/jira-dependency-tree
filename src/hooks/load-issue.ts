@@ -22,7 +22,7 @@ export const useLoadIssue = function useLoadIssue(): Hook {
       try {
         // We wish we can use parser/resolver as interface to parse URL or something.
         const url = new URL(urlLike);
-        const regExpForKey = new RegExp("/browse/([^/]+?)");
+        const regExpForKey = new RegExp("/browse/([^/]+)$");
         const match = regExpForKey.exec(url.pathname);
         if (url.host == `${apiCredential.userDomain}.atlassian.net` && match != null) {
           key = match.at(1);
@@ -32,7 +32,7 @@ export const useLoadIssue = function useLoadIssue(): Hook {
         return;
       }
 
-      if (key == null) {
+      if (!key) {
         return;
       }
 

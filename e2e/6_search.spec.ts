@@ -2,12 +2,6 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("allow search issue with term", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   await page.goto("/");
 
   // Input credentials
@@ -26,12 +20,6 @@ test("allow search issue with term", async ({ page }) => {
 });
 
 test("move point to task if result clicked", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   await page.goto("/");
 
   // Input credentials

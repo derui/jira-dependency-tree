@@ -1,20 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { inputCredential } from "./_support";
 
 test("show cycle", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/cycle.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   await page.goto("/");
 
   // Input credentials
-  await page.getByTestId("user-configuration/opener").click();
-  await page.getByTestId("user-configuration/form/user-domain").fill("domain");
-  await page.getByTestId("user-configuration/form/email").fill("email");
-  await page.getByTestId("user-configuration/form/token").fill("token");
-  await page.getByTestId("user-configuration/form/submit").click();
+  await inputCredential(page);
 
   // import issues
   await page.getByTestId("side-toolbar/importer-opener").click();

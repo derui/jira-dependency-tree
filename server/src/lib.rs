@@ -18,27 +18,26 @@ use serde_json::json;
 pub async fn handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract some useful information from the request
     let unmatch = not_found();
-    let preflight = preflight();
 
     match event.uri().path() {
         "/prod/get-issues" => match *event.method() {
             Method::POST => execute_get_issues(&event).await,
-            Method::OPTIONS => preflight,
+            Method::OPTIONS => preflight(&event),
             _ => unmatch,
         },
         "/prod/create-link" => match *event.method() {
             Method::POST => execute_create_link(&event).await,
-            Method::OPTIONS => preflight,
+            Method::OPTIONS => preflight(&event),
             _ => unmatch,
         },
         "/prod/delete-link" => match *event.method() {
             Method::POST => execute_delete_link(&event).await,
-            Method::OPTIONS => preflight,
+            Method::OPTIONS => preflight(&event),
             _ => unmatch,
         },
         "/prod/search-issues" => match *event.method() {
             Method::POST => execute_search_issues(&event).await,
-            Method::OPTIONS => preflight,
+            Method::OPTIONS => preflight(&event),
             _ => unmatch,
         },
         _ => unmatch,
@@ -179,18 +178,28 @@ fn not_found() -> Result<Response<Body>, Error> {
     Ok(builder.body(Body::Text(json.to_string()))?)
 }
 
-fn preflight() -> Result<Response<Body>, Error> {
+fn preflight(event: &Request) -> Result<Response<Body>, Error> {
     let builder = Response::builder().status(200);
     let json = json!({});
+    let given_origin = event
+        .headers()
+        .get("origin")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
 
     #[cfg(debug_assertions)]
-    let origin = "http://localhost:5173";
+    // 8080 for wiremock
+    let origins = vec!["http://localhost:5173", "http://localhost:8080"];
 
     #[cfg(not(debug_assertions))]
-    let origin = include_str!(".origin-release").trim();
+    let origins = vec![include_str!(".origin-release").trim()];
+
+    let origin = origins.iter().find(|v| v == &&given_origin).unwrap_or(&"");
 
     Ok(builder
-        .header("Access-Control-Allow-Origin", origin)
+        .header("Access-Control-Allow-Origin", *origin)
         .header("Access-Control-Allow-Method", "POST,OPTIONS")
         .header(
             "Access-Control-Allow-Headers",

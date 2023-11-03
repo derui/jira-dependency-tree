@@ -1,0 +1,30 @@
+{
+  "id" : "ed66be16-3e4f-4a85-aecb-7325aa4c67be",
+  "name" : "delete-link",
+  "request" : {
+    "url" : "/delete-link",
+    "method" : "POST",
+    "headers" : {
+      "Content-Type" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"id\":\"10027\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "headers" : {
+      "Server" : "Werkzeug/2.3.7 Python/3.11.3",
+      "Date" : "Fri, 03 Nov 2023 03:05:25 GMT",
+      "content-type" : "application/json"
+    }
+  },
+  "uuid" : "ed66be16-3e4f-4a85-aecb-7325aa4c67be",
+  "persistent" : true,
+  "insertionIndex" : 5
+}

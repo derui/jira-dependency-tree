@@ -2,12 +2,6 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("view issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // open issue set
@@ -23,12 +17,6 @@ test("view issue set", async ({ page }) => {
 });
 
 test("create, rename, delete issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // open issue set
@@ -80,12 +68,6 @@ test("create, rename, delete issue set", async ({ page }) => {
 });
 
 test("restore issue set", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // Input credentials

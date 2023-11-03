@@ -27,12 +27,6 @@ test("open importer", async ({ page }) => {
 });
 
 test("input jql and import issues", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   await page.goto("/");
 
   await inputCredential(page);

@@ -1,0 +1,31 @@
+{
+  "id" : "004cc097-c684-41e6-a897-4667796c24fe",
+  "name" : "search-issues",
+  "request" : {
+    "url" : "/search-issues",
+    "method" : "POST",
+    "headers" : {
+      "Content-Type" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"jql\":\"project = \\\"TES\\\" ORDER BY created DESC\",\"page\":1}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "search-issues-004cc097-c684-41e6-a897-4667796c24fe.json",
+    "headers" : {
+      "Server" : "Werkzeug/2.3.7 Python/3.11.3",
+      "Date" : "Fri, 03 Nov 2023 03:05:19 GMT",
+      "content-type" : "application/json"
+    }
+  },
+  "uuid" : "004cc097-c684-41e6-a897-4667796c24fe",
+  "persistent" : true,
+  "insertionIndex" : 7
+}

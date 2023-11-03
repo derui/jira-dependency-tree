@@ -1,0 +1,31 @@
+{
+  "id" : "b3179bc4-3612-4a64-898f-5abee11a73fd",
+  "name" : "get-issues",
+  "request" : {
+    "url" : "/get-issues",
+    "method" : "POST",
+    "headers" : {
+      "Content-Type" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"issues\":[\"TES-51\",\"TES-52\",\"TES-54\"]}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "get-issues-b3179bc4-3612-4a64-898f-5abee11a73fd.json",
+    "headers" : {
+      "Server" : "Werkzeug/2.3.7 Python/3.11.3",
+      "Date" : "Fri, 03 Nov 2023 03:05:22 GMT",
+      "content-type" : "application/json"
+    }
+  },
+  "uuid" : "b3179bc4-3612-4a64-898f-5abee11a73fd",
+  "persistent" : true,
+  "insertionIndex" : 6
+}

@@ -1,0 +1,25 @@
+{
+  "id" : "5ab913cc-91dd-45af-97ef-c7cb2aab109d",
+  "name" : "get-issues",
+  "request" : {
+    "url" : "/get-issues",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"issues\":[\"TES-9\"]}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "[{\"key\":\"TES-9\",\"summary\":\"test 5\",\"description\":null,\"status\":{\"id\":\"10001\",\"name\":\"進行中\",\"statusCategory\":\"進行中\"},\"issueType\":{\"id\":\"10001\",\"name\":\"ストーリー\",\"avatarUrl\":\"https://derui.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10315?size=medium\"},\"selfUrl\":\"https://derui.atlassian.net/rest/api/3/issue/10008\",\"links\":[{\"id\":\"10007\",\"outwardIssue\":\"TES-13\",\"inwardIssue\":\"TES-9\"}],\"subtasks\":[]}]",
+    "headers" : {
+      "Server" : "Werkzeug/2.3.7 Python/3.11.3",
+      "Date" : "Fri, 03 Nov 2023 02:04:37 GMT",
+      "content-type" : "application/json"
+    }
+  },
+  "uuid" : "5ab913cc-91dd-45af-97ef-c7cb2aab109d",
+  "persistent" : true,
+  "insertionIndex" : 8
+}

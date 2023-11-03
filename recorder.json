@@ -1,0 +1,13 @@
+{
+  "targetBaseUrl" : "http://localhost:3000",
+  "captureHeaders" : {
+    "Content-Type" : {
+      "caseInsensitive" : true
+    }
+  },
+  "extractBodyCriteria" : {
+    "textSizeThreshold" : "0",
+    "binarySizeThreshold" : "10240"
+  },
+  "repeatsAsScenarios" : false
+}

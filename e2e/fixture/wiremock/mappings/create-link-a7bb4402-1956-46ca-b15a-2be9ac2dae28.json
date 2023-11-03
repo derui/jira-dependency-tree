@@ -1,0 +1,31 @@
+{
+  "id" : "a7bb4402-1956-46ca-b15a-2be9ac2dae28",
+  "name" : "create-link",
+  "request" : {
+    "url" : "/create-link",
+    "method" : "POST",
+    "headers" : {
+      "Content-Type" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\"inward_issue\":\"TES-52\",\"outward_issue\":\"TES-51\"}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "create-link-a7bb4402-1956-46ca-b15a-2be9ac2dae28.json",
+    "headers" : {
+      "Server" : "Werkzeug/2.3.7 Python/3.11.3",
+      "Date" : "Fri, 03 Nov 2023 03:05:26 GMT",
+      "content-type" : "application/json"
+    }
+  },
+  "uuid" : "a7bb4402-1956-46ca-b15a-2be9ac2dae28",
+  "persistent" : true,
+  "insertionIndex" : 4
+}

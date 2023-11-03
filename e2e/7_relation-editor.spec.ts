@@ -6,12 +6,6 @@ const testidOf = function testidOf(id: string) {
 };
 
 test("view relations between imported issues", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/relation-editor/basic.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // Input credentials
@@ -41,12 +35,6 @@ test("open and close panel", async ({ page }) => {
 });
 
 test("append and remove relation", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/relation-editor/has-relations.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // Input credentials

@@ -87,7 +87,6 @@ const Styles = {
   skeletonRoot: classNames(
     "animate-pulse",
     "flex",
-    "h-18",
     "w-full",
     "items-center",
     "px-4",

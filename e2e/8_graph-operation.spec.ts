@@ -2,12 +2,6 @@ import { test, expect } from "@playwright/test";
 import { importIssues, inputCredential } from "./_support";
 
 test("view issue details in graph", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // Input credentials
@@ -34,12 +28,6 @@ test("view issue details in graph", async ({ page }) => {
 });
 
 test("remove issue from graph", async ({ page }) => {
-  await page.routeFromHAR("./e2e/fixtures/normal.zip", {
-    url: "http://localhost:3000/**",
-    update: false,
-    updateMode: "minimal",
-  });
-
   page.goto("/");
 
   // Input credentials

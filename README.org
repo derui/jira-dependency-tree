@@ -98,6 +98,10 @@ Some developers does not have personal macOS. We think this application might ru
 
 ** Run CI
 #+begin_src shell
+  # Run wiremock before CI
+  docker run -it --net host --rm -p 8080:8080 -v (pwd)/e2e/fixture/wiremock:/home/wiremock --name wiremock \
+          wiremock/wiremock:3.2.0 --enable-stub-cors
+
   # Run all CI with headless browser
   $ pnpm run it:run
 
